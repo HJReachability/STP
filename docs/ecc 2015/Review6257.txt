@@ -1,0 +1,41 @@
+Reviewer 3 of ECC'15 submission 697
+
+Comments to the author
+======================
+
+This paper deals with the problem of sequential safe path
+planning for a group of N vehicles. Based on [21], a
+tractable solution is provided solving a double-obstacle
+Hamilton-Jacobi-Isaacs variational inequality. Through two
+numerical examples, it is shown how the reach-avoid set is
+computed for each vehicle and how the latest start time is
+obtained. Compared to the exponential complexity of
+single-obstacle HJI VI, this scheme provides linear
+complexity with respect to the number of vehicles. 
+This paper is interesting and well-written. The
+contribution is clear since it provides an interesting
+scalable solution to the path planning problem for
+multi-agent systems. The SPP enables to reduce the
+complexity of the problem. However, it will adds
+conservatism since the problem will not be solved in a
+fully decentralized way but in a leader-folllower way.
+Furthermore, it induces a full knowledge of the agent
+trajectories for lowest priority vehicles (problem of
+security, delay in the computation if online planning,
+etc.).
+Other remarks are as follows:
+- Page 2, \forall t \geq 0 should be replaced by \forall t
+\geq t_i^{LST}
+- Page 3, description of single-obstacle HJI VI is not
+clear and not sufficiently detailed. For instance, Eq. (2)
+is not understandable since V is not defined.
+- Page 4, it is said that “an optimal control problem
+involving only one vehicle and no adversary”. From my point
+of view, this claim is not clear. Indeed, A_i(t) depends on
+x_j.
+- Algorithm 1 is hard to follow because of index k and
+\bold{k}
+- Fig. 4, where are results of single-obstacle (resp.
+double-obtacle) HJI VI? Titles are not understandable.
+- Very nice results are depicted in Fig. 6-8. These figures
+well show the efficiency of the proposed scheme.

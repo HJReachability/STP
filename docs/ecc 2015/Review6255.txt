@@ -1,0 +1,45 @@
+Reviewer 2 of ECC'15 submission 697
+
+Comments to the author
+======================
+
+The paper presents the first application of a new method
+for the optimal computattion of trajectoris of vehicles
+moving in dynamic environments, based on the solution of
+the Hamilton-Jacobi-Isaacs (HJI) variational inequalities
+(VI). After introducing the problem and describing its
+importance, the
+author give a brief state of the art of the planning
+methods in dynamic environments that guarantee safety and
+then give the general problem formulation. The departure
+times of the vehicles are variable and bounded by the
+Earliest Start Time (EST) and Latest Start Time (LST), the
+arrival time is given by the scheduled arrival time (STA),
+and the fixed and moving obstacles are represented by disks
+of various radius called Danger sets. To apply the theory
+developed by the authors, the vehicles are prioritezed and
+the trajectories are computed in a sequential manner
+(sequentiona path planning SPP), first those of more
+important vehicles and then those of less important
+vehicles by avoiding the other trajectories. The paper
+compares then the the minimum time solutions computed by
+two methods, the direct solution of the HJI IV and the SPP
+approach for the simple case of two moving vehicles, which
+is numerically tractable. For a more complex case with four
+vehicles, only the SPP solution is computationally feasible
+and the paper gives the solution for the four vehicles and
+the evolution of the reach-avoid sets for one of the
+vechicles.
+
+The paper is very interesting and well written, and there
+are no significant observations to the paper. However, it
+would be good to include a discussion on the existance of a
+solution to the problem when using the SPP approach. In
+fact, the inability to change the trajectories already
+computed for the higher priorities vehicles, may prevent
+the computation of a solution for the lower priority
+vehicles. Given the small computation time of the
+algorithm, it would be interesting to compare the solutions
+obtained by rotating the priorities of the vehicles, and to
+develop an example in which the solutions for some of the
+vehicles do not exhist. 

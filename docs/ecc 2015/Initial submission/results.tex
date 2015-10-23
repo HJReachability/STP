@@ -1,0 +1,182 @@
+\section{Numerical Implementation \label{sec:example}}
+For the numerical examples in this paper, we use a numerical method provided in \cite{fisac15} which is based on methods in \cite{mitchell05, sethian96}. The numerical algorithm is shown in Algorithm \ref{alg:HJI}. Here, $\mathbf{i}$ represents the index for a particular grid cell, $I$ represents the set of grid indices, and $k$ represents the time step.  $\hat{V}$ represents the numerical approximation to $V$. $D^+_x\hat{V}, D^-_x\hat{V}$ represent the ``right" and ``left" approximations of spatial derivatives. For the numerical Hamiltonian $\hat{H}$, we used the well-known Lax-Friedrich approximation \cite{mitchell-thesis, osher91}.
+
+For spatial derivatives $D^\pm_x\hat{V}$, we used a fifth-order accurate weighted essentially nonoscillatory scheme \cite{osher91,osher03}. For time derivative $D_t \hat{V}$, we used a third-order total variation diminishing Runge-Kutta scheme \cite{osher03, shu88}. For these derivative approximations, the implementation in \cite{LSToolbox} was used. For two-, three-, and four-dimensional (2D, 3D, 4D) computations, we used a $200^2, 71^3, 45^4$ grid, respectively.
+
+\begin{algorithm}[h] 
+\KwData{$\hat{l}(x_\mathbf{i},t_\mathbf{k}), \hat{g}(x_\mathbf{i},t_\mathbf{k})$}
+ \KwResult{$\hat{V}(x_\mathbf{i},t_\mathbf{k})$}
+ \BlankLine
+ Initialization\DontPrintSemicolon\;\PrintSemicolon
+   \For{$\mathbf{i}\in I$}{
+     \nlset{Init}
+     $\hat{V}(x_\mathbf{i},t_0) \leftarrow \max\{\hat{l}(x_\mathbf{i},t_0), \hat{g}(x_\mathbf{i},t_0)\}$\;
+   }
+   Value propagation\DontPrintSemicolon\;\PrintSemicolon
+  \For{$k\leftarrow 1$ \KwTo $n$}{
+     \For{$\mathbf{i}\in I$}{
+     $\hat{V}(x_\mathbf{i},t_k) \leftarrow \hat{V}(x_\mathbf{i},t_{k-1})$ \DontPrintSemicolon\;\PrintSemicolon$\quad+\displaystyle\int_{t_k}^{t_{k-1}} \!\!\!\hat{H}\big(x_\mathbf{i}, D^+_x\hat{V}(x_\mathbf{i},\tau), D^-_x\hat{V}(x_\mathbf{i},\tau)\big)d\tau$\;
+$\hat{V}(x_\mathbf{i},t_k) \leftarrow \min \left\{\hat{V}(x_\mathbf{i},t_k), l(x_\mathbf{i},t_k)\right\}$\;
+$\hat{V}(x_\mathbf{i},t_\mathbf{k}) \leftarrow \max\left\{\hat{V}(x_\mathbf{i},t_k), g(x_\mathbf{i},t_k)\right\}$\;
+     }
+   }
+ \caption{Numerical Double-Obstacle HJI Solution\label{alg:HJI}}
+\end{algorithm}
+
+Note that although the two examples we present have two and four vehicles, our method can be used for \textit{any} number of vehicles, as long as the state space of each vehicle is less than six dimensions. The computational complexity of our method scales linearly with the number of vehicles, allowing the possibility of performing trajectory planning for a very large number of vehicles.
+
+\section{Two Vehicles with Kinematics Model \label{sec:2vek}}
+Consider two vehicles $i = 1,2$ using the simple kinematics model with the following dynamics in $t\in[\tnow_i, \tf_i]$:
+
+\begin{equation}
+\begin{aligned}
+\dotx_i &= v_i\ctrl_i(t), \ctrl_i(t) \in \ctrlin \\
+\x_i(\tnow_i) &= \x_i^0 \\
+\end{aligned}
+\end{equation}
+
+\noindent where $v_1=v_2=1$ are the maximum speeds of the vehicles and $\ctrlin$ is the unit disk. Under this model, each vehicle can move in any direction at some maximum speed. With the above dynamics, the Hamiltonian for each vehicle is
+
+\bq
+\ham_i(t, D_{\x_i}\soln_i(\x_i,t), \soln_i(\x_i,t)) = \min_{\ctrl_i} \{v_i\ctrl_i(t) \cdot D_{\x_i}\soln(\x_i, t)\}
+\eq
+
+\noindent giving the optimal control 
+\bq
+\ctrl_i(t) = -\frac{D_{\x_i}\soln_i(\x_i,t)}{\| D_{\x_i}\soln_i(\x_i,t) \|_2}
+\eq
+
+The vehicles have the following scheduled times of arrival from the following initial conditions:
+\bq
+\begin{aligned}
+\x_1^0 &= (-0.5, 0), \x_2^0 = (0.5, 0)\\
+\tf_1 &= \tf_2 = 0
+\end{aligned}
+\eq
+
+The target sets of the vehicles are squares with side length $0.2$ on the opposite side of the domain, and the obstacles are rectangles near the middle of the domain. The system's initial conditions and domain are shown in Figure \ref{fig:kin_ic}.
+
+For this system, we determine $\ti_1, \ti_2$, the latest acceptable times that vehicles $1,2$ must depart from their initial positions $\x_1^0, \x_2^0$ in order to reach their respective targets $\target_1, \target_2$ while avoiding obstacles and danger. We will do this by computing the reach-avoid sets from the target sets using two different methods. First, we perform SPP by solving the HJI VI (\ref{eq:HJI}) for the two vehicles as outlined in Section \ref{sec:solution}. Second, note that this system has a 4D joint state space, and thus the single-obstacle HJI VI (\ref{eq:HJIPDE}) would actually be numerically tractable. Therefore, we will also compute the reach-avoid set by solving (\ref{eq:HJIPDE}) in 4D for comparison.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.2\textwidth]{"fig/kin_ic"}
+	\caption{Initial configuration of the two-vehicle example.}
+	\label{fig:kin_ic}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.3\textwidth]{"fig/kin_reach"}
+	\caption{Evolution of reach-avoid set for vehicle $2$. The initial reach-avoid set at time 0 grows backwards in time unobstructed before it encounters obstacles (left top). Black arrows indicate direction of obstacle motion. When the time reaches $t=-0.61$, the growth of the reach-avoid set is inhibited by both the static obstacle $\obs$ and the time-varying obstacle induced by vehicle 1, $\mobs_1^2$. The evolution of the reach-avoid set is computed until $t=\ti_2=-1.13$, when the reach-avoid set contains vehicle $2$'s initial position.}
+	\label{fig:kin_reach}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{"fig/kin_result"}
+	\caption{A comparison between the single-obstacle and double-obstacle HJI VI solutions. With the double-obstacle HJI VI solution, vehicle $2$ optimally moves to $\target_2$ while avoiding vehicle $1$, which takes the shortest path to $\target_1$. With the single-obstacle HJI VI solution, both vehicles avoid each other along their way to the targets. The resulting reach-avoid sets at $t=\ti_2$ are very similar in both cases.}
+	\label{fig:kin_result}
+\end{figure}
+
+\subsection{Solution via double-obstacle HJI VI and SPP}
+With the HJI VI and SPP approach, we first determine the minimum time trajectory for vehicle $1$ from $\x_1^0$ to $\target_1$. Then, given this trajectory, we determine the optimal trajectory for vehicle $2$ that brings vehicle $2$ from $\x_2^0$ to $\target_2$ while avoiding the danger zone of vehicle $1$.
+
+Figure \ref{fig:kin_reach} shows the reach-avoid set for vehicle $2$ at various times. We start at $t=\tf_2=0$, and propagate the reach-avoid set backwards in time until $t=\ti_2=-1.13$. Before the induced obstacle touches the reach-avoid set, the reach-avoid set grows from the target set in the same way as in a front propagation problem with uniform speed; this is shown in the left top subplot. Eventually, the obstacle inhibits the propagation of the reach-avoid set, shown in the next two subplots. Finally, the reach-avoid set grows to contain $\x_2^0$, and the computation is stopped at $\ti_2=-1.13$. The left top plot of Figure \ref{fig:kin_result} shows the resulting trajectory from applying the optimal control in Equation (\ref{eq:ctrl_syn}).
+
+Computations were done on a $200^2$ grid. Trajectory planning for vehicle 1 took approximately 0.34 seconds using the fast marching method \cite{sethian96}. Trajectory planning via solving Equation (\ref{eq:HJI}) for vehicle $2$ given the trajectory for vehicle 1 took approximately 25 seconds. Computations were done on a Lenovo T420s laptop with a Core i7-2640M processor, and are orders of magnitude faster than doing a 4D HJI calculation, which took approximately 30 minutes.
+
+\subsection{Solution via single-obstacle HJI VI}
+To solve the single-obstacle HJI VI (\ref{eq:HJIPDE}), we define, in the joint state space of the vehicles, the \textit{static} joint target set
+
+\bq
+\target = \{(\x_1, \x_2)\in\R^4: \x_1 \in \target_1 \wedge \x_2 \in \target_2 \}
+\eq
+
+Next we define, also in the joint state space of the vehicles, the \textit{static} joint avoid set
+\bq
+\begin{aligned}
+\avoid &= \{(\x_1, \x_2)\in\R^4: \x_1 \in \obs \vee \x_2 \in \obs \\
+&\qquad \vee \|\x_1-\x_2\|_2\le\Rc \}
+\end{aligned}
+\eq
+
+Now, we can solve the single-obstacle HJI VI (\ref{eq:HJIPDE}) with the terminal set  $\target\backslash\avoid$, and the avoid set $\avoid$.
+
+The result of solving (\ref{eq:HJIPDE}) is shown in the top right and bottom left subplots of Figure \ref{fig:kin_result}. The top right subplot shows the resulting trajectory, in which the two vehicles cooperatively avoid collision. The bottom left plot compares the reach-avoid sets computed from solving (\ref{eq:HJIPDE}) and the double-obstacle HJI VI (\ref{eq:HJI}) at $t=\ti_2$. The two sets are quite similar. The discrepancy between the reach-avoid sets is due to the difference in control strategies derived from the two different approaches: with the single-obstacle HJI VI, we compute the joint optimal control for both vehicles, and with the double-obstacle HJI VI, we compute the optimal control for vehicle 2 given vehicle 1's optimal trajectory, which does not take into account vehicle 2's motion. 
+
+For the latest start time, we obtained $\ti_2 = -1.15$ from the single-obstacle HJI VI (recall $\ti_2=-1.13$ from the double-obstacle HJI VI). This discrepancy is likely due to the grid resolution limitation when doing a 4D calculation. Computations were done on a $45^4$ grid, and took approximately 30 minutes.
+
+\section{Four Vehicles with Constrained Turn Rate}
+Consider four vehicles with states $\x_i = [x_i, y_i, \theta_i]^\top$ modeled using a horizontal kinematics model with the following dynamics for $t \in[\tnow_i, \tf_i],i=1,2,3,4$:
+
+\begin{equation}
+\begin{aligned}
+\dot{x}_i &= v_i \cos(\theta_i) \\
+\dot{y}_i &= v_i \sin(\theta_i) \\
+\dot{\theta}_i &= \omega_i \\
+\x_i(\tnow_i) &= \x_i^0 \\
+|\omega_i| &\le \bar{\omega}_i \\
+\end{aligned}
+\end{equation}
+
+\noindent where $(x_i, y_i)$ is the position of vehicle $i$, $\theta_i$ is the heading of vehicle $i$, and $v_i$ is the speed of vehicle $i$. The control input $\ctrl_i$ of vehicle $i$ is the turning rate $\omega_i$, whose absolute value is bounded by $\bar{\omega}_i$. For illustration, we chose $\bar{\omega}_i=1 \forall i$ and assume $v_i=1$ is constant; however, our method can easily handle the case in which $\bar{\omega}_i$ differ across vehicles and $v_i$ is a control input. The Hamiltonian associated with vehicle $i$ is
+
+\bq
+\begin{aligned}
+\ham_i(t, &D_{\x_i}\soln_i(\x_i,t), \soln_i(\x_i,t)) \\
+&= \min_i \big\{ v_i D_{x_i} \soln_i(\x_i, t) \cos(x_i(t)) \\
+&\; + v_i D_{y_i} \soln_i(\x_i, t) \sin(y_i(t)) + D_{\theta_i} \soln_i(\x_i, t) \omega_i \big\}
+\end{aligned}
+\eq
+
+\noindent giving the optimal control
+\bq
+\omega_i(t) = -\bar{\omega}_i\frac{D_{\theta_i}\soln_i(\x_i,t)}{\left| D_{\theta_i}\soln_i(\x_i,t) \right|}
+\eq
+
+The vehicles have initial conditions and STA as follows:
+\bq
+\begin{aligned}
+\x_1^0 &= (-0.5, 0, 0), &\tf_1 &= 0\\
+\x_2^0 &= (0.5, 0, \pi), &\tf_2 &= 0.2\\
+\x_3^0 &= \left(-0.6, 0.6, \frac{7\pi}{4}\right), &\tf_3 &= 0.4\\
+\x_4^0 &= \left(0.6, 0.6, \frac{5\pi}{4}\right), &\tf_4 &= 0.6\\
+\end{aligned}
+\eq
+
+The target sets $\target_i$ of the vehicles are all 4 circles of radius $0.1$ in the domain. The centers of the target sets are at $(0.7, 0.2), (-0.7, 0.2), (0.7, -0.7), (-0.7, -0.7)$ for vehicles $i=1,2,3,4$, respectively. The domain $\amb$ and obstacles $\obs$ are the same as those of the example in Section \ref{sec:2vek}. The setup for this example is shown in Figure \ref{fig:dubins_ic}. 
+
+The joint state space of this system is twelve-dimensional, intractable for analysis using the single-obstacle HJI VI (\ref{eq:HJIPDE}). Therefore, we will repeatedly solve the double-obstacle HJI VI (\ref{eq:HJI}) to compute the reach-avoid sets from targets $\target_i$ for vehicles $1,2,3,4$, in that order, with moving obstacles induced by vehicles $j=1,\ldots,i-1$. We will also obtain $\ti_i,i=1,2,3,4$, the LSTs for each vehicle in order to reach $\target_i$ by $\tf_i$.
+
+Figures \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the results. Since the state space of each vehicle is 3D, the reach-avoid set is also 3D. To visualize the results, we slice the reach-avoid sets at the initial heading angles $\theta_i^0$. Figure \ref{fig:dubins_reach_all} shows the 2D reach-avoid set slices for each vehicle at its LSTs $\ti_1=-1.12, \ti_2=-0.94,\ti_3=-1.48,\ti_4=-1.44$ determined from our method. The obstacles in the domain $\obs$ and the obstacles induced by other vehicles inhibit the evolution of the reach-avoid sets, carving out thin ``channels" that separate the reach-avoid set into different ``islands". One can see how these channels and islands form by looking at the time evolution of the reach-avoid set, shown in Figure \ref{fig:dubins_reach_3} for vehicle 3. 
+
+Finally, Figure \ref{fig:dubins_result} shows the resulting trajectories of the four vehicles. The subplot labeled $t=-0.55$ shows all four vehicles in close proximity without collision: each vehicle is outside of the danger zone of all other vehicles. The actual arrival times of vehicles $i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, respectively. It is interesting to note that for some vehicles, the actual arrival times are earlier than the STAs $\tf_i, i=1,2,3,4$. This is because in order to arrive at the target by $\tf_i$, these vehicles must depart early enough to avoid major delays  resulting from the induced obstacles of other vehicles; these delays would have lead to a late arrival if vehicle $i$ departed after $\ti_i$.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.275\textwidth]{"fig/dubins_ic"}
+	\caption{Initial configuration of the four-vehicle example.}
+	\label{fig:dubins_ic}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{"fig/dubins_reach_all"}
+	\caption{Reach-avoid sets at $t=\ti_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\obs$ and time-varying obstacles induced by higher-priority vehicles $\mobs^i_j(t)$ carves ``channels" in the reach-avoid set, dividing it up into multiple ``islands".}
+	\label{fig:dubins_reach_all}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{"fig/dubins_reach_3"}
+	\caption{Time evolution of the reach-avoid set for vehicle $3$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Initially, the reach-avoid set grows unobstructed by obstacles, as shown in the top subplots. Then, in the bottom subplots, the static obstacles $\obs$ and the induced obstacles of vehicles $1$ and $2$, $\mobs^3_1,\mobs^3_2$, carve out ``channels" in the reach-avoid set.}
+	\label{fig:dubins_reach_3}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.4\textwidth]{"fig/dubins_result"}
+	\caption{The planned trajectories of the four vehicles. In the left top subplot, only vehicles $3$ (green) and $4$ (purple) have started moving, showing $\ti_i$ is not common across the vehicles. Right top subplot: all vehicles have come within very close proximity, but none is in the danger zone another. Left bottom subplot: vehicle $1$ (blue) arrives at $\target_1$ at $t=0$. Right bottom subplot: all vehicles have reached their destination, some ahead of the STA $\tf_i$.}
+	\label{fig:dubins_result}
+\end{figure}

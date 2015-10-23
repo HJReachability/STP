@@ -1,0 +1,28 @@
+\section{Problem Formulation \label{sec:formulation}}
+Consider $N$ vehicles $P_i,i=1\ldots,N$, each trying to reach one of $N$ target sets $\target_i,i=1\ldots,N$, while avoiding obstacles and collision with each other. Each vehicle $i$ has states $\x_i\in \R^{n_i}$ and travels on a domain $\amb=\obs \cup \free\in\R^p$, where $\obs$ represents the obstacles that each vehicle must avoid, and $\free$ represents all other states in the domain on which vehicles can move. Each vehicle $i = 1,2,\ldots,N$ moves with the following dynamics for $t\in[\tnow_i, \tf_i]$:
+
+\begin{equation} \label{eq:dyn}
+\dotx_i = f_i (t, \x_i, \ctrl_i), \quad\x_i(\ti_i) = \x_i^0 
+\end{equation}
+
+\noindent where $\x_i^0$ represents the initial condition of vehicle $i$, and $\ctrl_i(\cdot)$ represents the control function of vehicle $i$. In general, $f_i(\cdot,\cdot,\cdot)$ depends on the specific dynamic model of vehicle $i$, and need not be of the same form across different vehicles. Denote $\pos_i\in\R^p$ the subset of the states that represent the position of the vehicle. Given $\pos_i^0\in\free$, we define the admissible control function set for $P_i$ to be the set of all control functions such that $\pos_i(t) \in \free \forall t\ge 0$. Denote the joint state space of all vehicles $\x \in \R^n$ where $n = \sum_i n_i$, and their joint control $\ctrl$.
+
+We assume that the control functions $\ctrl_i(\cdot)$ are drawn from the set $\ctrlf_i := \{\ctrl_i: [\tnow_i, \tf_i] \rightarrow \ctrlin_i, \text{measurable}$\footnote{
+A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}\} where $\ctrlin_i \in \R^{n^\ctrl_i}$ is the set of allowed control inputs. Furthermore, we assume $f_i(t,\x_i, \ctrl_i)$ is bounded, Lipschitz continuous in $\x_i$ for any fixed $t,\ctrl_i$, and measurable in $t, \ctrl_i$ for each $\x_i$. Therefore given any initial state $\x_i^0$ and any control function $\ctrl_i(\cdot)$, there exists a unique, continuous trajectory $\x_i(\cdot)$ solving (\ref{eq:dyn}) \cite{coddington55}.
+
+The goal of each vehicle $i$ is to arrive at $\target_i \subset \R^{n_i}$ at or before some scheduled time of arrival (STA) $\tf_i$ in minimum time, while avoiding obstacles and danger with all other vehicles. The target sets $\target_i$ can be used to represent desired kinematic quantities such as position and velocity and, in the case of non-holonomic systems, quantities such as heading angle.  $\tnow_i$ can be interpreted as the earliest start time (EST) of vehicle $i$, before which the vehicle may not depart from its initial state. Further, we define $\ti_i$, the latest (acceptable) start time (LST) for vehicle $i$. Our problem can now be thought of as determining the LST $\ti_i$ for each vehicle to get to $\target_i$ at or before the STA $\tf_i$, and finding a control to do this safely. If the LST is before the EST $\ti_i < \tnow_i$, then it is infeasible for vehicle $i$ to arrive at $\target_i$ at or before the STA $\tf_i$. Comparing $\ti_i$ and $\tnow_i$ is feasibility problem that may arise in practice; however, for simplicity of presentation, we will assume that $\tnow_i\le \ti_i \forall i$.
+
+Danger is described by sets $\danger_{ij}(\x_j) \subset \amb$. In general, the definition of $\danger_{ij}$ depends on the conditions under which vehicles $i$ and $j$ are considered to be in an unsafe configuration, given the state of vehicle $j$. Here, we define danger to be the situation in which the two vehicles come within a certain radius $\Rc$ of each other: $\danger_{ij}(\x_j) = \{\x_i: \| \pos_i - \pos_j\|_2 \le \Rc \}$. Such a danger zone is also used by the FAA \cite{paglione99}. An illustration of the problem setup is shown in Figure \ref{fig:formulation}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.3\textwidth]{"fig/formulation"}
+	\caption{An illustration of the problem formulation with three vehicles. Each vehicle $P_i$ seeks to reach its target set $\target_i$ by time $t=\tf_i$, while avoiding physical obstacles $\obs$ and the danger zones of other vehicles.}
+	\label{fig:formulation}
+\end{figure}
+
+In general, the above problem must be analyzed in the joint state space of all vehicles, making the solution computationally intractable. In this paper, we will instead consider the problem of performing path planning of the vehicles in a sequential manner. Without loss of generality, we consider the problem of first fixing $i=1$ and determining the optimal control for vehicle $1$, the vehicle with the highest priority. The resulting optimal control $\ctrl_1$ sends vehicle $1$ to $\target_1$ in minimum time. 
+
+Then, we plan the minimum time trajectory for each of the vehicles $2,\ldots,N$, in decreasing order of priority, given the previously-determined trajectories for higher-priority vehicles $1,\ldots,i-1$. We assume that all vehicles have complete information about the states and trajectories of higher-priority vehicles, and that all vehicles adhere to their planned trajectories. Thus, in planning its trajectory, vehicle $i$ treats higher-priority vehicles as known time-varying obstacles. 
+
+With the above sequential path planning (SPP) protocol and assumptions, our problem now reduces to the following for vehicle $i$. Given $\x_j(\cdot), j=1,\ldots,i-1$, determine $\ctrl_i(\cdot)$ that maximizes $\ti_i$ and such that $x_i(\tau) \in \target_i, \tau\le \tf_i$.

@@ -1,0 +1,116 @@
+\section{Solution via double-obstacle HJI VI and SPP\label{sec:solution}}
+One direct way of solving the problem formulated in Section \ref{sec:formulation} is by solving a corresponding single-obstacle HJI VI \cite{mitchell05,bokanowski10}. In this approach, one considers the joint time-invariant dynamics of the entire system, $f(\x,\ctrl)$, and defines the static goal set and the static avoid set in the joint state space of all vehicles. The goal set encodes the joint states representing all vehicles being at their target sets, and the avoid set encodes the joint states representing all unsafe configurations. These sets are defined as sub-zero level sets of appropriate implicit surface functions $\setf(\x)$ where $\x\in\set \Leftrightarrow \setf(\x)\le 0$. Having defined the implicit surface functions, the HJI VI (\ref{eq:HJIPDE}) is then solved backwards in time with the implicit surface function representing the terminal set $\goalf(\x)$ as the initial condition and the implicit surface function representing the avoid set $\avoidf(\x)$ as an effective constraint. From the solution, we obtain the reach-avoid set $\RA(t)$, which defines the set of states from which the system has a control to drive the state at time $t$ to the goal set $\goal$ at time $0$ while staying out of the avoid set $\avoid$ at all times. Note that the joint dynamics, goal set, and avoid set must be time-invariant. Time-varying dynamics and sets can be treated by augmenting the state space with time as an auxiliary state \cite{bokanowski11}; however, this state augmentation comes at a large computational expense.
+
+\begin{equation}
+\begin{aligned}
+	\label{eq:HJIPDE}
+	\max\big\{D_t\soln + \min \left[0, H\left(\x,D_{\x}\soln\right)\right], -\avoidf(\x)-\soln(\x,t) \big\}= 0,\\
+\soln(\xj,0) = \goalf(\x)	 
+\end{aligned}
+\end{equation}
+\noindent where the optimal Hamiltonian is given by
+\begin{equation*}
+H\left(\xj,p\right) = \min_{\ctrl \in \ctrlin} p \cdot f(\x,\ctrl).
+\end{equation*}
+
+The direct solution described above has been successfully used to solve a number of problems involving up to a pair of vehicles \cite{mitchell05, ding08, huang11, chen14}. However, since numerical methods for solving a PDE or a VI involve gridding up the state space, the computation complexity scales exponentially with the number of dimensions in the joint state. This makes the single-obstacle HJI VI inapplicable for problems involving three or more vehicles. Therefore, instead of solving a single-obstacle HJI VI in the joint state space in $\R^n=\R^{\sum_i n_i}$, we will consider the problem in in $\R^{n_i}$ and solve a sequence of \textit{double-obstacle} HJI VIs introduced in \cite{fisac15}. By doing so, we take advantage of the fact that time-varying targets, obstacles, and dynamics can be handled by the double-obstacle HJI VIs (but not by the single-obstacle HJI VI without incurring significant computational expense), making the analysis of the problem tractable. Furthermore, even if the dimensionality of the problem is sufficiently low for computing a numerical solution to the single-obstacle HJI VI, its inability to handle time-varying systems would still limit us to only consider problems in which the required time of arrival is common across all vehicles: $\tf_i = \tf \;\forall i$.
+
+We first describe the framework for computing reach-avoid sets with arbitrary terrain, domain, moving obstacles, and moving target sets based on \cite{fisac15}. As with the single-obstacle HJI VI, sets are defined as sub-zero level sets of implicit surface functions; however, crucially, these implicit surface functions can be time-varying in the double-obstacle HJI VI without increasing computational complexity. Being able to compute reach-avoid sets with moving obstacles allows us to overcome the computational intractability described above by sequentially performing path planning for one vehicle at a time in order of priority, while treating higher-priority vehicles as moving obstacles. The target set is defined in the same way as in the single-obstacle HJI VI; the avoid set is by convention defined as the complement of the state constraint set in the double-obstacle HJI VI.
+
+\subsection{Reachability via HJI VI}
+We first state the result given in \cite{fisac15}, and then specialize the result to the problem formulation given in Section \ref{sec:formulation}. Consider a general nonlinear system describing the state evolution of two players in a differential game for $t\in[0,T]$.
+
+\begin{equation}
+\dot{x}(t) = f(t, x, u, d), \quad x(0) = x
+\end{equation}
+
+\noindent where $x$ is the joint state, $u$ is the control input for player 1, and $d$ is the control input for player 2. Their joint dynamics $f$ is assumed to be bounded, Lipschitz continuous in $x$ for any fixed $u,d$ and $t$, and measurable in $t,u,d$ for each $x$. Given control functions $u(\cdot), d(\cdot)$, there exists a unique trajectory $\phi_x^{u,d}((\tau),\tau)$ \cite{coddington55}. Player 1 wishes to minimize, and player 2 wishes to maximize the following cost functional:
+
+\begin{equation}
+\begin{aligned}
+&\mathcal{V}\big(t,x,u(\cdot),d(\cdot)\big) \\
+&\quad = \min_{\tau\in[t,T]}\max\big\{l(\phi_{x(0)}^{u,d}(\tau),\tau),\max_{s\in[t,\tau]} g(\phi_{x(0)}^{u,d}(s),s)\big\}
+\end{aligned}
+\end{equation}
+
+The value of the game is thus given by
+
+\begin{equation}
+\begin{aligned}
+\soln(x,t):=\sup_{u(\cdot)}\inf_{\delta[u](\cdot)}\mathcal{V}\big(t,x,u(\cdot),\delta[u](\cdot)\big)
+\end{aligned}
+\end{equation}
+
+\noindent where player 2 chooses a nonanticipative strategy $d(\cdot) = \delta[u](\cdot)$, under which the control signal $d(t)$ is chosen in response to player 1's control function up to time $t$, $u(\tau),\tau\le t$ \cite{mitchell-thesis}. The value of the game characterizes reach-avoid set, or all the states from which player 1 can reach the target $\goal$ encoded by the implicit surface function $\goalf(x,t)$, while staying within some state constraint set $\constr$ encoded by the implicit surface function $\constrf(x,t)$, despite the adversarial actions of player 2. The value function is the unique viscosity solution \cite{crandall84} to the following single-obstacle HJI VI \cite{fisac15}:
+
+\begin{equation}
+\label{eq:HJIVI_full}
+\begin{aligned}
+\max\Big\{&\min\big\{D_t V + H\left(x, D_x V,t\right),l(x,t)-V(x, t)\big\}\\
+& g(x,t)-V(x,t)\Big\}=0, \quad t\in[0,T], \quad x\in\R^n\\
+&V(x,T) = \max\big\{l(x,T),g(x,T)\big\},  \quad x\in\R^n
+\end{aligned}
+\end{equation}
+
+The proof is given in \cite{fisac15} and is based on viscosity solution theory \cite{evans84, barron90}.
+
+Now consider the system with dynamics given by (\ref{eq:dyn}). Given a time-varying target set $\target_i(t)$ and obstacle $\avoid_i(t)$ that vehicle $i$ must avoid, we define implicit surface functions $\goalf(\x_i,t), \constrf(\x_i,t)$ such that $\x_i\in\target_i(t)\Leftrightarrow \goalf_i(\x_i,t)\le 0,\x_i\notin \avoid_i(t) \Leftrightarrow \constrf_i(x,t)\le 0$. Now, the problem formulated in Section \ref{sec:formulation} becomes one in which vehicle $i$ chooses a control function $\ctrl_i(\cdot)$ to minimize the following cost functional:
+
+\begin{equation}
+\label{eq:cost}
+\begin{aligned}
+&\mathcal{V}_i\big(t,\x_i, \ctrl_i(\cdot)\big) \\
+&\qquad= \min_{\tau\in[t,T]}\max\big\{\goalf_i(\x_i(\tau),\tau),\max_{s\in[t,\tau]} \constrf_i(\x_i(s),s)\big\}
+\end{aligned}
+\end{equation}
+
+Note here, we have an optimal control problem involving only one vehicle and no adversary, unlike in the case of the HJI VI (\ref{eq:HJIVI_full}). Now, specializing (\ref{eq:HJIVI_full}) to our optimal control problem, the value function that characterizes the reach-avoid set $\RA_i(t)$ is $\soln_i(\x_i, t)$, where $\x_i \in \RA_i(t) \Leftrightarrow \soln_i(\x_i, t) \le 0$. $\soln_i(\x_i, t)$ is the viscosity solution \cite{crandall84} of the HJI VI
+
+\begin{equation}
+\label{eq:HJI}
+\begin{aligned}
+\max\big\{\min\{D_t \soln_i + H_i\left(\x_i, D_{\x_i} \soln_i,t\right),\goalf_i(\x_i,t)-\soln_i(\x_i, t)\}\\
+\quad \constrf_i(\x_i,t)-\soln_i(\x_i,t)\big\}=0, t\in[\tnow_i,\tf_i], \x_i\in\R^{n_i}\\
+\soln_i(\x_i,\tf_i) = \max\left\{\goalf_i(\x_i,\tf_i),\constrf_i(\x_i,\tf_i)\right\}, \x_i\in\R^{n_i}
+\end{aligned}
+\end{equation}
+
+\noindent where the Hamiltonian $H_i(t, \x_i, p)$ and optimal control $\ctrl_i$ are given by
+
+\begin{equation}
+\begin{aligned}
+H_i(t,\x_i,p) &= \min_{\ctrl_i\in\ctrlin_i} p \cdot f_i(t,\x_i,\ctrl_i) \\
+\ctrl^*_i &= \arg \min_{\ctrl_i} H_i(t,\x_i,p)
+\end{aligned}
+\end{equation}
+
+\subsection{Sequential Path Planning}
+In order to use (\ref{eq:HJI}) to perform SPP, we first define the moving obstacles induced by higher-priority vehicles. Specifically, for vehicle $i$, we define the moving obstacles $\mobs^i_j(t)$ induced by vehicles $j=1,\ldots,i-1$, given their known trajectories $\x_j (\cdot)$, to be
+
+\bq
+\mobs^i_j(t) := \{\x_i: \pos_i \in \danger_{ij}(\x_j(t)) \}
+\eq
+
+Each vehicle $i$ must avoid being in $\mobs^i_j(t)$ for each $j=1,\ldots,i-1$ and for all time $t$, as well as avoid being in static obstacles $\obs$ in the domain. Therefore, for the \ith vehicle, we compute the reach-avoid set with the following time-varying avoid set $\avoid_i(t)$ and goal set $\goal_i(t)$:
+
+\bq
+\begin{aligned}
+\avoid_i(t) &:= \{\x_i: \pos_i \in \obs\} \cup \Big(\bigcup_{j=1,\ldots,i-1} \mobs^i_j(t)\Big)\\
+\goal_i(t) &:= \target_i, t\le \tf_i
+\end{aligned}
+\eq
+
+The goal set is represented by the implicit surface function $\goalf_i(\x,t)$, where $\goalf_i(\x_i,t)\le0\Leftrightarrow \x_i(t)\in \goal_i(t)$. The state constraint set in the HJI VI is defined as the complement of the avoid set, $\avoid_i^c(t)$, and is represented by the implicit surface function $\constrf(\x_i,t)$, where $\constrf(\x_i,t)\le0 \Leftrightarrow \x_i\notin \avoid_i(t)$. For both $\goalf_i(\x_i,t)$ and $\constrf(\x_i,t)$, we use the signed distance function (in $\x_i$) to the sets $\goal_i(t)$ and $\avoid_i^c(t)$, respectively.
+
+Now, we can solve the double-obstacle HJI VI (\ref{eq:HJI}). The solution $\soln(\x_i,t)$ represents the reach-avoid set $\RA(t)$: $\soln(\x_i,t)\le0\Leftrightarrow \x_i(t)\in\RA(t)$. $\RA(t)$ is the set of states at starting time $t$ from which vehicle $i$ can arrive at $\target_i$ at or before time $\tf_i$ while avoiding obstacles and danger zones of all higher-priority vehicles $j=1,\ldots,i-1$. 
+
+Alternatively, given an initial state $\x_i^0$, we can solve (\ref{eq:HJI}) to some $\ti_i = \inf\{t:\x_i^0 \in \RA(t)\}$. This represents the latest time that vehicle $i$ must depart from its initial position in order to reach $\target_i$ while avoiding obstacles and all danger zones of higher-priority vehicles $j=1,\ldots,i-1$.
+
+The optimal control is given by
+
+\bq
+\label{eq:ctrl_syn}
+\ctrl_i(t) = \arg \min \ham_i \left(t, D_{\x_i} \soln(\x_i, t), \soln(\x_i, t)\right)
+\eq
+
+Observe that since each vehicle $i$ is guaranteed to be safe with respect to higher priority vehicles $j=1,\ldots,i-1$, the safety of all vehicles, including lower-priority vehicles, can also be guaranteed.
