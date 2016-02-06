@@ -1,4 +1,4 @@
-function FRS = computeFRS(FBC, IS, target, visualize)
+function FRS = computeFRS(FBC, IS, target, t0, visualize)
 % RS = computeFRS(FBC, target, d, visualize)
 % Computes the forward reachable set given a feedback control law that is 
 % derived from a previously computed backwards reachable set
@@ -13,23 +13,14 @@ function FRS = computeFRS(FBC, IS, target, visualize)
 %                     .tau  - time stamps
 %
 % Mo Chen, 2016-02-02
-if nargin < 4
+
+if nargin < 5
   visualize = true;
 end
-%---------------------------------------------------------------------------
-% Grid of joint space
-g = FBC.g;
-tau_in = FBC.tau;
 
-%---------------------------------------------------------------------------
-% Integration parameters.
-plotSteps = 12;               % How many intermediate plots to produce?
-t0 = tau_in(end);                      % Start time.
-tMax = tau_in(1);                  % End time.
+%% Integration parameters.
+tMax = FBC.tau(1);           % End time.
 singleStep = 1;              % Plot at each timestep (overrides tPlot).
-
-% Period at which intermediate plots should be produced.
-tPlot = (tMax - t0) / (plotSteps - 1);
 
 % How close (relative) do we need to get to tMax to be considered finished?
 small = 100 * eps;
@@ -37,36 +28,32 @@ small = 100 * eps;
 % What kind of dissipation?
 dissType = 'global';
 
-%---------------------------------------------------------------------------
-% Approximately how many grid cells?
-%   (Slightly different grid cell counts will be chosen for each dimension.)
+% Accuracy
 accuracy = 'veryHigh';
 
-%---------------------------------------------------------------------------
-% Create initial conditions
+%% Create initial conditions
 % Variance of states
 Xw = 1.5;
 Yw = 1.5;
 THETAw = 15*pi/180;
 
-IC = sqrt((g.xs{1} - IS(1)).^2 / Xw^2 + (g.xs{2} - IS(2)).^2 / Yw^2 + ...
-  (g.xs{3} - IS(3)).^2 / THETAw^2) - 1;
+IC = sqrt((FBC.g.xs{1} - IS(1)).^2 / Xw^2 + ...
+  (FBC.g.xs{2} - IS(2)).^2 / Yw^2 + ...
+  (FBC.g.xs{3} - IS(3)).^2 / THETAw^2) - 1;
 
-%---------------------------------------------------------------------------
-% Set up spatial approximation scheme.
+%% Set up spatial approximation scheme.
 schemeFunc = @termLaxFriedrichs;
 schemeData.hamFunc = @HamFunc;
 schemeData.partialFunc = @PartialFunc;
-schemeData.grid = g;
+schemeData.grid = FBC.g;
 
-% The Hamiltonian and partial functions need problem parameters.
-schemeData.velocity = FBC.v;
+%% The Hamiltonian and partial functions need problem parameters.
+schemeData.v = FBC.v;
 schemeData.uMax = FBC.uMax;
 schemeData.dMax = FBC.dMax;
 schemeData.target = target;
 
-%--------------------------------------------------------------------------
-% Choose degree of dissipation.
+%% Choose degree of dissipation.
 
 switch(dissType)
   case 'global'
@@ -79,8 +66,7 @@ switch(dissType)
     error('Unknown dissipation function %s', dissFunc);
 end
 
-%--------------------------------------------------------------------------
-% Set up time approximation scheme.
+%% Set up time approximation scheme.
 integratorOptions = odeCFLset('factorCFL', 0.5, 'stats', 'on');
 
 % Choose approximations at appropriate level of accuracy.
@@ -105,50 +91,49 @@ if(singleStep)
   integratorOptions = odeCFLset(integratorOptions, 'singleStep', 'on');
 end
 
+%% Finalize initialization
 tau = t0;
 reach = IC;
 data = IC;
 
 if visualize
-  %---------------------------------------------------------------------------
-  % Initialize Display
   figure;
   
-  h = visualizeLevelSet(g, data, 'surface', 0);
+  h = visualizeLevelSet(FBC.g, data, 'surface', 0);
   camlight right
   camlight left
 
-  axis(g.axis);
+  axis(FBC.g.axis);
   axis square
   drawnow;
 end
-%---------------------------------------------------------------------------
-% Loop until tMax (subject to a little roundoff).
+
+%% Loop until tMax (subject to a little roundoff).
 tNow = t0;
 startTime = cputime;
 while(tMax - tNow > small * tMax)
   %% Get feedback control
-  ind = find(tau_in <= tNow, 1, 'first');
+  ind = find(FBC.tau <= tNow, 1, 'first');
 
   % Feedback controller
   schemeData.Ut = FBC.U(:,:,:,ind);
-%   schemeData.It = FBC.I(:,:,:,ind);
-  for j = 1:g.dim
-    schemeData.Dt{j} = FBC.D{j}(:,:,:,ind);
-  end
-  
+% %   schemeData.It = FBC.I(:,:,:,ind);
+%   for j = 1:g.dim
+%     schemeData.Dt{j} = FBC.D{j}(:,:,:,ind);
+%   end
+%   
   % Reshape data array into column vector for ode solver call.
   y0 = data(:);
   
   % How far to step?
-  tNext = min(tMax, tNow + tPlot);
-  tSpan = [ tNow, tNext ];
+  tNext = tMax;
+  tSpan = [tNow tNext];
   
   % Take a timestep.
   [t, y] = feval(integratorFunc, schemeFunc, tSpan, y0,...
     integratorOptions, schemeData);
   % Get back the correctly shaped data array
-  data = reshape(y, g.shape);
+  data = reshape(y, FBC.g.shape);
   tNow = t(end);
   
   reach = cat(4, reach, data);
@@ -156,13 +141,18 @@ while(tMax - tNow > small * tMax)
   
   if visualize
     delete(h);
-    h = visualizeLevelSet(g, data, 'surface', 0);
+    h = visualizeLevelSet(FBC.g, data, 'surface', 0);
     axis square
     drawnow;
   end
+  
+  if all(data(:) > 0)
+    break
+  end
 end
 
-FRS.g = g;
+%% Pack output
+FRS.g = FBC.g;
 FRS.data = reach;
 FRS.tau = tau;
 
@@ -170,18 +160,15 @@ endTime = cputime;
 fprintf('Total execution time %g seconds\n', endTime - startTime);
 end
 
-%---------------------------------------------------------------------------
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%---------------------------------------------------------------------------
 function hamValue = HamFunc(t, data, deriv, schemeData)
 % hamValue = HamFunc(t, data, deriv, schemeData)
 %
 % Hamiltonian for the forward reachable set
 
-checkStructureFields(schemeData, 'grid', 'velocity', 'Ut', 'dMax');
+checkStructureFields(schemeData, 'grid', 'v', 'Ut', 'dMax', 'target');
 
 g = schemeData.grid;
-v = schemeData.velocity;
+v = schemeData.v;
 % Dt = schemeData.Dt;
 Ut = schemeData.Ut;
 % It = schemeData.It;
@@ -206,12 +193,6 @@ hamValue(target <= 0) = 0;
 
 end
 
-
-
-
-%---------------------------------------------------------------------------
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%---------------------------------------------------------------------------
 function alpha = PartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 % air3DPartialFunc: Hamiltonian partial fcn for 3D collision avoidance example.
 %
@@ -236,10 +217,10 @@ function alpha = PartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %		   at each node of the grid.
 % Ian Mitchell 3/26/04
 
-checkStructureFields(schemeData, 'grid', 'velocity', 'uMax', 'dMax');
+checkStructureFields(schemeData, 'grid', 'v', 'uMax', 'dMax');
 
 g = schemeData.grid;
-v = schemeData.velocity;
+v = schemeData.v;
 uMax = schemeData.uMax;
 dMax = schemeData.dMax;
 

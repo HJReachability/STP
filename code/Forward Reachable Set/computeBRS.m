@@ -1,4 +1,6 @@
 function BRS = computeBRS(visualize)
+% BRS = computeBRS(visualize)
+% Computes the backwards reachable set from a target set
 
 if nargin<1
   visualize = true;
