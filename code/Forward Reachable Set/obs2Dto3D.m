@@ -1,5 +1,5 @@
-function data3D = Obs2D_to_Obs3D(data2D, g3D)
-% data3D = Obs2D_to_Obs3D(data2D, g3D)
+function data3D = obs2Dto3D(data2D, g3D)
+% data3D = obs2Dto3D(data2D, g3D)
 %
 % To test this function, run it without any input parameters
 
@@ -13,7 +13,12 @@ if nargin < 1
   g3D = processGrid(g3D);
   
   g2D = proj2D(g3D, [], [0 0 1]);
-  data2D = shapeSphere(g2D, 0, rand); 
+  
+  if rand <= 0.5
+    data2D = shapeRectangleByCenter(g2D, [rand; rand], [rand rand]);
+  else
+    data2D = shapeSphere(g2D, [rand; rand], rand);
+  end
 end
 
 %% Compute 3D data and plot
