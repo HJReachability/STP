@@ -36,7 +36,7 @@ else
   target = BRS.data(:,:,:,1);
   t0 = latestRS(IS, BRS);
   FRS = computeFRS(FBC, IS, target, t0);
-  save(FRS_file, 'FRS')
+%   save(FRS_file, 'FRS')
 end
 
 %% Compute obstacles

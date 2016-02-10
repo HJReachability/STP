@@ -61,7 +61,7 @@ accuracy = 'veryHigh';
 target = shapeCylinder(g, 3, [0 0 0], 3);
 v = 5;
 uMax = 1;
-dMax = [1; 1; 0.2];
+dMax = [1.5; 1.5; 0.3];
 
 %---------------------------------------------------------------------------
 % Set up spatial approximation scheme.

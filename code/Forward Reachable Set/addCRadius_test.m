@@ -45,5 +45,7 @@ extra_radius = 1 + 4*rand;
 dataOut = addCRadius(g, data, extra_radius);
 
 contour(g.xs{1}, g.xs{2}, dataOut, [0 0], 'r')
+grid on
+axis equal
 title(['Extra radius: ' num2str(extra_radius)])
 end
