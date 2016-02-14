@@ -1,6 +1,10 @@
 function FRS2Obs_test(recompute)
-% NOT WORKING! Try running BRS only until the reachable set includes the initial
-% state...
+% FRS2Obs_test(recompute)
+% Tests the FRS2Obs function
+%
+% Set recompute to true to recompute the backwards reachable set, the
+% feedback control law, and the forwards reachable set
+
 if nargin < 1
   recompute = false;
 end
@@ -28,16 +32,17 @@ FRS_file = ['test_data/' mfilename '_FRS.mat'];
 if exist(FRS_file, 'file') && ~recompute
   load(FRS_file)
 else
-  % Find a random point that is inside the reachable set
   IS = randISinRS(BRS);
   target = BRS.data(:,:,:,1);
-  FRS = computeFRS(FBC, IS, target);
-  %   save(FRS_file, 'FRS')
+  t0 = latestRS(IS, BRS);
+  FRS = computeFRS(FBC, IS, target, t0);
+%   save(FRS_file, 'FRS')
 end
 
 %% Compute obstacles
 Obs = FRS2Obs(FRS);
 
+%% Plot
 colors = jet(length(Obs.tau));
 figure;
 contour(Obs.g.xs{1}, Obs.g.xs{2}, Obs.O2D(:,:,1), [0 0], ...

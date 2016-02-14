@@ -31,23 +31,10 @@ else
 end
 
 %% Compute forward reachable set
-% Find a random point that is inside the reachable set
-x = -15 + 30*rand;
-y = -15 + 30*rand;
-theta = 2*pi*rand;
-ival = eval_u(BRS.g, BRS.data(:,:,:,end), [x; y; theta]);
-
-while ival > 0
-  disp(['Random value: ' num2str(ival) '; retrying...'])
-  x = -10 + 20*rand;
-  y = -10 + 20*rand;
-  theta = 2*pi*rand;
-  ival = eval_u(BRS.g, BRS.data(:,:,:,end), [x; y; theta]);
-end
-disp(['Initial value: ' num2str(ival)])
-
-IS = [x; y; theta];
+IS = randISinRS(BRS);
 target = BRS.data(:,:,:,1);
-FRS = computeFRS(FBC, IS, target);
+t0 = latestRS(IS, BRS);
+FRS = computeFRS(FBC, IS, target, t0);
 
+visualizeRS(FRS, 'multi', 9);
 end

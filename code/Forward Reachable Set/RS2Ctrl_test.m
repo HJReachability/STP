@@ -33,21 +33,9 @@ end
 function RS2Ctrl_test_single(BRS, FBC)
 %% Initialize Plane
 % Find a random point that is inside the reachable set
-x = -15 + 30*rand;
-y = -15 + 30*rand;
-theta = 2*pi*rand;
-ival = eval_u(BRS.g, BRS.data(:,:,:,end), [x; y; theta]);
+IS = randISinRS(BRS);
 
-while ival > 0
-  disp(['Random value: ' num2str(ival) '; retrying...'])
-  x = -10 + 20*rand;
-  y = -10 + 20*rand;
-  theta = 2*pi*rand;
-  ival = eval_u(BRS.g, BRS.data(:,:,:,end), [x; y; theta]);
-end
-disp(['Initial value: ' num2str(ival)])
-
-pl = Plane([x y theta]);
+pl = Plane(IS);
 pl.speed = 5;
 
 %% Plot initial conditions
