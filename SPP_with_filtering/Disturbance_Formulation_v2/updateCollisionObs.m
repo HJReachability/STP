@@ -16,6 +16,11 @@ if (strcmp(vehicle.state_uncertainty,'ellipsoid'))
     axis1_radius = vehicle.state_uncertainty_axis(1);
     axis2_radius = vehicle.state_uncertainty_axis(2);
     axis3_radius = vehicle.state_uncertainty_axis(3);
+    if(tinit_index ==1) % Assuming very small uncertainty in the initial state; 2 is just chosen randomly
+      axis1_radius = axis1_radius/2; 
+      axis2_radius = axis2_radius/2;
+      axis3_radius = axis3_radius/2;
+    end
     collisionObs = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
         (1/(axis3_radius)^2)*(g.xs{3} - mment(3)).^2) - 1;
 end

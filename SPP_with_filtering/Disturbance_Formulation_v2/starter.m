@@ -28,7 +28,7 @@ g = processGrid(g);
 %---------------------------------------------------------------------------
 % Time parameters
 t_start = 0;
-t_end = 0.1;
+t_end = 0.2;
 t_step = 0.01;
 steps = ceil((t_end - t_start)/t_step);
 
@@ -50,11 +50,11 @@ vehicle.turnRate = 1;
 % vehicle.state_uncertainty_axis = 0.4;
 
 vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = [0.1, 0.1, 0.1]';
+vehicle.state_uncertainty_axis = [0.1, 0.1, 0.2]';
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
-vehicle.disturbance_mag = [0.5, 0.5, 0.1]'; %assuming symmetric lower and upper bounds
+vehicle.disturbance_mag = [0.4, 0.4, 0.6]'; %assuming symmetric lower and upper bounds
 
 % Define and initialize collisionmat matrix
 % This matrix contains the most conservative estimate of the vehicle
@@ -115,8 +115,8 @@ for i=1:vnum
 end
 
 % Load the starting positions of the vehicle
-allVehicles{1}.x(:,1) = [0.3, -0.2, pi/2]';
-allVehicles{2}.x(:,1) = [0.1, 0.1, pi/4]';
+allVehicles{1}.x(:,1) = [0.3, -0.2, 3*pi/4]';
+allVehicles{2}.x(:,1) = [-0.4, -0.3, pi/4]';
 
 % Plot the initial positions of the vehicles
 for i=1:vnum
@@ -137,7 +137,7 @@ end
 % Target sets of vehicles
 % Target position and target radius matrix should be provided
 target_pos = zeros(vnum,2); % Number of vehicles x Number of states (to be reached)
-target_pos(1,:) = [0.3,0.3];
+target_pos(1,:) = [-0.3,0.3];
 target_pos(2,:) = [0.4,0.4];
 
 target_radius = zeros(vnum,1);
@@ -175,7 +175,7 @@ OU = 4;
 
 % Times to plot reachable set and collision set for each vehicle
 for i=1:vnum
-    allVehicles{i}.tplot = 0.04;
+    allVehicles{i}.tplot = 0.02;
 end
 
 % ---------------------------------------------------------------------------
