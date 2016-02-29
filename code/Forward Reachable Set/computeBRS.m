@@ -1,6 +1,11 @@
 function BRS = computeBRS(visualize)
 % BRS = computeBRS(visualize)
 % Computes the backwards reachable set from a target set
+%
+% Dynamics:
+%   \dot{x} = v * cos(\theta) + d_1
+%   \dot{y} = v * sin(\theta) + d_2
+%   \dot{\theta} = u + d_3
 
 if nargin<1
   visualize = true;
@@ -27,7 +32,6 @@ end
 
 %---------------------------------------------------------------------------
 % Integration parameters.
-
 plotSteps = 12;               % How many intermediate plots to produce?
 t0 = 0;                      % Start time.
 tMax = 5;                  % End time.
@@ -45,9 +49,6 @@ dissType = 'global';
 % Pause after each plot?
 pauseAfterPlot = 0;
 
-% Delete previous plot before showing next?
-deleteLastPlot = 1;
-
 % Plot in separate subplots (set deleteLastPlot = 0 in this case)?
 useSubplots = 0;
 
@@ -57,11 +58,14 @@ useSubplots = 0;
 accuracy = 'veryHigh';
 
 %---------------------------------------------------------------------------
-% Create initial conditions
-target = shapeCylinder(g, 3, [0 0 0], 3);
-v = 5;
-uMax = 1;
-dMax = [1.5; 1.5; 0.3];
+% Problem parameters
+
+% Target set is a cylinder in (x, y, \theta) space 
+radius = 3;
+target = shapeCylinder(g, 3, [0 0 0], radius);
+v = 5; % constant speed
+uMax = 1; % u \in [-uMax, uMax]
+dMax = [1.5; 1.5; 0.3]; % d_i \in [-dMax(i), dMax(i)]
 
 %---------------------------------------------------------------------------
 % Set up spatial approximation scheme.
