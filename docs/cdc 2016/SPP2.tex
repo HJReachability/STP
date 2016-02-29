@@ -23,8 +23,16 @@
 \usepackage{cancel}
 \usepackage{amssymb}
 \usepackage{color}
-\usepackage{my_macros}
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
+
+\newcommand{\cset}{\mathcal{U}}
+\newcommand{\dset}{\mathcal{D}}
+\newcommand{\target}{\mathcal{T}}
+\newcommand{\targeti}[1]{\target_{#1}}
+\newcommand{\sta}{t_\text{STA}}
+\newcommand{\aset}{\mathcal{A}} % Avoid set
+\newcommand{\aseti}[1]{\aset_{#1}} % Avoid set for vehicle i
+\newcommand{\cradius}{R_c} % Capture radius
 
 \title{\LARGE \bf
 Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturbances and Measurement Noise}
@@ -50,19 +58,23 @@ Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturb
 %% Summary of results
 
 \input{formulation.tex}
-% Problem formulation (1p)
+% Problem formulation (1.5p)
 %% A number of aircrafts aiming to reach a number of destinations respectively, on a certain schedule
 %% Disturbance
 %% How to guarantee they all get there and on time?
+%% Feedback control (centralized server) or distributed control (naive forward reachable set)
 
 \input{solution.tex}
-% Solution methodology (1.5-2p)
+% Solution methodology (1.5-2.5p)
 %% Variational inequality to be solved
 %% Backwards reachability
 %% Forward reachability
+%%% with feedback control
+%%% without feedback control
+%% State updates
 
 \input{results.tex}
-% Numerical Simuations (1-1.5p)
+% Numerical Simuations (1-2p)
 
 \input{conclusion.tex}
 % Conclusion (0.5p)

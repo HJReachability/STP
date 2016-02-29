@@ -1,2 +1,20 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
+Consider $N$ vehicles whose joint dynamics described by
+
+\begin{equation}
+\begin{aligned}
+\dot{x}_i = f_i(t, x_i, u_i, d_i) \\
+|u_i| \in \cset \\
+|d_i| \in \dset \\
+i = 1,\ldots, N
+\end{aligned}
+\end{equation}
+
+where blah blah and [STANDARD ASSUMPTIONS HERE].
+
+Under the worst case disturbance, each vehicle aims to get to some target state, denoted $\targeti{i}$ at some scheduled time of arrival $\sta$. On its way to the target state, each vehicle $i$ must avoid the danger zones $\aseti{i}(t)$ of all other vehicles $j\neq i$ for all time, defined as
+
+\begin{equation}
+\aseti{i}(t) = \bigcup_j \{x_i: \|x_i - x_j(t)\| \le \cradius \}
+\end{equation}
