@@ -43,18 +43,18 @@ vehicle.capture_radius = 0.1;
 
 % Other vehicle parameters
 vehicle.velocity = 2;
-vehicle.turnRate = 2;
+vehicle.turnRate = 1;
 
 % State uncertainty models: circular, ellipsoidal
 % vehicle.state_uncertainty = 'circular';
 % vehicle.state_uncertainty_axis = 0.4;
 
 vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = [0.1, 0.1, 0.2]';
+vehicle.state_uncertainty_axis = 0.5*[0.1, 0.1, 0.2]';
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
-percent = 0.2; % (% of disturbance)
+percent = 0.1; % (% of disturbance)
 vehicle.disturbance_mag = percent*[vehicle.velocity, vehicle.velocity, vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
 % 30% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
 % stops after a while)
@@ -134,8 +134,8 @@ end
 % Load the starting positions of the vehicle
 % allVehicles{1}.x(:,1) = [0.2, -0.2, 3*pi/4]';
 % allVehicles{2}.x(:,1) = [-0.4, -0.3, pi/4]';
-allVehicles{1}.x(:,1) = [ 0.4,  -0.4,  3*pi/4]';
-allVehicles{2}.x(:,1) = [-0.3, -0.35, pi/4]';
+allVehicles{1}.x(:,1) = [ 0.4,  -0.4, 3*pi/4]';
+allVehicles{2}.x(:,1) = [0.26, -0.16, pi/2]';
 
 
 % Plot the initial positions of the vehicles
@@ -158,7 +158,7 @@ end
 % Target position and target radius matrix should be provided
 target_pos = zeros(vnum,2); % Number of vehicles x Number of states (to be reached)
 target_pos(1,:) = [-0.3,0.3];
-target_pos(2,:) = [0.4,0.4];
+target_pos(2,:) = [0.05,0.7];
 
 target_radius = zeros(vnum,1);
 target_radius(1,1) = 0.2;

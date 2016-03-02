@@ -1,5 +1,8 @@
 function vehicle = updateCollisionObs(g, tinit, tmax, tinit_index, vehicle)
 
+if(tinit == tmax)
+    return;
+end
 
 %---------------------------------------------------------------------------
 % Update collision matrix based on the obstacle state measurement
@@ -17,9 +20,10 @@ if (strcmp(vehicle.state_uncertainty,'ellipsoid'))
     axis2_radius = vehicle.state_uncertainty_axis(2);
     axis3_radius = vehicle.state_uncertainty_axis(3);
     if(tinit_index ==1) % Assuming very small uncertainty in the initial state; 2 is just chosen randomly
-      axis1_radius = axis1_radius/2; 
-      axis2_radius = axis2_radius/2;
-      axis3_radius = axis3_radius/2;
+        f = 1;
+        axis1_radius = axis1_radius/f;
+        axis2_radius = axis2_radius/f;
+        axis3_radius = axis3_radius/f;
     end
     collisionObs = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
         (1/(axis3_radius)^2)*(g.xs{3} - mment(3)).^2) - 1;
@@ -127,9 +131,9 @@ switch(accuracy)
         error('Unknown accuracy level %s', accuracy);
 end
 
-% if(singleStep)
-%   integratorOptions = odeCFLset(integratorOptions, 'singleStep', 'on');
-% end
+if(singleStep)
+    integratorOptions = odeCFLset(integratorOptions, 'singleStep', 'on');
+end
 
 %---------------------------------------------------------------------------
 % % Initialize Display
@@ -153,15 +157,16 @@ end
 % axis square
 % drawnow;
 
-% Initialize Display
-% figure(vehicle.mast_fig);
-% if(~isempty(vehicle.fig_hand))
-%     subplot(vehicle.fig_hand);
-% end
-% hold on;
-% [~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color, 'Linestyle', '--');
-% drawnow;
-% hold off;
+%Initialize Display
+figure(vehicle.mast_fig);
+if(~isempty(vehicle.fig_hand))
+    subplot(vehicle.fig_hand);
+end
+hold on;
+[g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,tinit_index));
+[~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color, 'Linestyle', '--');
+drawnow;
+hold off;
 
 %---------------------------------------------------------------------------
 % Loop until tMax (subject to a little roundoff).
@@ -193,18 +198,20 @@ while(tMax - tNow > small * tMax)
     tindex = tindex + 1;
     vehicle.collisionmat(:,:,1:end,tindex) = repmat(data2D, [1,1,g.shape(3)]);
     
-    %     % Start plotting
-    %     figure(vehicle.mast_fig);
-    %     if(~isempty(vehicle.fig_hand))
-    %         subplot(vehicle.fig_hand);
-    %     end
-    %
-    %     % Delete last visualization if necessary.
-    %     delete(h2);
-    %
-    %     %Create new visualization.
-    %     hold on;
-    %     [~,h2] = contour(g2D.xs{1}, g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color);
+    % Start plotting
+    figure(vehicle.mast_fig);
+    if(~isempty(vehicle.fig_hand))
+        subplot(vehicle.fig_hand);
+    end
+    
+    % Delete last visualization if necessary.
+    delete(h2);
+    
+    %Create new visualization.
+    hold on;
+    [~,h2] = contour(g2D.xs{1}, g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color, 'Linestyle', '--');
+    drawnow;
+    %     pause;
     %
     %     % Keep the handle to the reachable set at the desired time
     %     if(abs((tmax + tinit - tNow)- vehicle.tplot) <= tstep/5 && (tinit == vehicle.tplot || tinit == 0))
@@ -247,7 +254,7 @@ end
 % if(tinit > vehicle.tplot || tmax < vehicle.tplot)
 %    vehicle.obs_hand = h2;
 % end
-% delete(h2);
+delete(h2);
 
 endTime = cputime;
 fprintf('Total execution time %g seconds\n', endTime - startTime);

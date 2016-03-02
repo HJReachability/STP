@@ -1,4 +1,4 @@
-function vehicle = updateReachSet(g, tinit, tmax, tinit_index, vehicle, obsVehicles)
+function vehicle = ComputeReachSet(g, vehicle, obsVehicles, flag)
 
 %% To dos
 % 1) Add fix_traj_Obs, fix_Obs to the Obstacle object. Don't forget to
@@ -7,15 +7,13 @@ function vehicle = updateReachSet(g, tinit, tmax, tinit_index, vehicle, obsVehic
 
 %% Start function
 
-if(tinit == tmax)
-    return;
-end
-
 %---------------------------------------------------------------------------
 % Update obstacle shapes based on the new calculated obstacles
-init_index = tinit_index;
+init_index = 1;
+tinit = 0;
 tstep = vehicle.t_step;
-steps = int64((tmax - tinit)/tstep);
+tmax = vehicle.t_end;
+steps = int64(tmax/tstep);
 end_index = int64(init_index + steps-1);
 
 if(~isempty(obsVehicles)) % if there are any obstacles at all
@@ -172,9 +170,9 @@ if(~isempty(vehicle.fig_hand))
     subplot(vehicle.fig_hand);
 end
 hold on;
-[g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,tinit_index));
+[g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
 [~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-');
-[g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,tinit_index));
+[g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
 [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
 drawnow;
 hold off;
@@ -223,25 +221,25 @@ while(tMax - tNow > small * tMax)
     
     %Create new visualization.
     hold on;
-    [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,tinit_index));
+    [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
     [~,h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-' );
     drawnow;
-    [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,tinit_index));
+    [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
     [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
     drawnow;
     
     % Keep the handle to the reachable set at the desired time
     if(abs((tmax + tinit - tNow)- vehicle.tplot) <= tstep/5 && (abs(tinit - vehicle.tplot)<= tstep/5))
         plots_len = length(vehicle.plot_data);
-        [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,tinit_index));
+        [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
         [~,vehicle.reach_hand1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle', '--');
         drawnow;
         vehicle.plot_data{plots_len+1} = data2D; vehicle.plot_grid{plots_len+1} = g2D;
-        [g2D, data2D] = proj2D(g, vehicle.cons_reach(:,:,:,tinit_index), [0 0 1], vehicle.x(3,tinit_index));
+        [g2D, data2D] = proj2D(g, vehicle.cons_reach(:,:,:,init_index), [0 0 1], vehicle.x(3,init_index));
         [~,vehicle.reach_hand2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle', '--');
         drawnow;
         vehicle.plot_data{plots_len+2} = data2D; vehicle.plot_grid{plots_len+2} = g2D;
-%         [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,tinit_index));
+%         [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
 %         [~,vehicle.obs_hand1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle','-.');
 %         drawnow;
     end
@@ -259,14 +257,17 @@ while(tMax - tNow > small * tMax)
     hold off;
     
     % Record the initial TTR
-    if (tinit_index == 1)
+    if (init_index == 1)
         location{1} = vehicle.x(1,1);
         location{2} = vehicle.x(2,1);
         location{3} = vehicle.x(3,1);
         [location_index, ~] = getCellIndexes(g, location);
         [index1, index2, index3] = ind2sub(g.shape, location_index);
         if (data(index1, index2, index3) <= 0)
-            vehicle.initial_TTR = min(vehicle.initial_TTR, tNow);
+            vehicle.t_start = min(vehicle.t_start, tNow);
+            if (strcmp(flag, 'stop'))
+                break;
+            end
         end
     end
     
@@ -302,13 +303,6 @@ while(tMax - tNow > small * tMax)
     %   view(view_az, view_el);
 end
 
-% if(tinit > vehicle.tplot || tmax < vehicle.tplot)
-%    vehicle.reach_hand = h2;
-% end
-
-if(tinit ~= 0)
-    delete(h2);
-end
 delete(h3);
 
 endTime = cputime;

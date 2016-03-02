@@ -30,7 +30,7 @@ g = processGrid(g);
 t_start = 0;
 t_end = 0.6;
 t_step = 0.01;
-steps = ceil((t_end - t_start)/t_step);
+steps = int8((t_end - t_start)/t_step);
 
 %---------------------------------------------------------------------------
 % Create default vehicle object
@@ -39,22 +39,24 @@ steps = ceil((t_end - t_start)/t_step);
 % Integration parameters
 vehicle.accuracy = 'medium';
 vehicle.t_step = t_step; % can also be different for obstacle simulation
-vehicle.capture_radius = 0.1;
+vehicle.t_start = t_end; % Initialize to the end time
+vehicle.t_end = t_end;
+vehicle.capture_radius = 0.5*0.1;
 
 % Other vehicle parameters
 vehicle.velocity = 2;
-vehicle.turnRate = 2;
+vehicle.turnRate = 1;
 
 % State uncertainty models: circular, ellipsoidal
 % vehicle.state_uncertainty = 'circular';
 % vehicle.state_uncertainty_axis = 0.4;
 
 vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = [0.1, 0.1, 0.2]';
+vehicle.state_uncertainty_axis = 0.5*[0.1, 0.1, 0.2]';
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
-percent = 0.2; % (% of disturbance)
+percent = 0.1; % (% of disturbance)
 vehicle.disturbance_mag = percent*[vehicle.velocity, vehicle.velocity, vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
 % 30% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
 % stops after a while)
@@ -69,8 +71,9 @@ vehicle.disturbance_mag = percent*[vehicle.velocity, vehicle.velocity, vehicle.t
 % Define and initialize collisionmat matrix
 % This matrix contains the most conservative estimate of the vehicle
 % positions
-vehicle.collisionmat = -1e6*ones(g.shape);
+vehicle.collisionmat =  1e6*ones(g.shape);
 vehicle.collisionmat  = repmat(vehicle.collisionmat,  [ones(1,g.dim),steps+1]);
+vehicle.collisionmat(:,:,:,1) = -1*vehicle.collisionmat(:,:,:,1);
 
 % Define and initialize reachable set matrix
 vehicle.reach = 1e6*ones(g.shape);
@@ -132,11 +135,8 @@ for i=1:vnum
 end
 
 % Load the starting positions of the vehicle
-% allVehicles{1}.x(:,1) = [0.2, -0.2, 3*pi/4]';
-% allVehicles{2}.x(:,1) = [-0.4, -0.3, pi/4]';
-allVehicles{1}.x(:,1) = [ 0.4,  -0.4,  3*pi/4]';
-allVehicles{2}.x(:,1) = [-0.3, -0.35, pi/4]';
-
+allVehicles{1}.x(:,1) = [ 0,  0.2, 3*pi/2]';
+allVehicles{2}.x(:,1) = [-0.28, -0.3, 80*pi/180]';
 
 % Plot the initial positions of the vehicles
 for i=1:vnum
@@ -157,8 +157,8 @@ end
 % Target sets of vehicles
 % Target position and target radius matrix should be provided
 target_pos = zeros(vnum,2); % Number of vehicles x Number of states (to be reached)
-target_pos(1,:) = [-0.3,0.3];
-target_pos(2,:) = [0.4,0.4];
+target_pos(1,:) = [0,-0.4];
+target_pos(2,:) = [0,0.4];
 
 target_radius = zeros(vnum,1);
 target_radius(1,1) = 0.2;
@@ -191,7 +191,7 @@ for i=1:vnum
 end
 
 % Number of obstacle update steps
-OU = 10;
+OU = 4;
 
 % Times to plot reachable set and collision set for each vehicle
 for i=1:vnum
@@ -200,17 +200,87 @@ end
 
 % ---------------------------------------------------------------------------
 %% Initialize the obstacle and reachable set shapes-- most conservative estimates of obstacles
+
+for i=1:vnum
+    allVehicles{i} = ComputeReachSet(g, allVehicles{i}, allVehicles(1:i-1),'stop');
+    if (i ~= vnum) % Do not update collision obstacles for the last vehicle
+        allVehicles{i} = ComputeCollisionObs(g, allVehicles{i}, 'stop');
+        % Fix collision matrix so that actual obstacles are towards the end
+        temp1 = 1e6*ones(g.shape);
+        temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
+        % Extract the relevant collision matrix
+        num_steps = int8(allVehicles{i}.t_start/t_step +1);
+        start_index = int8((t_end-allVehicles{i}.t_start)/t_step);
+        temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
+        allVehicles{i}.collisionmat = temp1;
+    end
+    t_start = max(t_start, allVehicles{i}.t_start);
+end
+
+t_end = t_start;
+t_start = 0;
+steps = int8((t_end - t_start)/t_step);
+
+% Adjust the matrix sizes
+for i=1:vnum
+   % First change the end time
+   allVehicles{i}.t_end = t_end;
+   
+   % Adjust the start time
+   allVehicles{i}.t_start = t_end - allVehicles{i}.t_start;
+   
+   % Adjust the collision matrix
+   % Remove the collision matrix part that is not required
+%    temp1 = 1e6*ones(g.shape);
+%    temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
+   % Extract the relevant collision matrix
+   num_steps = int8((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
+   start_index = int8(allVehicles{i}.t_start/t_step);
+%    temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
+%    allVehicles{i}.collisionmat = temp1;
+   allVehicles{i}.collisionmat(:,:,:,1:end-num_steps) = [];
+   
+   % Adjust the reach matrix: simply delete the extra rows
+   temp2 = 1e6*ones(g.shape);
+   temp2  = repmat(temp2,  [ones(1,g.dim),steps+1]);
+   % Extract the relevant reach matrix
+   temp2(:,:,:,start_index+1:end) = allVehicles{i}.reach(:,:,:,end-num_steps+1:end);
+   allVehicles{i}.reach = temp2;
+   
+   % Adjust the optU matrix
+   temp3 = zeros(g.shape);
+   temp3  = repmat(temp3,  [ones(1,g.dim),steps+1]);
+   % Extract the relevant optU matrix
+   temp3(:,:,:,start_index+1:end) = allVehicles{i}.optU(:,:,:,end-num_steps+1:end);
+   allVehicles{i}.optU = temp3;
+   
+   % Actual input trajectory
+   allVehicles{i}.u = zeros(1,steps);
+
+   % Applied disturbance
+   allVehicles{i}.d = zeros(3,steps);
+
+   % state trajectory (initialized to the initial state)
+   temp_x = allVehicles{i}.x(:,1);
+   allVehicles{i}.x = zeros(3,steps+1);
+   allVehicles{i}.x(:,1:start_index+1) = repmat(temp_x, 1, start_index+1);
+   
+   % Current state measurement
+   temp_m = allVehicles{i}.mment(:,1);
+   allVehicles{i}.mment = zeros(3,steps);
+   allVehicles{i}.mment(:,1:start_index+1) = repmat(temp_m, 1, int8(start_index+1));
+   
+   % Save the most conservative reachable set
+   allVehicles{i}.cons_reach = allVehicles{i}.reach;
+   
+end    
+    
+
+% Process inputs for the vehicles who are starting at t=0 
 index = 1;
 
 for i=1:vnum
-    allVehicles{i} = updateReachSet(g, t_start, t_end, index, allVehicles{i}, allVehicles(1:i-1));
-    allVehicles{i} = updateCollisionObs(g, t_start, t_end, index, allVehicles{i});
-    
-    % Save the most conservative reachable set
-    %     plot_index = 1 + allVehicles{i}.tplot/t_step;
-    %     allVehicles{i}.cons_reach = allVehicles{i}.reach(:,:,:,plot_index);
-    allVehicles{i}.cons_reach = allVehicles{i}.reach;
-    
+   if(allVehicles{i}.t_start == 0) 
     % Process the input
     x_current = allVehicles{i}.x(:,index);
     P = extractCostates(g,allVehicles{i}.reach(:,:,:,index));
@@ -244,15 +314,17 @@ for i=1:vnum
     
     allVehicles{i}.x(:,index+1) = x_next;
     
+    % Generate the measurement
+    allVehicles{i}.mment(:,index+1) = allVehicles{i}.x(:,index+1);
+   end
+   
     % Process the trajectory
     figure(allVehicles{i}.mast_fig);
     if(~isempty(allVehicles{i}.fig_hand))
         subplot(allVehicles{i}.fig_hand);
     end
+    x_next = allVehicles{i}.x(:,index+1);
     hold on,
-    %     % Change the line style of the most conservative reachable set
-    %     set(allVehicles{i}.reach_hand, 'Linestyle', ':');
-    %     set(allVehicles{i}.obs_hand, 'Linestyle', '-.');
     plot(x_next(1), x_next(2), 'marker', 'o', 'color', allVehicles{i}.fig_color,'markersize',5);
     delete(allVehicles{i}.quiver_hand);
     dirn = 0.2*[cos(x_next(3)) sin(x_next(3))];
@@ -262,8 +334,6 @@ for i=1:vnum
     axis equal;
     hold off,
     
-    % Generate the measurement
-    allVehicles{i}.mment(:,index+1) = allVehicles{i}.x(:,index+1);
 end
 
 
@@ -274,11 +344,17 @@ end_time = min(t_end, current_time + OU*t_step);
 index = index+1;
 
 while(current_time < t_end)
-    % Update collision set
+    % Update reachable sets and obstacles
     for i=1:vnum
-        if(~allVehicles{i}.reach_flag)
-            allVehicles{i} = updateReachSet(g, current_time, end_time, index, allVehicles{i}, allVehicles(1:i-1));
-            allVehicles{i} = updateCollisionObs(g, current_time, end_time, index, allVehicles{i});
+        if(~allVehicles{i}.reach_flag && current_time >= allVehicles{i}.t_start)
+            
+            if (i ~= 1) % No need to update the reachable set for vehicle 1
+                allVehicles{i} = updateReachSet(g, current_time, end_time, index, allVehicles{i}, allVehicles(1:i-1));
+            end
+            
+            if (i ~= vnum) % No need to update the obstacle set for the last vehicle
+                allVehicles{i} = updateCollisionObs(g, current_time, end_time, index, allVehicles{i});
+            end
             
             % Process the input
             x_current = allVehicles{i}.x(:,index);
@@ -301,12 +377,13 @@ while(current_time < t_end)
             [index1, index2, index3] = ind2sub(g.shape, location_index);
             if (allVehicles{i}.reach(index1, index2, index3, end) <= 0)
                 x_next = x_current;
-                allVehicles{i}.final_TTR = min(allVehicles{i}.final_TTR, (index-1)*t_step); 
-                % Stop updating if both obstacles and the vehicle themselves
-                % have reached the target
-                if (isempty(allVehicles{i}.collisionmat(:,:,:,index) <= 0))
-                    allVehicles{i}.reach_flag = 1;
-                end
+                allVehicles{i}.final_TTR = min(allVehicles{i}.final_TTR, (index-1)*t_step);
+                allVehicles{i}.reach_flag = 1;
+%                 % Stop updating if both obstacles and the vehicle themselves
+%                 % have reached the target
+%                 if (isempty(allVehicles{i}.collisionmat(:,:,:,index) <= 0))
+%                     allVehicles{i}.reach_flag = 1;
+%                 end
             else
                 % Actual next state
                 x_next(1) = x_current(1) + d1*t_step + ...
@@ -317,7 +394,7 @@ while(current_time < t_end)
                     u*t_step;
             end
         else
-            x_next = x_current;
+            x_next = allVehicles{i}.x(:,index);
         end
         allVehicles{i}.x(:,index+1) = x_next;
         
@@ -327,11 +404,6 @@ while(current_time < t_end)
             subplot(allVehicles{i}.fig_hand);
         end
         hold on,
-        %         if (index == int8(allVehicles{i}.tplot/t_step + 2))
-        %             % Change the line style of the most updated reachable set
-        %             set(allVehicles{i}.reach_hand, 'Linestyle', '-');
-        %             set(allVehicles{i}.obs_hand, 'Linestyle', '--');
-        %         end
         plot(x_next(1), x_next(2), 'marker', 'o', 'color', allVehicles{i}.fig_color,'markersize',5);
         delete(allVehicles{i}.quiver_hand);
         dirn = 0.2*[cos(x_next(3)) sin(x_next(3))];
