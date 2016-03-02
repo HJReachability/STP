@@ -1,1 +1,5 @@
 *.mat
+*.aux
+*.bbl
+*.blg
+*.gz
