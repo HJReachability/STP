@@ -28,16 +28,17 @@ g = processGrid(g);
 %---------------------------------------------------------------------------
 % Time parameters
 t_start = 0;
-t_end = 2;
+t_end = 3;
 t_step = 0.01;
-steps = int8((t_end - t_start)/t_step);
+steps = int64((t_end - t_start)/t_step);
 
 %---------------------------------------------------------------------------
 % Create default vehicle object
 % There should be one vehicle object for each vehicle
 
 % Integration parameters
-vehicle.accuracy = 'medium';
+vehicle.reach_accuracy = 'low';
+vehicle.obs_accuracy = 'medium';
 vehicle.t_step = t_step; % can also be different for obstacle simulation
 vehicle.t_start = t_end; % Initialize to the end time
 vehicle.t_end = t_end;
@@ -135,8 +136,14 @@ for i=1:vnum
 end
 
 % Load the starting positions of the vehicle
-allVehicles{1}.x(:,1) = [ 0,  0.5, 3*pi/2]';
-allVehicles{2}.x(:,1) = [0, -0.8, pi/2]';
+allVehicles{1}.x(:,1) = [ 0,  0.6, 3*pi/2]';
+allVehicles{2}.x(:,1) = [ -0.04, -0.66, pi/2]';
+% allVehicles{2}.x(:,1) = [ -0.04, -0.66, pi/2]';
+% pi/3 is a promising heading
+
+% Velocity of two vehicles
+allVehicles{2}.velocity = 3;
+allVehicles{2}.turnRate = 3;
 
 % Plot the initial positions of the vehicles
 for i=1:vnum
@@ -157,7 +164,7 @@ end
 % Target sets of vehicles
 % Target position and target radius matrix should be provided
 target_pos = zeros(vnum,2); % Number of vehicles x Number of states (to be reached)
-target_pos(1,:) = [0,-0.5];
+target_pos(1,:) = [0,-0.4];
 target_pos(2,:) = [0,0.8];
 
 target_radius = zeros(vnum,1);
@@ -191,11 +198,11 @@ for i=1:vnum
 end
 
 % Number of obstacle update steps
-OU = 4;
+OU = 10;
 
 % Times to plot reachable set and collision set for each vehicle
 for i=1:vnum
-    allVehicles{i}.tplot = 0.1;
+    allVehicles{i}.tplot = 0.4;
 end
 
 % ---------------------------------------------------------------------------
@@ -206,20 +213,20 @@ for i=1:vnum
     if (i ~= vnum) % Do not update collision obstacles for the last vehicle
         allVehicles{i} = ComputeCollisionObs(g, allVehicles{i}, 'stop');
         % Fix collision matrix so that actual obstacles are towards the end
-        temp1 = 1e6*ones(g.shape);
-        temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
+        temp0 = 1e6*ones(g.shape);
+        temp0  = repmat(temp0,  [ones(1,g.dim),steps+1]);
         % Extract the relevant collision matrix
-        num_steps = int8(allVehicles{i}.t_start/t_step +1);
-        start_index = int8(allVehicles{i}.t_start/t_step);
-        temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
-        allVehicles{i}.collisionmat = temp1;
+        num_steps = int64(allVehicles{i}.t_start/t_step +1);
+        start_index = int64((t_end-allVehicles{i}.t_start)/t_step);
+        temp0(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
+        allVehicles{i}.collisionmat = temp0;
     end
     t_start = max(t_start, allVehicles{i}.t_start);
 end
 
 t_end = t_start;
 t_start = 0;
-steps = int8((t_end - t_start)/t_step);
+steps = int64((t_end - t_start)/t_step);
 
 % Adjust the matrix sizes
 for i=1:vnum
@@ -230,13 +237,16 @@ for i=1:vnum
    allVehicles{i}.t_start = t_end - allVehicles{i}.t_start;
    
    % Adjust the collision matrix
+   % Remove the collision matrix part that is not required
    temp1 = 1e6*ones(g.shape);
    temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
    % Extract the relevant collision matrix
-   num_steps = int8((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
-   start_index = int8(allVehicles{i}.t_start/t_step);
-   temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
+   num_steps = int64((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
+   start_index = int64(allVehicles{i}.t_start/t_step);
+   temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,end-num_steps+1:end);
    allVehicles{i}.collisionmat = temp1;
+%    temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
+%   allVehicles{i}.collisionmat(:,:,:,1:end-num_steps) = [];
    
    % Adjust the reach matrix: simply delete the extra rows
    temp2 = 1e6*ones(g.shape);
@@ -266,7 +276,7 @@ for i=1:vnum
    % Current state measurement
    temp_m = allVehicles{i}.mment(:,1);
    allVehicles{i}.mment = zeros(3,steps);
-   allVehicles{i}.mment(:,1:start_index+1) = repmat(temp_m, 1, int8(start_index+1));
+   allVehicles{i}.mment(:,1:start_index+1) = repmat(temp_m, 1, int64(start_index+1));
    
    % Save the most conservative reachable set
    allVehicles{i}.cons_reach = allVehicles{i}.reach;

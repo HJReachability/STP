@@ -1,9 +1,9 @@
-function simulate_trajectory(g, vehicle, t_end)
+function x_sim = simulate_trajectory(g, vehicle, t_end)
 t_step = vehicle.t_step;
 steps = t_end/t_step;
 xinit = vehicle.x(:,1);
 x_current = xinit;
-
+x_sim(:,1) = xinit;
 figure,
 for index=1:steps
     % Process the input
@@ -30,8 +30,12 @@ for index=1:steps
             u*t_step;
     else
         index
+        x_sim(:,index+1) = x_next;
+        return;
+        
     end
     x_current = x_next;
+    x_sim(:,index+1) = x_current;
     
     % Plot functions
     [g2D, data2D] = proj2D(g, vehicle.cons_reach(:,:,:,index), [0 0 1], x_current(3));
@@ -43,6 +47,5 @@ for index=1:steps
     vehicle.quiver_hand = quiver(x_next(1),x_next(2), dirn(1), dirn(2), ...
             'maxheadsize', 50, 'marker', '*', 'color', vehicle.fig_color);
     drawnow;
-    pause;
     delete(h2);
 end

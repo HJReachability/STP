@@ -49,7 +49,7 @@ small = 100 * eps;
 dissType = 'global';
 
 % How much accuracy?
-accuracy = vehicle.accuracy;
+accuracy = vehicle.obs_accuracy;
 
 %---------------------------------------------------------------------------
 % create initial conditions
@@ -109,7 +109,7 @@ end
 
 %---------------------------------------------------------------------------
 % Set up time approximation scheme.
-integratorOptions = odeCFLset('factorCFL', 0.5, 'stats', 'on');
+integratorOptions = odeCFLset('factorCFL', 0.9, 'stats', 'on');
 
 % Choose approximations at appropriate level of accuracy.
 switch(accuracy)

@@ -50,7 +50,7 @@ small = 100 * eps;
 dissType = 'global';
 
 % How much accuracy?
-accuracy = vehicle.accuracy;
+accuracy = vehicle.reach_accuracy;
 
 % % Plotting parameters
 % plotSteps = 9;               % How many intermediate plots to produce?
@@ -118,7 +118,7 @@ end
 
 %---------------------------------------------------------------------------
 % Set up time approximation scheme.
-integratorOptions = odeCFLset('factorCFL', 0.5, 'stats', 'on');
+integratorOptions = odeCFLset('factorCFL', 0.9, 'stats', 'on');
 
 % Choose approximations at appropriate level of accuracy.
 switch(accuracy)
