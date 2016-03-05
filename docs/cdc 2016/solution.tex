@@ -30,20 +30,17 @@ Given the target set $\targetset(t)$ specified as an implicit surface function s
 \label{eq:HJIVI}
 \begin{aligned}
 \max\Big\{&\min\big\{D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}\\
-& g(t, z) - V(t, z)\Big\} = 0, \quad t\in[0,T]\\
-&V(T, x) = \max\big\{l(T, x), g(T, x)\big\}
+& -g(t, z) - V(t, z)\Big\} = 0, \quad t\in[0,T]\\
+&V(T, x) = \max\big\{l(T, x), -g(T, x)\big\} \\
+&H\left(t, z, p\right) = \min_{u \in \cset} \max_{d \in \dset} p \cdot f(t, z, u, d)
 \end{aligned}
 \end{equation}
-
-\begin{equation*}
-H\left(z, p\right) = \min_{u \in \cset} p \cdot f(z, u, d).
-\end{equation*}
 
 \noindent where $g(t, x)$ is the implicit surface function representing $\obsset(t)$: $\obsset(t) = \{z: g(t, x) \le 0\}$. After the reachable set is computed, the optimal control can be obtained as follows:
 
 \begin{equation}
 \label{eq:opt_ctrl}
-u^* = \arg \min_{u \in \cset} H\left(t, z, D_z V\right)
+u^* = \arg \min_{u \in \cset} \max_{d \in \dset} H\left(t, z, D_z V\right)
 \end{equation}
 
 In theory, one could define the state to be the joint states of all vehicles, $z = (x_1, x_2, \ldots, x_N)$, define the dynamics \eqref{eq:fdyn} to follow $\eqref{eq:dyn}$, the target set $\targetset$ to correspond to the situation in which all vehicles have arrived at their targets $\targetset_i, i = 1, \ldots, N$, and the obstacle set $\obsset$ to correspond to the union of all the danger zones $\dz_{ij}$. Then, \eqref{eq:HJIVI} could be solved to obtain $\brs(t)$, and then the joint optimal control would be given by \eqref{eq:opt_ctrl}.
@@ -51,18 +48,34 @@ In theory, one could define the state to be the joint states of all vehicles, $z
 However, practically, the dimensionality of the joint state $z$ would be extremely high. In fact, for even the simplest vehicle models, solving \eqref{eq:HJIVI} would be intractable for more than two vehicles. Therefore, we propose the sequential path planning method, which allows \eqref{eq:HJIVI} to be solved in the state space of each vehicle, making the computation complexity scale linearly, as opposed to exponentially, with the number of vehicles.
 
 \subsection{Sequential Path Planning}
-- Priorities
+In order to make the $N$-vehicle path planning problem safe and tractable, we impose a slight structure to the problem: each vehicle is assigned a priority. When planning its trajectory to its target, a higher priority vehicle can disregard the presence of a lower priority vehicle. In contrast, a lower priority vehicle must take into account the presence of all higher priority vehicles, and plan its trajectory in a way that avoids the higher priority vehicles' danger zones. For convenience, denote the vehicle with the $i$th highest priority as $\veh_i$.
 
-- Treat higher priority vehicles as obstacles
+Optimal path planning in this setting is enabled by the HJ variational inequality which computes the backwards reachable set $\brs_i$ from a target set $\targetset_i$ in the presence of time-varying obstacles $\obsset_i$. In the sequential path planning application, the time-varying obstacles represent regions of the state space of $\veh_i$ that must be avoided in order to ensure that $\veh_i$ does not enter any danger zones of higher priority vehicles. We present three different ways to compute $\obsset_i$, obstacles induced by higher priority vehicles in Section \ref{sec:obs_gen}. For now, we proceed assuming $\obsset_i$ is given.
 
-For convenience, denote the vehicle with the $i$th highest priority as $\veh_i$.
+To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} to $\veh_i$ and solve the following PDE:
 
-Denote backwards reachable set value function $V_i(t, x_i)$.
+\begin{equation}
+\label{eq:HJIVI_i}
+\begin{aligned}
+\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right), l_i(t, x_i) - V_i(t, x_i)\big\}\\
+& -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0, \quad t \in [\edt, \sta]\\
+&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(\sta, x_i)\big\}
+&H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
+\end{aligned}
+\end{equation}
 
-Denote optimal control for vehicle $i$
+Here, the target set $\targetset_i$, obstacle set $\obsset_i$, and backwards reachable set $\brs_i$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
+
+\begin{equation}
+\begin{aligned}
+\targetset_i &= \{x_i: l_i(x_i) \le 0\} \\
+\obsset_i &= \{x_i: g_i(t, x_i) \le 0\} \\
+\brs_i &= \{x_i: V_i(t, x_i) \le 0\}
+\end{aligned}
+\end{equation}
+
+From the reachable set, the optimal control for vehicle $\veh_i$ is then given as
 \begin{equation}
 \label{eq:opt_ctrl_i}
 u_i^* = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
 \end{equation}
-
-\noindent where $H_i = ...$.
