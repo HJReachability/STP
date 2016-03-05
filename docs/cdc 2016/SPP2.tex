@@ -72,10 +72,11 @@ Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturb
 % Solution methodology (1.5-2.5p)
 %% Variational inequality to be solved
 %% Backwards reachability
-%% Forward reachability
-%%% with feedback control
-%%% without feedback control
-%% State updates
+
+% Obstacle generation
+\input{obs_gen1} % with feedback control
+\input{obs_gen2} % with intersection of FRS and BRS
+\input{obs_gen3} % with bubbles
 
 \input{results.tex}
 % Numerical Simuations (1-2p)

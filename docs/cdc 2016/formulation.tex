@@ -6,8 +6,8 @@ Consider $N$ vehicles whose joint dynamics described by the time-varying ordinar
 \label{eq:dyn}
 \begin{aligned}
 \dot{x}_i = f_i(t, x_i, u_i, d_i) \\
-|u_i| \in \cset_i \\
-|d_i| \in \dset_i \\
+u_i \in \cset_i \\
+d_i \in \dset_i \\
 i = 1,\ldots, N
 \end{aligned}
 \end{equation}
@@ -35,5 +35,4 @@ Recently, \cite{Chen15} described how such a sequential path planning algorithm 
 \item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite the disturbances it experiences?
 \item How can each vehicle take into account the disturbances that other vehicles experience?
 \item How should each vehicle robustly handle situations with limited information about the state and intention of other vehicles?
-\item How can each vehicle perform trajectory re-planning given updated information about the state of other vehicles?
 \end{enumerate}
