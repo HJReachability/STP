@@ -1,7 +1,7 @@
 % !TEX root = SPP2.tex
 \section{Solution via double-obstacle HJI VI and SPP\label{sec:solution}}
 \subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-Our solution method takes advantage of the double-obstacle HJ approach \cite{Fisac15}, in which one computes the reachable set $\reachset(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to the following ODE:
+Our solution method takes advantage of the double-obstacle HJ approach \cite{Fisac15}, in which one computes the reachable set $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to the following ODE:
 
 \begin{equation}
 \label{eq:fdyn} % Full dynamics
@@ -13,7 +13,7 @@ u &\in \cset, d \in \dset \\
 \end{aligned}
 \end{equation}
 
-After defining some target set $\targetset(t)$, we compute the reachable set $\reachset(t)$, defined by
+After defining some target set $\targetset(t)$, we compute the backwards reachable set $\brs(t)$, defined by
 
 \begin{equation}
 \begin{aligned}
@@ -24,7 +24,7 @@ After defining some target set $\targetset(t)$, we compute the reachable set $\r
 
 \noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05}. Intuitively, the reachable set is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
 
-Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\reachset(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ variational inequality:
+Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ variational inequality:
 
 \begin{equation}
 \label{eq:HJIVI}
@@ -46,10 +46,23 @@ H\left(z, p\right) = \min_{u \in \cset} p \cdot f(z, u, d).
 u^* = \arg \min_{u \in \cset} H\left(t, z, D_z V\right)
 \end{equation}
 
-In theory, one could define the state to be the joint states of all vehicles, $z = (x_1, x_2, \ldots, x_N)$, define the dynamics \eqref{eq:fdyn} to follow $\eqref{eq:dyn}$, the target set $\targetset$ to correspond to the situation in which all vehicles have arrived at their targets $\targetset_i, i = 1, \ldots, N$, and the obstacle set $\obsset$ to correspond to the union of all the danger zones $\dz_{ij}$. Then, \eqref{eq:HJIVI} could be solved to obtain $\reachset(t)$, and then the joint optimal control would be given by \eqref{eq:opt_ctrl}.
+In theory, one could define the state to be the joint states of all vehicles, $z = (x_1, x_2, \ldots, x_N)$, define the dynamics \eqref{eq:fdyn} to follow $\eqref{eq:dyn}$, the target set $\targetset$ to correspond to the situation in which all vehicles have arrived at their targets $\targetset_i, i = 1, \ldots, N$, and the obstacle set $\obsset$ to correspond to the union of all the danger zones $\dz_{ij}$. Then, \eqref{eq:HJIVI} could be solved to obtain $\brs(t)$, and then the joint optimal control would be given by \eqref{eq:opt_ctrl}.
 
 However, practically, the dimensionality of the joint state $z$ would be extremely high. In fact, for even the simplest vehicle models, solving \eqref{eq:HJIVI} would be intractable for more than two vehicles. Therefore, we propose the sequential path planning method, which allows \eqref{eq:HJIVI} to be solved in the state space of each vehicle, making the computation complexity scale linearly, as opposed to exponentially, with the number of vehicles.
 
 \subsection{Sequential Path Planning}
 - Priorities
+
 - Treat higher priority vehicles as obstacles
+
+For convenience, denote the vehicle with the $i$th highest priority as $\veh_i$.
+
+Denote backwards reachable set value function $V_i(t, x_i)$.
+
+Denote optimal control for vehicle $i$
+\begin{equation}
+\label{eq:opt_ctrl_i}
+u_i^* = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
+\end{equation}
+
+\noindent where $H_i = ...$.
