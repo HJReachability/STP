@@ -16,8 +16,9 @@ u &\in \cset, d \in \dset \\
 After defining some target set $\targetset(t)$, we compute the backwards reachable set $\brs(t)$, defined by
 
 \begin{equation}
+\label{eq:brs}
 \begin{aligned}
-&\targetset(t) = \{z: \exists u \in \cfset, \forall \gamma[u] \in \Gamma, \eqref{eq:fdyn} \\
+&\brs(t) = \{z: \exists u \in \cfset, \forall \gamma[u] \in \Gamma, \eqref{eq:fdyn} \\
 &\Rightarrow \exists s \in [t, T], z(s) \in \targetset(s) \wedge z(\tau) \notin \obsset(\tau) \forall \tau \in [t, s]\}
 \end{aligned}
 \end{equation}
@@ -59,7 +60,7 @@ To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} 
 \begin{aligned}
 \max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right), l_i(t, x_i) - V_i(t, x_i)\big\}\\
 & -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0, \quad t \in [\edt, \sta]\\
-&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(\sta, x_i)\big\}
+&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(\sta, x_i)\big\} \\
 &H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
 \end{aligned}
 \end{equation}

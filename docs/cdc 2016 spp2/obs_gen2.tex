@@ -1,2 +1,38 @@
 % !TEX root = SPP2.tex
-\subsection{Method 2}
+\subsection{Method 2: least restrictive control}
+If there is no centralized planner to enforce the control policy for higher priority vehicles, more assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+
+\begin{equation}
+\label{eq:lrctrl} % least restrictive control
+u_j^* =
+\end{equation}
+
+This assumption is the weakest assumption that could be made by lower priority vehicles given that the higher priority vehicles will get to their targets on time.
+
+Suppose a lower priority vehicle $\veh_i$ assumes that higher priority vehicles $\veh_j, j < i$ use the least restrictive control strategy \eqref{eq:lrctrl}. From the perspective of the lower priority vehicle $\veh_i$, a higher priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $x_j(\edt)$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by $\veh_j$ is the intersection of the forward reachable set from the initial state $x_j(\edt)$ and the backwards reachable set defined in \eqref{eq:brs} from the target set $\targetset_j$, $\brs_j(t) \cup \frs_j(t)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined as
+
+\begin{equation}
+\label{eq:frs2}
+\begin{aligned}
+&\frs_j(t) = \{y \in \R^{n_j}: \exists u \in \cfset, \exists d \in \dfset, \\
+& \quad \dot{x}_j = f_j(x_j, u_j, d_j) \Rightarrow \exists s \in [\edt, t], x_j(s) = y\}
+\end{aligned}
+\end{equation}
+
+In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority vehicle $\veh_i$ is as follows:
+
+\begin{equation}
+\ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \}
+\end{equation}
+
+\noindent where $\pfrs_j(t)$ is given by
+
+\begin{equation}
+\pfrs_j(t) = \{p: \exists \npos_j, (p, \npos_j) \in \brs_j(t) \cup \frs_j(t)\}
+\end{equation}
+
+As before, the time-varying obstacles needed to solve \eqref{eq:HJIVI_i} is the union of the obstacles induced by higher priority vehicles:
+
+\begin{equation}
+\obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
+\end{equation}

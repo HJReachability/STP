@@ -23,7 +23,7 @@ The forward reachable set $\frs_j(t)$ represents the set of possible states of a
 \ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \}
 \end{equation}
 
-\noindent where the $\dist$ function represents the minimum distance from a point to a set, and the set $\pfrs_j(t)$ is the set of positions in the forward reachable set $\frs_j(t)$, disregarding the non-position dimensions $\npos_j$:
+\noindent where the $\dist(\cdot, \cdot)$ function represents the minimum distance from a point to a set, and the set $\pfrs_j(t)$ is the set of positions in the forward reachable set $\frs_j(t)$, disregarding the non-position dimensions $\npos_j$:
 
 \begin{equation}
 \pfrs_j(t) = \{p: \exists \npos_j, (p, \npos_j) \in \frs_j(t)\}
