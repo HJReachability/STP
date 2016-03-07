@@ -56,7 +56,7 @@ data = vehicle.collisionmat(:,:,:,init_index);
 vehicle.collisionmat(:,:,1:end,init_index) = repmat(data2D, [1,1,g.shape(3)]);
 
 % New grid
-Nx = 201;
+Nx = 301;
 % Create the computation grid.
 g_new.dim = 3;
 g_new.min = [ -1; -1; 0];
@@ -297,7 +297,7 @@ d3 = schemeData.disturbance(3);
 target = schemeData.target;
 
 hamValue = vnom*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) + vnom*deriv{2}.*sin(g.xs{3}) ...
-    + d2*abs(deriv{2}) + v.*(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) + ...
+    + d2*abs(deriv{2}) + 0.25*(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) + ...
     w.*deriv{3} + d3*abs(deriv{3});
 
 % Freeze dynamics inside target set

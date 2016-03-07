@@ -55,7 +55,7 @@ vehicle.state_uncertainty_axis = 0.5*[0.1, 0.1, 0.1]';
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
 percent = 0.1; % (% of disturbance)
-vehicle.disturbance_mag = percent*[(vehicle.velocity + vehicle.v_nom), (vehicle.velocity + vehicle.v_nom), vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
+vehicle.disturbance_mag = percent*[(vehicle.velocity + vehicle.v_nom), (vehicle.velocity + vehicle.v_nom), 2*vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
 % 30% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
 % stops after a while)
 % 25% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
