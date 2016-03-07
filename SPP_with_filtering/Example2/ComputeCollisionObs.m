@@ -39,7 +39,7 @@ small = 100 * eps;
 dissType = 'global';
 
 % How much accuracy?
-accuracy = 'medium'; %vehicle.obs_accuracy;
+accuracy = vehicle.obs_accuracy;
 
 % % Plotting parameters
 % plotSteps = 9;               % How many intermediate plots to produce?
