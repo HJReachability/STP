@@ -24,7 +24,7 @@ function [data, g, data0] = bubble(radius)
 
 %---------------------------------------------------------------------------
 % Integration parameters.
-tMax = 5;                  % End time.
+tMax = 4;                  % End time.
 plotSteps = 50;               % How many intermediate plots to produce?
 t0 = 0;                      % Start time.
 singleStep = 1;              % Plot at each timestep (overrides tPlot).
@@ -46,11 +46,11 @@ dissType = 'global';
 %   inputA	  Maximum turn rate of the evader (positive).
 %   inputB	  Maximum turn rate of the pursuer (positive).
 if nargin < 1
-  radius = 0.01;
+  radius = 0.1;
 end
 
-vNom = 0.7;
-vRange = [0.4 1];
+vNom = 0.75;
+vRange = [0.5 1];
 wNom = 0.6;
 wMax = 1;
 dMax = [0.1; 0.2]; % [radius in (x,y) space; bounds in theta space]
