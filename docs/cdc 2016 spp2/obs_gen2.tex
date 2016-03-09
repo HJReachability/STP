@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
-\subsection{Method 2: least restrictive control}
-If there is no centralized planner to enforce the control policy for higher priority vehicles, more assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+\subsection{Method 2: Least Restrictive Control}
+If there is no centralized planner \JFFnote{Careful! The planner is always centralized (uses info on \emph{all} previous vehicles), this should be called a ``centralized controller".} to enforce the control policy for higher priority vehicles, more assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
