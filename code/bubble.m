@@ -116,7 +116,7 @@ end
 accuracy = 'veryHigh';
 
 % Set up time approximation scheme.
-integratorOptions = odeCFLset('factorCFL', 0.75, 'stats', 'on');
+integratorOptions = odeCFLset('factorCFL', 0.5, 'stats', 'on');
 
 % Choose approximations at appropriate level of accuracy.
 switch(accuracy)
@@ -251,31 +251,36 @@ dMax = schemeData.dMax;
 % b is control of actual vehicle: drives state away from target -> maximize
 % a is virtual vehicle: drives state into target -> minimize
 % d is disturbance: drives state into target -> minimize
+%
+% Hamiltonian (unoptimized):
+% H = p_1 (-v_a + v_b \cos \psi + a y + d_1) + 
+%     p_2 (v_b \sin \psi - a x + d_2) +
+%     p_3 (b - a + d_3)
+% d, b: minimize
+% v_b, a: maximize
 
-hamValue1 = deriv{1} .* (-vNom) + ... % p_1 * -v_a
-  (deriv{1}.*cos(grid.xs{3}) >= 0) .* ... % p_1 * cos x_3 * v_b
-    (deriv{1}.*cos(grid.xs{3})) * vRange(2) + ...
-  (deriv{1}.*cos(grid.xs{3}) < 0) .* ...
-    (deriv{1}.*cos(grid.xs{3})) * vRange(1) + ... % p_1 * x_2 * a
-  (deriv{1}.*grid.xs{2} >= 0) .* (deriv{1}.*grid.xs{2}) * (-wNom) + ...
-  (deriv{1}.*grid.xs{2} < 0) .* (deriv{1}.*grid.xs{2}) * (wNom);
+% Terms constant in control and disturbance
+hamValConst = deriv{1} * (-vNom);
 
-hamValue2 = (deriv{2}.*sin(grid.xs{3}) >= 0) .* ... % p_2 * sin x_3 * v_b
-  (deriv{2}.*sin(grid.xs{3})) * vRange(2) + ...
-  (deriv{2}.*sin(grid.xs{3}) < 0) .* ...
-  (deriv{2}.*sin(grid.xs{3})) * vRange(1) + ...                % p_2 * -x_1 * a
-  (deriv{2}.*(-grid.xs{1}) >= 0) .* (deriv{2}.*(-grid.xs{1})) * (-wNom) + ...
-  (deriv{2}.*(-grid.xs{1}) < 0) .* (deriv{2}.*(-grid.xs{1})) * (wNom);
-
-hamValue3 = (deriv{3} >= 0) .* deriv{3} * (wMax + (-wNom) + (-dMax(2))) + ...
-  (deriv{3} < 0) .* deriv{3} * (-wMax + wNom + dMax(2));
-  
-% Dealing with disturbance in the first two components
+% Disturbance: d
 % (d_x, d_y) points in the opposite direction of (p_1, p_2) --> -d(1)*norm(p)
-hamValued12 = -dMax(1) * sqrt(deriv{1}.^2 + deriv{2}.^2);
+hamValDist = -dMax(1) * sqrt(deriv{1}.^2 + deriv{2}.^2) + ...
+  -abs(deriv{3}) * dMax(2);
+
+% Control of virtual vehicle: a
+hamValA = -abs(deriv{1} .* grid.xs{2} - ...
+  deriv{2} .* grid.xs{1} - deriv{3}) * wNom;
+
+% Speed control of actual vehicle: v_b
+determinant = deriv{1} .* cos(grid.xs{3}) + deriv{2} .* sin(grid.xs{3});
+hamValVB = (determinant >= 0) .* determinant * vRange(2) + ...
+  (determinant < 0) .* determinant * vRange(1);
+
+% Turn rate control of actual vehicle: b
+hamValB = abs(deriv{3}) * wMax;
 
 % Backwards reachable set
-hamValue = -(hamValue1 + hamValue2 + hamValue3 + hamValued12);
+hamValue = -(hamValConst + hamValDist + hamValA + hamValVB + hamValB);
 end
 
 

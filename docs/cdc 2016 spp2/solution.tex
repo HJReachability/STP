@@ -14,7 +14,7 @@ u &\in \cset, d \in \dset \\
 \end{equation}
 
 After defining some target set $\targetset(t)$, we compute the backwards reachable set $\brs(t)$, defined by
-
+%
 \begin{equation}
 \label{eq:brs}
 \begin{aligned}
@@ -22,11 +22,11 @@ After defining some target set $\targetset(t)$, we compute the backwards reachab
 &\Rightarrow \exists s \in [t, T], z(s) \in \targetset(s) \wedge z(\tau) \notin \obsset(\tau) \forall \tau \in [t, s]\}
 \end{aligned}
 \end{equation}
-
-\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05}. Intuitively, the reachable set is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
+%
+\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of nonanticipative strategies \cite{Mitchell05}\JFFnote{This is not clearly defined, you need to say somewhere that $\gamma[u]$ gives the signal $d(\cdot)$ used in \eqref{eq:fdyn}}. Intuitively, the reachable set is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
 
 Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ variational inequality:
-
+%
 \begin{equation}
 \label{eq:HJIVI}
 \begin{aligned}
@@ -36,9 +36,9 @@ Given the target set $\targetset(t)$ specified as an implicit surface function s
 &H\left(t, z, p\right) = \min_{u \in \cset} \max_{d \in \dset} p \cdot f(t, z, u, d)
 \end{aligned}
 \end{equation}
-
+%
 \noindent where $g(t, x)$ is the implicit surface function representing $\obsset(t)$: $\obsset(t) = \{z: g(t, x) \le 0\}$. After the reachable set is computed, the optimal control can be obtained as follows:
-
+%
 \begin{equation}
 \label{eq:opt_ctrl}
 u^* = \arg \min_{u \in \cset} \max_{d \in \dset} H\left(t, z, D_z V\right)
@@ -54,7 +54,7 @@ In order to make the $N$-vehicle path planning problem safe and tractable, we im
 Optimal path planning in this setting is enabled by the HJ variational inequality which computes the backwards reachable set $\brs_i$ from a target set $\targetset_i$ in the presence of time-varying obstacles $\obsset_i$. In the sequential path planning application, the time-varying obstacles represent regions of the state space of $\veh_i$ that must be avoided in order to ensure that $\veh_i$ does not enter any danger zones of higher priority vehicles. We present three different ways to compute $\obsset_i$, obstacles induced by higher priority vehicles in Section \ref{sec:obs_gen}. For now, we proceed assuming $\obsset_i$ is given.
 
 To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} to $\veh_i$ and solve the following PDE:
-
+%
 \begin{equation}
 \label{eq:HJIVI_i}
 \begin{aligned}
@@ -66,7 +66,7 @@ To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} 
 \end{equation}
 
 Here, the target set $\targetset_i$, obstacle set $\obsset_i$, and backwards reachable set $\brs_i$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
-
+%
 \begin{equation}
 \begin{aligned}
 \targetset_i &= \{x_i: l_i(x_i) \le 0\} \\
