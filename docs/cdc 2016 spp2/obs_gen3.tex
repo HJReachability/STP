@@ -3,21 +3,22 @@
 A general issue with the above two methods can be the large size of the generated obstacles due to the uncertainty on other vehicles' motion. In order to reduce this uncertainty, one can have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can guarantee that it will track a time trajectory with a bounded error at all times, then this can be used to limit the size of the resulting time-varying obstacle. This approach requires a moderate amount of information sharing between vehicles: higher-priority vehicles need to declare their nominal trajectory, together with an uncertainty region, to all vehicles with lower priority. Lower-priority vehicles will then use these nominal trajectories ``expanded" by the uncertainty regions as time-varying obstacles.
 
 To define each vehicle's uncertainty set, we need to solve a robust trajectory tracking problem.
-Typically, the planning phase will not fully exploit the vehicle's full control authority, first due to energy efficiency considerations and second due to the need to leave some margin for unexpected needs and disturbance rejection. It is this margin that we will exploit in the robust tracking. Suppose that the planning in Section \ref{sec:solution} is done for a control authority $\cset^p\subset\cset$. This means that the resulting trajectory reference that the vehicle needs to track will maneuver less aggressively than the true vehicle: replicating the nominal control is therefore always possible, while the additional real-time maneuverability can be used to counteract the external disturbance and make the error dynamics asymptotically stable. In this context, robust nonlinear control techniques such as Lyapunov-based methods
-\cite{Majumdar2013}\JFFnote{add citation}{ }%http://link.springer.com/10.1007/978-3-642-36279-8_33
-can be used to compute robust ``funnels" around a concrete trajectory.
+Typically, the planning phase will not make full use of the vehicle's full control authority, due to energy efficiency considerations as well as the need to leave some margin for unexpected needs and disturbance rejection; it is this margin that we will exploit in the robust tracking. Suppose that the planning in Section \ref{sec:solution} is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances and render the error dynamics asymptotically stable.
 
+In this context, robust nonlinear control techniques such as Lyapunov-based methods
+\cite{Majumdar2013}\JFFnote{add citation}{ }%http://link.springer.com/10.1007/978-3-642-36279-8_33
+can be used to compute robust ``funnels" around a concrete nominal trajectory.
 Instead, here we propose a reachability-based method to compute a trajectory-independent uncertainty set. In particular, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be thought of as a virtual evader vehicle that is optimally attempting to violate our desired bound on the tracking error. We therefore have a new reach-avoid game in which the controller is playing against the coordinated worst-case action of the reference and the disturbance. In general, this game will be governed by dynamics of the form:
 \begin{equation}
 \label{eq:jdyn} % Joint dynamics
 \begin{aligned}
-\dot{x} &= f(t, x, u, d) \\
-\dot{x_r} &=f(t,x_r,u_r,0)\\
-u &\in \cset, u_r\in\cset^p, d \in \dset \\
+\dot{x} &= f(t, x, u, d), \\
+\dot{x_r} &=f(t,x_r,u_r,0),\\
+u &\in \cset, u_r\in\cset^p, d \in \dset, \\
 &t \in [0, T].
 \end{aligned}
 \end{equation}
-Given a desired bound $\errorbound$ on the tracking error $e=x-x_r$, we can now represent the target set $\targetset$ for the adversarial reference and disturbance as the set of joint configurations where this bound is violated, that is, $\targetset = \{(x,x_r): x-x_r\not\in\errorbound\}$. In this case the backwards reachable set $\brs(t)$ is defined as
+Given an open bound $\errorbound$ on the tracking error $e=x-x_r$, we can now represent the target set $\targetset$ for the adversarial reference and disturbance as the set of joint configurations where this bound is violated, i.e $\targetset = \{(x,x_r): x-x_r\not\in\errorbound\}$. In this case the backwards reachable set $\brs(t)$ is defined as:
 \begin{equation}
 \label{eq:brs}
 \begin{aligned}
@@ -30,21 +31,27 @@ With analogous definitions as those in Section \ref{sec:solution}, this set can 
 \begin{equation}
 \label{eq:HJIVI_track}
 \begin{aligned}
-\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\&  t\in[0,T]\\
-&V(T, z) = l(T, z)\\
-&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d)
+\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\&  t\in[0,T],\\
+&V(T, z) = l(T, z),\\
+&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d),
 \end{aligned}
 \end{equation}
-where for compactness of notation we denote $z=(x,x_r)$ and $f_z(t,z,u,u_r,d) = [f(t,x,u,d),f(t,x_r,u_r,0)]$. In general we will let $T\to\infty$ to obtain an all-time robust controlled invariant set.
-It is worth noting that for a large class of vehicle dynamics it will be possible to exactly or approximately express the error dynamics as independent of the absolute state. In such cases, the dimensionality of the problem is reduced significantly by rewriting the problem as:
+where for compactness of notation we denote $z=(x,x_r)$ and $f_z(t,z,u,u_r,d) = [f(t,x,u,d),f(t,x_r,u_r,0)]$. The complement of $\brs(0)$ is the maximal robust controlled invariant set in $\targetset^\text{c}$, also known as the \emph{discriminating kernel} of the game. Letting $T\to\infty$ we obtain an all-time discriminating kernel, which we denote by $\disckernel$. If this set is nonempty, then the tracking error $e$ at flight time is guaranteed to remain within $\errorbound$ provided that the vehicle starts inside the set $\{x: (x,x_r(0))\in\disckernel\}$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
+\begin{equation}\label{eq:robust_tracking_law}
+\tracklaw(x,x_r) \in \arg\max_{u \in \cset} \big[\min_{u_r \in\cset^p} \min_{d \in \dset} D_z V(0) \cdot f_z(t,z,u,u_r,d)\big].
+\end{equation}
+
+It is worth noting that for a practically relevant class of vehicle dynamics it will be possible to exactly or approximately express the error dynamics as independent of the absolute state. In such cases, the dimensionality of the problem is reduced significantly by rewriting the problem as:
 \begin{equation}
 \label{eq:edyn} % Error dynamics
 \begin{aligned}
-\dot{e} &= f_e(t, e, u, u_r,d) \\
-u &\in \cset, u_r\in\cset^p, d \in \dset \\
+\dot{e} &= f_e(t, e, u, u_r,d), \\
+u &\in \cset, u_r\in\cset^p, d \in \dset, \\
 &t \in [0, T],
 \end{aligned}
 \end{equation}
-now requiring the state (error) to remain in $\errorbound$, so that the target simply becomes $\targetset = \mathbb{R}^n \setminus \errorbound$.
+now requiring the state (error) to remain in $\errorbound$, so that the target simply becomes $\targetset = \mathbb{R}^n \setminus \errorbound$. In these cases, \eqref{eq:HJIVI_track} is defined on the lower-dimensional state space of relative (error) dynamics (i.e. over $e$ instead of $z$), and the resulting $\disckernel\subset \mathbb{R}^n$ is the discriminating kernel of $\errorbound$. The flight-time tracking error $e$ is then guaranteed to remain within $\errorbound$ provided that the initial error is contained in $\disckernel$ and the vehicle controller applies the optimally robust tracking feedback law \eqref{eq:robust_tracking_law}, which is now of the form $\tracklaw(e)$.
 
-If the complement of the reachable set $\brs$ is nonempty, then the vehicle is guaranteed to remain within $\errorbound$ of the nominal trajectory provided that it starts inside the set $\{x_r(0) + e: e\in{\brs^c}\}$.
+A price to be paid for using this method is that it imposes more stringent restrictions on the planning. At flight time, the vehicle will apply this robust tracking law around the nominal trajectory instead of the optimal control policy prescribed by the path planner; while constraint satisfaction is guaranteed for the nominal trajectory, this guarantee does not immediately extend to trajectories within the tracking error bound. The natural solution is to ``robustify" the planning by augmenting all obstacles as $\obsset^\errorbound(t) := \obsset(t) - \errorbound$ (with $-$ denoting the Minkowski difference). It then follows directly that if $x_r(t)$ remains clear of $\obsset^\errorbound(t)$ for all $t$, then $x(t)$ remains clear of the original obstacle $\obsset(t)$.
+
+Based on this, it will be desirable to choose the tracking error bound $\errorbound$ to be as small as possible. The concrete choice of $\errorbound$ will generally correspond to the system designer, since it is specific to the vehicle dynamics, and should always ensure that the resulting discriminating kernel $\disckernel$ (a) is nonempty and (b) contains all expected errors in the initial configuration.
