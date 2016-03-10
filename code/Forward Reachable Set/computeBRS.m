@@ -1,4 +1,4 @@
-function BRS = computeBRS(tradius, speed, uMax, dMax, visualize)
+function BRS = computeBRS(tradius, speed, uMax, dMax, res, visualize, endEarly)
 % BRS = computeBRS(visualize)
 % Computes the backwards reachable set from a target set
 %
@@ -7,7 +7,7 @@ function BRS = computeBRS(tradius, speed, uMax, dMax, visualize)
 %   \dot{y} = v * sin(\theta) + d_2
 %   \dot{\theta} = u + d_3
 
-% Problem parameters
+%% Problem parameters
 if nargin < 1
   tradius = 0.1;
 end
@@ -25,15 +25,20 @@ if nargin < 4
   dMax = [0.1; 0.2]; % [radius in (x,y) space; bounds in theta space]
 end
 
+% Resolution
 if nargin < 5
+  res = [0.075; 0.075; 5*pi/180];
+end
+
+if nargin < 6
   visualize = true;
 end
 
-%---------------------------------------------------------------------------
-% Resolution
-res = [0.02; 0.02; 5*pi/180];
+if nargin < 7
+  endEarly = false;
+end
 
-% Create the computation grid.
+%% Create the computation grid.
 g.dim = 3;
 g.min = [-2; -2; 0];
 g.max = [+2; +2; 2*pi];
@@ -48,7 +53,20 @@ if prod(g.N) > 71^3
   warning(['g.N = ' num2str(g.N')])
 end
 
-target = shapeCylinder(g, 3, [0 0 0], tradius);
+data = shapeCylinder(g, 3, [0 0 0], tradius);
+
+RF = 1.25; % Refinement factor
+
+if nnz(data(:) <= 0) <= 5 * g.N(3)
+  disp('Target set is too small for this grid resolution!')
+  disp(['Changing resolution from [' num2str(res(1)) '; ' num2str(res(2)) ...
+    '; ' num2str(res(3)) '] to [' num2str(res(1)/RF) '; ' ...
+    num2str(res(2)/RF) '; ' num2str(res(3)) ']'])
+  
+  res(1:2) = res(1:2) / RF;
+  BRS = computeBRS(tradius, speed, uMax, dMax, res, visualize, true);
+  data = migrateGrid(BRS.g, BRS.data, g);
+end
 
 %---------------------------------------------------------------------------
 % Integration parameters.
@@ -128,8 +146,6 @@ if(singleStep)
   integratorOptions = odeCFLset(integratorOptions, 'singleStep', 'on');
 end
 
-data = target;
-
 if visualize
   %---------------------------------------------------------------------------
   % Initialize Display
@@ -156,6 +172,7 @@ tNow = t0;
 startTime = cputime;
 while(tMax - tNow > small * tMax)
   % Reshape data array into column vector for ode solver call.
+  data_last = data;
   y0 = data(:);
   
   % How far to step?
@@ -167,7 +184,7 @@ while(tMax - tNow > small * tMax)
     integratorOptions, schemeData);
   % Get back the correctly shaped data array
   data = reshape(y, g.shape);
-  data = min(data, target);
+  data = min(data, data_last);
   tNow = t(end);
   
   if visualize
@@ -180,6 +197,14 @@ while(tMax - tNow > small * tMax)
     h = visualizeLevelSet(g, data, 'surface', 0);
     axis square
     drawnow;
+  end
+  
+  if endEarly
+    if nnz(data(:) <= 0) > 40 * g.N(3)
+      disp(['Reverting resolution back to [' num2str(res(1)*RF) '; ' ...
+        num2str(res(2)*RF) '; ' num2str(res(3)) ']'])
+      break;
+    end
   end
 end
 
@@ -216,10 +241,6 @@ hamValue = hamValue + dMax(1) * sqrt(deriv{1}.^2 + deriv{2}.^2) + ...
   abs(deriv{3}) * dMax(2);
 
 hamValue = -hamValue;
-
-
-
-
 
 %---------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

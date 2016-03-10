@@ -25,7 +25,7 @@ For convenience, let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; no
 
 \noindent the interpretation of which is that a vehicle is another vehicle's danger zone if the two vehicles are within a distance of $\cradius$ apart \textcolor{blue}{(we consider Euclidean distances throughout the paper)}.
 
-The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity of the state space with the problem dimension, an optimal solution is computationally intractable \textcolor{blue}{even for a moderate number of vehicles (typically $N>3$)}.
+The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity of the state space with the problem dimension, an optimal solution is computationally intractable even for a moderate number of vehicles (typically $N>3$).
 
 In this paper we impose a mild structure to the general problem in order to trade complexity for optimality: we assign a priority to each vehicle. \JFFnote{Careful! Not a contribution of this paper, should rephrase.} While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Such a joint path planning scheme makes intuitive and practical sense\JFFnote{weak argument (+ completely unjustified), should cite NASA and/or other work}, and the priorities can be assigned, for example, on a first-come-first-served basis.
 
