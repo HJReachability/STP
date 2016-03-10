@@ -96,18 +96,19 @@ title('t = 0')
 drawnow;
 
 for i = 1:size(plv.xhist, 2)
-  % Relative state
-  xv = plv.xhist(:, i);
-  x = pl.x;
-  relx = x - xv;
-  relx(1:2) = rotate2D(relx(1:2), xv(3));
-  relx(3) = wrapToPi(relx(3));
-  
   % Bubble control
-  u = RBControl(relx, vRange, [-wMax wMax], RB);
+  u = RBControl(pl.x, plv.xhist(:, i), vRange, [-wMax wMax], RB);
   
-  pl.updateState(u, dt);
+  not_done = true;
+  while not_done
+    d12 = -dMax(1) + 2*dMax(1)*rand(2, 1);
+    not_done = norm(d12) > dMax(1);
+  end
+  d = [d12; -dMax(2) + 2*dMax(2)*rand];
+  
+  pl.updateState(u, dt, [], d);
   pl.plotPosition();
+  title(['t = ' num2str(t(i))])
   drawnow
 end
 
