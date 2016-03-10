@@ -21,8 +21,11 @@ if (strcmp(vehicle.state_uncertainty,'ellipsoid'))
         axis2_radius = axis2_radius/f;
         axis3_radius = axis3_radius/f;
     end
-    collisionObs = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
+    collisionObs1 = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
         (1/(axis3_radius)^2)*(g.xs{3} - mment(3)).^2) - 1;
+    collisionObs2 = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
+    (1/(axis3_radius)^2)*(-2*pi + g.xs{3} - mment(3)).^2) - 1;
+    collisionObs = min(collisionObs1, collisionObs2);
 end
 vehicle.collisionmat(:,:,:,init_index) = collisionObs;
 
@@ -36,7 +39,7 @@ tMax = tmax;                  % End time.
 small = 100 * eps;
 
 % What kind of dissipation?
-dissType = 'global';
+dissType = 'local';
 
 % How much accuracy?
 accuracy = vehicle.obs_accuracy;
@@ -56,11 +59,11 @@ data = vehicle.collisionmat(:,:,:,init_index);
 vehicle.collisionmat(:,:,1:end,init_index) = repmat(data2D, [1,1,g.shape(3)]);
 
 %---------------------------------------------------------------------------
-% % What level set should we view?
-% level = 0;
-%
-% % Visualize the 3D reachable set.
-% displayType = 'surface';
+% What level set should we view?
+level = 0;
+
+% Visualize the 3D reachable set.
+displayType = 'surface';
 %
 % % Pause after each plot?
 % pauseAfterPlot = 0;
@@ -164,6 +167,12 @@ hold on;
 drawnow;
 hold off;
 
+fig_3D = figure;
+figure(fig_3D);
+h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
+camlight right;  camlight left;
+axis(g.axis);
+
 %---------------------------------------------------------------------------
 % Loop until tMax (subject to a little roundoff).
 tNow = t0;
@@ -203,6 +212,7 @@ while(tMax - tNow > small * tMax)
     
     % Delete last visualization if necessary.
     delete(h2);
+    delete(h);
     
     %Create new visualization.
     hold on;
@@ -210,6 +220,9 @@ while(tMax - tNow > small * tMax)
     drawnow;
     hold off;
     
+    figure(fig_3D);
+    h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
+
     if (init_index == 1 && abs(tNow - vehicle.t_start) <= tstep/5 && strcmp(flag, 'stop'))
         break;
     end

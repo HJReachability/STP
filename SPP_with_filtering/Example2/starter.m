@@ -18,7 +18,8 @@ g.max = [ +1; +1; 2*pi];
 g.bdry = { @addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
 % Roughly equal dx in x and y (so different N).
 g.N = [ Nx; Nx; Nx];
-
+% Need to trim max bound in \psi (since the BC are periodic in this dimension).
+g.max(3) = g.max(3) * (1 - 1 / g.N(3));
 g = processGrid(g);
 
 %---------------------------------------------------------------------------
@@ -50,7 +51,7 @@ vehicle.turnRate = 1;
 % vehicle.state_uncertainty_axis = 0.4;
 
 vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = 0.5*[0.1, 0.1, 0.1]';
+vehicle.state_uncertainty_axis = 2*[0.05, 0.05, 0.15]';
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
@@ -133,7 +134,7 @@ for i=1:vnum
 end
 
 % Load the starting positions of the vehicle
-allVehicles{1}.x(:,1) = [ -0.5, 0, 0]';
+allVehicles{1}.x(:,1) = [ -0.5, 0, pi/6]';
 allVehicles{2}.x(:,1) = [  0.5, 0, pi]';
 allVehicles{3}.x(:,1) = [ -0.6, 0.6, 7*pi/4]';
 allVehicles{4}.x(:,1) = [  0.6, 0.6, 5*pi/4]';

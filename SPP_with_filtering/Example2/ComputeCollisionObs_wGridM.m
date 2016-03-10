@@ -9,6 +9,20 @@ tstep = vehicle.t_step;
 reach_index = int64(vehicle.t_start/tstep) + 1;
 mment = vehicle.x(:,init_index);
 
+% Define a new grid
+% New grid
+Nx = 201;
+% Create the computation grid.
+g_new.dim = 3;
+g_new.min = [ -1; -1; 0];
+g_new.max = [ +1; +1; 2*pi];
+g_new.bdry = { @addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
+% Roughly equal dx in x and y (so different N).
+g_new.N = [ Nx; Nx; Nx];
+% Need to trim max bound in \psi (since the BC are periodic in this dimension).
+g_new.max(3) = g_new.max(3) * (1 - 1 / g_new.N(3));
+g_new = processGrid(g_new);
+
 % Initial state model--for numerical purposes
 % Ellipsoidal model
 if (strcmp(vehicle.state_uncertainty,'ellipsoid'))
@@ -21,10 +35,13 @@ if (strcmp(vehicle.state_uncertainty,'ellipsoid'))
         axis2_radius = axis2_radius/f;
         axis3_radius = axis3_radius/f;
     end
-    collisionObs = sqrt((1/(axis1_radius)^2)*(g.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g.xs{2} - mment(2)).^2 +...
-        (1/(axis3_radius)^2)*(g.xs{3} - mment(3)).^2) - 1;
+    collisionObs1 = sqrt((1/(axis1_radius)^2)*(g_new.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g_new.xs{2} - mment(2)).^2 +...
+        (1/(axis3_radius)^2)*(g_new.xs{3} - mment(3)).^2) - 1;
+    collisionObs2 = sqrt((1/(axis1_radius)^2)*(g_new.xs{1} - mment(1)).^2 + (1/(axis2_radius)^2)*(g_new.xs{2} - mment(2)).^2 +...
+        (1/(axis3_radius)^2)*(-2*pi + g_new.xs{3} - mment(3)).^2) - 1;
+    collisionObs = min(collisionObs1, collisionObs2);
 end
-vehicle.collisionmat(:,:,:,init_index) = collisionObs;
+collisionmat_temp = collisionObs;
 
 %---------------------------------------------------------------------------
 % Integration parameters.
@@ -50,27 +67,18 @@ accuracy = vehicle.obs_accuracy;
 
 %---------------------------------------------------------------------------
 % create initial conditions
-data = vehicle.collisionmat(:,:,:,init_index);
+data = collisionmat_temp;
 % Project obstacle on 2D and then extend in 3D
-[~, data2D] = proj2D(g, data, [0 0 1]);
-vehicle.collisionmat(:,:,1:end,init_index) = repmat(data2D, [1,1,g.shape(3)]);
+[~, data2D] = proj2D(g_new, data, [0 0 1]);
+collisionmat_temp = repmat(data2D, [1,1,g_new.shape(3)]);
+vehicle.collisionmat(:,:,:,init_index) = migrateGrid(g_new, collisionmat_temp, g);
 
-% New grid
-Nx = 201;
-% Create the computation grid.
-g_new.dim = 3;
-g_new.min = [ -1; -1; 0];
-g_new.max = [ +1; +1; 2*pi];
-g_new.bdry = { @addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
-% Roughly equal dx in x and y (so different N).
-g_new.N = [ Nx; Nx; Nx];
-g_new = processGrid(g_new);
 %---------------------------------------------------------------------------
-% % What level set should we view?
-% level = 0;
-%
-% % Visualize the 3D reachable set.
-% displayType = 'surface';
+% What level set should we view?
+level = 0;
+
+% Visualize the 3D reachable set.
+displayType = 'surface';
 %
 % % Pause after each plot?
 % pauseAfterPlot = 0;
@@ -170,11 +178,16 @@ if(~isempty(vehicle.fig_hand))
     subplot(vehicle.fig_hand);
 end
 hold on;
-[g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
+[g2D, data2D] = proj2D(g_new, data, [0 0 1], vehicle.x(3,init_index));
 [~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color, 'Linestyle', '--');
 drawnow;
 hold off;
 
+fig_3D = figure;
+figure(fig_3D);
+h = visualizeLevelSet(g_new, data, displayType, level, [ 't = ' num2str(0) ]);
+camlight right;  camlight left;
+axis(g_new.axis);
 %---------------------------------------------------------------------------
 % Loop until tMax (subject to a little roundoff).
 tNow = t0;
@@ -184,7 +197,6 @@ startTime = cputime;
 while(tMax - tNow > small * tMax)
     
     % Reshape data array into column vector for ode solver call.
-    data = migrateGrid(g, data, g_new);
     y0 = data(:);
     
     % How far to step?
@@ -196,7 +208,7 @@ while(tMax - tNow > small * tMax)
     P = extractCostates(g_new, reach_data);
     schemeData.U = (P{3} >= 0) * (-vehicle.turnRate) + (P{3} < 0) * vehicle.turnRate;
     schemeData.V = ((P{1}.*cos(g_new.xs{3}) + P{2}.*sin(g_new.xs{3})) >= 0) * (-vehicle.velocity)...
-    + ((P{1}.*cos(g_new.xs{3}) + P{2}.*sin(g_new.xs{3})) < 0) * vehicle.velocity;
+        + ((P{1}.*cos(g_new.xs{3}) + P{2}.*sin(g_new.xs{3})) < 0) * vehicle.velocity;
     
     % Take a timestep.
     [ t y ] = feval(integratorFunc, schemeFunc, tSpan, y0,...
@@ -205,12 +217,10 @@ while(tMax - tNow > small * tMax)
     
     % Get back the correctly shaped data array
     data = reshape(y, g_new.shape);
-    data = migrateGrid(g_new, data, g);
     
     % Project obstacle on 2D and then extend in 3D
-    [g2D, data2D] = proj2D(g, data, [0 0 1]);
+    [g2D, data2D] = proj2D(g_new, data, [0 0 1]);
     tindex = tindex + 1;
-    vehicle.collisionmat(:,:,1:end,tindex) = repmat(data2D, [1,1,g.shape(3)]);
     
     % Start plotting
     figure(vehicle.mast_fig);
@@ -220,12 +230,20 @@ while(tMax - tNow > small * tMax)
     
     % Delete last visualization if necessary.
     delete(h2);
+    delete(h);
     
     %Create new visualization.
     hold on;
     [~,h2] = contour(g2D.xs{1}, g2D.xs{2}, data2D, [0 0], 'color', vehicle.fig_color, 'Linestyle', '--');
     drawnow;
     hold off;
+    
+    figure(fig_3D);
+    h = visualizeLevelSet(g_new, data, displayType, level, [ 't = ' num2str(0) ]);
+    
+    % Transfer back to the coarser grid
+    collisionmat_temp = repmat(data2D, [1,1,g_new.shape(3)]);
+    vehicle.collisionmat(:,:,:,tindex) = migrateGrid(g_new, collisionmat_temp, g);
     
     if (init_index == 1 && abs(tNow - vehicle.t_start) <= tstep/5 && strcmp(flag, 'stop'))
         break;

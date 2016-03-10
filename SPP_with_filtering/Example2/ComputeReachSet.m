@@ -40,7 +40,7 @@ tMax = tmax;                 % End time.
 small = 100 * eps;
 
 % What kind of dissipation?
-dissType = 'global';
+dissType = 'local';
 
 % How much accuracy?
 accuracy = vehicle.reach_accuracy;

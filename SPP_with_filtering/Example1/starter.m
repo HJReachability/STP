@@ -18,7 +18,8 @@ g.max = [ +1; +1; 2*pi];
 g.bdry = { @addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
 % Roughly equal dx in x and y (so different N).
 g.N = [ Nx; Nx; Nx];
-
+% Need to trim max bound in \psi (since the BC are periodic in this dimension).
+g.max(3) = g.max(3) * (1 - 1 / g.N(3));
 g = processGrid(g);
 
 %---------------------------------------------------------------------------
@@ -55,7 +56,7 @@ vehicle.state_uncertainty_axis = 0.3*[0.1, 0.1, 0.1]';
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
 percent = 0.1; % (% of disturbance)
-vehicle.disturbance_mag = percent*[(vehicle.velocity + vehicle.v_nom), (vehicle.velocity + vehicle.v_nom), vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
+vehicle.disturbance_mag = percent*[(vehicle.velocity + vehicle.v_nom), (vehicle.velocity + vehicle.v_nom), 2*vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
 % 30% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
 % stops after a while)
 % 25% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
