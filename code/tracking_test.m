@@ -3,7 +3,7 @@ function tracking_test()
 addpath(genpath('.'))
 
 %% Problem parameters
-tradius = 0.1;
+tradius = 0.025;
 speed = 0.75;
 uMax = 0.6;
 dMax = [0; 0];
@@ -17,6 +17,8 @@ else
   BRS = computeBRS(tradius, speed, uMax, dMax);
   save(filename, 'BRS')
 end
+
+
 
 %% Create trajectory
 IS = [-0.7; -0.3; 0];
@@ -58,7 +60,7 @@ for i = 1:length(t)
 end
 
 %% Load bubble
-bradius = 0.1;
+bradius = 0.075;
 vNom = 0.75;
 vRange = [0.5; 1];
 wNom = 0.6;
@@ -66,7 +68,7 @@ wMax = 1;
 dMax = [0.1; 0.2];
 
 filename = ['RB_' num2str(bradius) '_' num2str(vNom) '_' num2str(vRange(1)) ...
-  num2str(vRange(1)) '_' num2str(wNom) '_' num2str(wMax) '_' ...
+  num2str(vRange(2)) '_' num2str(wNom) '_' num2str(wMax) '_' ...
   num2str(dMax(1)) num2str(dMax(2)) '.mat'];
 
 if exist(filename, 'file')

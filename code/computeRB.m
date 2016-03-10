@@ -46,7 +46,7 @@ dissType = 'global';
 %   inputA	  Maximum turn rate of the evader (positive).
 %   inputB	  Maximum turn rate of the pursuer (positive).
 if nargin < 1
-  radius = 0.1;
+  radius = 0.075;
 end
 
 if nargin < 2
@@ -98,7 +98,6 @@ g = processGrid(g);
 %---------------------------------------------------------------------------
 % Create initial conditions (cylinder centered on origin).
 data = -shapeCylinder(g, 3, [ 0; 0; 0 ], radius);
-data0 = data;
 
 %---------------------------------------------------------------------------
 % Set up spatial approximation scheme.
@@ -223,6 +222,12 @@ RB.wNom = wNom;
 RB.wMax = wMax;
 RB.dMax = dMax; % [radius in (x,y) space; bounds in theta space]
 RB.P = extractCostates(g, data);
+
+filename = ['RB_' num2str(radius) '_' num2str(vNom) '_' num2str(vRange(1)) ...
+  num2str(vRange(2)) '_' num2str(wNom) '_' num2str(wMax) '_' ...
+  num2str(dMax(1)) num2str(dMax(2)) '.mat'];
+save(filename, 'RB')
+keyboard
 end
 
 %---------------------------------------------------------------------------
