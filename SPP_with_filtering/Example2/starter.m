@@ -9,7 +9,7 @@ addpath ~/Documents/MATLAB/helperOC
 
 %---------------------------------------------------------------------------
 % Grid of joint space
-Nx = 101;
+Nx = 301;
 
 % Create the computation grid.
 g.dim = 3;
@@ -51,7 +51,7 @@ vehicle.turnRate = 1;
 % vehicle.state_uncertainty_axis = 0.4;
 
 vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = 2*[0.05, 0.05, 0.15]';
+vehicle.state_uncertainty_axis = [0.03, 0.03, 0.1]';
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
@@ -134,7 +134,7 @@ for i=1:vnum
 end
 
 % Load the starting positions of the vehicle
-allVehicles{1}.x(:,1) = [ -0.5, 0, pi/6]';
+allVehicles{1}.x(:,1) = [ -0.5, 0, 0]';
 allVehicles{2}.x(:,1) = [  0.5, 0, pi]';
 allVehicles{3}.x(:,1) = [ -0.6, 0.6, 7*pi/4]';
 allVehicles{4}.x(:,1) = [  0.6, 0.6, 5*pi/4]';
@@ -213,8 +213,7 @@ for i=1:vnum
         clear('temp0');
     end
     t_start = max(t_start, allVehicles{i}.t_start);
-    save('ex2', '-v7.3');
-    pause;
+    save('ex2', 'allVehicles', '-v7.3');
 end
 
 t_end = t_start;
@@ -355,4 +354,4 @@ for i=1:vnum
     drawnow;
 end
 hold off;
-save('ex2', '-v7.3');
+ save('ex2', 'allVehicles', '-v7.3');

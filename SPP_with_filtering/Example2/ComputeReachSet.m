@@ -40,7 +40,7 @@ tMax = tmax;                 % End time.
 small = 100 * eps;
 
 % What kind of dissipation?
-dissType = 'local';
+dissType = 'global';
 
 % How much accuracy?
 accuracy = vehicle.reach_accuracy;
@@ -310,9 +310,15 @@ d3 = schemeData.disturbance(3);
 % hamValue = v*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) + v*deriv{2}.*sin(g.xs{3}) ...
 %     + d2*abs(deriv{2}) - w*abs(deriv{3}) + d3*abs(deriv{3});
 
-% Hamiltonian with velocity as an input
-hamValue = vnom*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) +...
-    vnom*deriv{2}.*sin(g.xs{3}) + d2*abs(deriv{2})...
+% % Hamiltonian with velocity as an input
+% hamValue = vnom*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) +...
+%     vnom*deriv{2}.*sin(g.xs{3}) + d2*abs(deriv{2})...
+%     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
+%     - w*abs(deriv{3}) + d3*abs(deriv{3});
+
+% Hamiltonian with disturbance on circle
+hamValue = vnom*deriv{1}.*cos(g.xs{3}) + ...
+    vnom*deriv{2}.*sin(g.xs{3}) + d1 * sqrt(deriv{1}.^2 + deriv{2}.^2)...
     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
     - w*abs(deriv{3}) + d3*abs(deriv{3});
 
@@ -362,10 +368,10 @@ d3 = schemeData.disturbance(3);
 
 switch dim
     case 1
-        alpha = (v+vnom)*abs(cos(g.xs{3})) + d1;
+        alpha = (v+vnom)*abs(cos(g.xs{3})) + d1 * abs(derivMax{1}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
         
     case 2
-        alpha = (v+vnom)*abs(sin(g.xs{3})) + d2;
+        alpha = (v+vnom)*abs(sin(g.xs{3})) + d2* abs(derivMax{2}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
         
     case 3
         alpha = d3 + w;
