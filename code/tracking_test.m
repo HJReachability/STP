@@ -1,16 +1,16 @@
 function tracking_test()
 
 addpath(genpath('.'))
-addpath(genpath('C:\Users\Mo\Documents\UTM\code\platoon'))
+
 %% Problem parameters
 tradius = 0.1;
 speed = 0.75;
 uMax = 0.6;
-dMax = [0; 0; 0];
+dMax = [0; 0];
 
 %% Compute or reachable set
 filename = ['BRS_' num2str(tradius) '_' num2str(speed) '_' num2str(uMax) ...
-  '_' num2str(dMax(1)) num2str(dMax(2)) num2str(dMax(3)) '.mat'];
+  '_' num2str(dMax(1)) num2str(dMax(2)) '.mat'];
 if exist(filename, 'file')
   load(filename)
 else
@@ -28,15 +28,15 @@ plv.plotPosition(); % Initial position
 hold on
 
 % Target set
-[g2D, data2D] = proj2D(BRS.g, BRS.data(:,:,:,1), [0 0 1]);
-contour(g2D.xs{1}, g2D.xs{2}, data2D, [0 0], 'r')
+theta = linspace(0, 2*pi, 100);
+plot(tradius*cos(theta), tradius*sin(theta), 'r-')
 
 xlim([-1 1])
 ylim([-1 1])
 title('t = 0')
 drawnow;
 
-dt = 0.1;
+dt = 0.025;
 tMax = 10;
 t = 0:dt:tMax;
 
@@ -44,7 +44,7 @@ for i = 1:length(t)
   x = plv.x;
   x(3) = wrapTo2Pi(x(3));
   
-  if eval_u(BRS.g, BRS.data(:,:,:,1), x) <= 0
+  if norm(plv.getPosition()) <= tradius
     break
   end
   
@@ -58,9 +58,23 @@ for i = 1:length(t)
 end
 
 %% Load bubble
-load('RB.mat')
-vRange = [0.5 1];
-wRange = [-1 1];
+bradius = 0.1;
+vNom = 0.75;
+vRange = [0.5; 1];
+wNom = 0.6;
+wMax = 1;
+dMax = [0.1; 0.2];
+
+filename = ['RB_' num2str(bradius) '_' num2str(vNom) '_' num2str(vRange(1)) ...
+  num2str(vRange(1)) '_' num2str(wNom) '_' num2str(wMax) '_' ...
+  num2str(dMax(1)) num2str(dMax(2)) '.mat'];
+
+if exist(filename, 'file')
+  load(filename)
+else
+  RB = computeRB(bradius, vNom, vRange, wNom, wMax, dMax);
+  save(filename, 'RB')
+end
 
 %% Follow trajectory
 pl = Plane(IS);
@@ -69,6 +83,8 @@ pl = Plane(IS);
 figure;
 pl.plotPosition(); % Initial position
 hold on
+theta = linspace(0, 2*pi, 100);
+plot(tradius*cos(theta), tradius*sin(theta), 'r-')
 
 % Target set
 [g2D, data2D] = proj2D(BRS.g, BRS.data(:,:,:,1), [0 0 1]);
@@ -79,16 +95,16 @@ ylim([-1 1])
 title('t = 0')
 drawnow;
 
-for i = 1:length(t)
+for i = 1:size(plv.xhist, 2)
   % Relative state
   xv = plv.xhist(:, i);
   x = pl.x;
   relx = x - xv;
   relx(1:2) = rotate2D(relx(1:2), xv(3));
-  relx(3) = wrapTo2Pi(relx(3));
+  relx(3) = wrapToPi(relx(3));
   
   % Bubble control
-  u = RBControl(x, vRange, wRange, RB);
+  u = RBControl(relx, vRange, [-wMax wMax], RB);
   
   pl.updateState(u, dt);
   pl.plotPosition();

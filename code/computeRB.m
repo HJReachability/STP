@@ -1,4 +1,4 @@
-function [data, g, data0] = bubble(radius)
+function RB = computeRB(radius, vNom, vRange, wNom, wMax, dMax)
 % air3D: demonstrate the 3D aircraft collision avoidance example
 %
 % [data, g, data0] = bubble(radius)
@@ -49,11 +49,25 @@ if nargin < 1
   radius = 0.1;
 end
 
-vNom = 0.75;
-vRange = [0.5 1];
-wNom = 0.6;
-wMax = 1;
-dMax = [0.1; 0.2]; % [radius in (x,y) space; bounds in theta space]
+if nargin < 2
+  vNom = 0.75;
+end
+
+if nargin < 3
+  vRange = [0.5 1];
+end
+
+if nargin < 4
+  wNom = 0.6;
+end
+
+if nargin < 5
+  wMax = 1;
+end
+
+if nargin < 6
+  dMax = [0.1; 0.2]; % [radius in (x,y) space; bounds in theta space]
+end
 
 %---------------------------------------------------------------------------
 % What level set should we view?
@@ -103,14 +117,14 @@ schemeData.dMax = dMax;
 %---------------------------------------------------------------------------
 % Choose degree of dissipation.
 switch(dissType)
- case 'global'
-  schemeData.dissFunc = @artificialDissipationGLF;
- case 'local'
-  schemeData.dissFunc = @artificialDissipationLLF;
- case 'locallocal'
-  schemeData.dissFunc = @artificialDissipationLLLF;
- otherwise
-  error('Unknown dissipation function %s', dissFunc);
+  case 'global'
+    schemeData.dissFunc = @artificialDissipationGLF;
+  case 'local'
+    schemeData.dissFunc = @artificialDissipationLLF;
+  case 'locallocal'
+    schemeData.dissFunc = @artificialDissipationLLLF;
+  otherwise
+    error('Unknown dissipation function %s', dissFunc);
 end
 
 accuracy = 'veryHigh';
@@ -120,20 +134,20 @@ integratorOptions = odeCFLset('factorCFL', 0.5, 'stats', 'on');
 
 % Choose approximations at appropriate level of accuracy.
 switch(accuracy)
- case 'low'
-  schemeData.derivFunc = @upwindFirstFirst;
-  integratorFunc = @odeCFL1;
- case 'medium'
-  schemeData.derivFunc = @upwindFirstENO2;
-  integratorFunc = @odeCFL2;
- case 'high'
-  schemeData.derivFunc = @upwindFirstENO3;
-  integratorFunc = @odeCFL3;
- case 'veryHigh'
-  schemeData.derivFunc = @upwindFirstWENO5;
-  integratorFunc = @odeCFL3;
- otherwise
-  error('Unknown accuracy level %s', accuracy);
+  case 'low'
+    schemeData.derivFunc = @upwindFirstFirst;
+    integratorFunc = @odeCFL1;
+  case 'medium'
+    schemeData.derivFunc = @upwindFirstENO2;
+    integratorFunc = @odeCFL2;
+  case 'high'
+    schemeData.derivFunc = @upwindFirstENO3;
+    integratorFunc = @odeCFL3;
+  case 'veryHigh'
+    schemeData.derivFunc = @upwindFirstWENO5;
+    integratorFunc = @odeCFL3;
+  otherwise
+    error('Unknown accuracy level %s', accuracy);
 end
 
 if(singleStep)
@@ -170,35 +184,45 @@ drawnow;
 tNow = t0;
 startTime = cputime;
 while(tMax - tNow > small * tMax)
-
+  
   % Reshape data array into column vector for ode solver call.
   y0 = data(:);
-
+  
   % How far to step?
   tSpan = [ tNow, min(tMax, tNow + tPlot) ];
   
   % Take a timestep.
   [ t y ] = feval(integratorFunc, schemeFunc, tSpan, y0,...
-                  integratorOptions, schemeData);
+    integratorOptions, schemeData);
   tNow = t(end);
-
+  
   % Get back the correctly shaped data array
   data = reshape(y, g.shape);
-
+  
   % Get correct figure, and remember its current view.
   figure(f);
-
+  
   % Delete last visualization if necessary.
   if(deleteLastPlot)
     delete(h);
   end
-
+  
   % Create new visualization.
-  h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(tNow) ]);  
+  h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(tNow) ]);
 end
 
 endTime = cputime;
 fprintf('Total execution time %g seconds\n', endTime - startTime);
+
+RB.g = g;
+RB.data = data;
+RB.radius = radius;
+RB.vNom = vNom;
+RB.vRange = vRange;
+RB.wNom = wNom;
+RB.wMax = wMax;
+RB.dMax = dMax; % [radius in (x,y) space; bounds in theta space]
+RB.P = extractCostates(g, data);
 end
 
 %---------------------------------------------------------------------------
@@ -235,7 +259,7 @@ function hamValue = air3DHamFunc(t, data, deriv, schemeData)
 % Ian Mitchell 3/26/04
 
 checkStructureFields(schemeData, 'grid', 'vNom', 'vRange', ...
-                                 'wNom', 'wMax', 'dMax');
+  'wNom', 'wMax', 'dMax');
 
 grid = schemeData.grid;
 vNom = schemeData.vNom;
@@ -253,7 +277,7 @@ dMax = schemeData.dMax;
 % d is disturbance: drives state into target -> minimize
 %
 % Hamiltonian (unoptimized):
-% H = p_1 (-v_a + v_b \cos \psi + a y + d_1) + 
+% H = p_1 (-v_a + v_b \cos \psi + a y + d_1) +
 %     p_2 (v_b \sin \psi - a x + d_2) +
 %     p_3 (b - a + d_3)
 % d, b: minimize
@@ -296,7 +320,7 @@ function alpha = air3DPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %   aircraft collision avoidance example (also called the game of
 %   two identical vehicles).
 %
-% It calculates the extrema of the absolute value of the partials of the 
+% It calculates the extrema of the absolute value of the partials of the
 %   analytic Hamiltonian with respect to the costate (gradient).
 %
 % Parameters:
@@ -308,7 +332,7 @@ function alpha = air3DPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %   dim          Dimension in which the partial derivatives is taken.
 %
 %   alpha	 Maximum absolute value of the partial of the Hamiltonian
-%		   with respect to the costate in dimension dim for the 
+%		   with respect to the costate in dimension dim for the
 %                  specified range of costate values (O&F equation 5.12).
 %		   Note that alpha can (and should) be evaluated separately
 %		   at each node of the grid.
@@ -325,7 +349,7 @@ function alpha = air3DPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 % Ian Mitchell 3/26/04
 
 checkStructureFields(schemeData, 'grid', 'vNom', 'vRange', ...
-                                 'wNom', 'wMax', 'dMax');
+  'wNom', 'wMax', 'dMax');
 
 grid = schemeData.grid;
 vNom = schemeData.vNom;
@@ -347,16 +371,16 @@ switch dim
     alpha = abs(-vNom + vRange(2) * cos(grid.xs{3})) + ...
       wNom * abs(grid.xs{2}) + ...
       dMax(1) * abs(derivMax{1}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
-
+    
   case 2
-    alpha = abs(vRange(2) * sin(grid.xs{3})) + wNom * abs(grid.xs{1}) + ... 
+    alpha = abs(vRange(2) * sin(grid.xs{3})) + wNom * abs(grid.xs{1}) + ...
       dMax(1) * abs(derivMax{2}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
-
+    
   case 3
     alpha = wNom + wMax + dMax(2);
-
+    
   otherwise
     error([ 'Partials for the game of two identical vehicles' ...
-            ' only exist in dimensions 1-3' ]);
+      ' only exist in dimensions 1-3' ]);
 end
 end

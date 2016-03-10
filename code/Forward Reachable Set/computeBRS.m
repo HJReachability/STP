@@ -22,7 +22,7 @@ if nargin < 3
 end
 
 if nargin < 4
-  dMax = [0.1; 0.1; 0.2]; % d_i \in [-dMax(i), dMax(i)]
+  dMax = [0.1; 0.2]; % [radius in (x,y) space; bounds in theta space]
 end
 
 if nargin < 5
@@ -35,8 +35,8 @@ res = [0.05; 0.05; 5*pi/180];
 
 % Create the computation grid.
 g.dim = 3;
-g.min = [-1; -1; 0];
-g.max = [+1; +1; 2*pi];
+g.min = [-2; -2; 0];
+g.max = [+2; +2; 2*pi];
 g.N = ceil((g.max - g.min) ./ res);
 g.bdry = {@addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
 % Roughly equal dx in x and y (so different N).
@@ -45,7 +45,7 @@ g.max(3) = g.max(3) * (1 - 1 / g.N(3));
 g = processGrid(g);
 
 if prod(g.N) > 71^3
-  disp(['g.N = ' num2str(g.N') '; continue?'])
+  warning(['g.N = ' num2str(g.N')])
 end
 
 target = shapeCylinder(g, 3, [0 0 0], tradius);
@@ -83,7 +83,7 @@ schemeFunc = @termLaxFriedrichs;
 schemeData.hamFunc = @RASHamFunc;
 schemeData.partialFunc = @RASPartialFunc;
 schemeData.grid = g;
-schemeData.d = dMax;
+schemeData.dMax = dMax;
 
 % The Hamiltonian and partial functions need problem parameters.
 schemeData.velocity = v;
@@ -128,8 +128,6 @@ if(singleStep)
   integratorOptions = odeCFLset(integratorOptions, 'singleStep', 'on');
 end
 
-tau = t0;
-reach = target;
 data = target;
 
 if visualize
@@ -172,9 +170,6 @@ while(tMax - tNow > small * tMax)
   data = min(data, target);
   tNow = t(end);
   
-  reach = cat(4, reach, data);
-  tau = cat(1, tau, -tNow);
-  
   if visualize
     if(pauseAfterPlot)
       % Wait for last plot to be digested.
@@ -189,11 +184,12 @@ while(tMax - tNow > small * tMax)
 end
 
 BRS.g = g;
-BRS.data = reach;
-BRS.tau = tau;
+BRS.data = data;
+BRS.tMax = tNow;
 BRS.v = v;
 BRS.uMax = uMax;
 BRS.dMax = dMax;
+BRS.P = extractCostates(g, data);
 
 endTime = cputime;
 fprintf('Total execution time %g seconds\n', endTime - startTime);
@@ -204,20 +200,20 @@ fprintf('Total execution time %g seconds\n', endTime - startTime);
 %---------------------------------------------------------------------------
 function hamValue = RASHamFunc(t, data, deriv, schemeData)
 
-checkStructureFields(schemeData, 'grid', 'velocity');
+checkStructureFields(schemeData, 'grid', 'velocity', 'turnRate', 'dMax');
 
 g = schemeData.grid;
 v = schemeData.velocity;
 w = schemeData.turnRate;
-d = schemeData.d;
+dMax = schemeData.dMax;
 
 % Dynamics without disturbances
 hamValue = v*deriv{1}.*cos(g.xs{3}) + v*deriv{2}.*sin(g.xs{3}) ...
   - w*abs(deriv{3});
 
 % Add disturbances
-hamValue = hamValue + abs(deriv{1})*d(1) + abs(deriv{2})*d(2) + ...
-  abs(deriv{3})*d(3);
+hamValue = hamValue + dMax(1) * sqrt(deriv{1}.^2 + deriv{2}.^2) + ...
+  abs(deriv{3}) * dMax(2);
 
 hamValue = -hamValue;
 
@@ -257,20 +253,22 @@ function alpha = RASPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %
 % Ian Mitchell 3/26/04
 
-checkStructureFields(schemeData, 'grid', 'velocity');
+checkStructureFields(schemeData, 'grid', 'velocity', 'turnRate', 'dMax');
 
 g = schemeData.grid;
 v = schemeData.velocity;
 w = schemeData.turnRate;
-d = schemeData.d;
+dMax = schemeData.dMax;
 
 switch dim
   case 1
-    alpha = v*abs(cos(g.xs{3})) + d(1);
+    alpha = v*abs(cos(g.xs{3})) + ...
+      dMax(1) * abs(derivMax{1}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
     
   case 2
-    alpha = v*abs(sin(g.xs{3})) + d(2);
+    alpha = v*abs(sin(g.xs{3})) + ...
+      dMax(1) * abs(derivMax{1}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
     
   case 3
-    alpha = w + d(3);
+    alpha = w + dMax(2);
 end
