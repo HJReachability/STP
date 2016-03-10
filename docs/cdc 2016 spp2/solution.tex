@@ -23,7 +23,17 @@ After defining some target set $\targetset(t)$, we compute the backwards reachab
 \end{aligned}
 \end{equation}
 %
-\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of nonanticipative strategies \cite{Mitchell05}\JFFnote{This is not clearly defined, you need to say somewhere that $\gamma[u]$ gives the signal $d(\cdot)$ used in \eqref{eq:fdyn}}. Intuitively, the reachable set is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
+\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of nonanticipative strategies \cite{Mitchell05} defined as follows \MCnote{Check notation!}:
+
+\begin{equation}
+\begin{aligned}
+\gamma &\in \Gamma := \{\mathcal{N}: \mathbb{U}_1 \rightarrow \mathbb{U}_2 \mid  u_1(r) = \hat{u}_1(r) \\
+&\text{for almost every } r\in[t,s] \Rightarrow \mathcal{N}[u_1](r) \\
+&= \mathcal{N}[\hat{u}_1](r) \text{ for almost every } r\in[t,s]\}
+\end{aligned}
+\end{equation}
+
+Intuitively, the reachable set is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
 
 Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ variational inequality:
 %
@@ -41,7 +51,7 @@ Given the target set $\targetset(t)$ specified as an implicit surface function s
 %
 \begin{equation}
 \label{eq:opt_ctrl}
-u^* = \arg \min_{u \in \cset} \max_{d \in \dset} H\left(t, z, D_z V\right)
+u^*(t, z) = \arg \min_{u \in \cset} \max_{d \in \dset} H\left(t, z, D_z V\right)
 \end{equation}
 
 In theory, one could define the state to be the joint states of all vehicles, $z = (x_1, x_2, \ldots, x_N)$, define the dynamics \eqref{eq:fdyn} to follow $\eqref{eq:dyn}$, the target set $\targetset$ to correspond to the situation in which all vehicles have arrived at their targets $\targetset_i, i = 1, \ldots, N$, and the obstacle set $\obsset$ to correspond to the union of all the danger zones $\dz_{ij}$. Then, \eqref{eq:HJIVI} could be solved to obtain $\brs(t)$, and then the joint optimal control would be given by \eqref{eq:opt_ctrl}.
@@ -58,25 +68,26 @@ To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} 
 \begin{equation}
 \label{eq:HJIVI_i}
 \begin{aligned}
-\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right), l_i(t, x_i) - V_i(t, x_i)\big\}\\
-& -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0, \quad t \in [\edt, \sta]\\
+\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right),\\
+& l_i(t, x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0, \\
+& t \in [\edt, \sta]\\
 &V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(\sta, x_i)\big\} \\
 &H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
 \end{aligned}
 \end{equation}
 
-Here, the target set $\targetset_i$, obstacle set $\obsset_i$, and backwards reachable set $\brs_i$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
+Here, the target set $\targetset_i$, obstacle set $\obsset_i(t)$, and backwards reachable set $\brs_i(t)$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
 %
 \begin{equation}
 \begin{aligned}
 \targetset_i &= \{x_i: l_i(x_i) \le 0\} \\
-\obsset_i &= \{x_i: g_i(t, x_i) \le 0\} \\
-\brs_i &= \{x_i: V_i(t, x_i) \le 0\}
+\obsset_i(t) &= \{x_i: g_i(t, x_i) \le 0\} \\
+\brs_i(t) &= \{x_i: V_i(t, x_i) \le 0\}
 \end{aligned}
 \end{equation}
 
 From the reachable set, the optimal control for vehicle $\veh_i$ is then given as
 \begin{equation}
 \label{eq:opt_ctrl_i}
-u_i^* = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
+u_i^*(t, x_i) = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
 \end{equation}
