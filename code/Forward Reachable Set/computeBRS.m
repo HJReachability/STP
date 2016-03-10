@@ -1,4 +1,4 @@
-function BRS = computeBRS(visualize)
+function BRS = computeBRS(tradius, speed, uMax, dMax, visualize)
 % BRS = computeBRS(visualize)
 % Computes the backwards reachable set from a target set
 %
@@ -7,18 +7,36 @@ function BRS = computeBRS(visualize)
 %   \dot{y} = v * sin(\theta) + d_2
 %   \dot{\theta} = u + d_3
 
-if nargin<1
+% Problem parameters
+if nargin < 1
+  tradius = 0.1;
+end
+
+if nargin < 2
+  speed = 1; % constant speed
+end
+v = speed;
+
+if nargin < 3
+  uMax = 1; % u \in [-uMax, uMax]
+end
+
+if nargin < 4
+  dMax = [0.1; 0.1; 0.2]; % d_i \in [-dMax(i), dMax(i)]
+end
+
+if nargin < 5
   visualize = true;
 end
 
 %---------------------------------------------------------------------------
 % Resolution
-res = [1; 1; 5*pi/180];
+res = [0.05; 0.05; 5*pi/180];
 
 % Create the computation grid.
 g.dim = 3;
-g.min = [-20; -20; 0];
-g.max = [+20; +20; 2*pi];
+g.min = [-1; -1; 0];
+g.max = [+1; +1; 2*pi];
 g.N = ceil((g.max - g.min) ./ res);
 g.bdry = {@addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
 % Roughly equal dx in x and y (so different N).
@@ -29,6 +47,8 @@ g = processGrid(g);
 if prod(g.N) > 71^3
   disp(['g.N = ' num2str(g.N') '; continue?'])
 end
+
+target = shapeCylinder(g, 3, [0 0 0], tradius);
 
 %---------------------------------------------------------------------------
 % Integration parameters.
@@ -56,16 +76,6 @@ useSubplots = 0;
 % Approximately how many grid cells?
 %   (Slightly different grid cell counts will be chosen for each dimension.)
 accuracy = 'veryHigh';
-
-%---------------------------------------------------------------------------
-% Problem parameters
-
-% Target set is a cylinder in (x, y, \theta) space 
-radius = 3;
-target = shapeCylinder(g, 3, [0 0 0], radius);
-v = 5; % constant speed
-uMax = 1; % u \in [-uMax, uMax]
-dMax = [1.5; 1.5; 0.3]; % d_i \in [-dMax(i), dMax(i)]
 
 %---------------------------------------------------------------------------
 % Set up spatial approximation scheme.
