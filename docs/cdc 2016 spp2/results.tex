@@ -113,7 +113,7 @@ Here, the red vehicle has the highest priority, and takes a quick path to reach 
 
 \subsection{Centralized Controller}
 \begin{itemize}
-\item Advantages: Optimal control at all times, so smallest possible TTR for each vehicle for a given priority order.
+\item Advantages: Optimal control at all times, so smallest possible TTR \JFFnote{Not true! Larger induced obstacle can lead to worse TTR in low-priority vehicles} for each vehicle for a given priority order.
 \item Limitations: Need a centralized planner to ensure that the optimal control is being applied at all times; no flexibility in control.
 \end{itemize}
 
