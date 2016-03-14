@@ -74,7 +74,7 @@ schemeData.grid = g;
 
 % The Hamiltonian and partial functions need problem parameters.
 schemeData.vnom = vehicle.v_nom;
-schemeData.turnRate = vehicle.turnRate_nom;
+schemeData.turnRate_nom = vehicle.turnRate_nom;
 %---------------------------------------------------------------------------
 % Choose degree of dissipation.
 
@@ -273,7 +273,7 @@ fprintf('Total execution time %g seconds\n', endTime - startTime);
 %---------------------------------------------------------------------------
 function hamValue = RASHamFunc(t, data, deriv, schemeData)
 
-checkStructureFields(schemeData, 'grid', 'velocity');
+%checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
 vnom = schemeData.vnom;
@@ -334,7 +334,7 @@ function alpha = RASPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %
 % Ian Mitchell 3/26/04
 
-checkStructureFields(schemeData, 'grid', 'velocity');
+%checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
 vnom = schemeData.vnom;

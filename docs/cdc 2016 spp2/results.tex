@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Numerical Simulations \label{sec:sim}}
-We demonstrate our proposed method using a four-vehicle example. Each vehicle has the following simple mode:
+We demonstrate our proposed methods using a four-vehicle example. Each vehicle has the following simple mode:
 
 \begin{equation}
 \label{eq:dyn_i}
@@ -12,7 +12,21 @@ We demonstrate our proposed method using a four-vehicle example. Each vehicle ha
 \end{aligned}
 \end{equation}
 
-\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, and $\theta_i$ represents $\veh_i$'s heading. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$.
+\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, and $\theta_i$ represents $\veh_i$'s heading. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $\ham_i(t, D_{\x_i}\soln_i(\x_i,t), \soln_i(\x_i,t))$, and is given by:
+%
+%\bq
+%\begin{aligned}
+%\ham_i(t, &D_{\x_i}\soln_i(\x_i,t), \soln_i(\x_i,t)) \\
+%&= \min_i \big\{ v_i D_{x_i} \soln_i(\x_i, t) \cos(x_i(t)) \\
+%&\; + v_i D_{y_i} \soln_i(\x_i, t) \sin(y_i(t)) + D_{\theta_i} \soln_i(\x_i, t) \omega_i \big\}
+%\end{aligned}
+%\eq
+%
+%\noindent giving the optimal control
+\bq
+\omega_i(t) = -\bar{\omega}_i\frac{D_{\theta_i}\soln_i(\x_i,t)}{\left| D_{\theta_i}\soln_i(\x_i,t) \right|},
+\eq
+
 
 
 

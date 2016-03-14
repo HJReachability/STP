@@ -25,7 +25,7 @@ g = processGrid(g);
 %---------------------------------------------------------------------------
 % Time parameters
 t_start = 0;
-t_end = 7;
+t_end = 6;
 t_step = 0.01;
 steps = int64((t_end - t_start)/t_step);
 

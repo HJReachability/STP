@@ -2,9 +2,9 @@ function vehicle = simulate_trajectory(g, vehicle);
 
 current_time = 0;
 t_end = vehicle.t_start;
-tstep = vehicle.t_start;
+t_step = vehicle.t_step;
 index = 1;
-reach_index = int64((vehicle.t_end - vehicle.t_start)/tstep);
+reach_index = int64((vehicle.t_end - vehicle.t_start)/t_step);
 
 while(current_time < t_end)
     
