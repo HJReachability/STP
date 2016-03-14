@@ -5,15 +5,79 @@ We demonstrate our proposed method using a four-vehicle example. Each vehicle ha
 \begin{equation}
 \label{eq:dyn_i}
 \begin{aligned}
-\dot{p}_{x,i} &= v_i \cos \theta_i \\
-\dot{p}_{y,i} &= v_i \sin \theta_i \\
+\dot{\pos}_{x,i} &= v_i \cos \theta_i \\
+\dot{\pos}_{y,i} &= v_i \sin \theta_i \\
 \dot{\theta}_i &= \omega_i, \\
 \underline{v} &\le v_i \le \bar{v}, |\omega_i| \le \bar{\omega}
 \end{aligned}
 \end{equation}
 
-\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, and $\theta_i$ represents $\veh_i$'s heading. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$.
+\noindent where $x_i = (\pos_{x_i}, \pos_{y_i}, \theta_i)$ represents vehicle $\veh_i$'s state, $\pos_i = (\pos_{x,i}, \pos_{y,i})$ represents $\veh_i$'s position, and $\theta_i$ represents $\veh_i$'s heading. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$.
+
+Each of the four vehicles have a target set $\targetset_i$ that is circular in their position $\pos_i$ centered at $c_i = (c_{x,i}, c_{y,i})$ with radius $r$:
+
+\begin{equation}
+\targetset_i = \{x_i \in \R^3: \|p_i - c_i\| \le r\}
+\end{equation}
+
+For the example shown, we chose $c_1 = (0000, 0000), c_2 = (0000, 0000), c_3 = (0000, 0000), c_4 = (0000, 0000)$ and $r = 0.1$. 
+
+For each of the three proposed methods of computing induced obstacles, we show each vehicle's entire trajectory (in colored dotted lines). On top of the trajectory plot, we overlay each vehicle's position (colored asterisks) and heading (arrows) at a point in time in which the vehicles are in relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time.
+
+\subsection{Centralized Controller}
+Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $u^*_i(t, x_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}.
+
+In this case, each vehicle do not appear to deviate very much from a straight line trajectory towards its target, since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=1.5$, the vehicles are close to each other but still outside each other's danger zones.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/cc_traj"}
+  \caption{Simulated trajectories in the centralized controller method.}
+  \label{fig:cc_traj}
+\end{figure}
+
+Fig. \ref{fig:cc_rs3} shows the evolution of the backwards reachable set for the third vehicle (blue boundaries), as well as the obstacles induced by the higher priority vehicles $\veh_1$ and $\veh_2$ (black boundaries). The locations of the induced obstacles at different time points the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remain relatively small. As the backwards reachable set grows in time, one can see that the induced obstacles carve out a channel, which can be see at $t = 0000$.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/cc_rs3"}
+  \caption{Evolution of the backwards reachable set for the third vehicle $\veh_3$ in the centralized controller method}
+  \label{fig:cc_rs3}
+\end{figure}
+
+\subsection{Least Restrictive Control}
+Fig. \ref{fig:lrc_traj} shows the simulated trajectories in the situation where each vehicle assumes that higher priority vehicles use the least restrictive control to reach their targets, as described in \ref{sec:lrc}. 
+
+Here, the red vehicle has the highest priority, and takes a quick path to reach its target. 
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/lrc_traj"}
+%  \caption{Simulated trajectories in the centralized controller method.}
+%  \label{fig:lrc_traj}
+%\end{figure}
 
 
+
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/lrc_rs3"}
+%  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the centralized controller method}
+%  \label{fig:lrc_rs3}
+%\end{figure}
+
+\subsection{Robust Trajectory Tracking}
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/rtt_traj"}
+%  \caption{Simulated trajectories in the centralized controller method.}
+%  \label{fig:lrc_traj}
+%\end{figure}
+%
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/rtt_rs3"}
+%  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the centralized controller method}
+%  \label{fig:rtt_rs3}
+%\end{figure}
 
 \section{Comparison of Proposed Methods}
