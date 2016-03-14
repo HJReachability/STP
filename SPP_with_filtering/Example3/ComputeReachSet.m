@@ -208,7 +208,7 @@ while(tMax - tNow > small * tMax)
         [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
         [~,vehicle.reach_hand1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle', '--');
         drawnow;
-        [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1]);
+        [g2D, data2D] = proj2D(g, obstacle, [0 0 1]);
         [~,vehicle.obs_hand] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle','-.');
         drawnow;
     end
