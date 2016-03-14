@@ -49,7 +49,7 @@ data = max(data, -obstacle);
 %---------------------------------------------------------------------------
 % % What level set should we view?
 % level = 0;
-%
+% 
 % % Visualize the 3D reachable set.
 % displayType = 'surface';
 %
@@ -117,7 +117,7 @@ end
 % end
 
 %---------------------------------------------------------------------------
-% % Initialize Display
+% Initialize Display
 % f = figure;
 %
 % % Set up subplot parameters if necessary.
@@ -128,11 +128,12 @@ end
 %   subplot(rows, cols, plotNum);
 % end
 %
-% h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(t0) ]);
-% camlight right;  camlight left;
 % % [g2D, data2D] = proj2D(g, data, [0 0 1], pi);
 % % h = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'b');
 %
+
+% h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(t0) ]);
+% camlight right;  camlight left;
 % hold on;
 % axis(g.axis);
 % axis square
@@ -214,6 +215,9 @@ while(tMax - tNow > small * tMax)
     end
     hold off;
     
+%     figure(f),
+%     h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(tNow) ]);
+    
     % Stop as soon as we reach the initial state
     if (init_index == 1)
         location{1} = vehicle.x(1,1);
@@ -229,7 +233,6 @@ while(tMax - tNow > small * tMax)
             end
         end
     end
-    
     
     %   if(pauseAfterPlot)
     %     % Wait for last plot to be digested.

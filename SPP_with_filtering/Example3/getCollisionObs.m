@@ -9,12 +9,12 @@ function collisionObs = getCollisionObs(g, tau, vehicle)
 %
 % Modified by Somil to adapt to the example at hand
 % Assuming the nominal trajectory is of length (tinit/tstep) + 1.
-captureRadius = vehicle.capture_radius + vehicle.bubble_radius;
+captureRadius = vehicle.capture_radius + 2*vehicle.bubble_radius;
 tinit = vehicle.t_start;
 tstep = vehicle.t_step;
 ip = int64((tinit- tau)/tstep) + 1; 
 
-if(tau <= vehicle.t_start)
+if(tau >= vehicle.obs_stoptime && tau <= vehicle.t_start)
     collisionObs = sqrt((g.xs{1} - vehicle.x_nom(1,ip)).^2 + (g.xs{2} - vehicle.x_nom(2,ip)).^2) - captureRadius;
 else
     collisionObs = 1e6*ones(g.shape);

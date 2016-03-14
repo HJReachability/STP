@@ -90,6 +90,10 @@ for i=1:vnum
     allVehicles{i} = vehicle;
 end
 
+% Change the accuracy for vehicle 3 so that it works 
+allVehicles{3}.reach_accuracy = 'medium';
+allVehicles{4}.reach_accuracy = 'medium';
+
 % ---------------------------------------------------------------------------
 % Initialize the game
 
@@ -152,6 +156,12 @@ target_radius(4,1) = 0.025;
 for i=1:vnum
     allVehicles{i}.reach(:,:,:,steps+1) = sqrt((g.xs{1} - target_pos(i,1)).^2 +...
         (g.xs{2} - target_pos(i,2)).^2) - target_radius(i,1);
+end
+
+% Original target sets of the vehicles
+for i=1:vnum
+    allVehicles{i}.target = sqrt((g.xs{1} - target_pos(i,1)).^2 +...
+        (g.xs{2} - target_pos(i,2)).^2) - 0.1;
 end
 
 % Plot the target sets of the vehicles
@@ -227,11 +237,6 @@ current_time = t_start;
 end_time = min(t_end, current_time + t_step);
 index = 1;
 
-% Original target sets of the vehicles
-for i=1:vnum
-    allVehicles{i}.target = sqrt((g.xs{1} - target_pos(i,1)).^2 +...
-        (g.xs{2} - target_pos(i,2)).^2) - 0.1;
-end
 
 while(current_time < t_end)
     
