@@ -9,25 +9,11 @@ tmax = vehicle.t_end;
 steps = int64(tmax/tstep);
 end_index = int64(init_index + steps-1);
 
-if(~isempty(obsVehicles)) % if there are any obstacles at all
-    vnum = size(obsVehicles,2);
-    obstacle = obsVehicles{1}.collisionmat(:,:,:,init_index:end_index+1);
-    for i=2:vnum
-        obstacle = shapeUnion(obstacle,obsVehicles{i}.collisionmat(:,:,:,init_index:end_index+1));
-    end
-else
-    obstacle = 1e6*ones(g.shape);
-    obstacle = repmat(obstacle, [ones(1,g.dim),steps+1]);
-end
-
-% Take the 2D projection of the above 3D obstacle, add the capture radius
-% and then extend it in the third dimension
-capture_radius = vehicle.capture_radius;
-obs_len = end_index+2-init_index;
-for i=1:obs_len
-    [g2D, data2D] = proj2D(g, obstacle(:,:,:,i), [0 0 1]);
-    dataout = addCRadius(g2D, data2D, capture_radius);
-    obstacle(:,:,1:end,i) = repmat(dataout, [1,1,g.shape(3)]);
+vnum = size(obsVehicles,2);
+obstacle = 1e6*ones(g.shape);
+for i=1:vnum
+    temp_obs = getCollisionObs(g, tinit, obsVehicles{i});
+    obstacle = shapeUnion(obstacle,temp_obs);
 end
 
 %---------------------------------------------------------------------------
@@ -58,12 +44,7 @@ accuracy = vehicle.reach_accuracy;
 mat_index = end_index+1;
 data = vehicle.reach(:,:,:,mat_index);
 data = min(data, vehicle.reach(:,:,:,end));
-data = max(data, -obstacle(:,:,:,mat_index-init_index+1));
-
-P = extractCostates(g, data);
-vehicle.optU(:,:,:,mat_index) = (P{3} >= 0) * (-vehicle.turnRate) + (P{3} < 0) * vehicle.turnRate;
-vehicle.optV(:,:,:,mat_index) = ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) >= 0) * (-vehicle.velocity)...
-    + ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) < 0) * vehicle.velocity;
+data = max(data, -obstacle);
 
 %---------------------------------------------------------------------------
 % % What level set should we view?
@@ -93,10 +74,7 @@ schemeData.grid = g;
 
 % The Hamiltonian and partial functions need problem parameters.
 schemeData.vnom = vehicle.v_nom;
-schemeData.velocity = vehicle.velocity;
-schemeData.turnRate = vehicle.turnRate;
-schemeData.disturbance = vehicle.disturbance_mag;
-
+schemeData.turnRate = vehicle.turnRate_nom;
 %---------------------------------------------------------------------------
 % Choose degree of dissipation.
 
@@ -168,7 +146,7 @@ end
 hold on;
 [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
 [~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-');
-[g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
+[g2D, data2D] = proj2D(g, obstacle, [0 0 1], vehicle.x(3,init_index));
 [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
 drawnow;
 hold off;
@@ -197,15 +175,14 @@ while(tMax - tNow > small * tMax)
     % Remove obstacle from the reachable set and store it
     mat_index = mat_index - 1;
     data = min(data, vehicle.reach(:,:,:,end));
-    data = max(data, -obstacle(:,:,:,mat_index-init_index+1));
-    vehicle.reach(:,:,:,mat_index) = data;
     
-    % Update optimal control
-    % Get gradients
-    P = extractCostates(g, data);
-    vehicle.optU(:,:,:,mat_index) = (P{3} >= 0) * (-vehicle.turnRate) + (P{3} < 0) * vehicle.turnRate;
-    vehicle.optV(:,:,:,mat_index) = ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) >= 0) * (-vehicle.velocity)...
-    + ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) < 0) * vehicle.velocity;
+    obstacle = 1e6*ones(g.shape);
+    for i=1:vnum
+        temp_obs = getCollisionObs(g, tNow, obsVehicles{i});
+        obstacle = shapeUnion(obstacle,temp_obs);
+    end
+    data = max(data, -obstacle);
+    vehicle.reach(:,:,:,mat_index) = data;
     
     % Start plotting
     figure(vehicle.mast_fig);
@@ -222,7 +199,7 @@ while(tMax - tNow > small * tMax)
     [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
     [~,h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-' );
     drawnow;
-    [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
+    [g2D, data2D] = proj2D(g, obstacle, [0 0 1], vehicle.x(3,init_index));
     [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
     drawnow;
     
@@ -299,12 +276,9 @@ function hamValue = RASHamFunc(t, data, deriv, schemeData)
 checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
-v = schemeData.velocity;
 vnom = schemeData.vnom;
-w = schemeData.turnRate;
-d1 = schemeData.disturbance(1);
-d2 = schemeData.disturbance(2);
-d3 = schemeData.disturbance(3);
+w = schemeData.turnRate_nom;
+
 
 % % Hamiltonian when velocity is not an input
 % hamValue = v*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) + v*deriv{2}.*sin(g.xs{3}) ...
@@ -316,11 +290,15 @@ d3 = schemeData.disturbance(3);
 %     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
 %     - w*abs(deriv{3}) + d3*abs(deriv{3});
 
+% % Hamiltonian with disturbance on circle
+% hamValue = vnom*deriv{1}.*cos(g.xs{3}) + ...
+%     vnom*deriv{2}.*sin(g.xs{3}) + d1 * sqrt(deriv{1}.^2 + deriv{2}.^2)...
+%     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
+%     - w*abs(deriv{3}) + d3*abs(deriv{3});
+
 % Hamiltonian with disturbance on circle
 hamValue = vnom*deriv{1}.*cos(g.xs{3}) + ...
-    vnom*deriv{2}.*sin(g.xs{3}) + d1 * sqrt(deriv{1}.^2 + deriv{2}.^2)...
-    - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
-    - w*abs(deriv{3}) + d3*abs(deriv{3});
+    vnom*deriv{2}.*sin(g.xs{3})  - w*abs(deriv{3});
 
 hamValue = -hamValue;
 
@@ -359,20 +337,16 @@ function alpha = RASPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
-v = schemeData.velocity;
 vnom = schemeData.vnom;
-w = schemeData.turnRate;
-d1 = schemeData.disturbance(1);
-d2 = schemeData.disturbance(2);
-d3 = schemeData.disturbance(3);
+w = schemeData.turnRate_nom;
 
 switch dim
     case 1
-        alpha = (v+vnom)*abs(cos(g.xs{3})) + d1;
+        alpha = vnom*abs(cos(g.xs{3}));
         
     case 2
-        alpha = (v+vnom)*abs(sin(g.xs{3})) + d2;
+        alpha = vnom*abs(sin(g.xs{3}));
         
     case 3
-        alpha = d3 + w;
+        alpha = w;
 end

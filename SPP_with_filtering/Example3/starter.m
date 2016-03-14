@@ -3,13 +3,13 @@
 clear all;
 close all;
 addpath ~/Documents/MATLAB/helperOC
+load RB_data
 
 % f1 = figure; % Figure with reachable set and obstacles
 
-
 %---------------------------------------------------------------------------
 % Grid of joint space
-Nx = 101;
+Nx = 151;
 
 % Create the computation grid.
 g.dim = 3;
@@ -17,7 +17,7 @@ g.min = [ -1; -1; 0];
 g.max = [ +1; +1; 2*pi];
 g.bdry = { @addGhostExtrapolate; @addGhostExtrapolate; @addGhostPeriodic};
 % Roughly equal dx in x and y (so different N).
-g.N = [ Nx; Nx; Nx];
+g.N = [ Nx; Nx; 73];
 % Need to trim max bound in \psi (since the BC are periodic in this dimension).
 g.max(3) = g.max(3) * (1 - 1 / g.N(3));
 g = processGrid(g);
@@ -25,7 +25,7 @@ g = processGrid(g);
 %---------------------------------------------------------------------------
 % Time parameters
 t_start = 0;
-t_end = 3.5;
+t_end = 7;
 t_step = 0.01;
 steps = int64((t_end - t_start)/t_step);
 
@@ -35,56 +35,26 @@ steps = int64((t_end - t_start)/t_step);
 
 % Integration parameters
 vehicle.reach_accuracy = 'low';
-vehicle.obs_accuracy = 'medium';
 vehicle.t_step = t_step; % can also be different for obstacle simulation
 vehicle.t_start = t_end; % Initialize to the end time
 vehicle.t_end = t_end;
-vehicle.capture_radius = 0.7*0.1;
+vehicle.capture_radius = 0.1;
+vehicle.bubble_radius = 0.075;
 
 % Other vehicle parameters
 vehicle.v_nom = 0.75;
 vehicle.velocity = 0.25;
-vehicle.turnRate = 1;
-
-% State uncertainty models: circular, ellipsoidal
-% vehicle.state_uncertainty = 'circular';
-% vehicle.state_uncertainty_axis = 0.4;
-
-vehicle.state_uncertainty = 'ellipsoid';
-vehicle.state_uncertainty_axis = [0.03, 0.03, 0.1]';
+vehicle.turnRate_nom = 0.6;
+vehicle.turnRate = 0.4;
 
 % Input uncertainty models: box
 vehicle.disrurbance_type = 'box';
 percent = 0.1; % (% of disturbance)
-vehicle.disturbance_mag = percent*[(vehicle.velocity + vehicle.v_nom), (vehicle.velocity + vehicle.v_nom), 2*vehicle.turnRate]'; %assuming symmetric lower and upper bounds;
-% 30% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
-% stops after a while)
-% 25% disturbance leads to a bubble radius of approximately 0.09 (Reachable set evolution
-% doesn't stop till 0.4 sec)
-% 22% disturbance leads to a bubble radius of approximately 0.08 (Reachable set evolution
-% doesn't stop till 0.4 sec)
-% 20% disturbance leads to a bubble radius of approximately 0.07 starting from 0.05 (Reachable set evolution
-% doesn't stop till 0.4 sec)
-
-
-% Define and initialize collisionmat matrix
-% This matrix contains the most conservative estimate of the vehicle
-% positions
-vehicle.collisionmat =  1e6*ones(g.shape);
-vehicle.collisionmat  = repmat(vehicle.collisionmat,  [ones(1,g.dim),steps+1]);
-vehicle.collisionmat(:,:,:,1) = -1*vehicle.collisionmat(:,:,:,1);
+vehicle.disturbance_mag = [0.1, 0.1, 0.2]'; %assuming symmetric lower and upper bounds;
 
 % Define and initialize reachable set matrix
 vehicle.reach = 1e6*ones(g.shape);
 vehicle.reach  = repmat(vehicle.reach,  [ones(1,g.dim),steps+1]);
-
-% Optimal control (turnrate) at each state
-vehicle.optU = zeros(g.shape);
-vehicle.optU  = repmat(vehicle.optU,  [ones(1,g.dim),steps]);
-
-% Optimal control (velocity) at each state
-vehicle.optV = zeros(g.shape);
-vehicle.optV  = repmat(vehicle.optV,  [ones(1,g.dim),steps]);
 
 % Actual input trajectory
 vehicle.u = zeros(1,steps);
@@ -95,6 +65,10 @@ vehicle.d = zeros(3,steps);
 
 % state trajectory (initialized to the initial state)
 vehicle.x = zeros(3,steps+1);
+
+% Store the nominal trajectory for each vehicle
+vehicle.x_nom = zeros(3,steps+1);
+vehicle.u_nom = zeros(3,steps+1);
 
 % Reach and Obstacle handles
 vehicle.reach_hand1 = {};
@@ -139,6 +113,12 @@ allVehicles{2}.x(:,1) = [  0.5, 0, pi]';
 allVehicles{3}.x(:,1) = [ -0.6, 0.6, 7*pi/4]';
 allVehicles{4}.x(:,1) = [  0.6, 0.6, 5*pi/4]';
 
+% Also initialize the nominal trajectory to the initial state
+allVehicles{1}.x_nom(:,1) = allVehicles{1}.x(:,1);
+allVehicles{2}.x_nom(:,1) = allVehicles{2}.x(:,1);
+allVehicles{3}.x_nom(:,1) = allVehicles{3}.x(:,1);
+allVehicles{4}.x_nom(:,1) = allVehicles{4}.x(:,1);
+
 % Plot the initial positions of the vehicles
 for i=1:vnum
     figure(allVehicles{i}.mast_fig);
@@ -164,10 +144,10 @@ target_pos(3,:) = [0.7,-0.7];
 target_pos(4,:) = [-0.7,-0.7];
 
 target_radius = zeros(vnum,1);
-target_radius(1,1) = 0.1;
-target_radius(2,1) = 0.1;
-target_radius(3,1) = 0.1;
-target_radius(4,1) = 0.1;
+target_radius(1,1) = 0.025;
+target_radius(2,1) = 0.025;
+target_radius(3,1) = 0.025;
+target_radius(4,1) = 0.025;
 
 for i=1:vnum
     allVehicles{i}.reach(:,:,:,steps+1) = sqrt((g.xs{1} - target_pos(i,1)).^2 +...
@@ -193,27 +173,16 @@ for i=1:vnum
     allVehicles{i}.tplot = 1.2;
 end
 
-
-
 % ---------------------------------------------------------------------------
 %% Compute the obstacle and reachable set shapes
 
 for i=1:vnum
     allVehicles{i} = ComputeReachSet(g, allVehicles{i}, allVehicles(1:i-1),'stop');
     if (i ~= vnum) % Do not update collision obstacles for the last vehicle
-        allVehicles{i} = ComputeCollisionObs(g, allVehicles{i}, 'stop');
-        % Fix collision matrix so that actual obstacles are towards the end
-        temp0 = 1e6*ones(g.shape);
-        temp0  = repmat(temp0,  [ones(1,g.dim),steps+1]);
-        % Extract the relevant collision matrix
-        num_steps = int64(allVehicles{i}.t_start/t_step +1);
-        start_index = int64((t_end-allVehicles{i}.t_start)/t_step);
-        temp0(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
-        allVehicles{i}.collisionmat = temp0;
-        clear('temp0');
+        allVehicles{i} = simulate_trajectory(g, allVehicles{i});
     end
     t_start = max(t_start, allVehicles{i}.t_start);
-    save('ex2', 'allVehicles', '-v7.3');
+    save('ex3', '-v7.3');
 end
 
 t_end = t_start;
@@ -228,34 +197,15 @@ for i=1:vnum
    % Adjust the start time
    allVehicles{i}.t_start = t_end - allVehicles{i}.t_start;
    
-   % Adjust the collision matrix
-   % Remove the collision matrix part that is not required
-   temp1 = 1e6*ones(g.shape);
-   temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
-   % Extract the relevant collision matrix
-   num_steps = int64((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
-   start_index = int64(allVehicles{i}.t_start/t_step);
-   temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,end-num_steps+1:end);
-   allVehicles{i}.collisionmat = temp1;
-   clear('temp1');
-%    temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,1:num_steps);
-%   allVehicles{i}.collisionmat(:,:,:,1:end-num_steps) = [];
-   
    % Adjust the reach matrix: simply delete the extra rows
    temp2 = 1e6*ones(g.shape);
    temp2  = repmat(temp2,  [ones(1,g.dim),steps+1]);
    % Extract the relevant reach matrix
+   num_steps = int64((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
+   start_index = int64(allVehicles{i}.t_start/t_step);
    temp2(:,:,:,start_index+1:end) = allVehicles{i}.reach(:,:,:,end-num_steps+1:end);
    allVehicles{i}.reach = temp2;
    clear('temp2');
-   
-   % Adjust the optU matrix
-   temp3 = zeros(g.shape);
-   temp3  = repmat(temp3,  [ones(1,g.dim),steps+1]);
-   % Extract the relevant optU matrix
-   temp3(:,:,:,start_index+1:end) = allVehicles{i}.optU(:,:,:,end-num_steps+1:end);
-   allVehicles{i}.optU = temp3;
-   clear('temp3');
    
    % Actual input trajectory
    allVehicles{i}.u = zeros(1,steps);
@@ -268,6 +218,8 @@ for i=1:vnum
    allVehicles{i}.x = zeros(3,steps+1);
    allVehicles{i}.x(:,1:start_index+1) = repmat(temp_x, 1, start_index+1);
    
+   % Fix the nominal trajectory as well
+   allVehicles{i}.x_nom = [zeros(3,start_index), allVehicles{i}.x_nom];
 end    
 
 % Process inputs for the vehicles starting at t=0 
@@ -275,22 +227,28 @@ current_time = t_start;
 end_time = min(t_end, current_time + t_step);
 index = 1;
 
+% Original target sets of the vehicles
+for i=1:vnum
+    allVehicles{i}.target = sqrt((g.xs{1} - target_pos(i,1)).^2 +...
+        (g.xs{2} - target_pos(i,2)).^2) - 0.1;
+end
+
 while(current_time < t_end)
     
     for i=1:vnum
         if(~allVehicles{i}.reach_flag && current_time >= allVehicles{i}.t_start)
-            
             % Process the input
             x_current = allVehicles{i}.x(:,index);
-            P = extractCostates(g,allVehicles{i}.reach(:,:,:,index));
-            p = calculateCostate(g,P,x_current);
-            u = - 1*allVehicles{i}.turnRate*sign(p(3));
-            v = -1*allVehicles{i}.velocity*(p(1)*cos(x_current(3)) + p(2)*sin(x_current(3)));
-            allVehicles{i}.u(:,index) = u;
-            allVehicles{i}.v(:,index) = v;
+            xref = allVehicles{i}.x_nom(:,index);
+            vrange = [-allVehicles{i}.velocity  allVehicles{i}.velocity] + allVehicles{i}.v_nom; 
+            wrange = [-allVehicles{i}.turnRate  allVehicles{i}.turnRate] + allVehicles{i}.turnRate_nom; 
+            ctrl = RBControl(x_current, xref, vrange, wRange, RB);
+            allVehicles{i}.u(:,index) = ctrl(2);
+            allVehicles{i}.v(:,index) = ctrl(1);
             
             % Applied disturbance
-            allVehicles{i}.d(:,index) = applyDisturbance(allVehicles{i}, p, 'worst');
+            temp = [];
+            allVehicles{i}.d(:,index) = applyDisturbance(allVehicles{i}, temp, 'random');
             d1 = allVehicles{i}.d(1,index);
             d2 = allVehicles{i}.d(2,index);
             d3 = allVehicles{i}.d(3,index);
@@ -301,7 +259,7 @@ while(current_time < t_end)
             location{3} = x_current(3);
             [location_index, ~] = getCellIndexes(g, location);
             [index1, index2, index3] = ind2sub(g.shape, location_index);
-            if (allVehicles{i}.reach(index1, index2, index3, end) <= 0)
+            if (allVehicles{i}.target(index1, index2, index3, end) <= 0)
                 x_next = x_current;
                 allVehicles{i}.final_TTR = min(allVehicles{i}.final_TTR, (index-1)*t_step);
                 allVehicles{i}.reach_flag = 1;
@@ -340,18 +298,18 @@ while(current_time < t_end)
     index = index+1;
 end
 
-% % Plot the trajectories
-% f2 = figure; % Figure with all the trajectories
-% figure(f2);
-% hold on,
-% for i=1:vnum
-%     % Plot the target sets of the vehicles
-%     [g2D, data2D] = proj2D(g, allVehicles{i}.reach(:,:,:,end), [0 0 1]);
-%     contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', allVehicles{i}.fig_color,'linewidth',2);
-%     % Plot the trajectories of the vehicles
-%     plot(allVehicles{i}.x(1,:), allVehicles{i}.x(2,:), 'marker', 'o', 'color', allVehicles{i}.fig_color,'markersize',5);
-%     axis equal;
-%     drawnow;
-% end
-% hold off;
- save('ex2', 'allVehicles', '-v7.3');
+% Plot the trajectories
+f2 = figure; % Figure with all the trajectories
+figure(f2);
+hold on,
+for i=1:vnum
+    % Plot the target sets of the vehicles
+    [g2D, data2D] = proj2D(g, allVehicles{i}.reach(:,:,:,end), [0 0 1]);
+    contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', allVehicles{i}.fig_color,'linewidth',2);
+    % Plot the trajectories of the vehicles
+    plot(allVehicles{i}.x(1,:), allVehicles{i}.x(2,:), 'marker', 'o', 'color', allVehicles{i}.fig_color,'markersize',5);
+    axis equal;
+    drawnow;
+end
+hold off;
+ save('ex3', '-v7.3');

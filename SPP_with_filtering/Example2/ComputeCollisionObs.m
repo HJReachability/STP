@@ -8,6 +8,7 @@ tmax = vehicle.t_end;
 tstep = vehicle.t_step;
 reach_index = int64(vehicle.t_start/tstep) + 1;
 mment = vehicle.x(:,init_index);
+reset_radius = vehicle.state_uncertainty_axis';
 
 % Initial state model--for numerical purposes
 % Ellipsoidal model
@@ -167,11 +168,11 @@ hold on;
 drawnow;
 hold off;
 
-fig_3D = figure;
-figure(fig_3D);
-h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
-camlight right;  camlight left;
-axis(g.axis);
+% fig_3D = figure;
+% figure(fig_3D);
+% h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
+% camlight right;  camlight left;
+% axis(g.axis);
 
 %---------------------------------------------------------------------------
 % Loop until tMax (subject to a little roundoff).
@@ -199,6 +200,23 @@ while(tMax - tNow > small * tMax)
     % Get back the correctly shaped data array
     data = reshape(y, g.shape);
     
+    % Check if collision set has get super small; if so, reset it!
+%     if(update_flag)
+%         data = check_obssize(g, data, vehicle);
+%         if (find(shapeIntersection(data,vehicle.reach(:,:,:,end))<=0))
+%             update_flag = 0;
+%         end
+%     end
+    
+%     if (abs(vehicle.t_start - tNow - tstep*30) <= tstep/3)
+%         reset_radius = reset_radius/2;
+%     end
+
+    data = check_obssize(g, data, reset_radius);
+%     data = shapeIntersection(data, vehicle.reach(:,:,:,end-reach_index + tindex));
+    data = max(data, -vehicle.reach(:,:,:,end)); 
+    
+    
     % Project obstacle on 2D and then extend in 3D
     [g2D, data2D] = proj2D(g, data, [0 0 1]);
     tindex = tindex + 1;
@@ -212,7 +230,7 @@ while(tMax - tNow > small * tMax)
     
     % Delete last visualization if necessary.
     delete(h2);
-    delete(h);
+%     delete(h);
     
     %Create new visualization.
     hold on;
@@ -220,8 +238,8 @@ while(tMax - tNow > small * tMax)
     drawnow;
     hold off;
     
-    figure(fig_3D);
-    h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
+%     figure(fig_3D);
+%     h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(0) ]);
 
     if (init_index == 1 && abs(tNow - vehicle.t_start) <= tstep/5 && strcmp(flag, 'stop'))
         break;

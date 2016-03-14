@@ -5,9 +5,9 @@
 % [~,h1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'r', 'linestyle', '--');
 
 % Vehicle 2
-index = 30;
+index = 0;
 figure,
-[g2D, data2D] = proj2D(g, allVehicles{4}.reach(:,:,:,index+1), [0 0 1], 5*pi/4);
+[g2D, data2D] = proj2D(g, allVehicles{2}.reach(:,:,:,index+1), [0 0 1], 75*pi/180);
 [~,h1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'r', 'linestyle', '--');
 hold on;
 [g2D, data2D] = proj2D(g, allVehicles{2}.cons_reach(:,:,:,index+1), [0 0 1], pi/2);
