@@ -6,7 +6,7 @@ Obstacles can be generated in many different ways depending on the assumptions m
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
-\subsection{Method 1: Centralized Controller}
+\subsection{Method 1: Centralized Controller \label{sec:cc}}
 If there is a centralized planner directly controlling each of the $N$ vehicles, the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. One possible control law that a higher priority vehicle $\veh_j$ can be assumed to be using is the control law $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i}, which takes each vehicle to the target in the optimal way according to the value function $V_j(t, x_j)$.
 
 From the perspective of a lower priority vehicle $\veh_i$, a higher priority vehicle $\veh_j, j < i$ induces an time-varying obstacle that represent the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ given that $\veh_j$ is executing the feedback controller $u_j^*(t, x_j)$. Determining this obstacle involves first solving a forward reachability problem, which computes the forward reachable set of $\veh_j$ starting from its initial state $x_j(\edt)$ at initial time $\edt$, denoted $\frs_j(t)$ and defined as follows:

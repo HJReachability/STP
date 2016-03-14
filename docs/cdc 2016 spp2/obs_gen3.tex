@@ -1,5 +1,5 @@
 % !TEX root = SPP2.tex
-\subsection{Method 3: Robust Tracking of Nominal Trajectories}
+\subsection{Method 3: Robust Tracking of Nominal Trajectories \label{sec:rtt}}
 %A general issue with the above two methods can be the large size of the generated obstacles due to the uncertainty on other vehicles' motion. In order to reduce this uncertainty,
 % This approach requires a moderate amount of information sharing between vehicles: higher-priority vehicles need to declare their nominal trajectory, together with an uncertainty region, to all vehicles with lower priority. Lower-priority vehicles will then use these nominal trajectories ``expanded" by the uncertainty regions as time-varying obstacles.
 \MCnote{We will have a dedicated section to compare the methods}A third way of computing induced obstacles is to have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can guarantee that it will track a time trajectory with a bounded error at all times, then this can be used to limit the size of the resulting time-varying obstacle. To define each vehicle's uncertainty set, we need to solve a robust trajectory tracking problem.
