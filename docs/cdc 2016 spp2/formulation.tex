@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $N$ vehicles whose joint dynamics described by the time-varying ordinary differential equation
+Consider $N$ vehicles whose joint dynamics described by the time-varying ordinary differential equation (ODE)
 
 \begin{equation}
 \label{eq:dyn}
@@ -12,24 +12,22 @@ i = 1,\ldots, N
 \end{aligned}
 \end{equation}
 
-where $x_i \in \R^{n_i}$ is the state of the $i$th vehicle, $u_i$ is the control and of the $i$th vehicle, and $d_i$ is the disturbance experienced by the $i$th vehicle. In general, the physical meaning of $x_i$ and the dynamics $f_i$ depend on the specific dynamic model of vehicle $i$, and need not be the same across the different vehicles. 
+\noindent where $x_i \in \R^{n_i}$ is the state of the $i$th vehicle, $u_i$ is the control of the $i$th vehicle, and $d_i$ is the disturbance experienced by the $i$th vehicle. In general, the physical meaning of $x_i$ and the dynamics $f_i$ depend on the specific dynamic model of vehicle $i$, and need not be the same across the different vehicles. 
 
 We assume that the control signals $u_i(\cdot), d_i(\cdot)$ are drawn from the set of measurable functions\footnote{
-A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}. Furthermore, we assume $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Therefore given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique, continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
+A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}, and $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
 
-For convenience, let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; note that $\pos_i$ in most practical cases would be a subset of the state $x_i$. Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$ at some scheduled time of arrival $\sta$. On its way to the target set $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. For simplicity, in this paper we define $\dz_{ij}(t)$ as
+For convenience, let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; note that $\pos_i$ in most practical cases would be a subset of the state $x_i$. Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$, at some scheduled time of arrival $\sta$. On its way to $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. In this paper, we define $\dz_{ij}(t)$ as
 
 \begin{equation}
-\dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\| \le \cradius \},
+\dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \},
 \end{equation}
 
-\noindent the interpretation of which is that a vehicle is another vehicle's danger zone if the two vehicles are within a distance of $\cradius$ apart \textcolor{blue}{(we consider Euclidean distances throughout the paper)}.
+\noindent the interpretation of which is that a vehicle is another vehicle's danger zone if the two vehicles are within a Euclidean distance of $\cradius$ apart \textcolor{blue}.
 
-The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity of the state space with the problem dimension, an optimal solution is computationally intractable even for a moderate number of vehicles (typically $N>3$).
+The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$.
 
-In this paper we impose a mild structure to the general problem in order to trade complexity for optimality: we assign a priority to each vehicle. \JFFnote{Careful! Not a contribution of this paper, should rephrase.} While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Such a joint path planning scheme makes intuitive and practical sense\JFFnote{weak argument (+ completely unjustified), should cite NASA and/or other work}, and the priorities can be assigned, for example, on a first-come-first-served basis.
-
-Recently, \cite{Chen15} described how such a sequential path planning algorithm can be implemented using a HJ reachability approach without taking into account the presence of disturbances $d_i$ and limited information available to each vehicle. In this paper, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
+In this paper, we assume assigned priorities of the vehicles as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
 
 \begin{enumerate}
 \item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite the disturbances it experiences?
