@@ -2,15 +2,14 @@
 \subsection{Method 3: Robust Tracking of Nominal Trajectories \label{sec:rtt}}
 %A general issue with the above two methods can be the large size of the generated obstacles due to the uncertainty on other vehicles' motion. In order to reduce this uncertainty,
 % This approach requires a moderate amount of information sharing between vehicles: higher-priority vehicles need to declare their nominal trajectory, together with an uncertainty region, to all vehicles with lower priority. Lower-priority vehicles will then use these nominal trajectories ``expanded" by the uncertainty regions as time-varying obstacles.
-\MCnote{We will have a dedicated section to compare the methods}A third way of computing induced obstacles is to have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can guarantee that it will track a time trajectory with a bounded error at all times, then this can be used to limit the size of the resulting time-varying obstacle. To define each vehicle's uncertainty set, we need to solve a robust trajectory tracking problem.
-The planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbance. Therefore, in this obstacle generation method, planning is done for a reduced control set $\cset^p\subset\cset$ according to Section \ref{sec:solution} .
+A third way of computing induced obstacles is to have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacle. The planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbance. Therefore, in this obstacle generation method, planning is done for a reduced control set $\cset^p\subset\cset$ according to Section \ref{sec:solution} .
 
 %The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances and render the error dynamics asymptotically stable.
 
-In this context, robust nonlinear control techniques such as Lyapunov-based methods
-\cite{Majumdar2013}\JFFnote{add citation}{ }%http://link.springer.com/10.1007/978-3-642-36279-8_33
-can be used to compute robust ``funnels" around a concrete nominal trajectory.
-Here, we instead propose a reachability-based method to compute a trajectory-independent uncertainty set. In particular, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be thought of as a virtual evader vehicle that is optimally attempting to violate our desired bound on the tracking error. We therefore can model trajectory tracking as the pursuit-evasion game in which the controller is playing against the coordinated worst-case action of the reference and the disturbance. In general, this game will be governed by dynamics of the form:
+%In this context, robust nonlinear control techniques such as Lyapunov-based methods
+% \cite{Majumdar2013}\JFFnote{add citation}{ }%http://link.springer.com/10.1007/978-3-642-36279-8_33
+%can be used to compute robust ``funnels" around a concrete nominal trajectory.
+Determining the tracking error bound can be cast as a reachability problem, and can be computed independent of the nominal trajectory. In this context, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be thought of as a virtual evader vehicle that is optimally attempting to enlarge the tracking error. We therefore can model trajectory tracking as the pursuit-evasion game in which the controller is playing against the coordinated worst-case action of the reference and the disturbance. In general, this game will be governed by dynamics of the form:
 
 \begin{equation}
 \label{eq:jdyn} % Joint dynamics
@@ -22,18 +21,21 @@ u &\in \cset, u_r\in\cset^p, d \in \dset, \\
 \end{aligned}
 \end{equation}
 
-Given an open bound $\errorbound$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ to be set of joint configurations where this bound is violated: $\targetset = \{(x,x_r): x-x_r\not\in\errorbound\}$. In this case the backwards reachable set $\brs(t)$ is defined as:
+Given an open bound $\errorbound$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ for this reachability problem to be set of joint configurations where this bound is violated: $\targetset = \{(x,x_r): x-x_r\not\in\errorbound\}$. In this case, the backwards reachable set $\brs(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds. 
 
-\begin{equation}
-\label{eq:brs}
-\begin{aligned}
-&\brs(t) = \{(x,x_r):  \exists \lambda[u] \in \Lambda, \forall u \in \cfset, \eqref{eq:jdyn} \\
-&\Rightarrow \exists s \in [t, T], (x(s),x_r(s)) \in \targetset(s)\},
-\end{aligned}
-\end{equation}
+%In this case the backwards reachable set $\brs(t)$ is defined as:
 
-where $\Lambda$ is the set of nonanticipative strategies from $\cfset$ to $\cfset^p\times \dfset$.
-With analogous definitions as those in Section \ref{sec:solution}, this set can be characterized as the negative region of the solution $V$ to a simpler case of \eqref{eq:HJIVI}:
+%\begin{equation}
+%\label{eq:brs}
+%\begin{aligned}
+%&\brs(t) = \{(x,x_r):  \exists \lambda[u] \in \Lambda, \forall u \in \cfset, \eqref{eq:jdyn} \\
+%&\Rightarrow \exists s \in [t, T], (x(s),x_r(s)) \in \targetset(s)\},
+%\end{aligned}
+%\end{equation}
+
+% where $\Lambda$ is the set of nonanticipative strategies from $\cfset$ to $\cfset^p\times \dfset$.
+
+With analogous definitions as those in Section \ref{sec:solution}, $\brs(t)$ can be characterized as the negative region of the solution $V$ to a simpler case of \eqref{eq:HJIVI}:
 
 \begin{equation}
 \label{eq:HJIVI_track}
@@ -50,7 +52,19 @@ With analogous definitions as those in Section \ref{sec:solution}, this set can 
 \tracklaw(x,x_r) \in \arg\max_{u \in \cset} \big[\min_{u_r \in\cset^p} \min_{d \in \dset} D_z V(0) \cdot f_z(t,z,u,u_r,d)\big].
 \end{equation}
 
-For a practically relevant class of vehicle dynamics, the error dynamics is independent of the absolute state. In such cases, computation of the discriminating kernel can be done in the state space of the error tracking error $e$ to produce a feedback control law that also only depends on $e$, which significantly reduces the problem dimensionality and therefore computation complexity.
+In cases where the error dynamics is independent of the absolute state, the discriminating kernel can be computed in the state space of the tracking error $e$ to produce a feedback control law that also only depends on $e$, which significantly reduces the problem dimensionality.
+
+For simplicity, we will conservatively approximate $\Omega$ with a minimum-radius disk around the point representing zero tracking error: $\Omega \subseteq \bar\Omega(x_i) = \{x_i: \|p_i - p_{r, i}\| \le r\}$. Given $\bar\Omega$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\bar\Omega \subseteq \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be the set of points inside $\targetset_i$ with a clearance of $r$: $\{x_i: \Omega(x_i) \subseteq \targetset_i\}$.
+
+Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\bar\Omega_i(x_i)$, we must make sure at any given time, the approximate discriminating kernels do not intersect. This can be done by choosing the induced obstacle to be as follows:
+
+\begin{equation}
+\begin{aligned}
+\ioset_i^j(t) &= \{x_i: \bar\Omega_i(x_i) \cap \bar\Omega_j(x_j(t)) \neq \emptyset\} \\
+& = \{x_i: \dist(x_i, x_j(t)) \le 2r \}
+\end{aligned}
+\end{equation}
+
 %\begin{equation}
 %\label{eq:edyn} % Error dynamics
 %\begin{aligned}
