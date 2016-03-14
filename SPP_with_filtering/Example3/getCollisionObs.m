@@ -14,7 +14,7 @@ tinit = vehicle.t_start;
 tstep = vehicle.t_step;
 ip = int64((tinit- tau)/tstep) + 1; 
 
-if(tau >= vehicle.obs_stoptime && tau <= vehicle.t_start)
+if(tau >= (vehicle.t_start - vehicle.obs_stoptime) && tau <= vehicle.t_start)
     collisionObs = sqrt((g.xs{1} - vehicle.x_nom(1,ip)).^2 + (g.xs{2} - vehicle.x_nom(2,ip)).^2) - captureRadius;
 else
     collisionObs = 1e6*ones(g.shape);

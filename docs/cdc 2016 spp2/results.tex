@@ -9,11 +9,11 @@ We demonstrate our proposed methods using a four-vehicle example. Each vehicle h
 \dot{\pos}_{y,i} &= v_i \sin \theta_i + d_{y,i}\\
 \dot{\theta}_i &= \omega_i + d_{\theta,i}, \\
 \underline{v} & \le v_i \le \bar{v}, |\omega_i| \le \bar{\omega},\\
-|d_{x,i}| & \le \bar{d_{x}}, |d_{y,i}| \le \bar{d_{y}}, |d_{\theta,i}| \le \bar{d_{\theta}}
+\|(d_{x,i}, & d_{y,i}) \|_2 \le d_{r}, |d_{\theta,i}| \le \bar{d_{\theta}}
 \end{aligned}
 \end{equation}
 
-\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbance in the three states. Disturbance in each state is bounded from top and below. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The disturbance bounds are chosen as $\bar{d_{x}} = \bar{d_{y}} = 0.1$ and $\bar{d_{\theta}} = 0.2$, which correspond to a 10\% disturbance. The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
+\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbance in the three states. Disturbance in each state is bounded from top and below. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The disturbance bounds are chosen as $d_{r} = 0.1$ and $\bar{d_{\theta}} = 0.2$, which correspond to a 10\% disturbance in position and a 20\% disturbance in heading. The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
 
 \begin{equation}
 \omega_i(t) = -\bar{\omega}_i \frac{D_{\theta_i}V_i(\bm{x}_i,t)}{\left| D_{\theta_i}V_i(\bm{x}_i,t) \right|},
@@ -110,21 +110,15 @@ Here, the red vehicle has the highest priority, and takes a quick path to reach 
 (\textbf{mention the $t_i^{LDT}$ numbers})
 
 \section{Comparison of Proposed Methods}
+This section briefly discusses the relative advantages and limitations of the proposed obstacle generation methods. Each method basically makes a trade-off between optimality (in terms of LTDs) and flexibility in control and disturbance rejection.
 
 \subsection{Centralized Controller}
-\begin{itemize}
-\item Advantages: Optimal control at all times, so smallest possible TTR for each vehicle for a given priority order.
-\item Limitations: Need a centralized planner to ensure that the optimal control is being applied at all times; no flexibility in control.
-\end{itemize}
+Given an order of priority, the vehicles will have the highest possible LTDs in this method for the scenario where a higher priority vehicle maximizes it's LTD as much as it can because every vehicle is taking the optimal action at all times. 
+%However, it is important to note that since a higher priority vehicle only minimizes  LTDs can be much higher for lower priority vehicles in some cases, compared to the methods which jointly optimize the LTDs. 
+A limitation of this method is that a centralized planner and coordinator is required to ensure that the optimal control is being applied by all vehicles at all times, and hence safety.
 
 \subsection{Least Restrictive Control}
-\begin{itemize}
-\item Advantages: Greater control flexibility (as long as the vehicle operates within the pre-designated safety bounds)
-\item Limitations: Big obstacles so TTR increases significantly
-\end{itemize}
+This method gives more control flexibility to the higher priority vehicles, as long as the control doesn't push the vehicle out of it's reach-avoid region. This flexibility, however, comes at the price of having a larger obstacle, and hence a lower LTD, for the lower priority vehicles.  
 
 \subsection{Robust Trajectory Tracking}
-\begin{itemize}
-\item Advantages: Practical (easy to implement); greater control flexibility (as long as the vehicle operates within the pre-designated bubble); good trade-off between TTR and "altruism" (more suitable for scenarios where there is no strong sense of priority).
-\item Limitations: limited to the system which can be transformed into relative dynamics, TTR can increase  significantly, currently heuristics are used to find the appropriate bubble size.
-\end{itemize}
+Since the obstacle size is constant over time in this method, it's easier to implement from a practical standpoint. This method aims at striking a balance between LTDs across vehicles. In particular, the LTD of a higher priority vehicle can be lower in this method, compared to Method-1 for example, to have a relatively higher LTD for the lower priority vehicle, making this method particularly suitable for the scenarios where there is no strong sense of priority among vehicles. This method, however, is limited to the system which can be transformed into relative dynamics.
