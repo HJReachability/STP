@@ -9,15 +9,11 @@ tmax = vehicle.t_end;
 steps = int64(tmax/tstep);
 end_index = int64(init_index + steps-1);
 
-if(~isempty(obsVehicles)) % if there are any obstacles at all
-    vnum = size(obsVehicles,2);
-    obstacle = obsVehicles{1}.collisionmat(:,:,:,init_index:end_index+1);
-    for i=2:vnum
-        obstacle = shapeUnion(obstacle,obsVehicles{i}.collisionmat(:,:,:,init_index:end_index+1));
-    end
-else
-    obstacle = 1e6*ones(g.shape);
-    obstacle = repmat(obstacle, [ones(1,g.dim),steps+1]);
+vnum = size(obsVehicles,2);
+obstacle = 1e6*ones(g.shape);
+for i=1:vnum
+    temp_obs = getCollisionObs(g, tinit, obsVehicles{i});
+    obstacle = shapeUnion(obstacle,temp_obs);
 end
 
 %---------------------------------------------------------------------------
@@ -48,7 +44,7 @@ accuracy = vehicle.reach_accuracy;
 mat_index = end_index+1;
 data = vehicle.reach(:,:,:,mat_index);
 data = min(data, vehicle.reach(:,:,:,end));
-data = max(data, -obstacle(:,:,:,mat_index-init_index+1));
+data = max(data, -obstacle);
 
 %---------------------------------------------------------------------------
 % % What level set should we view?
@@ -151,7 +147,7 @@ end
 hold on;
 [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
 [~, h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-');
-[g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
+[g2D, data2D] = proj2D(g, obstacle, [0 0 1], vehicle.x(3,init_index));
 [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
 drawnow;
 hold off;
@@ -180,7 +176,13 @@ while(tMax - tNow > small * tMax)
     % Remove obstacle from the reachable set and store it
     mat_index = mat_index - 1;
     data = min(data, vehicle.reach(:,:,:,end));
-    data = max(data,-obstacle(:,:,:,mat_index-init_index+1));
+    
+    obstacle = 1e6*ones(g.shape);
+    for i=1:vnum
+        temp_obs = getCollisionObs(g, tNow, obsVehicles{i});
+        obstacle = shapeUnion(obstacle,temp_obs);
+    end
+    data = max(data, -obstacle);
     vehicle.reach(:,:,:,mat_index) = data;
     
     % Start plotting
@@ -198,7 +200,7 @@ while(tMax - tNow > small * tMax)
     [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
     [~,h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-' );
     drawnow;
-    [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1], vehicle.x(3,init_index));
+    [g2D, data2D] = proj2D(g, obstacle, [0 0 1], vehicle.x(3,init_index));
     [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle',':');
     drawnow;
     
@@ -207,7 +209,7 @@ while(tMax - tNow > small * tMax)
         [g2D, data2D] = proj2D(g, data, [0 0 1], vehicle.x(3,init_index));
         [~,vehicle.reach_hand1] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle', '--');
         drawnow;
-        [g2D, data2D] = proj2D(g, obstacle(:,:,:,mat_index-init_index+1), [0 0 1]);
+        [g2D, data2D] = proj2D(g, obstacle, [0 0 1]);
         [~,vehicle.obs_hand] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'c', 'linestyle','-.');
         drawnow;
     end

@@ -9,6 +9,7 @@ tstep = vehicle.t_step;
 reach_index = int64(vehicle.t_start/tstep) + 1;
 mment = vehicle.x(:,init_index);
 reset_radius = vehicle.state_uncertainty_axis';
+update_flag = 1;
 
 % Initial state model--for numerical purposes
 % Ellipsoidal model
@@ -60,11 +61,11 @@ data = vehicle.collisionmat(:,:,:,init_index);
 vehicle.collisionmat(:,:,1:end,init_index) = repmat(data2D, [1,1,g.shape(3)]);
 
 %---------------------------------------------------------------------------
-% What level set should we view?
-level = 0;
-
-% Visualize the 3D reachable set.
-displayType = 'surface';
+% % What level set should we view?
+% level = 0;
+% 
+% % Visualize the 3D reachable set.
+% displayType = 'surface';
 %
 % % Pause after each plot?
 % pauseAfterPlot = 0;
@@ -201,18 +202,18 @@ while(tMax - tNow > small * tMax)
     data = reshape(y, g.shape);
     
     % Check if collision set has get super small; if so, reset it!
-%     if(update_flag)
-%         data = check_obssize(g, data, vehicle);
-%         if (find(shapeIntersection(data,vehicle.reach(:,:,:,end))<=0))
-%             update_flag = 0;
-%         end
-%     end
+    if(update_flag)
+        data = check_obssize(g, data, reset_radius);
+        if (find(shapeIntersection(data,vehicle.reach(:,:,:,end))<=0))
+            update_flag = 0;
+        end
+    end
     
 %     if (abs(vehicle.t_start - tNow - tstep*30) <= tstep/3)
 %         reset_radius = reset_radius/2;
 %     end
 
-    data = check_obssize(g, data, reset_radius);
+%     data = check_obssize(g, data, reset_radius);
 %     data = shapeIntersection(data, vehicle.reach(:,:,:,end-reach_index + tindex));
     data = max(data, -vehicle.reach(:,:,:,end)); 
     

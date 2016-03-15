@@ -202,17 +202,6 @@ for i=1:vnum
    % Adjust the start time
    allVehicles{i}.t_start = t_end - allVehicles{i}.t_start;
 
-   % Adjust the collision matrix
-   % Remove the collision matrix part that is not required
-   temp1 = 1e6*ones(g.shape);
-   temp1  = repmat(temp1,  [ones(1,g.dim),steps+1]);
-   % Extract the relevant collision matrix
-   num_steps = int64((allVehicles{i}.t_end - allVehicles{i}.t_start)/t_step +1);
-   start_index = int64(allVehicles{i}.t_start/t_step);
-   temp1(:,:,:,start_index+1:end) = allVehicles{i}.collisionmat(:,:,:,end-num_steps+1:end);
-   allVehicles{i}.collisionmat = temp1;
-   clear('temp1');
-   
    % Adjust the reach matrix: simply delete the extra rows
    temp2 = 1e6*ones(g.shape);
    temp2  = repmat(temp2,  [ones(1,g.dim),steps+1]);
@@ -235,9 +224,7 @@ for i=1:vnum
    allVehicles{i}.x(:,1:start_index+1) = repmat(temp_x, 1, start_index+1);
 
    % Fix the nominal trajectory as well
-   temp_x = allVehicles{i}.x_nom;
-   allVehicles{i}.x_nom = zeros(3,steps+1);
-   allVehicles{i}.x_nom = [zeros(3,start_index), allVehicles{i}.x_nom(:,1:];
+   allVehicles{i}.x_nom = [zeros(3,start_index), allVehicles{i}.x_nom];
 end
 
 
