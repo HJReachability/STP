@@ -4,8 +4,8 @@ Fig. \ref{fig:lrc_traj} shows the simulated trajectories in the situation where 
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{"fig/lrc_traj"}
-  \caption{Simulated trajectories in the least restrictive control method. All vehicles start moving before vehicle $\veh_1$ becuase the large obstacle sizes in this method makes it optimal to wait until higher priority vehicles pass by than to move around the vehicle, or to reach the destination before higher priority vehicles start moving, and hence a smaller LDT. }
+  \includegraphics[width=0.45\textwidth]{"fig/lrc_traj"}
+  \caption{Simulated trajectories in the least restrictive control method. All vehicles start moving before $\veh_1$ because the large obstacles make it optimal to wait until higher priority vehicles pass by, leading to a smaller LDT. }
   \label{fig:lrc_traj}
 \end{figure}
 
@@ -13,9 +13,9 @@ The red vehicle has the highest priority, and takes a quick path to reach its ta
 
 From the green vehicle's perspective, the large obstacles induced by the red and blue vehicles are shown in Fig. \ref{fig:lrc_rs3} as the black boundary. As the BRS (green) evolves over time, its growth gets inhibited by the large obstacle for a long time, from $t=-0.89$ to $t=-1.39$. Eventually, the boundary of the BRS reaches the initial state of the green vehicle at $t = \ldt_i = -2.66$.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=0.5\textwidth]{"fig/lrc_rs3"}
-  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the least restrictive control method. LDT for vehicle $\veh_3$ is significantly lower than that in Method-1 (-1.96 vs. -2.68), reflecting the impact of relatively bigger obstacles induced by higher priority vehicles. }
+  \caption{Evolution of the BRS for $\veh_3$ in the least restrictive control method. LDT for vehicle $\veh_3$ is significantly lower than that in Method 1 (-1.96 vs. -2.68), reflecting the impact of bigger obstacles induced by higher priority vehicles. }
   \label{fig:lrc_rs3}
 \end{figure}

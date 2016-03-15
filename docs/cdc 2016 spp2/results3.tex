@@ -6,16 +6,16 @@ Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where ea
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{"fig/rtt_traj"}
+  \includegraphics[width=0.45\textwidth]{"fig/rtt_traj"}
   \caption{Simulated trajectories for the robust trajectory tracking method.}
   \label{fig:rtt_traj}
 \end{figure}
 
 $\ldt_i$ numbers for the four vehicles in this case are $-1.63, -3.16, -3.63$ and $-2.49$ respectively. Note that LDT is lower for the highest priority vehicle, $\veh_1$, in this method compared to the other two methods, as higher priority vehicles give up on the LDT in this method (by tracking a pre-defined trajectory and declaring a fixed obstacle size) in order to increase the LDT of lower priority vehicles, which is also evident from the LDT of vehicle $\veh_4$; however, since only a part of the control authority is used to compute the nominal trajectory to be tracked (and with a smaller target set, see Figure \ref{fig:rtt_rs3}), the net LDT might increase or decrease compared to the other methods depending on the specific configuration of the problem. In this example, LDT increases for vehicle $\veh_4$ and decreases for vehicles $\veh_2$ and $\veh_3$ compared to the other methods.     
 
-\begin{figure}
+\begin{figure}[h]
   \centering
-  \includegraphics[width=0.5\textwidth]{"fig/rtt_rs3"}
+  \includegraphics[width=0.45\textwidth]{"fig/rtt_rs3"}
   \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the robust trajectory tracking method. As the backwards reachable set grows in time, one can see that the induced obstacles carve out a channel. In particular, the obsatcles at $t =-0.63$ and $t=-1.83$ are induced by vehicle $\veh_1$ and at $t =-2.63$ by vehicle $\veh_1$. Also, note that a smaller target set is used to compute the backward reachable set to ensure that the whole bubble reaches the target set by $t=0$, as the vehicle can be anywhere within the bubble.}
   \label{fig:rtt_rs3}
 \end{figure}

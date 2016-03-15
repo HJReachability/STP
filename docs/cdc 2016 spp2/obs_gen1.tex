@@ -6,6 +6,8 @@ Obstacles can be generated in many different ways depending on the assumptions m
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
+In general, the different methods of obstacle generation can be done in a single path planning problem, since different control strategies can be assumed for each vehicle indepedently. This means that $\ioset_i^j(t)$ can be computed using a different method for each $j$. For example, a more predictable vehicle may induce obstacles under the stronger assumptions in Section \ref{sec:cc}, while a vehicle that requires more control freedom may induce obstacles under the weaker assumptions in Section \ref{sec:lrc}.
+
 \subsection{Method 1: Centralized Controller \label{sec:cc}}
 In this obstacle generation method, the induced obstacle for a vehicle $\veh_j$ is computed assuming that $\veh_j$ is applying the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i}, which takes $\veh_j$ to the target in the optimal way according to the value function $V_j(t, x_j)$. If there is a centralized planner directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. 
 
