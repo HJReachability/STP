@@ -1,15 +1,13 @@
 % !TEX root = SPP2.tex
 \section{Solution via double-obstacle HJI VI and SPP\label{sec:solution}}
 \subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-Our solution method takes advantage of the double-obstacle HJ approach \cite{Fisac15}, in which one computes the reachable set $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to the following ODE:
+Our solution method takes advantage of the double-obstacle HJ approach \cite{Fisac15}, in which one computes the reachable set $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to
 
 \begin{equation}
 \label{eq:fdyn} % Full dynamics
 \begin{aligned}
-\dot{z} &= f(t, z, u, d) \\
-z(0) &= z_0 \\
-u &\in \cset, d \in \dset \\
-&t \in [0, T]
+\dot{z} &= f(t, z, u, d), \quad t \in [0, T] \\
+z(0) &= z_0, \quad u \in \cset, d \in \dset
 \end{aligned}
 \end{equation}
 
