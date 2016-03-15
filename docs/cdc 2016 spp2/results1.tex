@@ -45,29 +45,37 @@ The initial states of the vehicles are given as follows:
 \targetset_i = \{x_i \in \R^3: \|p_i - c_i\| \le r\}
 \end{equation}
 
-\noindent For the example shown, we chose $c_1 = (0.7, 0.2), c_2 = (-0.7, 0.2), c_3 = (0.7, -0.7), c_4 = (-0.7, -0.7)$ and $r = 0.1$. The setup of the this examples is shown in Figure (\textbf{add figure number here}).
+\noindent For the example shown, we chose $c_1 = (0.7, 0.2), c_2 = (-0.7, 0.2), c_3 = (0.7, -0.7), c_4 = (-0.7, -0.7)$ and $r = 0.1$. The setup of the this examples is shown in Figure \ref{fig:init_setup}.
 
-Since the joint state space of this system is intractable for analysis using the single-obstacle HJI VI, we repeatedly solve the double-obstacle HJI VI (\ref{eq:HJIVI}) to compute the reach-avoid sets from the targets $\targetset_i$ for vehicles $1,2,3,4$, in that order, with moving obstacles induced by vehicles $j=1,\ldots,i-1$. We will also obtain $t_i^{LDT},i=1,2,3,4$, latest departure time for each vehicle in order to reach $\targetset_i$ by a scheduled time of arrival, STA, assumed to be $0$ without loss of generality (\textbf{show figures in negative time to be consistent with this notation}). Note that even though the STA is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which STAs are diffeenet for vehicles.
+Since the joint state space of this system is intractable for analysis using the single-obstacle HJI VI, we repeatedly solve the double-obstacle HJI VI (\ref{eq:HJIVI}) to compute the reachable sets from the targets $\targetset_i$ for vehicles $1,2,3,4$, in that order, with moving obstacles induced by vehicles $j=1,\ldots,i-1$. We will also obtain $t_i^{LDT},i=1,2,3,4$, latest departure time for each vehicle in order to reach $\targetset_i$ by a scheduled time of arrival, STA, assumed to be $0$ without loss of generality. Note that even though the STA is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which STAs are diffeenet for vehicles.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/init_setup"}
+  \caption{Initial configuration of the four-vehicle example.}
+  \label{fig:init_setup}
+\end{figure}
 
 For each of the three proposed methods of computing induced obstacles, we show each vehicle's entire trajectory (in colored dotted lines). On top of the trajectory plot, we overlay each vehicle's position (colored asterisks) and heading (arrows) at a point in time in which the vehicles are in relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time.
 
 \subsection{Centralized Controller}
 Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $u^*_i(t, x_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}.
 
-In this case, each vehicle do not appear to deviate very much from a straight line trajectory towards its target, since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=1.5$, the vehicles are close to each other but still outside each other's danger zones.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/cc_traj"}
+  \caption{Simulated trajectories in the centralized controller method. Since the higher priority vehicles induce relatively smaller obstacles in this case, vehicles do not deviate much from a straight line trajectory towards their respective targets.}
+  \label{fig:cc_traj}
+\end{figure}
 
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/cc_traj"}
-%  \caption{Simulated trajectories in the centralized controller method.}
-%  \label{fig:cc_traj}
-%\end{figure}
+In this case, each vehicle do not appear to deviate very much from a straight line trajectory towards its target, since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
 
-Fig. \ref{fig:cc_rs3} shows the evolution of the backwards reachable set for the third vehicle (blue boundaries), as well as the obstacles induced by the higher priority vehicles $\veh_1$ and $\veh_2$ (black boundaries). The locations of the induced obstacles at different time points the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remain relatively small. As the backwards reachable set grows in time, one can also see that the induced obstacles carve out a channel, which can be seen at $t = 0000$ (\textbf{mention the $t_i^{LDT}$ numbers}).
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/cc_rs3"}
+  \caption{Evolution of the reachable set and the obstacles induced by $\veh_1$ and $\veh_2$ for the third vehicle $\veh_3$ in the centralized controller method. Since the centralized controller ensures that every vehicle is applying the optimal at all time steps, the obstacle sizes are relatively smaller.}
+  \label{fig:cc_rs3}
+\end{figure}
 
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/cc_rs3"}
-%  \caption{Evolution of the backwards reachable set for the third vehicle $\veh_3$ in the centralized controller method}
-%  \label{fig:cc_rs3}
-%\end{figure}
+Fig. \ref{fig:cc_rs3} shows the evolution of the backwards reachable set for the third vehicle (blue boundaries), as well as the obstacles induced by the higher priority vehicles $\veh_1$ and $\veh_2$ (black boundaries). The locations of the induced obstacles at different time points are the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remain relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.96$ and $-2.04$, respectively. Numbers are very close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher priority vehicle are smaller and hence doesn't affect the LTDs of the lower priority vehicles significantly. 
+

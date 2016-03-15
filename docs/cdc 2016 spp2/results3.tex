@@ -1,36 +1,21 @@
 % !TEX root = SPP2.tex
-Fig. \ref{fig:lrc_traj} shows the simulated trajectories in the situation where each vehicle assumes that higher priority vehicles use the least restrictive control to reach their targets, as described in \ref{sec:lrc}. 
-
-Here, the red vehicle has the highest priority, and takes a quick path to reach its target. But as 
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/lrc_traj"}
-%  \caption{Simulated trajectories in the centralized controller method.}
-%  \label{fig:lrc_traj}
-%\end{figure}
-
-
-
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/lrc_rs3"}
-%  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the centralized controller method}
-%  \label{fig:lrc_rs3}
-%\end{figure}
-(\textbf{mention the $t_i^{LDT}$ numbers})
+Fig. \ref{fig:lrc_traj} shows the simulated trajectories in the situation where each vehicle assumes that higher priority vehicles use the least restrictive control to reach their targets, as described in \ref{sec:lrc}.
 
 \subsection{Robust Trajectory Tracking}
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/rtt_traj"}
-%  \caption{Simulated trajectories in the centralized controller method.}
-%  \label{fig:lrc_traj}
-%\end{figure}
-%
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{"fig/rtt_rs3"}
-%  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the centralized controller method}
-%  \label{fig:rtt_rs3}
-%\end{figure}
-(\textbf{mention the $t_i^{LDT}$ numbers})
+Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where each vehicle tracks a pre-specified trajectory and is guaranteed to stay inside a bubble around the trajectory. Fig. \ref{fig:rtt_rs3} shows the evolution of BRS and induced obstacles for vehicle $\veh_3$. The obstacles induced by other vehicles inhibit the evolution of the backward reachable sets, carving out thin “channels,” which can be seen at $t = -2.63$, that separate the reachable set into different “islands”. One can see how these channels and islands form by examining the time evolution of the reach-avoid set, shown in the figure.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/rtt_traj"}
+  \caption{Simulated trajectories for the robust trajectory tracking method.}
+  \label{fig:rtt_traj}
+\end{figure}
+
+$\ldt_i$ numbers for the four vehicles in this case are $-1.63, -3.16, -3.63$ and $-2.49$ respectively. Note that LTD is lower for the highest priority vehicle, $\veh_1$, in this method compared to the other two methods, as higher priority vehicles avoid the "selfish" behavior in this method (by tracking a pre-defined trajectory and declaring a fixed obstacle size) in order to increase the LTD of lower priority vehicle, which is also evident from the LTD of vehicle $\veh_4$. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{"fig/rtt_rs3"}
+  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the robust trajectory tracking method. As the backwards reachable set grows in time, one can see that the induced obstacles carve out a channel. In particular, the obsatcles at $t =-0.63$ and $t=-1.83$ are induced by vehicle $\veh_1$ and at $t =-2.63$ by vehicle $\veh_1$.}
+  \label{fig:rtt_rs3}
+\end{figure}

@@ -56,9 +56,8 @@ vehicle.disturbance_mag = [0.1, 0.1, 0.2]'; %assuming symmetric lower and upper 
 vehicle.reach = 1e6*ones(g.shape);
 vehicle.reach  = repmat(vehicle.reach,  [ones(1,g.dim),steps+1]);
 
-% Define and Initialize the collision matrix
-vehicle.collisionmat = 1e6*ones(g.shape);
-vehicle.collisionmat  = repmat(vehicle.collisionmat,  [ones(1,g.dim),steps+1]);
+% Define and initialize collision matrix
+vehicle.collisonmat = 1e6*ones(3, steps+1);
 
 % Actual input trajectory
 vehicle.u = zeros(1,steps);

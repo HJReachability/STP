@@ -19,7 +19,7 @@ while(current_time < t_end)
     vehicle.u_nom(:,index) = u;
     
     % Store the collision matrix for the vehicle
-    vehicle.collisionmat(:,:,:,reach_index+index) = sqrt((g.xs{1} - x_current(1)).^2 + (g.xs{2} - x_current(2)).^2) - captureRadius;
+    vehicle.collisionmat(:,reach_index+index) = x_current;
     
     % Let's do some plotting to ensure everything looks okay
     figure(f),
@@ -27,8 +27,6 @@ while(current_time < t_end)
     plot(x_current(1), x_current(2), 'marker', 'o','markersize',5);
     [g2D, data2D] = proj2D(g, vehicle.reach(:,:,:,reach_index+index), [0 0 1], vehicle.x(3,1));
     [~,h2] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'm', 'linestyle','-' );
-    [g2D, data2D] = proj2D(g, vehicle.collisionmat(:,:,:,reach_index+index), [0 0 1], vehicle.x(3,1));
-    [~,h3] = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'color', 'r', 'linestyle','-' );
     drawnow;
     axis([-1 1 -1 1]);
     hold off;
@@ -61,7 +59,6 @@ while(current_time < t_end)
 
     % delete function handle
     delete(h2);
-    delete(h3);
 end
 vehicle.obs_stoptime = t_end;
 clear('f');

@@ -34,7 +34,7 @@ steps = int64((t_end - t_start)/t_step);
 % There should be one vehicle object for each vehicle
 
 % Integration parameters
-vehicle.reach_accuracy = 'low';
+vehicle.reach_accuracy = 'medium';
 vehicle.obs_accuracy = 'medium';
 vehicle.t_step = t_step; % can also be different for obstacle simulation
 vehicle.t_start = t_end; % Initialize to the end time
@@ -213,7 +213,7 @@ for i=1:vnum
         clear('temp0');
     end
     t_start = max(t_start, allVehicles{i}.t_start);
-    save('ex2', 'allVehicles', '-v7.3');
+    save('ex2',  '-v7.3');
 end
 
 t_end = t_start;
@@ -354,4 +354,4 @@ end
 %     drawnow;
 % end
 % hold off;
- save('ex2', 'allVehicles', '-v7.3');
+ save('ex2',  '-v7.3');
