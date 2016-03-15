@@ -5,9 +5,8 @@ Consider $N$ vehicles whose joint dynamics described by the time-varying ordinar
 \begin{equation}
 \label{eq:dyn}
 \begin{aligned}
-\dot{x}_i &= f_i(t, x_i, u_i, d_i), \quad t \in [\edt, \sta] \\
-u_i &\in \cset_i \\
-d_i &\in \dset_i \\
+\dot{x}_i &= f_i(t, x_i, u_i, d_i), \quad t \in [\edt_i, \sta_i] \\
+u_i &\in \cset_i, d_i \in \dset_i \\
 i &= 1,\ldots, N
 \end{aligned}
 \end{equation}
@@ -17,13 +16,13 @@ i &= 1,\ldots, N
 We assume that the control signals $u_i(\cdot), d_i(\cdot)$ are drawn from the set of measurable functions\footnote{
 A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}, and $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
 
-For convenience, let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; note that $\pos_i$ in most practical cases would be a subset of the state $x_i$. Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$, at some scheduled time of arrival $\sta$. On its way to $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. In this paper, we define $\dz_{ij}(t)$ as
+For convenience, let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; note that $\pos_i$ in most practical cases would be a subset of the state $x_i$. Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$, at some scheduled time of arrival $\sta_i$. On its way to $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. In this paper, we define $\dz_{ij}(t)$ as
 
 \begin{equation}
 \dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \},
 \end{equation}
 
-\noindent the interpretation of which is that a vehicle is another vehicle's danger zone if the two vehicles are within a Euclidean distance of $\cradius$ apart \textcolor{blue}.
+\noindent the interpretation of which is that a vehicle is another vehicle's danger zone if the two vehicles are within a Euclidean distance of $\cradius$ apart.
 
 The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$.
 
