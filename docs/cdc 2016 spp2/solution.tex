@@ -89,3 +89,5 @@ From the reachable set, the optimal control for vehicle $\veh_i$ is then given a
 \label{eq:opt_ctrl_i}
 u_i^*(t, x_i) = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
 \end{equation}
+
+If $\veh_i$ uses the optimal control given by \eqref{eq:opt_ctrl_i}, then $\veh_i$ can be guaranteed to reach the target $\targetset_i$ as long as $\veh_i$ departs at the latest departure time $\ldt_i$, defined as $\inf_t V_i(t, x_i) \le 0$.
