@@ -14,15 +14,15 @@
 %\end{figure}
 
 \section{Comparison of Proposed Methods}
-This section briefly discusses the relative advantages and limitations of the proposed obstacle generation methods. Each method basically makes a trade-off between optimality (in terms of LDTs) and flexibility in control and disturbance rejection.
+This section briefly discusses the relative advantages and limitations of the proposed obstacle generation methods. Each method makes a trade-off between optimality (in terms of $\ldt_i$) and flexibility in control and disturbance rejection.
 
 \subsection{Centralized Controller}
-Given an order of priority, the vehicles will have the highest possible LDTs in this method for the scenario where a higher priority vehicle maximizes it's LDT as much as it can because every vehicle is taking the optimal action at all times. 
+Given an order of priority, the vehicles will have the highest possible $\ldt_i$ in this method for the scenario where a higher priority vehicle maximizes its $\ldt_i$ as much as it can because every vehicle is taking the optimal action at all times. 
 %However, it is important to note that since a higher priority vehicle only minimizes  LTDs can be much higher for lower priority vehicles in some cases, compared to the methods which jointly optimize the LTDs. 
 A limitation of this method is that a centralized planner and coordinator is required to ensure that the optimal control is being applied by all vehicles at all times, and hence safety.
 
 \subsection{Least Restrictive Control}
-This method gives more control flexibility to the higher priority vehicles, as long as the control doesn't push the vehicle out of it's reachable set. This flexibility, however, comes at the price of having a larger obstacle, and hence a lower LDT, for the lower priority vehicles.  
+This method gives more control flexibility to the higher priority vehicles, as long as the control doesn't push the vehicle out of it's reachable set. This flexibility, however, comes at the price of having a larger obstacle, and hence a lower $\ldt_i$, for the lower priority vehicles.  
 
 \subsection{Robust Trajectory Tracking}
-Since the obstacle size is constant over time in this method, it's easier to implement from a practical standpoint. This method aims at striking a balance between LDTs across vehicles. In particular, the LDT of a higher priority vehicle can be lower in this method, compared to Method-1 for example, to have a relatively higher LDT for the lower priority vehicle, making this method particularly suitable for the scenarios where there is no strong sense of priority among vehicles. This method, however, is computationally tractable only for the system which can be transformed into relative dynamics, as it otherwise requires doing computation in the joint state space of system dynamics and virtual vehicle dynamics as defined in \ref{eq:jdyn}. 
+Since the obstacle size is constant over time in this method, it's easier to implement from a practical standpoint. This method aims at striking a balance between $\ldt_i$ across vehicles. In particular, the $\ldt_i$ of a higher priority vehicle can be lower compared to the centralized controller method for example, so that a lower priority vehicle can achieve a higher $\ldt$, making this method particularly suitable for the scenarios where there is no strong sense of priority among vehicles. This method, however, is computationally tractable only for the system which can be transformed into relative dynamics, as it otherwise requires doing computation in the joint state space of system dynamics and virtual vehicle dynamics as defined in \eqref{eq:jdyn}. 

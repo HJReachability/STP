@@ -1,7 +1,7 @@
 % !TEX root = SPP2.tex
-\section{Solution via double-obstacle HJI VI and SPP\label{sec:solution}}
+\section{Solution via double-obstacle HJ VI and SPP\label{sec:solution}}
 \subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-Our solution method takes advantage of the double-obstacle HJ approach \cite{Fisac15}, in which one computes the reachable set $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to
+Our solution method takes advantage of the double-obstacle HJ variational inequality (VI) \cite{Fisac15}, in which one computes the reachable set $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacles $\obsset(t)$. Mathematically, we are given a system with state $z$ evolving according to
 
 \begin{equation}
 \label{eq:fdyn} % Full dynamics
@@ -21,7 +21,7 @@ After defining some target set $\targetset(t)$, we compute the backwards reachab
 \end{aligned}
 \end{equation}
 %
-\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05} defined as follows \MCnote{Check notation!}:
+\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05} defined as follows:
 
 \begin{equation}
 \begin{aligned}
@@ -32,7 +32,7 @@ After defining some target set $\targetset(t)$, we compute the backwards reachab
 
 Informally, the BRS is the set of states from which exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
 
-Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ variational inequality:
+Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the reachable set can be obtained as the implicit surface function such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ VI:
 %
 \begin{equation}
 \label{eq:HJIVI}
@@ -58,9 +58,9 @@ However, practically, the dimensionality of the joint state $z$ would be extreme
 \subsection{Sequential Path Planning}
 In order to make the $N$-vehicle path planning problem safe and tractable, we impose a reasonable structure to the problem: each vehicle is assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower priority vehicle. In contrast, a lower priority vehicle must take into account the presence of all higher priority vehicles, and plan its trajectory in a way that avoids the higher priority vehicles' danger zones. For convenience, denote the vehicle with the $i$th highest priority as $\veh_i$.
 
-Optimal path planning in this setting is enabled by the HJ variational inequality which computes the BRS $\brs_i(t)$ from a target set $\targetset_i$ in the presence of time-varying obstacles $\obsset_i(t)$. In the sequential path planning application, the time-varying obstacles represent regions of the state space of $\veh_i$ that must be avoided in order to ensure that $\veh_i$ does not enter any danger zones of higher priority vehicles. We present three different ways to compute $\obsset_i$, obstacles induced by higher priority vehicles in Section \ref{sec:obs_gen}. For now, we proceed assuming $\obsset_i$ is given.
+Optimal path planning in this setting is enabled by the HJ VI which computes the BRS $\brs_i(t)$ from a target set $\targetset_i$ in the presence of time-varying obstacles $\obsset_i(t)$. In the sequential path planning application, the time-varying obstacles represent regions of the state space of $\veh_i$ that must be avoided in order to ensure that $\veh_i$ does not enter any danger zones of higher priority vehicles. We present three different ways to compute $\obsset_i$, obstacles induced by higher priority vehicles in Section \ref{sec:obs_gen}. For now, we proceed assuming $\obsset_i$ is given.
 
-To obtain the optimal control for to reach the target we adapt \eqref{eq:HJIVI} to $\veh_i$ and solve the following variational inequality:
+To obtain the optimal control for reaching the target we adapt \eqref{eq:HJIVI} to $\veh_i$ and solve the following HJ VI:
 %
 \begin{equation}
 \label{eq:HJIVI_i}
@@ -89,4 +89,4 @@ From the BRS, the optimal control for vehicle $\veh_i$ is then given as
 u_i^*(t, x_i) = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
 \end{equation}
 
-If $\veh_i$ uses the optimal control given by \eqref{eq:opt_ctrl_i}, then $\veh_i$ can be guaranteed to reach the target $\targetset_i$ as long as $\veh_i$ departs by the latest departure time (LDT) $\ldt_i$, defined as $\inf_t V_i(t, x_i) \le 0$.
+If $\veh_i$ uses the optimal control given by \eqref{eq:opt_ctrl_i}, then $\veh_i$ can be guaranteed to reach the target $\targetset_i$ as long as $\veh_i$ departs by the latest departure time $\ldt_i$, defined as $\inf_t V_i(t, x_i) \le 0$.

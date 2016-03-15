@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Numerical Simulations \label{sec:sim}}
-We demonstrate our proposed methods using a four-vehicle example. Each vehicle has the following simple mode:
+We demonstrate our proposed methods using a four-vehicle example. Each vehicle has the following simple kinematics model:
 
 \begin{equation}
 \label{eq:dyn_i}
@@ -13,21 +13,21 @@ We demonstrate our proposed methods using a four-vehicle example. Each vehicle h
 \end{aligned}
 \end{equation}
 
-\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbance in the three states. Disturbance in each state is bounded from top and below. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The disturbance bounds are chosen as $d_{r} = 0.1$ and $\bar{d_{\theta}} = 0.2$, which correspond to a 10\% disturbance in position and a 20\% disturbance in heading. The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
+\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbance in the three states. Disturbance in each state is bounded from top and below. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The disturbance bounds are chosen as $d_{r} = 0.1$ and $\bar{d_{\theta}} = 0.2$. %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
 
-\begin{equation}
-\omega_i(t) = -\bar{\omega}_i \frac{D_{\theta_i}V_i(\bm{x}_i,t)}{\left| D_{\theta_i}V_i(\bm{x}_i,t) \right|},
-\end{equation}
-
-\begin{equation}
-v_i(t) =
-\left \{ 
-\begin{array}{ll}
-\underline{v} & \mbox{ if } D_{x_i}V_i(\bm{x}_i,t) \cos \theta_i + D_{y_i}V_i(\bm{x}_i,t) \sin \theta_i \geq 0 \\
-\bar{v} & \mbox{ otherwise } 
-\end{array}
-\right.
-\end{equation}
+%\begin{equation}
+%\omega_i(t) = -\bar{\omega}_i \frac{D_{\theta_i}V_i(\bm{x}_i,t)}{\left| D_{\theta_i}V_i(\bm{x}_i,t) \right|},
+%\end{equation}
+%
+%\begin{equation}
+%v_i(t) =
+%\left \{ 
+%\begin{array}{ll}
+%\underline{v} & \mbox{ if } D_{x_i}V_i(\bm{x}_i,t) \cos \theta_i + D_{y_i}V_i(\bm{x}_i,t) \sin \theta_i \geq 0 \\
+%\bar{v} & \mbox{ otherwise } 
+%\end{array}
+%\right.
+%\end{equation}
 
 The initial states of the vehicles are given as follows:
 \begin{equation}
@@ -39,7 +39,7 @@ The initial states of the vehicles are given as follows:
 \end{aligned}
 \end{equation}
 
-\noindent Each of the four vehicles have a target set $\targetset_i$ that is circular in their position $\pos_i$ centered at $c_i = (c_{x,i}, c_{y,i})$ with radius $r$:
+\noindent Each of the vehicles have a target set $\targetset_i$ that is circular in their position $\pos_i$ centered at $c_i = (c_{x,i}, c_{y,i})$ with radius $r$:
 
 \begin{equation}
 \targetset_i = \{x_i \in \R^3: \|p_i - c_i\| \le r\}
@@ -47,7 +47,7 @@ The initial states of the vehicles are given as follows:
 
 \noindent For the example shown, we chose $c_1 = (0.7, 0.2), c_2 = (-0.7, 0.2), c_3 = (0.7, -0.7), c_4 = (-0.7, -0.7)$ and $r = 0.1$. The setup of the this examples is shown in Figure \ref{fig:init_setup}.
 
-Since the joint state space of this system is intractable for analysis using the single-obstacle HJI VI, we repeatedly solve the double-obstacle HJI VI (\ref{eq:HJIVI}) to compute the reachable sets from the targets $\targetset_i$ for vehicles $1,2,3,4$, in that order, with moving obstacles induced by vehicles $j=1,\ldots,i-1$. We will also obtain $t_i^{LDT},i=1,2,3,4$, latest departure time for each vehicle in order to reach $\targetset_i$ by a scheduled time of arrival, STA, assumed to be $0$ without loss of generality. Note that even though the STA is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which STAs are diffeenet for vehicles.
+Since the joint state space of this system is intractable for a direct application of HJ reachability theory, we repeatedly solve (\ref{eq:HJIVI}) to compute BRSs from the targets $\targetset_i, i =1,2,3,4$, in that order, with moving obstacles induced by vehicles $j=1,\ldots,i-1$. We will also obtain $\ldt_i, i=1,2,3,4$ assuming $\sta_i=0$ without loss of generality. Note that even though $\sta_i$ is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which $\sta_i$ are different for each vehicle.
 
 \begin{figure}
   \centering
@@ -68,7 +68,7 @@ Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a
   \label{fig:cc_traj}
 \end{figure}
 
-In this case, each vehicle do not appear to deviate very much from a straight line trajectory towards its target, since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
+In this case, no vehicle appears to deviate very much from a straight line trajectory towards its target, since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
 
 \begin{figure}[h]
   \centering
@@ -77,5 +77,5 @@ In this case, each vehicle do not appear to deviate very much from a straight li
   \label{fig:cc_rs3}
 \end{figure}
 
-Fig. \ref{fig:cc_rs3} shows the evolution of the backwards reachable set for the third vehicle (blue boundaries), as well as the obstacles induced by the higher priority vehicles $\veh_1$ and $\veh_2$ (black boundaries). The locations of the induced obstacles at different time points are the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remain relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.96$ and $-2.04$, respectively. Numbers are very close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher priority vehicle are smaller and hence doesn't affect the LDTs of the lower priority vehicles significantly. 
+Fig. \ref{fig:cc_rs3} shows the evolution of the backwards reachable set for the third vehicle (blue boundaries), as well as the obstacles induced by the higher priority vehicles $\veh_1$ and $\veh_2$ (black boundaries). The locations of the induced obstacles at different time points are the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.96$ and $-2.04$, respectively. Numbers are very close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher priority vehicle are smaller and hence does not affect $\ldt$ of the lower priority vehicles significantly. 
 
