@@ -19,16 +19,18 @@ From the perspective of a lower priority vehicle $\veh_i$, a higher priority veh
 \end{aligned}
 \end{equation}
 
-Conveniently, $\frs_j(t)$ can also be computed using $\eqref{eq:FRS_i}$ with $l$ chosen to be such that $\targetset = \{x_j(t_0)\}$. In practice, when there is uncertainty in the initial state of $\veh_j$, we set $\targetset$ to be a small region around $x_j(t_0)$. Note that \eqref{eq:FRS_i} is just a simplified version of \eqref{eq:HJIVI_i}
+Conveniently, FRSs can be computed using a simplified version of \eqref{eq:HJIVI_i}, defined in $\eqref{eq:FRS_j}$:
 
 \begin{equation}
-\label{eq:FRS_i}
+\label{eq:FRS_j}
 \begin{aligned}
-&D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right) = 0, t \in [\edt, \sta]\\
-&V_i(\sta, x_i) =l_i(x_i) \\
-&H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
+&D_t V_j(t, x_j) + H_j\left(t, x_j, D_{x_j} V\right) = 0, t \in [\edt_j, \sta_j]\\
+&V_j(\sta_j, x_j) =l_j(x_j) \\
+&H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \max_{d_j \in \dset_j} p \cdot f(t, x_j, u_j, d_j)
 \end{aligned}
 \end{equation}
+
+\noindent where $l$ is chosen to be such that $\targetset = \{x_j(t_0)\}$. In practice, when there is uncertainty in the initial state of $\veh_j$, we set $\targetset_j$ to be a small region around $x_j(t_0)$.to impose that the optimal control is used, we substitute $u_j = u_j^*(t, x_j)$ into \eqref{eq:FRS_j}.
 
 The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given the worst case disturbance $d_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $u_j^*(t, x)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\cradius$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\cradius$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher priority vehicle $\veh_j$ for a lower priority vehicle $\veh_i$ as follows:
 
