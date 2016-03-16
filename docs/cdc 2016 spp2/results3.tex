@@ -1,8 +1,6 @@
 % !TEX root = SPP2.tex
-Fig. \ref{fig:lrc_traj} shows simulated trajectories in the situation where each vehicle assumes that higher priority vehicles use the least restrictive control, as described in \ref{sec:lrc}.
-
 \subsection{Robust Trajectory Tracking}
-Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where each vehicle tracks a pre-specified trajectory and is guaranteed to stay inside a "bubble" around the trajectory. Fig. \ref{fig:rtt_rs3} shows the evolution of BRS and induced obstacles for vehicle $\veh_3$. The obstacles induced by other vehicles inhibit the evolution of the backward reachable sets, carving out thin “channels,” which can be seen at $t = -2.63$, that separate the reachable set into different “islands”. One can see how these channels and islands form by examining the time evolution of the reach-avoid set, shown in the figure.
+Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where each vehicle tracks a pre-specified trajectory and is guaranteed to stay inside a ``bubble" around the trajectory. Fig. \ref{fig:rtt_rs3} shows the evolution of BRS and induced obstacles for vehicle $\veh_3$. The obstacles induced by other vehicles inhibit the evolution of the BRS, carving out thin “channels,” which can be seen at $t = -2.63$, that separate the BRS into different “islands”. One can see how these channels and islands form by examining the time evolution of the BRS set.
 
 \begin{figure}
   \centering
@@ -11,11 +9,11 @@ Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where ea
   \label{fig:rtt_traj}
 \end{figure}
 
-$\ldt_i$ numbers for the four vehicles in this case are $-1.63, -3.16, -3.63$ and $-2.49$ respectively. Note that $\ldt_1$ is lower for the highest priority vehicle, $\veh_1$, in this method compared to the other two methods, as higher priority vehicles sacrifice their $\ldt$ in this method (by tracking a pre-defined trajectory and declaring a fixed obstacle size) in order to increase the $\ldt$ of lower priority vehicles, which is also evident from the $\ldt_4$ of vehicle $\veh_4$; however, since only a part of the control authority is used to compute the nominal trajectory to be tracked (and with a smaller target set, see Figure \ref{fig:rtt_rs3}), the overall $\ldt_i, i = 1, \ldots, 4$ might increase or decrease compared to the other methods depending on the specific configuration of the problem. In this example, $\ldt_i$ increases for vehicle $\veh_4$ and decreases for vehicles $\veh_2$ and $\veh_3$ compared to the other methods.     
+$\ldt_i$ numbers for the four vehicles in this case are $-1.63, -3.16, -3.63$ and $-2.49$ respectively. In this method, vehicles use reduced control authority for path planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have higher $\ldt$ compared with the other two methods, as seen by $\ldt_1$. Because of the sacrifice in higher-priority vehicles' path planning process, in some cases the $\ldt$ of lower priority vehicles may increase, as evident from $\ldt_4$. Overall, it is unclear whether $\ldt_i$ for a particular vehicle would increase or decrease compared to the other methods, as $\ldt_i$ is increased by conservative path planning by higher-priority vehicles, and decreased by conservative path planning of $\veh_i$. 
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.45\textwidth]{"fig/rtt_rs3"}
-  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the robust trajectory tracking method. As the backwards reachable set grows in time, one can see that the induced obstacles carve out a channel. In particular, the obstacles at $t =-0.63$ and $t=-1.83$ are induced by vehicle $\veh_1$ and at $t =-2.63$ by vehicle $\veh_1$. Also, note that a smaller target set is used to compute the backward reachable set to ensure that the whole bubble reaches the target set by $t=0$, as the vehicle can be anywhere within the bubble.}
+  \caption{Evolution of the BRS for $\veh_3$ in the robust trajectory tracking method. As the BRS grows in time, the induced obstacles carve out a channel. The obstacle at $t =-0.63$ and $t=-1.83$ are induced by $\veh_1$ and the obstacle at $t =-2.63$ is induced by $\veh_2$. Note that a smaller target set is used to compute the BRS to ensure that the vehicle reaches the target set by $t=0$ for any allowed tracking error.}
   \label{fig:rtt_rs3}
 \end{figure}

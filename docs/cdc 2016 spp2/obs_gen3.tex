@@ -2,11 +2,13 @@
 \subsection{Method 3: Robust Tracking of Nominal Trajectories \label{sec:rtt}}
 %A general issue with the above two methods can be the large size of the generated obstacles due to the uncertainty on other vehicles' motion. In order to reduce this uncertainty,
 % This approach requires a moderate amount of information sharing between vehicles: higher-priority vehicles need to declare their nominal trajectory, together with an uncertainty region, to all vehicles with lower priority. Lower-priority vehicles will then use these nominal trajectories ``expanded" by the uncertainty regions as time-varying obstacles.
-A third way of computing induced obstacles is to have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacle. The planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances. Therefore, in this obstacle generation method, planning is done for a reduced control set $\cset^p\subset\cset$ according to Section \ref{sec:solution}.
+A third way of computing induced obstacles is to have vehicles commit to approximately tracking a robustly feasible nominal trajectory obtained in the path-planning phase. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacle. The planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances. Therefore, with this method, planning is done for a reduced control set $\cset^p\subset\cset$ according to Section \ref{sec:solution}.
 
 %The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances and render the error dynamics asymptotically stable.
 
-In this context, robust nonlinear control techniques such as Lyapunov-based methods \cite{Majumdar2013} can be used to compute robust ``funnels" around a concrete nominal trajectory. In this paper, we use reachability to determine the tracking error bound. Using our method, the tracking error bound can be determined independently of the nominal trajectory. In this context, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be thought of as a virtual evader vehicle that is optimally attempting to avoid the actual vehicle, enlarging the tracking error. We therefore can model trajectory tracking as the pursuit-evasion game in which the actual vehicle is playing against the coordinated worst-case action of the virtual vehicle and the disturbance. In general, this game will be governed by dynamics of the form:
+In this context, robust nonlinear control techniques such as Lyapunov-based methods \cite{Majumdar2013} can be used to compute robust ``funnels" around a concrete nominal trajectory. In this paper, we use reachability to determine the tracking error bound so that the tracking error bound can be determined independently of the nominal trajectory. 
+
+Here, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be viewed as a virtual evader vehicle that is optimally avoiding the actual vehicle to enlarge the tracking error. We therefore can model trajectory tracking as a pursuit-evasion game in which the actual vehicle is playing against the coordinated worst-case action of the virtual vehicle and the disturbance. In general, this game will be governed by dynamics of the form:
 
 \begin{equation}
 \label{eq:jdyn} % Joint dynamics
@@ -18,7 +20,7 @@ u &\in \cset, u_r\in\cset^p, d \in \dset, \\
 \end{aligned}
 \end{equation}
 
-Given an bound $\errorbound(x_r)$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ for this reachability problem to be the set of joint configurations where this bound is violated: $\targetset = \{(x, x_r): x\not\in\errorbound(x_r)\}$. In this case, the BRS $\brs(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds. 
+Given an error bound $\errorbound(x_{r,i})$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ for this reachability problem to be the set of joint configurations where this bound is violated: $\targetset = \{(x, x_{r,i}): x\not\in\errorbound(x_{r,i})\}$. In this case, the BRS $\brs(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds, outside of $\errorbound(x_{r,i})$.
 
 %In this case the backwards reachable set $\brs(t)$ is defined as:
 
@@ -59,12 +61,14 @@ u &\in \cset, u_r\in\cset^p, d \in \dset, \\
 \end{aligned}
 \end{equation}
 
-Given $\errorbound$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound \subset \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\{x_i: \errorbound(x_i) \subseteq \targetset_i\}$.
+Given $\errorbound$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound \subset \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\{x: \errorbound(x) \subseteq \targetset_i\}$.
 
-Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_i)$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_i)$ and $\errorbound(x_j)$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds:
+Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_{r,i})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_{r,i})$ and $\errorbound(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds:
 \begin{equation}
-\ioset_i^j(t) = \{x_i: \errorbound(x_i) + \errorbound(x_j(t))\}
+\ioset_i^j(t) = \errorbound(0) + \errorbound(x_{r,j}(t))
 \end{equation}
+
+\noindent where the $0$ denotes the origin.
 
 
 %now requiring the state (error) to remain in $\errorbound$, so that the target simply becomes $\targetset = \mathbb{R}^n \setminus \errorbound$. In these cases, \eqref{eq:HJIVI_track} is defined on the lower-dimensional state space of relative (error) dynamics (i.e. over $e$ instead of $z$), and the resulting $\disckernel\subset \mathbb{R}^n$ is the discriminating kernel of $\errorbound$. The flight-time tracking error $e$ is then guaranteed to remain within $\errorbound$ provided that the initial error is contained in $\disckernel$ and the vehicle controller applies the optimally robust tracking feedback law \eqref{eq:robust_tracking_law}, which is now of the form $\tracklaw(e)$.
