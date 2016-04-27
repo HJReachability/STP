@@ -29,18 +29,21 @@
 \newcommand{\R}{\mathbb{R}} % Real number
 \newcommand{\dist}{\text{dist}} % Distance
 \newcommand{\rc}{R_c} % Capture radius
+\newcommand{\N}{N} % number of agents
 
-\newcommand{\veh}{Q} % vehicle
+\newcommand{\veh}[1]{Q_{#1}} % vehicle
+\newcommand{\state}{z} % state
+\newcommand{\ctrl}{u} % control
+\newcommand{\dstb}{d} % disturbance
 \newcommand{\pos}{p} % position
 \newcommand{\npos}{h} % non-position states
-
 
 \newcommand{\cset}{\mathcal{U}} % Control set
 \newcommand{\cfset}{\mathbb{U}} % control function set
 \newcommand{\dset}{\mathcal{D}} % disturbance
 \newcommand{\dfset}{\mathbb{D}} % disturbance function set
 \newcommand{\obsset}{\mathcal{G}} % Obstacle (the one used to solve PDE)
-\newcommand{\dz}{\mathcal{A}} % danger zone
+\newcommand{\dz}{\mathcal{Z}} % danger zone
 
 \newcommand{\brs}{\mathcal{V}} % backwards reachable set
 \newcommand{\frs}{\mathcal{W}} % forwards reachable set
@@ -52,6 +55,7 @@
 \newcommand{\ldt}{t^\text{LDT}} % latest departure time
 \newcommand{\sta}{t^\text{STA}} % scheduled time of arrival
 \newcommand{\ioset}{\mathcal{O}} % Induced obstacle
+\newcommand{\soset}{\ioset_\text{static}} % static obstacle
 \newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
 
 
@@ -74,13 +78,16 @@
 \begin{abstract}
 \end{abstract}
 
-\input{introduction.tex}
+\input{introduction}
 
-\input{formulation.tex}
-\input{HJIVI.tex}
-\input{obsgen.tex}
-\input{intruder.tex}
-
+\input{formulation}
+\input{HJIVI}
+\input{basic}
+\input{basic_results}
+\input{incomp}
+\input{incomp_results}
+\input{intruder}
+\input{intruder_results}
 
 \input{conclusion.tex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
