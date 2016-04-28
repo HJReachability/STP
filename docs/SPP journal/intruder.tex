@@ -3,22 +3,36 @@
 \begin{itemize}
 \item Assumptions: only one intruder, avoid for a duration of $\iat$
 \item Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)
+\item Steps involved in computing the reach-avoid sets for vehicles:
+\begin{itemize}
+\item \textit{Step-1}: Compute the set of obstacles induced by the higher priority vehicles. 
+\item \textit{Step-2}: Append \textit{all} obstacles (including static ones) by a $\iat$-step FRS. Compute the BRS with these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
+\item \textit{Step-3}: Compute the $\iat$-step FRS for the BRS computed in Step-2. This FRS is the free flight region that will allow us to avoid any intruder for $\iat$ seconds. 
+\item \textit{Step-4}: Compute the BRS taking into account the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+\item \textit{Step-5}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. 
+\end{itemize}
 \end{itemize}
 
-\subsection{Obstacle Augmentation}
-\begin{itemize}
-\item For path planning
-\item For lower priority vehicles
-\end{itemize}
+%\subsection{Obstacle Augmentation}
+%\begin{itemize}
+%\item For path planning
+%\item For lower priority vehicles
+%\end{itemize}
+%
+%\subsection{Avoidance Controller}
+%\begin{itemize}
+%\item Reachable set computation
+%\item Controller
+%\end{itemize}
+%
+%\subsection{Liveness Controller}
+%\begin{itemize}
+%\item Path planning using augmented obstacles
+%\item Overall controller
+%\end{itemize}
 
-\subsection{Avoidance Controller}
-\begin{itemize}
-\item Reachable set computation
-\item Controller
-\end{itemize}
-
-\subsection{Liveness Controller}
-\begin{itemize}
-\item Path planning using augmented obstacles
-\item Overall controller
-\end{itemize}
+\input{./intruder/step1}
+\input{./intruder/step2}
+\input{./intruder/step3}
+\input{./intruder/step4}
+\input{./intruder/step5}
