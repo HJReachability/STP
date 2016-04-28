@@ -20,6 +20,16 @@ else
     obstacle = repmat(obstacle, [ones(1,g.dim),steps+1]);
 end
 
+% Take the 2D projection of the above 3D obstacle, add the capture radius
+% and then extend it in the third dimension
+capture_radius = vehicle.capture_radius;
+obs_len = end_index+2-init_index;
+for i=1:obs_len
+    [g2D, data2D] = proj2D(g, obstacle(:,:,:,i), [0 0 1]);
+    dataout = addCRadius(g2D, data2D, capture_radius);
+    obstacle(:,:,1:end,i) = repmat(dataout, [1,1,g.shape(3)]);
+end
+
 %---------------------------------------------------------------------------
 % Integration parameters.
 
@@ -50,10 +60,13 @@ data = vehicle.reach(:,:,:,mat_index);
 data = min(data, vehicle.reach(:,:,:,end));
 data = max(data, -obstacle(:,:,:,mat_index-init_index+1));
 
+P = extractCostates(g, data);
+vehicle.optU(:,:,:,mat_index) = (P{3} >= 0) * (-vehicle.turnRate) + (P{3} < 0) * vehicle.turnRate;
+
 %---------------------------------------------------------------------------
 % % What level set should we view?
 % level = 0;
-% 
+%
 % % Visualize the 3D reachable set.
 % displayType = 'surface';
 %
@@ -78,7 +91,10 @@ schemeData.grid = g;
 
 % The Hamiltonian and partial functions need problem parameters.
 schemeData.vnom = vehicle.v_nom;
-schemeData.turnRate_nom = vehicle.turnRate_nom;
+schemeData.velocity = vehicle.velocity;
+schemeData.turnRate = vehicle.turnRate;
+schemeData.disturbance = vehicle.disturbance_mag;
+
 %---------------------------------------------------------------------------
 % Choose degree of dissipation.
 
@@ -121,7 +137,7 @@ end
 % end
 
 %---------------------------------------------------------------------------
-% Initialize Display
+% % Initialize Display
 % f = figure;
 %
 % % Set up subplot parameters if necessary.
@@ -132,12 +148,11 @@ end
 %   subplot(rows, cols, plotNum);
 % end
 %
+% h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(t0) ]);
+% camlight right;  camlight left;
 % % [g2D, data2D] = proj2D(g, data, [0 0 1], pi);
 % % h = contour(g2D.xs{1},g2D.xs{2}, data2D, [0 0], 'b');
 %
-
-% h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(t0) ]);
-% camlight right;  camlight left;
 % hold on;
 % axis(g.axis);
 % axis square
@@ -180,8 +195,13 @@ while(tMax - tNow > small * tMax)
     % Remove obstacle from the reachable set and store it
     mat_index = mat_index - 1;
     data = min(data, vehicle.reach(:,:,:,end));
-    data = max(data,-obstacle(:,:,:,mat_index-init_index+1));
+    data = max(data, -obstacle(:,:,:,mat_index-init_index+1));
     vehicle.reach(:,:,:,mat_index) = data;
+    
+    % Update optimal control
+    % Get gradients
+    P = extractCostates(g, data);
+    vehicle.optU(:,:,:,mat_index) = (P{3} >= 0) * (-vehicle.turnRate) + (P{3} < 0) * vehicle.turnRate;
     
     % Start plotting
     figure(vehicle.mast_fig);
@@ -213,9 +233,6 @@ while(tMax - tNow > small * tMax)
     end
     hold off;
     
-%     figure(f),
-%     h = visualizeLevelSet(g, data, displayType, level, [ 't = ' num2str(tNow) ]);
-    
     % Stop as soon as we reach the initial state
     if (init_index == 1)
         location{1} = vehicle.x(1,1);
@@ -231,6 +248,7 @@ while(tMax - tNow > small * tMax)
             end
         end
     end
+    
     
     %   if(pauseAfterPlot)
     %     % Wait for last plot to be digested.
@@ -274,12 +292,15 @@ fprintf('Total execution time %g seconds\n', endTime - startTime);
 %---------------------------------------------------------------------------
 function hamValue = RASHamFunc(t, data, deriv, schemeData)
 
-%checkStructureFields(schemeData, 'grid', 'velocity');
+checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
+v = schemeData.velocity;
 vnom = schemeData.vnom;
-w = schemeData.turnRate_nom;
-
+w = schemeData.turnRate;
+d1 = schemeData.disturbance(1);
+d2 = schemeData.disturbance(2);
+d3 = schemeData.disturbance(3);
 
 % % Hamiltonian when velocity is not an input
 % hamValue = v*deriv{1}.*cos(g.xs{3}) + d1*abs(deriv{1}) + v*deriv{2}.*sin(g.xs{3}) ...
@@ -291,15 +312,11 @@ w = schemeData.turnRate_nom;
 %     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
 %     - w*abs(deriv{3}) + d3*abs(deriv{3});
 
-% % Hamiltonian with disturbance on circle
-% hamValue = vnom*deriv{1}.*cos(g.xs{3}) + ...
-%     vnom*deriv{2}.*sin(g.xs{3}) + d1 * sqrt(deriv{1}.^2 + deriv{2}.^2)...
-%     - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
-%     - w*abs(deriv{3}) + d3*abs(deriv{3});
-
 % Hamiltonian with disturbance on circle
 hamValue = vnom*deriv{1}.*cos(g.xs{3}) + ...
-    vnom*deriv{2}.*sin(g.xs{3})  - w*abs(deriv{3});
+    vnom*deriv{2}.*sin(g.xs{3}) + d1 * sqrt(deriv{1}.^2 + deriv{2}.^2)...
+    - v*abs(deriv{1}.*cos(g.xs{3}) + deriv{2}.*sin(g.xs{3})) ...
+    - w*abs(deriv{3}) + d3*abs(deriv{3});
 
 hamValue = -hamValue;
 
@@ -335,19 +352,23 @@ function alpha = RASPartialFunc(t, data, derivMin, derivMax, schemeData, dim)
 %
 % Ian Mitchell 3/26/04
 
-%checkStructureFields(schemeData, 'grid', 'velocity');
+checkStructureFields(schemeData, 'grid', 'velocity');
 
 g = schemeData.grid;
+v = schemeData.velocity;
 vnom = schemeData.vnom;
-w = schemeData.turnRate_nom;
+w = schemeData.turnRate;
+d1 = schemeData.disturbance(1);
+d2 = schemeData.disturbance(2);
+d3 = schemeData.disturbance(3);
 
 switch dim
     case 1
-        alpha = vnom*abs(cos(g.xs{3}));
+        alpha = (v+vnom)*abs(cos(g.xs{3})) + d1 * abs(derivMax{1}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
         
     case 2
-        alpha = vnom*abs(sin(g.xs{3}));
+        alpha = (v+vnom)*abs(sin(g.xs{3})) + d2* abs(derivMax{2}) / sqrt(derivMax{1}.^2 + derivMax{2}.^2);
         
     case 3
-        alpha = w;
+        alpha = d3 + w;
 end
