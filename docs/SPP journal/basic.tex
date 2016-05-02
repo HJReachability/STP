@@ -1,6 +1,12 @@
 % !TEX root = SPP_journal.tex
 \section{Basic SPP Solution\label{sec:basic}}
-Nottation:
+Notation:
 \begin{itemize}
 \item Obstacle induced by vehicle $j$ for vehicle $i$: $\ioset_i^j(t)$
+\item ``Basic'' liveness Hamiltonian:
+
+\begin{equation}
+H_\text{liveness}(t, x, p) = \min_{\ctrl_i} \max_{\dstb_i} p \cdot f_i(\state_i, \ctrl_i, \dstb_i)
+\end{equation}
+
 \end{itemize}

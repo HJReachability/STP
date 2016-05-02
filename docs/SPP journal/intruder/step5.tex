@@ -1,1 +1,37 @@
-\subsection{Step 5}
+% !TEX root = ../SPP_journal.tex
+\subsection{Step 5: Optimal Avoidance Controller}
+Define relative coordinates of the ``vehicle of interest'' with state $\state_i$ and intruder with state $\state_\intr$.
+
+\begin{equation}
+\label{eq:reldyn}
+\begin{aligned}
+\state_r &= \state_\intr - \state_i \\
+\dot \state_r &= f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{aligned}
+\end{equation}
+
+We need to compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+
+\begin{equation}
+\begin{aligned}
+\targetset_\text{CA} &= \{\state_r: \|\pos_r\|_2 \le \rc\} \\
+\obsset_\text{CA} &= \emptyset \\
+H_\text{CA}(\state_r, p) &= \max_{\ctrl_i} \min_{\ctrl_\intr} p \cdot f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{aligned}
+\end{equation}
+
+Once the value function $\valfunc_\text{CA}(t, \state_r)$ representing $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$ is computed, the optimal avoidance control can be obtained as 
+
+\begin{equation}
+\ctrl_i^A = \arg \max_{\ctrl_i} \min_{\ctrl_\intr} \nabla\valfunc_\text{CA}(t,\state_r) \cdot f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{equation}
+
+(``Factor'' optimal control to an earlier section?? This would be useful because it's difficult to specify the $t$ in $\valfunc$)
+
+(Decide on notation for $\ctrl_i^A$)
+
+If $\veh{i}$ applies the control $\ctrl_i^A$ when $\valfunc(\iat, \state_r) \le 0$, then collision avoidance between $\veh{i}$ and $\veh{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+
+In addition, since ???, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.
+
+(The ``???'' depends on previous steps)

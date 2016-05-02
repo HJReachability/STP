@@ -6,7 +6,11 @@ Given:
 \item dynamics $\dot\state_i = f_i(\state_i, \ctrl_i, \dstb_i)$
 \item state $\state_i = (\pos_i, \npos_i)$
 \item control $\ctrl_i \in \cset_i$; disturbance $\dstb_i \in \dset_i$
-\item targets $\targetset_i$, danger zones $\dz_{ij}$ with capture radius $\rc$
+\item targets $\targetset_i$, danger zones $\dz_{ij}$ with capture radius $\rc$; 
+\begin{equation}
+\dz_{ij} = \{(\state_i, \state_j): \dist(\pos_i, \pos_j) \le \rc\}
+\end{equation}
+
 \item static obstacles $\soset$.
 \item $\sta_i, \edt_i$ (should we mention earliest departure time?)
 \end{itemize}
