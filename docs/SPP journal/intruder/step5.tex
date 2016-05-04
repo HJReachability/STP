@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_journal.tex
 \subsection{Step 5: Optimal Avoidance Controller}
-Define relative coordinates of the ``vehicle of interest'' with state $\state_i$ and intruder with state $\state_\intr$.
+First, we define relative coordinates of the intruder $\veh{\intr}$ with state $\state_\intr$ with respect to $\veh{i}$ with state $\state_i$.
 
 \begin{equation}
 \label{eq:reldyn}
@@ -10,7 +10,7 @@ Define relative coordinates of the ``vehicle of interest'' with state $\state_i$
 \end{aligned}
 \end{equation}
 
-We need to compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
 
 \begin{equation}
 \begin{aligned}
@@ -32,6 +32,4 @@ Once the value function $\valfunc_\text{CA}(t, \state_r)$ representing $\brs(\ia
 
 If $\veh{i}$ applies the control $\ctrl_i^A$ when $\valfunc(\iat, \state_r) \le 0$, then collision avoidance between $\veh{i}$ and $\veh{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
 
-In addition, since ???, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.
-
-(The ``???'' depends on previous steps)
+In addition, under Assumption \ref{as:avoidOnce}, we have $\state_i \in \brs(\bar t, \targetset_i, \bar\obsset(t))$. Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.
