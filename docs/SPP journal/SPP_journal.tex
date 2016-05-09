@@ -25,6 +25,9 @@
 \usepackage{color}
 \usepackage{bm}
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
+\usepackage{todonotes} \setlength{\marginparwidth}{1.6cm} 
+
+\newcommand{\MCnote}{\todo[size=\small,author=MC,color=cyan]}
 
 \newcommand{\R}{\mathbb{R}} % Real number
 \newcommand{\dist}{\text{dist}} % Distance
@@ -47,11 +50,12 @@
 \newcommand{\dz}{\mathcal{Z}} % danger zone
 
 \newcommand{\valfunc}{V} % value function
+\newcommand{\valfuncfwd}{V} % value function for forwards reachable set
 \newcommand{\brs}{\mathcal{V}} % backwards reachable set
 \newcommand{\frs}{\mathcal{W}} % forwards reachable set
 \newcommand{\pfrs}{\mathcal{P}} % projected forwards reachable set
 \newcommand{\targetset}{\mathcal{L}} % target set
-\newcommand{\ham}{H}
+\newcommand{\ham}{H} % Hamiltonian
 
 
 \newcommand{\edt}{t^\text{EDT}} % earliest departure time
@@ -60,7 +64,7 @@
 \newcommand{\ioset}{\mathcal{O}} % Induced obstacle
 \newcommand{\soset}{\ioset_\text{static}} % static obstacle
 \newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
-
+\newcommand{\wcttr}{t^\text{WC}} % worst case TTR
 
 \newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
 \newcommand{\tracklaw}{\kappa} % Robust tracking law
