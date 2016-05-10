@@ -4,6 +4,9 @@
 \label{as:avoidOnce}
 Only one intruder, avoid for a duration of $\iat$
 \end{assumption}
+\begin{assumption}
+Dynamics of the intruder are known. 
+\end{assumption}
 
 \begin{itemize}
 \item Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)
@@ -41,3 +44,20 @@ Only one intruder, avoid for a duration of $\iat$
 %\input{./intruder/step3}
 \input{./intruder/step4}
 \input{./intruder/step5}
+
+The overall control policy for avoiding intruder is thus given by (\textbf{Formalize it mathematically!}):
+\begin{equation*}
+u^* = 
+\left \{ 
+\begin{array}{ll}
+u^*_{inner BRS} & \mbox{before intruder arrival}\\
+u^*_{relative BRS} & \mbox{while avoiding intruder} \\
+u^*_{outer BRS} & \mbox{after intruder departure}
+\end{array}
+\right.
+\end{equation*}
+
+\begin{itemize}
+\item \textbf{Control policy while in the inner set depends on the policy used to compute the base obstacles.}
+\item \textbf{Explain computation of the base obstacles}
+\end{itemize}
