@@ -1,12 +1,12 @@
 % !TEX root = ../SPP_journal.tex
-\subsection{Step 4: Optimal Avoidance Controller}
+\subsection{Step 4: Optimal Avoidance Controller \label{sec:intruder_avoid}}
 First, we define relative coordinates of the intruder $\veh{\intr}$ with state $\state_\intr$ with respect to $\veh{i}$ with state $\state_i$.
 
 \begin{equation}
 \label{eq:reldyn}
 \begin{aligned}
 \state_r &= \state_\intr - \state_i \\
-\dot \state_r &= f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\dot \state_r &= f_r(\state_r, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
 \end{aligned}
 \end{equation}
 

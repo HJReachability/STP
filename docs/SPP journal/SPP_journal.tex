@@ -2,15 +2,13 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-%\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
-                                                          % if you need a4paper
-\documentclass[letterpaper, 10pt, conference]{ieeeconf}      % Use this line for a4
-                                                          % paper
+%\documentclass[journal]{IEEEtran}  
+\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
 
 \IEEEoverridecommandlockouts                              % This command is only
                                                           % needed if you want to
                                                           % use the \thanks command
-\overrideIEEEmargins
+%\overrideIEEEmargins
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
 
@@ -24,7 +22,7 @@
 \usepackage{color}
 \usepackage{bm}
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
-\usepackage{todonotes} \setlength{\marginparwidth}{1.6cm} 
+\usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
 
 \newcommand{\MCnote}{\todo[size=\small,author=MC,color=cyan]}
 
@@ -65,6 +63,9 @@
 \newcommand{\soset}{\ioset_\text{static}} % static obstacle
 \newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
 \newcommand{\wcttr}{t^\text{WC}} % worst case TTR
+
+\newcommand{\tsa}{\underline{t}} % time of start of avoidance
+\newcommand{\tea}{\bar{t}} % time of end of avoidance
 
 \newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
 \newcommand{\tracklaw}{\kappa} % Robust tracking law
