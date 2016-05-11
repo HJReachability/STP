@@ -1,24 +1,23 @@
 % !TEX root = SPP_journal.tex
 \section{Response to Intruders \label{sec:HJIVI}}
-\begin{assumption}
-\label{as:avoidOnce}
-Only one intruder, avoid for a duration of $\iat$
-\end{assumption}
-\begin{assumption}
-Dynamics of the intruder are known. 
+The sequential path planning algorithms presented in the previous sections guarantees safety only for the scenarios when no other vehicles are present in the system. If a new vehicle enters the system, or even worse if this vehicle is intruder, the old plan can lead to a collision. In this section, our goal is to design a trajectory plan that is robust to the presence of intruders. To keep pur analysis tractable, we make the following assumption:  
+
+\begin{assumption} \label{as:avoidOnce}
+Only one intruder is present in the system for a maximum duration of $\iat$. Moreover, dynamics of the intruder are known. 
 \end{assumption}
 
-\begin{itemize}
-\item Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)
+Note that we do not assume anything about the time at which the intruder appears in the system; however, we assume that once it appears, it stays for a maximum duration of $\iat$. 
 
-\item Steps involved in computing the reach-avoid sets for vehicles:
 \begin{itemize}
-\item \textit{Step-1}: Compute the set of obstacles induced by the higher priority vehicles. 
-\item \textit{Step-2}: Append \textit{all} obstacles (including static ones) by a $\iat$-step FRS. Compute the BRS with these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
-\item \textit{Step-3}: Compute the $\iat$-step FRS for the BRS computed in Step-2. This FRS is the free flight region that will allow us to avoid any intruder for $\iat$ seconds. 
-\item \textit{Step-4}: Compute the BRS taking into account the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
-\item \textit{Step-5}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. 
+\item \textbf{Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)}.
 \end{itemize}
+
+We are now ready to develop a general theory that takes intruders into account. Our approach to a robust path planning can be summarized in the following steps:
+\begin{itemize}
+\item \textit{Step-1}: First, we compute the set of obstacles induced by the higher priority vehicles for the lower priority vehicles.  
+\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
+\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+\item \textit{Step-4}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. If a vehicle sense an intruder while it is still outside this region, the above algorithm will ensure safety at all times.  
 \end{itemize}
 
 %\subsection{Obstacle Augmentation}
@@ -41,23 +40,21 @@ Dynamics of the intruder are known.
 
 \input{./intruder/step1}
 \input{./intruder/step2}
-%\input{./intruder/step3}
+\input{./intruder/step3}
 \input{./intruder/step4}
-\input{./intruder/step5}
 
-The overall control policy for avoiding intruder is thus given by (\textbf{Formalize it mathematically!}):
+The overall control policy for avoiding intruder and reaching target is thus given by:
 \begin{equation*}
 u^* = 
 \left \{ 
 \begin{array}{ll}
-u^*_{inner BRS} & \mbox{before intruder arrival}\\
-u^*_{relative BRS} & \mbox{while avoiding intruder} \\
-u^*_{outer BRS} & \mbox{after intruder departure}
+\ctrl^*_\text{AO}(t, \state_i; \targetset_i, \tilde\obsset_i, \ham_\text{AO}) & t \leq \underbar{t}\\
+\ctrl^*_\text{CA}(t, \state_r; \targetset_\text{CA}, \obsset_\text{CA}, \ham_\text{CA}) & \underbar{t} \leq t \leq \bar{t} \\
+\ctrl^*(t, \state_i; \targetset_i, \obsset_i, \ham_\text{L}) & t \geq \bar{t}
 \end{array}
 \right.
 \end{equation*}
 
 \begin{itemize}
-\item \textbf{Control policy while in the inner set depends on the policy used to compute the base obstacles.}
 \item \textbf{Explain computation of the base obstacles}
 \end{itemize}

@@ -1,14 +1,27 @@
 % !TEX root = ../SPP_journal.tex
-\subsection{Step 4}
-Under Assumption \ref{as:avoidOnce}, a vehicle $\veh{i}$ does not need to avoid an intruder more than once. Thus, after performing an avoidance maneuver, $\veh{i}$ can simply resume moving towards its destination given by $\targetset_i$ while avoiding the (un-augmented) obstacles $\obsset_i(t)$ in \eqref{eq:obsseti}\MCnote{Add equation reference}. The optimal controller for this task is obtained from the BRS $\brs_\text{L}(t, \targetset_i, \obsset_i, \ham_\text{liveness}$) given in Section \ref{sec:basic}.
-
-\subsubsection{Time-to-reach bound after intruder avoidance}
-Before avoiding the intruder $\veh{\intr}$, vehicle $\veh{i}$ uses the controller $\ctrl^*_\text{AO}(t, \state_i; \targetset_i, \bar\obsset_i, \ham_\text{AO})$, which by construction keeps its state $\state_i$ within the BRS $\brs_\text{AO}(t, \targetset_i, \bar\obsset_i, \ham_\text{AO})$. When $\veh{\intr}$ interferes, $\veh{i}$ is forced to perform an avoidance maneuver for a duration of up to $\iat$ in order to avoid collisions. 
-
-Regardless of what control is used for avoidance, $\veh{i}$ still remains within the FRS $\frs_\text{APS}(\iat, \brs(t, \targetset_i, \obsset_i, \ham_\text{nom}), \emptyset, \ham_\text{APS})$, which is the set of all possible states that $\veh{i}$ can reach starting from inside $\brs_\text{AO}(t)$. Here, the Hamiltonian is given by
+\subsection{Step 4: Optimal Avoidance Controller}
+First, we define relative coordinates of the intruder $\veh{\intr}$ with state $\state_\intr$ with respect to $\veh{i}$ with state $\state_i$.
 
 \begin{equation}
-\ham_\text{APS}(\state_i, p) = \min_{\ctrl_i} \min_{\dstb_i} p \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\label{eq:reldyn}
+\begin{aligned}
+\state_r &= \state_\intr - \state_i \\
+\dot \state_r &= f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{aligned}
 \end{equation}
 
-Let $\wcttr$ be the smallest time horizon for the BRS $\brs(\wcttr, \targetset_i, \obsset_i, \ham_\text{L})$ such that it contains $\frs(\iat, \brs(t, \targetset_i, \obsset_i, \ham_\text{nom}), \emptyset, \ham_\text{APS})$ entirely. Then, $\wcttr$ would be an upper bound on the time that $\veh{i}$ needs to safely arrive at $\targetset_i$ after avoiding the intruder $\veh{\intr}$.
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+
+\begin{equation}
+\begin{aligned}
+\targetset_\text{CA} &= \{\state_r: \|\pos_r\|_2 \le \rc\} \\
+\obsset_\text{CA} &= \emptyset \\
+H_\text{CA}(\state_r, p) &= \max_{\ctrl_i} \min_{\ctrl_\intr} p \cdot f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{aligned}
+\end{equation}
+
+Once the value function $\valfunc_\text{CA}(t, \state_r)$ representing $\brs_\text{CA}(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$ is computed, the optimal avoidance control $\ctrl^*_\text{CA}$ can be derived from \eqref{eq:opt_ctrl}.
+
+Under normal circumstances when the intruder $\veh{\intr}$ is far away, we have $\valfunc_\text{CA}(\iat, \state_r) > 0$; as the $\veh{\intr}$ gets closer to $\veh{i}$, $\valfunc_\text{CA}(\iat, \state_r)$ decreases. If $\veh{i}$ applies the control $\ctrl^*_\text{CA}$ when $\valfunc_\text{CA}(\iat, \state_r) = 0$, then collision avoidance between $\veh{i}$ and $\veh{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+
+In addition, under Assumption \ref{as:avoidOnce}, we have $\state_i \in \brs(\bar t, \targetset_i, \tilde\obsset(t))$. Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.

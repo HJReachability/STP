@@ -1,5 +1,5 @@
 % !TEX root = ../SPP_journal.tex
-\subsection{Step 2}
+\subsection{Step 2: Augmented Obstacle Computation}
 The goal of this section is to compute a ``safety region" around the obstacles $\obsset_i(.)$ such that no matter what $\veh{i}$ and disturbance do, it doesn't collide with any obstacle for $\iat$ seconds, if it starts outside this safety region. The utility of computing such a region will become clearer in Step 3. 
 
 We let $\tilde\obsset_i(t)$ the obstacles augmented by this region. To ensure that a vehicle does not hit the obstacle $\obsset_i(t_1 + t')$ at time $t = t_1 + t'$ starting at $t = t_1$, even when it applies any control for the next $t'$ seconds, it suffices to avoid the BRS of $\obsset_i(t_1 + t')$ computed backwards for $t'$ seconds. This argument applies for all obstacles to appear in the next $\iat$ seconds to ensure safety under any controller and disturbance for the next $\iat$ seconds. Mathematically,

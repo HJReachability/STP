@@ -1,0 +1,14 @@
+% !TEX root = ../SPP_journal.tex
+\subsection{Step 3: Intruder Avoidance}
+Under Assumption \ref{as:avoidOnce}, a vehicle $\veh{i}$ does not need to avoid an intruder more than once. Thus, after performing an avoidance maneuver, $\veh{i}$ can simply resume moving towards its destination given by $\targetset_i$ while avoiding the (un-augmented) obstacles $\obsset_i(t)$ in \eqref{eq:obsseti}\MCnote{Add equation reference}. The optimal controller for this task is obtained from the BRS $\brs_\text{L}(t, \targetset_i, \obsset_i, \ham_\text{liveness}$) given in Section \ref{sec:basic}.
+
+\subsubsection{Time-to-reach bound after intruder avoidance}
+Before avoiding the intruder $\veh{\intr}$, vehicle $\veh{i}$ uses the controller $\ctrl^*_\text{AO}(t, \state_i; \targetset_i, \tilde\obsset_i, \ham_\text{AO})$, which by construction keeps its state $\state_i$ within the BRS $\brs_\text{AO}(t, \targetset_i, \tilde\obsset_i, \ham_\text{AO})$. When $\veh{\intr}$ interferes, $\veh{i}$ is forced to perform an avoidance maneuver for a duration of up to $\iat$ in order to avoid collisions. 
+
+Regardless of what control is used for avoidance, $\veh{i}$ still remains within the FRS $\frs_\text{APS}(\iat, \brs(t, \targetset_i, \obsset_i, \ham_\text{nom}), \emptyset, \ham_\text{APS})$, which is the set of all possible states that $\veh{i}$ can reach starting from inside $\brs_\text{AO}(t)$. Here, the Hamiltonian is given by
+
+\begin{equation}
+\ham_\text{APS}(\state_i, p) = \min_{\ctrl_i} \min_{\dstb_i} p \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\end{equation}
+
+Let $\wcttr$ be the smallest time horizon for the BRS $\brs(\wcttr, \targetset_i, \obsset_i, \ham_\text{L})$ such that it contains $\frs(\iat, \brs(t, \targetset_i, \obsset_i, \ham_\text{nom}), \emptyset, \ham_\text{APS})$ entirely. Then, $\wcttr$ would be an upper bound on the time that $\veh{i}$ needs to safely arrive at $\targetset_i$ after avoiding the intruder $\veh{\intr}$.
