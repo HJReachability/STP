@@ -1,19 +1,36 @@
 % !TEX root = SPP_journal.tex
 \section{Problem Formulation \label{sec:formulation}}
-Given:
-\begin{itemize}
-\item SPP vehicles $\veh{i}, i = 1, \ldots, \N$.
-\item dynamics $\dot\state_i = f_i(\state_i, \ctrl_i, \dstb_i)$
-\item state $\state_i = (\pos_i, \npos_i)$
-\item control $\ctrl_i \in \cset_i$; disturbance $\dstb_i \in \dset_i$
-\item targets $\targetset_i$, danger zones $\dz_{ij}$ with capture radius $\rc$; 
+Consider $\N$ vehicles which participate in the SPP process and denote these \textit{SPP vehicles} $\veh{i}, i = 1, \ldots, \N$. We assume their dynamics are given by
+
+\begin{equation}
+\begin{aligned}
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i, \dstb_i), t \in [\edt, \sta] \\
+\state_i(\edt) &= \state^0_i \\
+\ctrl_i &\in \cset_i \\
+\dstb_i &\in \dset_i \\
+i &= 1 \ldots, \N
+\end{aligned}
+\end{equation}
+
+\noindent where $\state_i \in \R^{n_i}$ represents the state of vehicle $\veh{i}$, $\ctrl_i \in \cset_i$ the control of $\veh{i}$, and $\dstb_i \in \dset_i$ the disturbance experienced by $\veh{i}$. For convenience, we partition the state $\state_i$ into the position component $\pos_i \in \R^{n_\pos}$ and the non-position component $\npos_i \in \R^{n_i - n_\pos}$: $\state_i = (\pos_i, \npos_i)$.
+
+Each vehicle $\veh{i}$ has initial state $\state^0_i$, and departs after $\edt$, its earliest departure time. $\veh{i}$ aims to reach its target $\targetset_i$ by some scheduled time of arrival $\sta_i$. The target in general represents some set of desirable states, for example the destination of $\veh{i}$. On its way to $\targetset_i$, $\veh{i}$ must avoid a set of static obstacles $\sosetp \subset \R^{n_\pos}$. The interpretation of $\sosetp$ could be a tall building, a region around an airport, or any set of positions that are forbidden for the set of SPP vehicles. In terms of the state space $\state_i = (\pos_i, \npos_i)$ of vehicle $\veh{i}$, the forbidden set induced by the static obstacles $\sosetp$ is given by
+
+\begin{equation}
+\begin{aligned}
+\soset_i = \{\state_i \mid p_i \in \sosetp\}
+\end{aligned}
+\end{equation}
+
+In addition to the static obstacles, each vehicle $\veh{i}$ must also avoid the danger zones with respect to each of the other vehicle $\veh{j}, j\neq i$. The danger zones in general can represent any joint configuration between $\veh{i}$ and $\veh{j}$ that is considered to be unsafe. In this paper, we define the danger zone of $\veh{i}$ with respect to $\veh{j}$ to be
+
 \begin{equation}
 \dz_{ij} = \{(\state_i, \state_j): \dist(\pos_i, \pos_j) \le \rc\}
 \end{equation}
 
-\item static obstacles $\soset$.
-\item $\sta_i, \edt_i$ (should we mention earliest departure time?)
-\end{itemize}
+\noindent whose interpretation is that $\veh{i}$ and $\veh{j}$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other.
+
+The control of each vehicle $\veh{i}$ is constrained
 
 Compute:
 \begin{itemize}
