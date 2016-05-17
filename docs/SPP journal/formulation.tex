@@ -1,6 +1,6 @@
 % !TEX root = SPP_journal.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $\N$ vehicles which participate in the SPP process and denote these \textit{SPP vehicles} $\veh{i}, i = 1, \ldots, \N$. We assume their dynamics are given by
+Consider $\N$ vehicles which participate in the SPP process and denote these vehicles as \textit{SPP vehicles} $\veh{i}, i = 1, \ldots, \N$. We assume their dynamics are given by
 
 \begin{equation}
 \begin{aligned}
@@ -30,10 +30,10 @@ In addition to the static obstacles, each vehicle $\veh{i}$ must also avoid the 
 
 \noindent whose interpretation is that $\veh{i}$ and $\veh{j}$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other.
 
-The control of each vehicle $\veh{i}$ is constrained
+Given the set of SPP vehicles, their targets $\targetset_i$, the static obstacles $\sosetp$, and the vehicles' danger zones with respect to each other $\dz_{ij}$, we would like to for each vehicle $\veh{i}$ synthesize a controller that guarantees $\veh{i}$ reaches its target $\targetset_i$ at or before the scheduled time of arrival $\sta$, while avoiding the static obstacles $\sosetp$ as well as the danger zones with respect to all other vehicles $\dz{ij}, j\neq i$. In addition, we would like to obtain a bound on the latest departure time $\ldt$ such that $\veh{i}$ can still arrive at $\targetset_i$ on time.
 
-Compute:
-\begin{itemize}
-\item See older SPP papers
-\item $\ldt_i$
-\end{itemize}
+In general, the above path planning problem must be solved in the joint space of all $\N$ SPP vehicles. However, due to the high joint problem dimensionality, a direct dynamic programming-based solution is intractable. Therefore, we propose to assign a priority to each vehicle, and perform SPP given the assigned priorities. Without loss of generality, $\veh{i}$ has a higher priority than $\veh{j}, j>i$. Under the SPP scheme, higher priority vehicles can ignore the presence of lower priority vehicles, and perform path planning without taking into account the lower priority vehicles' danger zones. A lower priority vehicle $\veh{i}$, on the other hand, must ensure that it does not enter the danger zones of the higher priority vehicles $\veh{j}, j<i$; each higher priority vehicle $\veh{j}$ induces a set of time-varying obstacles $\ioset_i^j(t)$.
+
+It is straight-forward to see that if each vehicle $\veh{i}$ is able to plan a trajectory that takes it to $\targetset_i$ while avoiding the static obstacles $\sosetp$ and the danger zones of higher priority vehicles $\veh{j}, j<i$, then the set of SPP vehicles $\veh{i}, i=1,\ldots,\N$ would all be able to reach their targets safely. With the SPP scheme, the additional structure provided by the vehicle priorities allows us to reduce the complexity joint path planning problem. As we will see, under the SPP scheme, path planning can be done sequentially in descending order of vehicle priority in the state space of only a single vehicle. Thus, SPP provides a solution whose complexity that scales linearly with the number of vehicles, as opposed to exponentially with a direct application of dynamic programming approaches.
+
+In the following sections, we will explore SPP under different assumptions. We begin with the basic solution in which disturbances are ignored and perfect information of vehicles' positions is assumed. Next, we show how the basic SPP approach can be robustified by taking into account the presence disturbances as well as an imperfect knowledge of other vehicles' states. Finally, we further robustify the SPP approach by considering how the set of SPP vehicles may respond to the presence of an intruder vehicle. \MCnote{This paragraph might be better in the introduction}

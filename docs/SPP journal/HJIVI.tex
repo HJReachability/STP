@@ -1,5 +1,23 @@
 % !TEX root = SPP_journal.tex
 \section{Double-Obstacle Hamilton-Jacobi Variational Inequality \label{sec:HJIVI}}
+The goal of reachability analysis is to compute either a backwards reachable set (BRS) $\brs$ or a forward reachable set (FRS) $\frs$, given some time-varying target set $\targetset(t)$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ or FRS $\frs$ with given parameters $\targetset(\cdot), \obsset(\cdot), \ham$ will be denoted by
+
+\begin{equation}
+\begin{aligned}
+\brs(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{ (backward reachable set)}\\
+\frs(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{ (forward reachable set)}
+\end{aligned}
+\end{equation}
+
+In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles on its way to the target. Reachability theory is a powerful tool for performing optimal path planning with hard guarantees on safety and performance under disturbances. For our application in SPP, we utilize the time-varying formulation in \cite{}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{}, a BRS is computed by solving the double-obstacle HJ VI:
+
+\begin{equation}
+\begin{aligned}
+\max \{ \min \{D_t \valfunc,  \} \}
+\end{aligned}
+\end{equation}
+
+
 Notation:
 \begin{itemize}
 \item Backwards reachable set from target set $\targetset$ with obstacle set $\obsset(t)$: $\brs(t, \targetset, \obsset, \ham)$ (second argument is target set, third argument is obstacle set, fourth argument is Hamiltonian)
