@@ -7,6 +7,8 @@ N = [51; 51; 51];
 pdDim = 3;
 g = createGrid(grid_min, grid_max, N, pdDim);
 
+Nfine = [101; 101; 101];
+base_g = createGrid(grid_min, grid_max, Nfine, pdDim);
 %% time vector
 dt = 0.025;
 tIAT = 2;
@@ -19,12 +21,21 @@ schemeData.grid = g;
 schemeData.hamFunc = @dubins3DHamFunc;
 schemeData.partialFunc = @dubins3DPartialFunc;
 
+schemeDataFine = schemeData;
+schemeDataFine.grid = base_g;
 %% Initial conditions
-data0{1} = shapeCylinder(g, 3, [0; 0; 0], 0.5+0.5*rand);
-data0{2} = shapeSphere(g, -1 + 2*rand(3,1), 1+rand);
+data0{1} = shapeCylinder(g, 3, [0; 0; 0], 0.5);
+data0{2} = shapeSphere(g, -1 + 2*rand(3,1), 0.5);
 
 %% Base reachable set
-[g, base_data] = computeBaseBRS(g, tau, g.dx, schemeData);
+filename = ['baseBRS_' num2str(schemeData.U(1)) '_' num2str(schemeData.U(2)) ...
+  '_' num2str(schemeData.speed)];
+if exist(filename, 'file')
+  load(filename)
+else
+  [base_g, base_data] = computeBaseBRS(tau, g.dx, schemeDataFine);
+  save(filename, 'base_g', 'base_data')
+end
 
 for i = 1:length(data0)
   %% Compute reachable set directly
@@ -32,15 +43,15 @@ for i = 1:length(data0)
   
   %% Compute reachable set by union
   tic
-  dataUnion = computeDataByUnion(g, base_data(:,:,:,end), data0{i});
+  dataUnion = computeDataByUnion(base_g, base_data(:,:,:,end), g, data0{i});
   toc
-  
+
   %% Visualize
   figure
   hT = visSetIm(g, dataTrue(:,:,:,end));
   hT.FaceAlpha = 0.5;
-  
-  hold on  
+
+  hold on
   hU = visSetIm(g, dataUnion, 'b');
   hU.FaceAlpha = 0.5;
 end

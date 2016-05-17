@@ -1,18 +1,17 @@
-function data = computeDataByUnion(g, base_data, target, pdims, adim)
+function data = computeDataByUnion(base_g, base_data, g, target, pdims, adim)
 
 % Default position dimensions
-if nargin < 4
+if nargin < 6
   pdims = [1 2];
 end
 
 % Default angle dimension
-if nargin < 5
+if nargin < 6
   adim = 3;
 end
 
-
-% For now, use common grid; later on, a finer grid may be needed for
-% base_data
+% Transfer base data to the same grid as the target set
+base_data = migrateGrid(base_g, base_data, g);
 
 %% Get indices of points inside target
 in_target = find(target<0);

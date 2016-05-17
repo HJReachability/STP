@@ -1,15 +1,7 @@
-function [g, data] = computeBaseBRS(g, tau, twidth, schemeData)
+function [g, data] = computeBaseBRS(tau, twidth, schemeData)
 addpath('..')
 
 if nargin < 1
-  grid_min = [-5; -5; -pi];
-  grid_max = [5; 5; pi];
-  N = [51; 51; 51];
-  pdDim = 3;
-  g = createGrid(grid_min, grid_max, N, pdDim);
-end
-
-if nargin < 2
   dt = 0.025;
   tIAT = 2;
   tau = 0:dt:tIAT;
@@ -19,9 +11,10 @@ if nargin < 3
   twidth = g.dx;
 end
 
-data0 = shapeRectangleByCorners(g, -twidth/2, twidth/2);
+g = schemeData.grid;
+data0 = shapeRectangleByCorners(schemeData.grid, -twidth/2, twidth/2);
 
-if nargin < 4
+if nargin < 3
   schemeData.U = [-1 1];
   schemeData.speed = 1;
   schemeData.grid = g;
