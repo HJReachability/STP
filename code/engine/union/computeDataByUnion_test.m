@@ -1,10 +1,11 @@
 function computeDataByUnion_test()
 % Tests the computeDataByUnion function
+addpath(genpath('..'))
 
 %% Grid
 grid_min = [-5; -5; -pi];
 grid_max = [5; 5; pi];
-N = [51; 51; 51];
+N = [75; 75; 75];
 pdDim = 3;
 g = createGrid(grid_min, grid_max, N, pdDim);
 
@@ -16,11 +17,11 @@ tIAT = 2;
 tau = 0:dt:tIAT;
 
 %% Problem parameters
-schemeData.U = [-1 1];
+schemeData.uMax = 1;
 schemeData.speed = 1;
 schemeData.grid = g;
-schemeData.hamFunc = @dubins3DHamFunc;
-schemeData.partialFunc = @dubins3DPartialFunc;
+schemeData.hamFunc = @dubins3Dham;
+schemeData.partialFunc = @dubins3Dpartial;
 
 schemeDataFine = schemeData;
 schemeDataFine.grid = base_g;
@@ -29,8 +30,9 @@ data0{1} = shapeCylinder(g, 3, [0; 0; 0], 0.5);
 data0{2} = shapeSphere(g, -1 + 2*rand(3,1), 0.5);
 
 %% Base reachable set
-filename = ['baseBRS_' num2str(schemeData.U(1)) '_' num2str(schemeData.U(2)) ...
+filename = ['baseBRS_' num2str(schemeData.uMax) ...
   '_' num2str(schemeData.speed) '.mat'];
+
 if exist(filename, 'file')
   load(filename)
 else
