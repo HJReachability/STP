@@ -1,4 +1,5 @@
 function computeDataByUnion_test()
+% Tests the computeDataByUnion function
 
 %% Grid
 grid_min = [-5; -5; -pi];
@@ -7,7 +8,7 @@ N = [51; 51; 51];
 pdDim = 3;
 g = createGrid(grid_min, grid_max, N, pdDim);
 
-Nfine = [101; 101; 101];
+Nfine = [151; 151; 151];
 base_g = createGrid(grid_min, grid_max, Nfine, pdDim);
 %% time vector
 dt = 0.025;
@@ -29,12 +30,13 @@ data0{2} = shapeSphere(g, -1 + 2*rand(3,1), 0.5);
 
 %% Base reachable set
 filename = ['baseBRS_' num2str(schemeData.U(1)) '_' num2str(schemeData.U(2)) ...
-  '_' num2str(schemeData.speed)];
+  '_' num2str(schemeData.speed) '.mat'];
 if exist(filename, 'file')
   load(filename)
 else
-  [base_g, base_data] = computeBaseBRS(tau, g.dx, schemeDataFine);
-  save(filename, 'base_g', 'base_data')
+  base_data0 = shapeRectangleByCorners(base_g, -g.dx/2, g.dx/2);
+  base_data = HJIPDE_solve(base_data0, tau, schemeDataFine, 'zero');
+  save(filename, 'base_g', 'base_data', '-v7.3')
 end
 
 for i = 1:length(data0)
