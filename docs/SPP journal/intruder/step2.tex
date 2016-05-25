@@ -14,4 +14,4 @@ $\ham_{\mathcal{G}}$ is given by:
 \ham_{\mathcal{G}}(\state_i, p) = \min_{\ctrl_i} \min_{\dstb_i} p \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Finally, we compute a BRS that contains the initial state of $\veh{i}$ while these augmented obstacles, $\brs_\text{AO}(t, \targetset_i, \bar\obsset_i, \ham_\text{AO})$, where $\ham_\text{AO} = \ham_{\mathcal{G}}$. Note that this BRS ensures liveness for $\veh{i}$ in the absence of intruder. Moroever, if we start from $\brs_\text{AO}$, we are guaranteed to avoid collision for $\iat$ seconds, irrespective of control and disturbance applied. 
+Finally, we compute a BRS that contains the initial state of $\veh{i}$ while these augmented obstacles, $\brs_\text{AO}(t, \targetset_i, \bar\obsset_i, \ham_\text{AO})$, where $\ham_\text{AO} = \ham_{\mathcal{G}}$ (\textbf{Somil}: this is not correct. Disturbance should maximize the Hamiltonian for this BRS.) Note that this BRS ensures liveness for $\veh{i}$ in the absence of intruder. Moroever, if we start from $\brs_\text{AO}$, we are guaranteed to avoid collision for $\iat$ seconds, irrespective of control and disturbance applied. 
