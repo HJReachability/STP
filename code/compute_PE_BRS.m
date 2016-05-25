@@ -1,4 +1,4 @@
-function [g, data] = compute_PE_BRS(Plane1, Plane2, PEmode, Rc, tau)
+function PE_BRS = compute_PE_BRS(Plane1, Plane2, PEmode, Rc, tau)
 % [g, data] = compute_PE_BRS(Plane1, Plane2, Rc, tau)
 %   Computes the backward reachable set for pursuit evasion
 %
@@ -40,10 +40,10 @@ grid_min = [-6; -10; 0];
 grid_max = [20; 10; 2*pi];
 N = [51; 51; 51];
 pdDim = 3;
-g = createGrid(grid_min, grid_max, N, pdDim);
+PE_BRS.g = createGrid(grid_min, grid_max, N, pdDim);
 
 %% Copy over Plane parameters
-schemeData.grid = g;
+schemeData.grid = PE_BRS.g;
 schemeData.vrange1 = Plane1.vrange;
 schemeData.vrange2 = Plane2.vrange;
 schemeData.w1Max = Plane1.wMax;
@@ -53,7 +53,12 @@ schemeData.PEmode = PEmode;
 schemeData.hamFunc = @dubins3DPEham;
 schemeData.partialFunc = @dubins3DPEpartial;
 
-%% Initial condition and solution
+%% Initial condition, solution, gradient, and output
 data0 = shapeCylinder(g, 3, [0; 0; 0], Rc);
-data = HJIPDE_solve(data0, tau, schemeData, 'zero');
+PE_BRS.data = HJIPDE_solve(data0, tau, schemeData, 'zero');
+
+% Compute gradient
+PE_BRS.grad = extractCostates(g, PE_BRS.data);
+
+
 end
