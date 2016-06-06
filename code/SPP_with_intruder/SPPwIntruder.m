@@ -253,11 +253,15 @@ for veh=1:numVeh
   extraArgs.visualize = true;
   extraArgs.plotData.plotDims = [1, 1, 0];
   extraArgs.plotData.projpt = Q{veh}.initState(3);
+  extraArgs.obstacles = Q{veh}.data0;
   
   % Set tau
   tau = 0:dt:tIAT;
   
-  dataFRS = HJIPDE_solve(data(:,:,:,end), tau, schemeData,...
+  % Set the initial data 
+  data0 = shapeDifference(data(:,:,:,end), Q{veh}.data0);
+  
+  dataFRS = HJIPDE_solve(data0, tau, schemeData,...
     'zero', extraArgs);
   
   %% Step-3b: Compute a BRS that contains the FRS in Step-3a
