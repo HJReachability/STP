@@ -144,11 +144,11 @@ for veh=1:numVeh
     else
       unionObs = obstacles;
     end
+    
+    % Save the sets, just in case
+    filename = sprintf('SPPwIntruder_check1_%f', veh);
+    save(filename, 'Q', 'unionObs', '-v7.3') 
   end
-  
-  % Save the sets, just in case
-  filename = sprintf('SPPwIntruder_check1_%f', veh);
-  save(filename, 'Q', 'unionObs', '-v7.3')
   
   %% Step-2a: Augment the obstacles by a tIAT step BRS
   % It should be simply the obstacles in Step1 augmented by a tIAT-step
@@ -203,11 +203,11 @@ for veh=1:numVeh
       extraArgs.visualize = false;
     end
     obstacles(:, :, :, numObs) = unionObs(:, :, :, numObs);
+    
+    % Save the sets, just in case
+    filename = sprintf('SPPwIntruder_check2_%f', veh);
+    save(filename, 'obstacles', '-v7.3')
   end
-  
-  % Save the sets, just in case
-  filename = sprintf('SPPwIntruder_check2_%f', veh);
-  save(filename, 'obstacles', '-v7.3')
   
   %% Step-2b: Compute the BRS of the vehicle with the above obstacles
   % Set schemeData
