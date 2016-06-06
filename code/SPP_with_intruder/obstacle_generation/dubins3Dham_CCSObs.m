@@ -1,9 +1,9 @@
 function hamValue = dubins3Dham_CCSObs(t, data, deriv, schemeData)
-% hamValue = dubins3Dham_baseObs(t, data, deriv, schemeData)
+% hamValue = dubins3Dham_CCSObs(t, data, deriv, schemeData)
 %   Hamiltonian function for Dubins car used with the level set toolbox.
 %   However the function is modified such that speed and turn rate range
 %   can vary for every state. This function is specialized for computing
-%   obsatcles using a centralized controller scheme (CCS).
+%   obstacles using a centralized controller scheme (CCS).
 %
 % Inputs:
 %   schemeData - problem parameters
@@ -27,28 +27,44 @@ function hamValue = dubins3Dham_CCSObs(t, data, deriv, schemeData)
 %
 % Somil Bansal, 2016-05-26
 
-checkStructureFields(schemeData, 'grid', 'vrange', 'wrange', 'data_BRS', 'reset_input');
+checkStructureFields(schemeData, 'grid', 'vrange', 'wMax', 'data_BRS', 'reset_input');
 
 g = schemeData.grid;
 
-%% Speed range
+%% Compute the input range
+% Speed range
 vrange = schemeData.vrange;
 if isscalar(vrange)
-  vrange{1} = vrange;
-  vrange{2} = vrange;
+  vrange = [vrange vrange];
 end
-vMin = vrange{1};
-vMax = vrange{2};
 
-%% Turnrate
-wrange = schemeData.wrange;
-if isscalar(wrange)
-  wrange{1} = -wrange;
-  wrange{2} = wrange;
+% TurnRate
+wMax = schemeData.wMax;
+
+if(schemeData.reset_input)
+  % Use the full range
+  velocity{1} = vrange(1);
+  velocity{2} = vrange(2);
+  turnR{1} = -wMax;
+  turnR{2} = wMax;
+else
+  % Extract the optimal input
+  P = extractCostates(g, schemeData.data_BRS);
+  optW = (P{3} >= 0) * -wMax + (P{3} < 0) * wMax;
+  optV = ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) >= 0) * vrange(1)...
+    + ((P{1}.*cos(g.xs{3}) + P{2}.*sin(g.xs{3})) < 0) * vrange(2);
+  velocity{1} = optV;
+  velocity{2} = optV;
+  turnR{1} = optW;
+  turnR{2} = optW;
 end
-wNom = 0.5*(wrange{1} + wrange{2});
-wMax = wrange{2} - wNom;
 
+% Extract the inputs
+vMin = velocity{1};
+vMax = velocity{2};
+wNom = 0.5*(turnR{1} + turnR{2});
+wMax = turnR{2} - wNom;
+  
 %% Defaults: min over control, max over disturbance, backward reachable set
 if ~isfield(schemeData, 'uMode')
   schemeData.uMode = 'min';

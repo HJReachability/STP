@@ -7,12 +7,16 @@ function [data, update_flag] = check_obssize(g, data, reset_radius)
 num_isl = length(cs);
 
 % Initialize the update flag
-updat_flag = false;
+update_flag = false;
+
+reset_radius = reshape(reset_radius, size(rs{1}));
 
 % Now add the obstacle corresponding to each islands
 for i=1:num_isl
-    if(min(rNs{i}) <= 1)
-        reset_indices = find(rNs{i} <= 1);
+%     if(min(rNs{i}) <= 1)
+    if(min(rs{i}-reset_radius) < 0)
+%         reset_indices = find(rNs{i} <= 1);
+        reset_indices = find(rs{i}-reset_radius < 0);
         rs{i}(reset_indices) = reset_radius(reset_indices)';
         collisionObs1 = sqrt((1/rs{i}(1)^2)*(g.xs{1} - cs{i}(1)).^2 + (1/rs{i}(2)^2)*(g.xs{2} - cs{i}(2)).^2 +...
             (1/rs{i}(3)^2)*(g.xs{3} - cs{i}(3)).^2) - 1;
