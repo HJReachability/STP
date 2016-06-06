@@ -15,7 +15,7 @@ g = createGrid(grid_min, grid_max, N, pdDims);
 t0 = 0;
 tMax = 4;
 dt = 0.01;
-tIAT = 0.2;
+tIAT = 0.1;
 
 %% problem parameters
 % Vehicle
