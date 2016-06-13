@@ -1,16 +1,58 @@
 % !TEX root = SPP_journal.tex
 \section{Basic SPP Solution\label{sec:basic}}
-Notation:
-\begin{itemize}
-\item Obstacle induced by vehicle $j$ for vehicle $i$: $\ioset_i^j(t)$
-\item ``Basic'' liveness Hamiltonian:
+\MCnote{Algorithm is a lot clearer than writing. Change writing to match algorithm}In this section, we introduce the basic SPP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle has the exact state information of higher priority vehicles. Although in practice, such assumptions do not hold, the basic SPP algorithm can serve as a useful approximation in certain situations. In addition, the description of the basic SPP will introducing the notation needed for describing the subsequent more realistic versions of SPP. 
+
+Recall that the SPP vehicles $\veh{i}, i=1,\ldots,N$, are each assigned a strict priority, with $\veh{j}$ having a higher priority than $\veh{i}$ if $j<i$. Without the presence of disturbances, we can write the dynamics the SPP vehicles as
 
 \begin{equation}
-H_\text{liveness}(t, x, p) = \min_{\ctrl_i} \max_{\dstb_i} p \cdot f_i(\state_i, \ctrl_i, \dstb_i)
+\begin{aligned}
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \in [\edt, \sta] \\
+\state_i(\edt) &= \state^0_i \\
+\ctrl_i &\in \cset_i \\
+i &= 1 \ldots, \N
+\end{aligned}
 \end{equation}
+
+In SPP, each vehicle $\veh{i}$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset$ and the obstacles $\ioset_i^j(t)$ induced by higher priority vehicles $\veh{j}, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh{1}, \veh{2}, \ldots, \veh{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. In its path planning process, $\veh{i}$ ignores the presence of the lower priority vehicles $\veh{k}, k>i$, and induces the obstacles $\ioset_k^i(t), k>i$.
+
+From the perspective of $\veh{i}$, each of the higher priority vehicles $\veh{j}, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$. Therefore, each vehicle $\veh{i}$ must plan its path to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh{i}$ must avoid on its way to $\targetset_i$:
 
 \begin{equation}
 \label{eq:obsseti}
-\obsset_i(t)
+\obsset_i(t)  = \soset \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
 \end{equation}
-\end{itemize}
+
+With full state information of higher priority vehicles, the obstacle induced for $\veh{i}$ by $\veh{j}$ is simply
+
+\begin{equation}
+\label{eq:ioset}
+\ioset_i^j(t) = \{\state_i \mid (\state_i, \state_j(t)) \in \dz_{ij}\}
+\end{equation}
+
+Each higher priority vehicle $\veh{j}$ plans its path while ignoring $\veh{i}$. Since path planning is done sequentially in descending order or priority, the vehicles $\veh{j}, j<i$ would have planned their paths before $\veh{i}$ does. Thus, in the absence of disturbances, $\state_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the path planning problem for $\veh{i}$ can be solved by first computing the BRS $\brs(t, \targetset_i, \obsset_i(t), \basicham)$. Since the control $\ctrl_i$ aims to reach $\targetset_i$, the Hamiltonian is given by
+
+\begin{equation}
+\label{eq:basicham}
+\basicham(t, \state_i, p) = \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
+\end{equation}
+
+$\brs(t, \targetset_i, \obsset_i(t), \basicham)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targetset = \targetset_i$, $\obsset = \obsset_i$, and $\ham=\basicham$: 
+
+\begin{equation}
+\brs(t, \targetset_i, \obsset_i(t), \basicham) = \{\state_i \mid \valfunc(t, \state_i;  \targetset_i, \obsset_i(t), \basicham)\}
+\end{equation}
+
+The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by $\ctrl_i^*(\cdot, \targetset_i, \obsset_i(t), \basicham)$, defined in \eqref{eq:opt_ctrl}.
+
+In summary, the basic SPP algorithm is given as follows:
+
+\begin{alg}
+\label{alg:basic}
+\textbf{Basic SPP algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics $\fdyn_i(t, \state_i, \ctrl_i)$, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\begin{enumerate}
+\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
+\item Compute the BRS $\brs(t, \targetset_i, \obsset_i(t), \basicham)$ with the HJ VI given in  \eqref{eq:HJIVI_BRS}.
+\item Determine the trajectory $\state_i(\cdot)$ using the initial condition $\state_i^0$ and vehicle dynamics $\fdyn(t, \state_i, \ctrl_i^*)$, where the optimal control  $\ctrl_i^*(\cdot, \targetset_i, \obsset_i(t), \basicham)$ is given by \eqref{eq:opt_ctrl}.
+\item Given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absense of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset}.
+\end{enumerate}
+\end{alg}
