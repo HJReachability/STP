@@ -48,13 +48,15 @@
 \newcommand{\dz}{\mathcal{Z}} % danger zone
 
 \newcommand{\valfunc}{V} % value function
-\newcommand{\valfuncfwd}{V} % value function for forwards reachable set
+\newcommand{\valfuncfwd}{W} % value function for forwards reachable set
 \newcommand{\brs}{\mathcal{V}} % backwards reachable set
 \newcommand{\frs}{\mathcal{W}} % forwards reachable set
 \newcommand{\pfrs}{\mathcal{P}} % projected forwards reachable set
 \newcommand{\targetset}{\mathcal{L}} % target set
 \newcommand{\ham}{H} % Hamiltonian
-
+\newcommand{\fc}{l} % Final condition
+\newcommand{\ic}{l} % Initial condition
+\newcommand{\obsfunc}{g} % Obstacle function
 
 \newcommand{\edt}{t^\text{EDT}} % earliest departure time
 \newcommand{\ldt}{t^\text{LDT}} % latest departure time
@@ -66,6 +68,8 @@
 \newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
 \newcommand{\wcttr}{t^\text{WC}} % worst case TTR
 
+\newcommand{\basicham}{\ham_\text{basic}}
+
 \newcommand{\tsa}{\underline{t}} % time of start of avoidance
 \newcommand{\tea}{\bar{t}} % time of end of avoidance
 
@@ -73,6 +77,7 @@
 \newcommand{\tracklaw}{\kappa} % Robust tracking law
 
 \newtheorem{assumption}{Assumption}
+\newtheorem{alg}{Algorithm}
 
 \title{\LARGE \bf Sequential Path Planning}
 
