@@ -13,13 +13,13 @@ g = createGrid(grid_min, grid_max, N, pdDims);
 
 %% time vector
 t0 = 0;
-tMax = 4;
+tMax = 5;
 dt = 0.01;
 tIAT = 0.1;
 
 %% problem parameters
 % Vehicle
-speed = [0.5 1];
+speed = [0.1 1];
 U = 1;
 Rc = 0.1;
 dMax = [0.1 0.2];
@@ -45,6 +45,13 @@ Q{1}.data0 = shapeCylinder(g, 3, [0.7; 0.2; 0], R);
 Q{2}.data0 = shapeCylinder(g, 3, [-0.7; 0.2; 0], R);
 Q{3}.data0 = shapeCylinder(g, 3, [0.7; -0.7; 0], R);
 Q{4}.data0 = shapeCylinder(g, 3, [-0.7; -0.7; 0], R);
+
+%% Reduced target set for the first BRS
+R1 = 0.03;
+Q{1}.redTar = shapeCylinder(g, 3, [0.7; 0.2; 0], R1);
+Q{2}.redTar = shapeCylinder(g, 3, [-0.7; 0.2; 0], R1);
+Q{3}.redTar = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
+Q{4}.redTar = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
 
 %% initial States
 Q{1}.initState = [-0.5, 0, 0]';
@@ -234,7 +241,7 @@ for veh=1:numVeh
   % Computation should stop once it contains the initial state
   extraArgs.stopInit = Q{veh}.initState;
   
-  [data, tau, ~] = HJIPDE_solve(Q{veh}.data0, tau, schemeData,...
+  [data, tau, ~] = HJIPDE_solve(Q{veh}.redTar, tau, schemeData,...
     'zero', extraArgs);
   
   % Assign these sets to the vehicle
@@ -278,7 +285,7 @@ for veh=1:numVeh
   extraArgs = [];
   extraArgs.visualize = true;
   extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.initState(3);;
+  extraArgs.plotData.projpt = Q{veh}.initState(3);
   
   % Stop the computation once the BRS includes the FRS (and thus also
   % contains the initial state)
@@ -294,6 +301,11 @@ for veh=1:numVeh
   % Assign these sets to the vehicle
   Q{veh}.data_BRS2 = data;
   Q{veh}.tau_BRS2 = tau;
+  
+%   % For debugging purposes
+%   filename = sprintf('SPPwIntruder_debug_FRSinclusionissue_try6');
+%   save(filename, 'Q', 'dataFRS', '-v7.3');
+%   break;
   
   %% Step-3c: Compute the base obstacles for vehicles
   
