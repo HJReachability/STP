@@ -326,8 +326,8 @@ for veh=1:numVeh
   % Set extraArgs
   extraArgs = [];
   extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.initState(3);
+  extraArgs.plotData.plotDims = [1, 1, 1];
+  extraArgs.plotData.projpt = [];
   
   extraArgs.genparams.data = Q{veh}.data_BRS2(:, :, :, end:-1:1);
   extraArgs.genparams.reset_thresholds = resetR;
