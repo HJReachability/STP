@@ -75,7 +75,7 @@ for veh=1:numVeh
   if veh ~= 1
     
     % Extract the base obstacles
-    obstacles = fixedScaleObs;
+    obstacles = Q{veh-1}.Obs;
     numObs = size(obstacles, g.dim+1);
     
     % Append the base obstacles by a tIAT step FRS
@@ -135,7 +135,7 @@ for veh=1:numVeh
     % the union makes sense
     fixedtau = 0:dt:tMax;
     fixedScaleObs = repmat(ones(g.shape), [ones(1,g.dim) length(fixedtau)]);
-    fixedScaleObs(:, :, :, end-length(tau):end) = obstacles;
+    fixedScaleObs(:, :, :, end-numObs:end-1) = obstacles;
     
     % Overload the obstacles with these new obstacles
     obstacles = fixedScaleObs;
@@ -343,6 +343,6 @@ for veh=1:numVeh
   
   % Save the sets, just in case
   filename = sprintf('SPPwIntruder_check3_%f', veh);
-  save(filename, 'Q', 'unionObs', 'fixedScaleObs', '-v7.3')
+  save(filename, 'Q', 'dataFRS', '-v7.3')
   
 end
