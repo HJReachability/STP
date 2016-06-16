@@ -9,10 +9,10 @@ pdDims = 3;               % 3rd diemension is periodic
 g = createGrid(grid_min, grid_max, N, pdDims);
 
 %% Visualize a slice
-slice = 5.6;
+slice = 3.45;
 figure,
 % First BRS
-data1 = Q{1}.data_BRS1(:, :, :, end);
+data1 = Q{2}.data_BRS1(:, :, :, end);
 [gProj, dataProj] = proj(g, data1, [0 0 1], slice);
 hT1 = visSetIm(gProj, dataProj, 'r', 0, [], false);
 hT1.LineWidth = 2;
@@ -25,7 +25,7 @@ hT2 = visSetIm(gProj, dataProj, 'b', 0, [], false);
 hT2.LineWidth = 2;
 
 % Second BRS
-data3 = Q{1}.data_BRS2(:, :, :, end);
+data3 = Q{2}.data_BRS2(:, :, :, end);
 [gProj, dataProj] = proj(g, data3, [0 0 1], slice);
 hT3 = visSetIm(gProj, dataProj, 'k', 0, [], false);
 hT3.LineWidth = 2;
@@ -47,7 +47,7 @@ hT2 = visSetIm(g, data2, 'b', 0, [], false);
 data3 = Q{1}.data_BRS2(:, :, :, end);
 hT3 = visSetIm(g, data3, 'k', 0, [], false);
 
-hT3.FaceAlpha = 0.3;
-hT2.FaceAlpha = 0.6;
+% hT3.FaceAlpha = 0.3;
+% hT2.FaceAlpha = 0.6;
 
 legend('BRS1', 'FRS', 'BRS2');
