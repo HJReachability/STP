@@ -153,7 +153,7 @@ for veh=1:numVeh
     end
     
     % Save the sets, just in case
-    filename = sprintf('SPPwIntruder_check1_%f', veh);
+    filename = sprintf('SPPwIntruder_check1_%d', veh);
     save(filename, 'Q', 'unionObs', '-v7.3') 
   end
   
@@ -212,7 +212,7 @@ for veh=1:numVeh
     obstacles(:, :, :, numObs) = unionObs(:, :, :, numObs);
     
     % Save the sets, just in case
-    filename = sprintf('SPPwIntruder_check2_%f', veh);
+    filename = sprintf('SPPwIntruder_check2_%d', veh);
     save(filename, 'obstacles', '-v7.3')
   end
   
@@ -342,7 +342,7 @@ for veh=1:numVeh
   Q{veh}.Obstau = tau;
   
   % Save the sets, just in case
-  filename = sprintf('SPPwIntruder_check3_%f', veh);
+  filename = sprintf('SPPwIntruder_check3_%d', veh);
   save(filename, 'Q', 'dataFRS', '-v7.3')
   
 end
