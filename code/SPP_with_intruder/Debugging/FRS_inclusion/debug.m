@@ -47,7 +47,7 @@ hT2 = visSetIm(g, data2, 'b', 0, [], false);
 data3 = Q{1}.data_BRS2(:, :, :, end);
 hT3 = visSetIm(g, data3, 'k', 0, [], false);
 
-% hT3.FaceAlpha = 0.3;
-% hT2.FaceAlpha = 0.6;
+hT3.FaceAlpha = 0.3;
+hT2.FaceAlpha = 0.6;
 
 legend('BRS1', 'FRS', 'BRS2');

@@ -50,6 +50,11 @@ else
   error('Obstacle generation parameters needs to be mentioned!')
 end
 
+% Extract the information about targets
+if isfield(extraArgs, 'targets')
+  targets = extraArgs.targets;
+end
+
 %% SchemeFunc and SchemeData
 schemeFunc = @termLaxFriedrichs;
 % Extract accuracy parameter o/w set default accuracy
@@ -100,6 +105,16 @@ for i = 2:length(tau)
     if strcmp(minWith, 'zero')
       y = min(y, yLast);
     end 
+    
+    % Min with targets
+    if isfield(extraArgs, 'targets')
+      if numDims(targets) == schemeData.grid.dim
+        y = min(y, targets(:));
+      else
+        target_i = targets(colons{:}, i);
+        y = min(y, target_i(:));
+      end
+    end
     
     % Reset the base obstacles if they go below the threshold
     schemeData.reset_input = false;

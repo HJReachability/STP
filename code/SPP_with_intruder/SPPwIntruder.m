@@ -54,10 +54,15 @@ Q{3}.redTar = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
 Q{4}.redTar = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
 
 %% initial States
-Q{1}.initState = [-0.5, 0, 0]';
-Q{2}.initState = [ 0.5, 0, pi]';
-Q{3}.initState = [-0.6, 0.6, 7*pi/4]';
-Q{4}.initState = [ 0.6, 0.6, 5*pi/4]';
+% Q{1}.initState = [-0.5, 0, 0]';
+% Q{2}.initState = [ 0.5, 0, pi]';
+% Q{3}.initState = [-0.6, 0.6, 7*pi/4]';
+% Q{4}.initState = [ 0.6, 0.6, 5*pi/4]';
+% Chnaged because the above conditions were too far
+Q{1}.initState = [-0.1, 0, 0]';
+Q{2}.initState = [ 0.1, 0, pi]';
+Q{3}.initState = [-0.1, 0.1, 7*pi/4]';
+Q{4}.initState = [ 0.1, 0.1, 5*pi/4]';
 
 %% base obstacle data
 % reset radius
@@ -116,10 +121,50 @@ for veh=1:numVeh
     % obstacle sequence
     shifts = floor((tIAT - t0)/dt);
     % For the tIAT time just use the first obstacle
-    obstacles(:, :, :, 1:shifts) = repmat(obstacles(:, :, :, 1), ...
-      [ones(1,g.dim) shifts]);
-    % Thereafter shift the obstacles by tIAT
-    obstacles(:, :, :, shifts+1:end) = obstacles(:, :, :, 1:end-shifts);
+    obsShift = repmat(obstacles(:, :, :, 1), [ones(1,g.dim) shifts]);
+    
+    % Now compute the obstacles cooresponding to the intruder appearing in
+    % the past
+    % Set schemeData
+    schemeDataBaseObs = schemeData;
+    schemeDataBaseObs.uMode = 'max';
+    schemeDataBaseObs.dMode = 'max';
+    schemeDataBaseObs.tMode = 'forward';
+    
+    % System dynamics
+    schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
+    schemeDataBaseObs.partialFunc = @dubins3Dpartial;
+    
+    % Set tau
+    % Obstacle is not computed at the last time step
+    tau = tIAT:dt:Q{veh-1}.tau_BRS2(end-1);
+    
+    % Set extraArgs
+    extraArgs = [];
+    extraArgs.visualize = true;
+    extraArgs.plotData.plotDims = [1, 1, 0];
+    extraArgs.plotData.projpt = Q{veh-1}.initState(3);
+    
+    extraArgs.genparams.data = Q{veh}.data_BRS2(:, :, :, end:-1:shifts+1);
+    extraArgs.genparams.reset_thresholds = resetR;
+    
+    numEmpTargets = length(tau) - numObs;
+    emptyTargets = repmat(ones(size(g)), [ones(1,g.dim) numEmpTargets]);
+    extraArgs.targets = cat(g.dim+1, obstacles, emptyTargets);
+    
+    [data, tau, ~] = computeCCSObs(obstacles(:, :, :, 1), tau, ...
+      schemeDataBaseObs, 'none', extraArgs);
+    
+    % Compute the overall obstacles
+    numObs = length(tau);
+    for i=1:numObs
+      obstacles(:, :, :, i) = shapeUnion(extraArgs.targets(:, :, :, i), ...
+        data(:, :, :, i));
+    end
+    
+    % Finally, take care of shifting
+    obstacles = cat(g.dim+1, obsShift, obstacles);
+    numObs = size(obstacles, g.dim+1);
     
     % Add capture radius to obstacles
     for i= 1:numObs
@@ -201,6 +246,7 @@ for veh=1:numVeh
         tau = 0: dt: tend;
         targets = unionObs(:, :, :, numObs:-1:i);
       end
+      extraArgs.targets = targets;
       
       [data, ~, ~] = HJIPDE_solve(targets(:, :, :, 1), tau, schemeData,...
         'zero', extraArgs);
@@ -290,6 +336,7 @@ for veh=1:numVeh
   % Stop the computation once the BRS includes the FRS (and thus also
   % contains the initial state)
   extraArgs.stopSet = dataFRS(:,:,:,end);
+  extraArgs.stopLevel = 0.01; % Determined by an analysis by Mo Chen 
   
   if veh ~= 1
     extraArgs.obstacles = unionObs(:, :, :, end:-1:1);
@@ -320,8 +367,8 @@ for veh=1:numVeh
   schemeDataBaseObs.partialFunc = @dubins3Dpartial;
   
   % Set tau
-  % obstacle is not computed at the last step
-  tau = Q{veh}.tau_BRS2(1:end-1);
+  % Obstacle is not computed at the last time step
+  tau = Q{veh}.tau_BRS1(1:end-1);
   
   % Set extraArgs
   extraArgs = [];
@@ -329,7 +376,7 @@ for veh=1:numVeh
   extraArgs.plotData.plotDims = [1, 1, 1];
   extraArgs.plotData.projpt = [];
   
-  extraArgs.genparams.data = Q{veh}.data_BRS2(:, :, :, end:-1:1);
+  extraArgs.genparams.data = Q{veh}.data_BRS1(:, :, :, end:-1:1);
   extraArgs.genparams.reset_thresholds = resetR;
   
   obs0 = genBaseObs0(g, Q{veh}.initState, resetR);
