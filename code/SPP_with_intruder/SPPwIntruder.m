@@ -338,7 +338,10 @@ for veh=1:numVeh
   schemeData.tMode = 'backward';
   
   % Set tau
-  tau = 0:dt:tMax;
+  % Compute for atleast tIAT step ahead of the first BRS, irrespective of
+  % stopSet
+  tauBRS1 = max(Q{veh}.tau_BRS1);
+  tau = 0: dt: tauBRS1+tIAT;
   
   % Set extraArgs
   extraArgs = [];
@@ -346,21 +349,35 @@ for veh=1:numVeh
   extraArgs.plotData.plotDims = [1, 1, 0];
   extraArgs.plotData.projpt = Q{veh}.initState(3);
   
-  % Stop the computation once the BRS includes the FRS (and thus also
-  % contains the initial state)
-  extraArgs.stopSet = dataFRS(:,:,:,end);
-  extraArgs.stopLevel = 0.01; % Determined by an analysis by Mo Chen
-  
   if veh ~= 1
     extraArgs.obstacles = unionObs(:, :, :, end:-1:1);
   end
   
   [data, tau, ~] = HJIPDE_solve(Q{veh}.data0, tau, schemeData,...
     'zero', extraArgs);
+  data_BRS2 = data;
+  tau_BRS2 = tau;
+  
+  % Now do the rest of the computation until the BRS includes the FRS 
+  % (and thus also contains the initial state)
+  extraArgs.stopSet = dataFRS(:,:,:,end);
+  extraArgs.stopLevel = 0.01; % Determined by an analysis by Mo Chen
+  
+  % Find index of the obstacle
+  obs_ind = length(tau_BRS2)-2;
+  
+  if veh ~= 1
+    extraArgs.obstacles = unionObs(:, :, :, end-obs_ind:-1:1);
+  end
+  
+  tau = max(tau_BRS2)-dt : dt : tMax;
+  
+  [data, tau, ~] = HJIPDE_solve(data(:, :, :, end-1), tau, schemeData,...
+    'zero', extraArgs);
   
   % Assign these sets to the vehicle
-  Q{veh}.data_BRS2 = data;
-  Q{veh}.tau_BRS2 = tau;
+  Q{veh}.data_BRS2 = cat(g.dim+1, data_BRS2(:, :, :, 1:end-2), data);
+  Q{veh}.tau_BRS2 = [tau_BRS2(1:end-2), tau];
   
   %   % For debugging purposes
   %   filename = sprintf('SPPwIntruder_debug_FRSinclusionissue_try6');
@@ -368,38 +385,39 @@ for veh=1:numVeh
   %   break;
   
   %% Step-3c: Compute the base obstacles for vehicles
-  
-  % Set schemeData
-  schemeDataBaseObs = schemeData;
-  schemeDataBaseObs.uMode = 'max';
-  schemeDataBaseObs.dMode = 'max';
-  schemeDataBaseObs.tMode = 'forward';
-  
-  % System dynamics
-  schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
-  schemeDataBaseObs.partialFunc = @dubins3Dpartial;
-  
-  % Set tau
-  % Obstacle is not computed at the last time step
-  tau = Q{veh}.tau_BRS1(1:end-1);
-  
-  % Set extraArgs
-  extraArgs = [];
-  extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 1];
-  extraArgs.plotData.projpt = [];
-  
-  extraArgs.genparams.data = Q{veh}.data_BRS1(:, :, :, end:-1:1);
-  extraArgs.genparams.reset_thresholds = resetR;
-  
-  obs0 = genBaseObs0(g, Q{veh}.initState, resetR);
-  
-  [data, tau, ~] = computeCCSObs(obs0, tau, schemeDataBaseObs,...
-    'none', extraArgs);
-  
-  % Assign these sets to the vehicle
-  Q{veh}.Obs = data;
-  Q{veh}.Obstau = tau;
+  if (veh~=numVeh)
+    % Set schemeData
+    schemeDataBaseObs = schemeData;
+    schemeDataBaseObs.uMode = 'max';
+    schemeDataBaseObs.dMode = 'max';
+    schemeDataBaseObs.tMode = 'forward';
+    
+    % System dynamics
+    schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
+    schemeDataBaseObs.partialFunc = @dubins3Dpartial;
+    
+    % Set tau
+    % Obstacle is not computed at the last time step
+    tau = Q{veh}.tau_BRS1(1:end-1);
+    
+    % Set extraArgs
+    extraArgs = [];
+    extraArgs.visualize = true;
+    extraArgs.plotData.plotDims = [1, 1, 1];
+    extraArgs.plotData.projpt = [];
+    
+    extraArgs.genparams.data = Q{veh}.data_BRS1(:, :, :, end:-1:1);
+    extraArgs.genparams.reset_thresholds = resetR;
+    
+    obs0 = genBaseObs0(g, Q{veh}.initState, resetR);
+    
+    [data, tau, ~] = computeCCSObs(obs0, tau, schemeDataBaseObs,...
+      'none', extraArgs);
+    
+    % Assign these sets to the vehicle
+    Q{veh}.Obs = data;
+    Q{veh}.Obstau = tau;
+  end
   
   % Save the sets, just in case
   filename = sprintf('SPPwIntruder_check3_%d', veh);
