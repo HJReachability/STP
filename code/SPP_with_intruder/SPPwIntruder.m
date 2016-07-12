@@ -1,3 +1,4 @@
+function SPPwIntruder()
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
@@ -16,6 +17,9 @@ t0 = 0;
 tMax = 5;
 dt = 0.01;
 tIAT = 0.1;
+
+% Set tau
+tau = 0:dt:tMax;
 
 %% Problem parameters
 % Vehicle
@@ -116,7 +120,7 @@ for veh=1:numVeh
     end
     
     %% Step-1b: The obstcales can be computed in a moving target fashion
-    % with the optimal control being given by the BRS2. 
+    % with the optimal control being given by the BRS2.
     
     % Set schemeData
     schemeDataBaseObs = schemeData;
@@ -138,8 +142,8 @@ for veh=1:numVeh
     extraArgs.plotData.plotDims = [1, 1, 0];
     extraArgs.plotData.projpt = Q{veh-1}.initState(3);
     
-    % Compute the time and the correspodning index at which the obstcales 
-    % corresponding to step-1b will start appear. 
+    % Compute the time and the correspodning index at which the obstcales
+    % corresponding to step-1b will start appear.
     tStart = tIAT;
     tStart_ind = find(Q{veh-1}.tau_BRS2 == tStart);
     
@@ -265,66 +269,15 @@ for veh=1:numVeh
   end
   
   %% Step-2b: Compute the BRS of the vehicle with the above obstacles
-  % Set schemeData
-  schemeData.uMode = 'min';
-  schemeData.dMode = 'max';
-  schemeData.tMode = 'backward';
-  
-  % Set tau
-  tau = 0:dt:tMax;
-  
-  % Reset extraArgs
-  extraArgs = [];
-  
-  % Set extraArgs
-  extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.x(3);
-  
-  % Set obstacles
-  if veh~= 1
-    extraArgs.obstacles = obstacles(:, :, :, end:-1:1);
+  if veh == 1
+    obstacles = ones(N');
   end
   
-  % Computation should stop once it contains the initial state
-  extraArgs.stopInit = Q{veh}.x;
-  
-  [Q{veh}.data.BRS1, Q{veh}.data.BRS1_tau] = ...
-    HJIPDE_solve(Q{veh}.data.target, tau, schemeData, 'zero', extraArgs);
+  Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
   
   %% Step-3c: Compute the base obstacles for vehicles
   if veh < numVeh
-    % Set schemeData
-    schemeDataBaseObs = schemeData;
-    schemeDataBaseObs.uMode = 'max';
-    schemeDataBaseObs.dMode = 'max';
-    schemeDataBaseObs.tMode = 'forward';
-    
-    % System dynamics
-    schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
-    schemeDataBaseObs.partialFunc = @dubins3Dpartial;
-    
-    % Set tau
-    % Obstacle is not computed at the last time step
-    tau = Q{veh}.tau_BRS1(1:end-1);
-    
-    % Set extraArgs
-    extraArgs = [];
-    extraArgs.visualize = true;
-    extraArgs.plotData.plotDims = [1, 1, 1];
-    extraArgs.plotData.projpt = [];
-    
-    extraArgs.genparams.data = Q{veh}.data_BRS1(:, :, :, end:-1:1);
-    extraArgs.genparams.reset_thresholds = resetR;
-    
-    obs0 = genBaseObs0(g, Q{veh}.initState, resetR);
-    
-    [data, tau, ~] = computeCCSObs(obs0, tau, schemeDataBaseObs,...
-      'none', extraArgs);
-    
-    % Assign these sets to the vehicle
-    Q{veh}.Obs = data;
-    Q{veh}.Obstau = tau;
+    vehicle = computeBaseObs(vehicle, schemeData, resetR);
   end
   
   % Save the sets, just in case
@@ -332,4 +285,52 @@ for veh=1:numVeh
   var2save = Q{veh};
   save(filename, 'var2save', 'dataFRS', '-v7.3')
   
+end
+end
+
+%%
+function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+% Set schemeData
+schemeData.uMode = 'min';
+schemeData.dMode = 'max';
+schemeData.tMode = 'backward';
+
+% Set extraArgs
+extraArgs.visualize = true;
+extraArgs.plotData.plotDims = [1, 1, 0];
+extraArgs.plotData.projpt = vehicle.x(3);
+
+% Set obstacles
+extraArgs.obstacles = obstacles;
+
+% Computation should stop once it contains the initial state
+extraArgs.stopInit = vehicle.x;
+
+[vehicle.data.BRS1, vehicle.data.BRS1_tau] = ...
+  HJIPDE_solve(vehicle.data.target, tau, schemeData, 'zero', extraArgs);
+
+t0 = vehicle.data.BRS1_tau(1);
+vehicle.data.BRS1_tau = 2*t0 - vehicle.data.BRS1_tau;
+end
+
+%%
+function vehicle = computeBaseObs(vehicle, schemeData, resetR)
+% Set schemeData
+schemeData.uMode = 'max';
+schemeData.dMode = 'max';
+schemeData.tMode = 'forward';
+
+% Set computation time
+tau = vehicle.data.BRS1_tau(1:end-1);
+
+% Create a small obstacle around current vehicle
+obs0 = genBaseObs0(schemeData.grid, vehicle.x, resetR);
+
+% Set extraArgs
+extraArgs.visualize = true;
+
+% Compute base obstacles
+[vehicle.data.baseObs, vehicle.data.baseObs_tau] = ...
+  computeCCSObs(obs0, tau, schemeData, 'none', extraArgs);
+
 end
