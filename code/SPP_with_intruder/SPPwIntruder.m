@@ -1,6 +1,10 @@
-function SPPwIntruder()
+function SPPwIntruder(restart)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
+
+if nargin < 1
+  restart = false;
+end
 
 %% Add the appropriate functions to the path
 addpath(genpath('./obstacle_generation'));
@@ -273,21 +277,34 @@ for veh=1:numVeh
     obstacles = ones(N');
   end
   
-  Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
+  filename = sprintf('SPPwIntruder_BRS1_%d.mat', veh);
   
-  %% Step-3c: Compute the base obstacles for vehicles
-  if veh < numVeh
-    vehicle = computeBaseObs(vehicle, schemeData, resetR);
+  if restart || ~exist(filename, 'file')
+    Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
   end
   
-  % Save the sets, just in case
-  filename = sprintf('SPPwIntruder_check3_%d', veh);
-  var2save = Q{veh};
-  save(filename, 'var2save', 'dataFRS', '-v7.3')
+  %% Step-3c: Compute the base obstacles for vehicles
+  filename = sprintf('SPPwIntruder_BaseObs_%d.mat', veh);
   
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = computeBaseObs(Q{veh}, schemeData, resetR);
+    end
+   
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
+  end
 end
 end
-
 %%
 function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 % Set schemeData
@@ -311,6 +328,10 @@ extraArgs.stopInit = vehicle.x;
 
 t0 = vehicle.data.BRS1_tau(1);
 vehicle.data.BRS1_tau = 2*t0 - vehicle.data.BRS1_tau;
+
+% Reverse the order of time elements
+vehicle.data.BRS1_tau = flip(vehicle.data.BRS1_tau);
+vehicle.data.BRS1 = flip(vehicle.data.BRS1, 4);
 end
 
 %%
@@ -331,6 +352,6 @@ extraArgs.visualize = true;
 
 % Compute base obstacles
 [vehicle.data.baseObs, vehicle.data.baseObs_tau] = ...
-  computeCCSObs(obs0, tau, schemeData, 'none', extraArgs);
+  HJIPDE_solve(obs0, tau, schemeData, 'none', extraArgs);
 
 end
