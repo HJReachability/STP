@@ -1,7 +1,7 @@
 function [data, update_flag] = check_obssize(g, data, reset_radius)
 
 % Compute center and radius of all islands
-[~, rNs, rs, cs] = findIslands(g, data, 0);
+[~, ~, rs, cs] = findIslands(g, data, 0);
 
 % Calculate the number of islands
 num_isl = length(cs);

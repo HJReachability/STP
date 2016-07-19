@@ -337,7 +337,6 @@ end
 %%
 function vehicle = computeBaseObs(vehicle, schemeData, resetR)
 % Set schemeData
-schemeData.uMode = 'max';
 schemeData.dMode = 'max';
 schemeData.tMode = 'forward';
 
@@ -347,8 +346,14 @@ tau = vehicle.data.BRS1_tau(1:end-1);
 % Create a small obstacle around current vehicle
 obs0 = genBaseObs0(schemeData.grid, vehicle.x, resetR);
 
-% Set extraArgs
+% Set extraArgs for visualization
 extraArgs.visualize = true;
+
+% Set extraArgs for centralized controller
+extraArgs.SDModFunc = @minIslandSize_SDFunc;
+extraArgs.SDModParams.resetR = resetR;
+extraArgs.SDModParams.BRS = vehicle.data.BRS1;
+extraArgs.SDModParams.tau = vehicle.data.BRS1_tau;
 
 % Compute base obstacles
 [vehicle.data.baseObs, vehicle.data.baseObs_tau] = ...
