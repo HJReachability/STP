@@ -279,10 +279,30 @@ for veh=1:numVeh
   end
 end
 end
-%%
+
+%% Compute BRS1
 function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
-%     
+%     Computes the first BRS for a vehicle, and updates its data with
+%     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
+%     target despite the worst-case disturbances and moving obstacles induced by
+%     other vehicles
+%
+% Inputs
+%     vehicle:
+%         vehicle for which the BRS is computed
+%     tau:
+%         the times for which the BRS is computed; unused times will be cut off
+%     schemeData:
+%         parameters for HJI PDE solver, should contain the following fields:
+%         .dynSys, .grid
+%     obstacles:
+%         union of induced obstacles from higher-priority vehicles
+%
+% Output
+%     vehicle:
+%         updated vehicle object
+%
 
 % Set schemeData
 schemeData.uMode = 'min';
@@ -311,8 +331,31 @@ vehicle.data.BRS1_tau = flip(vehicle.data.BRS1_tau);
 vehicle.data.BRS1 = flip(vehicle.data.BRS1, 4);
 end
 
-%%
+%% computeBaseObs
 function vehicle = computeBaseObs(vehicle, schemeData, resetR)
+% vehicle = computeBaseObs(vehicle, schemeData, resetR)
+%     Computes the induced base obstacles by vehicle according to BRS1 and the
+%     centralized controller scheme; populates the .baseObs and .baseObs_tau
+%     fields of vehicle.data
+%
+% Inputs
+%     vehicle:
+%         vehicle object; should have the .data field populated with .BRS1 and
+%         .BRS1_tau
+%     schemeData:
+%         parameters for the HJI PDE solver; should contain the fields .grid and
+%         .dynSys
+%     resetR:
+%         minimum size for the reachable set during evolution; if the reachable
+%         set goes below this size, the reachable set will be propagated
+%         "maximally" until the size becomes large enough
+%
+% Output
+%     vehicle:
+%         updated vehicle object with .baseObs and .baseObs_tau populated in the
+%         vehicle.data field
+%
+
 % Set schemeData
 schemeData.dMode = 'max';
 schemeData.tMode = 'forward';
@@ -341,7 +384,28 @@ extraArgs.obstacles = -vehicle.data.BRS1(colons{:}, 1:length(tau));
 
 end
 
+%% augmentBaseObsFRS
 function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+% vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+%     Augments the base obstacles by computing the tIAT-FRS from each obstacle
+%     in time, and updates the vehicle object with fields .augObsFRS and
+%     .augObsFRS_tau
+%
+% Inputs
+%     vehicle:
+%         vehicle object; must contains the fields .baseObs and .baseObs_tau in
+%         the .data field
+%     schemeData:
+%         parameters for the HJI PDE solver; must contain the fields .grid and
+%         .dynSys
+%     tIAT:
+%         maximum duration of the intruder
+%
+% Output
+%     vehicle:
+%         updated vehicle class; the fields .augObsFRS and .augObsFRS_tau will
+%         be populated
+
 % Extract the base obstacles
 numObs = size(vehicle.data.baseObs, schemeData.grid.dim+1);
 
@@ -361,6 +425,7 @@ tau = 0:dt:tIAT;
 extraArgs.obstacles = vehicle.data.target;
 
 % Compute tIAT-FRS of every base obstacle
+vehicle.data.augObsFRS = zeros(size(vehicle.data.baseObs));
 for i = 1:numObs
   fprintf('Augmenting obstacle %d out of %d...\n', i, numObs)
   
@@ -371,14 +436,21 @@ for i = 1:numObs
     extraArgs.visualize = false;
   end
   
-  vehicle.data.augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
+  augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
     tau, schemeData, 'none', extraArgs);
-  vehicle.data.augObsFRS = vehicle.data.augObsFRS(:, :, :, end);
+  vehicle.data.augObsFRS(:,:,:,i) = augObsFRS(:, :, :, end);
 end
 
 % Shift time vector
 vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
 end
 
-function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
+function vehicle = flatAugBOFRS(vehicle, capture_radius)
+% vehicle = flatAugBOFRS(vehicle, capture_radius)
+%     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture 
+%     radius, and then extends the 2D shape into 3D
+
+for i = 1:length(vehicle.data.augObsFRS_tau)
+  obs2D = 
+end
 end
