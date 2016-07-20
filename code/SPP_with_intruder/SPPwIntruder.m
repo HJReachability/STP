@@ -66,7 +66,6 @@ resetR = [0.03, 0.03, 0.1]';
 
 %% Pack problem parameters
 schemeData.grid = g; % Grid MUST be specified!
-schemeData.accuracy = 'medium';
 
 %% Start the computation of reachable sets
 for veh=1:numVeh
@@ -81,47 +80,6 @@ for veh=1:numVeh
   % compute the obstacles for the last vehicle.
   
   if veh ~= 1
-    
-    %% Step-1a: The obstcales should simply be given by the base obstacles
-    % augmented by a tIAT-step FRS.
-    
-    % Extract the base obstacles
-    obstacles = Q{veh-1}.Obs;
-    numObs = size(obstacles, g.dim+1);
-    
-    % Append each of the base obstacles by a tIAT step FRS
-    % Set schemeData
-    schemeData.uMode = 'max';
-    schemeData.dMode = 'max';
-    schemeData.tMode = 'forward';
-    
-    % Set tau
-    tau = 0:dt:tIAT;
-    
-    % Reset extraArgs
-    extraArgs = [];
-    
-    % Set extraArgs
-    extraArgs.visualize = false;
-    extraArgs.plotData.plotDims = [1, 1, 0];
-    extraArgs.plotData.projpt = Q{veh-1}.initState(3);
-    
-    % Subtract the part of the obstacle that hits the target
-    extraArgs.obstacles = Q{veh-1}.data0;
-    
-    for i= 1:numObs
-      % Visualize the set every 20 time steps
-      if mod(i-1,20) == 0
-        extraArgs.visualize = true;
-      end
-      
-      [data, ~, ~] = HJIPDE_solve(obstacles(:, :, :, i), tau, schemeData,...
-        'none', extraArgs);
-      obstacles(:, :, :, i) = data(:, :, :, end);
-      
-      % Turn off the visualization
-      extraArgs.visualize = false;
-    end
     
     %% Step-1b: The obstcales can be computed in a moving target fashion
     % with the optimal control being given by the BRS2.
@@ -296,7 +254,23 @@ for veh=1:numVeh
     if veh < numVeh
       Q{veh} = computeBaseObs(Q{veh}, schemeData, resetR);
     end
-   
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
+  end
+  
+  %% Step-1a: The obstcales should simply be given by the base obstacles
+  % augmented by a tIAT-step FRS.
+  filename = sprintf('SPPwIntruder_AugObsFRS_%d.mat', veh);
+  
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tIAT);
+    end
+    
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
@@ -307,6 +281,9 @@ end
 end
 %%
 function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+% vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+%     
+
 % Set schemeData
 schemeData.uMode = 'min';
 schemeData.dMode = 'max';
@@ -355,8 +332,53 @@ extraArgs.SDModParams.resetR = resetR;
 extraArgs.SDModParams.BRS = vehicle.data.BRS1;
 extraArgs.SDModParams.tau = vehicle.data.BRS1_tau;
 
+colons = repmat({':'}, 1, schemeData.grid.dim);
+extraArgs.obstacles = -vehicle.data.BRS1(colons{:}, 1:length(tau));
+
 % Compute base obstacles
 [vehicle.data.baseObs, vehicle.data.baseObs_tau] = ...
   HJIPDE_solve(obs0, tau, schemeData, 'none', extraArgs);
 
+end
+
+function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+% Extract the base obstacles
+numObs = size(vehicle.data.baseObs, schemeData.grid.dim+1);
+
+% Append each of the base obstacles by a tIAT step FRS
+% Set schemeData
+schemeData.uMode = 'max';
+schemeData.dMode = 'max';
+schemeData.tMode = 'forward';
+
+% Set tau for computation
+%   dt for computing augmentation; does not necessarily have to be the same as 
+%   the global dt
+dt = 0.01; 
+tau = 0:dt:tIAT;
+
+% Subtract the part of the obstacle that hits the target
+extraArgs.obstacles = vehicle.data.target;
+
+% Compute tIAT-FRS of every base obstacle
+for i = 1:numObs
+  fprintf('Augmenting obstacle %d out of %d...\n', i, numObs)
+  
+  % Visualize the set every 10 time steps
+  if ~mod(i-1, 10)
+    extraArgs.visualize = true;
+  else
+    extraArgs.visualize = false;
+  end
+  
+  vehicle.data.augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
+    tau, schemeData, 'none', extraArgs);
+  vehicle.data.augObsFRS = vehicle.data.augObsFRS(:, :, :, end);
+end
+
+% Shift time vector
+vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
+end
+
+function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
 end
