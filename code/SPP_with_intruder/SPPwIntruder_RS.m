@@ -92,7 +92,7 @@ for veh=1:numVeh
 
   %% Gather induced obstacles of higher-priority vehicles
   % Assume there's no static obstacle
-  obstacles = gatherObstacles(Q{1:veh-1}, schemeData, tau);
+  obstacles = gatherObstacles(Q(1:veh-1), schemeData, tau);
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   filename = sprintf('SPPwIntruder_BRS1_%d.mat', veh);
@@ -131,7 +131,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
-      Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tIAT);
+      Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tauIAT);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
@@ -165,7 +165,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
-      Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tIAT);
+      Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tauIAT);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
