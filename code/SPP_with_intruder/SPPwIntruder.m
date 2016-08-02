@@ -29,7 +29,7 @@ tau = 0:dt:tMax;
 % Vehicle
 vrange = [0.1 1];
 wMax = 1;
-Rc = 0.1;
+Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
 
 % Intruder
@@ -282,7 +282,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
-      Q{veh} = flatAugBOFRS(Q{veh}, schemeData, capture_radius);
+      Q{veh} = flatAugBOFRS(Q{veh}, schemeData, Rc);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
