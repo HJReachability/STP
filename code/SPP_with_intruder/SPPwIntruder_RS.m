@@ -1,4 +1,4 @@
-function SPPwIntruder(restart)
+function SPPwIntruder_RS(restart)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
