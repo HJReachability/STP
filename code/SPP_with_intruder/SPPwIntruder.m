@@ -67,168 +67,34 @@ resetR = [0.03, 0.03, 0.1]';
 %% Pack problem parameters
 schemeData.grid = g; % Grid MUST be specified!
 
+filenames = {'SPPwIntruder_BRS1_1.mat'; ...
+  'SPPwIntruder_BaseObs_1.mat'; ...
+  'SPPwIntruder_AugObsFRS_1.mat'; ...
+  'SPPwIntruder_FlatObs_1.mat'; ...
+  'SPPwIntruder_AugObsBRS_1.mat'; ...
+  'SPPwIntruder_BRS1_2.mat'; ...
+  'SPPwIntruder_BaseObs_2.mat'; ...
+  'SPPwIntruder_AugObsFRS_2.mat'; ...
+  'SPPwIntruder_FlatObs_2.mat'; ...
+  'SPPwIntruder_AugObsBRS_2.mat'; ...
+  'SPPwIntruder_BRS1_3.mat'; ...
+  'SPPwIntruder_BaseObs_3.mat'; ...
+  'SPPwIntruder_AugObsFRS_3.mat'; ...
+  'SPPwIntruder_FlatObs_3.mat'; ...
+  'SPPwIntruder_AugObsBRS_3.mat'; ...
+  'SPPwIntruder_BRS1_4.mat'};
+
+for fileNum = 1:length(filenames)
+  if exist(filenames{fileNum}, 'file')
+    last_filename = filenames{fileNum};
+  else
+    break
+  end
+end
+
 %% Start the computation of reachable sets
 for veh=1:numVeh
   schemeData.dynSys = Q{veh};
-  %% Step-1: Find out the set of obstacles induced by the higher priority
-  % vehicles. It consists of three steps. In step-1a, we compute the
-  % obstacles that correspond to the intruder being currently present in
-  % the system. In step-2b we compute the obstacles that correspond the
-  % case when intruder has already left the system. Finally, in step-2c, we
-  % do the appropriate shifting of the obstacles and do union over all
-  % vehicles. Since the computations are done recursively, we will only
-  % compute the obstacles for the last vehicle.
-  
-  if veh ~= 1
-    
-    %% Step-1b: The obstcales can be computed in a moving target fashion
-    % with the optimal control being given by the BRS2.
-    
-    % Set schemeData
-    schemeDataBaseObs = schemeData;
-    schemeDataBaseObs.uMode = 'max';
-    schemeDataBaseObs.dMode = 'max';
-    schemeDataBaseObs.tMode = 'forward';
-    
-    % System dynamics
-    schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
-    schemeDataBaseObs.partialFunc = @dubins3Dpartial;
-    
-    % Set tau
-    % Obstacle is not computed at the last time step
-    tau = tIAT: dt: Q{veh-1}.tau_BRS2(end-1);
-    
-    % Set extraArgs
-    extraArgs = [];
-    extraArgs.visualize = true;
-    extraArgs.plotData.plotDims = [1, 1, 0];
-    extraArgs.plotData.projpt = Q{veh-1}.initState(3);
-    
-    % Compute the time and the correspodning index at which the obstcales
-    % corresponding to step-1b will start appear.
-    tStart = tIAT;
-    tStart_ind = find(Q{veh-1}.tau_BRS2 == tStart);
-    
-    extraArgs.genparams.data = Q{veh-1}.data_BRS2(:, :, :, end: -1: ...
-      tStart_ind);
-    extraArgs.genparams.reset_thresholds = resetR;
-    
-    % There won't be any targets to add once the base obstacles end up
-    numEmpTargets = length(tau) - numObs;
-    emptyTargets = repmat(ones(g.shape), [ones(1,g.dim) numEmpTargets]);
-    extraArgs.targets = cat(g.dim+1, obstacles, emptyTargets);
-    
-    [data, tau, ~] = computeCCSObs(obstacles(:, :, :, 1), tau, ...
-      schemeDataBaseObs, 'none', extraArgs);
-    
-    %% Step-1c: Compute the overall obstacles.
-    % Starting at time tIAT the obstacle sequence is simply given by the
-    % data above in step-1b. Before that let's just use the first obstacle
-    % itself.
-    
-    % For the tIAT-1 time just use the first obstacle
-    obsShift = repmat(obstacles(:, :, :, 1), [ones(1,g.dim) tStart_ind-1]);
-    
-    % Now we are ready for the overall obstacles
-    obstacles = cat(g.dim+1, obsShift, data);
-    
-    % Add capture radius to obstacles
-    numObs = size(obstacles, g.dim+1);
-    for i= 1:numObs
-      [g2D, data2D] = proj2D(g, obstacles(:, :, :, i), [0,0,1]);
-      data2D = addCRadius(g2D, data2D, Rc);
-      obstacles(:, :, :, i) = repmat(data2D, [1,1,g.shape(3)]);
-    end
-    
-    % Assign this obstacle sequence to the vehicle
-    Q{veh-1}.Obs = obstacles;
-    
-    % Convert the obstacle set to a fixed time-scale of [0, tMax] so that
-    % the union makes sense
-    fixedtau = 0:dt:tMax;
-    fixedScaleObs = repmat(ones(g.shape), [ones(1,g.dim) length(fixedtau)]);
-    fixedScaleObs(:, :, :, end-numObs:end-1) = obstacles;
-    
-    % Overload the obstacles with these new obstacles
-    obstacles = fixedScaleObs;
-    numObs = size(obstacles, g.dim+1);
-    
-    % Finally, take union of obstacles across all vehicles to get the overall
-    % obstacle set
-    if exist('unionObs', 'var')
-      for i=1:numObs
-        unionObs(:, :, :, i) = shapeUnion(unionObs(:, :, :, i), ...
-          obstacles(:, :, :, i));
-      end
-    else
-      unionObs = obstacles;
-    end
-    
-    % Save the sets, just in case
-    filename = sprintf('SPPwIntruder_check1_%d', veh);
-    var2save = Q{veh-1};
-    save(filename, 'var2save', 'unionObs', '-v7.3')
-  end
-  
-  %% Step-2a: Augment the obstacles by a tIAT step BRS
-  % It should be simply the obstacles in Step1 augmented by a tIAT-step
-  % BRT and then union over all time steps for the duraction [0 tIAT].
-  if veh ~= 1
-    
-    % Append the obstacle i-step BRS of the obstacle corresponding to time
-    % t0-i, where t0 is the current time.
-    % Reset the obstacle matrix
-    obstacles = [];
-    
-    % Set schemeData
-    schemeData.uMode = 'min';
-    schemeData.dMode = 'min';
-    schemeData.tMode = 'backward';
-    
-    % Set tau
-    tau = 0:dt:tIAT;
-    
-    % Reset extraArgs
-    extraArgs = [];
-    
-    % Set extraArgs
-    extraArgs.visualize = false;
-    extraArgs.plotData.plotDims = [1, 1, 0];
-    extraArgs.plotData.projpt = Q{veh-1}.initState(3);
-    
-    % Number of obstacles
-    numObs = size(unionObs, g.dim+1);
-    
-    for i= 1:numObs-1
-      % Visualize the set every 20 time steps
-      if mod(i-1,20) == 0
-        extraArgs.visualize = true;
-      end
-      
-      % Set the moving targets
-      shifts = floor((tIAT - t0)/dt);
-      if i+shifts <= numObs
-        targets = unionObs(:, :, :, i+shifts:-1:i);
-      else
-        tend = (numObs - i)*dt;
-        tau = 0: dt: tend;
-        targets = unionObs(:, :, :, numObs:-1:i);
-      end
-      extraArgs.targets = targets;
-      
-      [data, ~, ~] = HJIPDE_solve(targets(:, :, :, 1), tau, schemeData,...
-        'zero', extraArgs);
-      obstacles(:, :, :, i) = data(:, :, :, end);
-      
-      % By default turn off the visualization
-      extraArgs.visualize = false;
-    end
-    obstacles(:, :, :, numObs) = unionObs(:, :, :, numObs);
-    
-    % Save the sets, just in case
-    filename = sprintf('SPPwIntruder_check2_%d', veh);
-    save(filename, 'obstacles', '-v7.3')
-  end
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if veh == 1
@@ -243,8 +109,10 @@ for veh=1:numVeh
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
-    load(filename)
-    Q = {Q1; Q2; Q3; Q4};
+    if strcmp(filename, last_filename)
+      load(filename)
+      Q = {Q1; Q2; Q3; Q4};
+    end
   end
   
   %% Compute the base obstacles for based on BRS1
@@ -258,8 +126,10 @@ for veh=1:numVeh
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
-    load(filename)
-    Q = {Q1; Q2; Q3; Q4};
+    if strcmp(filename, last_filename)
+      load(filename)
+      Q = {Q1; Q2; Q3; Q4};
+    end
   end
   
   %% Augment base obstacles with t-IAT FRS
@@ -273,12 +143,14 @@ for veh=1:numVeh
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
-    load(filename)
-    Q = {Q1; Q2; Q3; Q4};
+    if strcmp(filename, last_filename)
+      load(filename)
+      Q = {Q1; Q2; Q3; Q4};
+    end
   end
   
   %% Flatten augmented obstacles to 3D, add capture radius, and unflatten to 3D
-  filename = sprintf('SPPwIntruder_flatObs_%d.mat', veh);
+  filename = sprintf('SPPwIntruder_FlatObs_%d.mat', veh);
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
@@ -288,10 +160,28 @@ for veh=1:numVeh
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
-    load(filename)
-    Q = {Q1; Q2; Q3; Q4};
+    if strcmp(filename, last_filename)
+      load(filename)
+      Q = {Q1; Q2; Q3; Q4};
+    end
   end
   
+  %% Compute t-IAT backward reachable set from flattened 3D obstacle
+  filename = sprintf('SPPwIntruder_AugObsBRS_%d.mat', veh);
+  
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tIAT);
+    end
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    if strcmp(filename, last_filename)
+      load(filename)
+      Q = {Q1; Q2; Q3; Q4};
+    end
+  end
 end
 end
 
@@ -422,7 +312,7 @@ function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
 %         be populated
 
 % Extract the base obstacles
-numObs = size(vehicle.data.baseObs, schemeData.grid.dim+1);
+numObs = length(vehicle.data.baseObs_tau);
 
 % Append each of the base obstacles by a tIAT step FRS
 % Set schemeData
@@ -431,9 +321,9 @@ schemeData.dMode = 'max';
 schemeData.tMode = 'forward';
 
 % Set tau for computation
-%   dt for computing augmentation; does not necessarily have to be the same as 
+%   dt for computing augmentation; does not necessarily have to be the same as
 %   the global dt
-dt = 0.01; 
+dt = 0.01;
 tau = 0:dt:tIAT;
 
 % Subtract the part of the obstacle that hits the target
@@ -454,15 +344,27 @@ for i = 1:numObs
   augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
     tau, schemeData, 'none', extraArgs);
   vehicle.data.augObsFRS(:,:,:,i) = augObsFRS(:, :, :, end);
+  
+  % Keep first FRS at every time step
+  if i == 1
+    augObsFRS_beginning = augObsFRS;
+  end
 end
 
 % Shift time vector
 vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
+
+% Add the obstacles in the beginning
+vehicle.data.augObsFRS = ...
+  cat(4, augObsFRS_beginning(:,:,:,1:end-1), vehicle.data.augObsFRS);
+vehicle.data.augObsFRS_tau = ...
+  [vehicle.data.baseObs_tau(1:(length(tau)-1)) vehicle.data.augObsFRS_tau];
 end
 
+%% Flatten obstacles
 function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
 % vehicle = flatAugBOFRS(vehicle, capture_radius)
-%     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture 
+%     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture
 %     radius, and then extends the 2D shape into 3D. Populates the .flatObs2D
 %     and .cylObs3D fields of vehicle.data
 %
@@ -481,4 +383,64 @@ for i = 1:length(vehicle.data.augObsFRS_tau)
   vehicle.data.cylObs3D(:,:,:,i) = ...
     repmat(vehicle.data.flatObs2D(:,:,i), [1 1 schemeData.grid.N(3)]);
 end
+end
+
+%% t-IAT BRS from flattened obstacles
+function vehicle = augmentFlatObsBRS(vehicle, schemeData, tIAT)
+% vehicle = augmentFlatObsBRS(vehicle, schemeData, tIAT)
+%     Augments the flattened 3D obstacles with a t-IAT backward reachable set.
+%     Populates the .augFlatObsBRS and .augFlatObsBRS_tau fields of vehicle.data
+%
+
+
+% Number of obstacles
+numObs = length(vehicle.data.augObsFRS_tau);
+
+% Set tau for computation; must have same dt as base obstacles
+dt = diff(vehicle.data.augObsFRS_tau);
+dt = dt(1);
+tau = 0:dt:tIAT;
+
+% Set schemeData
+schemeData.uMode = 'min';
+schemeData.dMode = 'min';
+schemeData.tMode = 'backward';
+
+% Compute tIAT-FRS of every base obstacle
+vehicle.data.augFlatObsBRS = zeros(size(vehicle.data.augObsFRS));
+for i = 1:numObs
+  fprintf('Augmenting obstacle %d out of %d...\n', i, numObs)
+  
+  % Visualize the set every 10 obstacle augmentations
+  if ~mod(i-1, 10)
+    extraArgs.visualize = true;
+  else
+    extraArgs.visualize = false;
+  end
+  
+  % The moving target is a union of all flattened obstacles up to time t
+  extraArgs.targets = inf([schemeData.grid.N' length(tau)]);
+  for j = 1:length(tau)
+    if i-j+1 >= 1
+      extraArgs.targets(:,:,:,j) = vehicle.data.cylObs3D(:,:,:,i-j+1);
+    end
+    
+    extraArgs.targets(:,:,:,j) = min(extraArgs.targets(:,:,:,1:j), [], 4);
+  end
+  
+  % Solve HJI PDE with the moving targets
+  augFlatObsBRS = HJIPDE_solve(vehicle.data.cylObs3D(:,:,:,i), ...
+    tau, schemeData, 'none', extraArgs);
+  vehicle.data.augFlatObsBRS(:,:,:,i) = augFlatObsBRS(:, :, :, end);
+  
+end
+
+% Shift time vector
+vehicle.data.augFlatObsBRS_tau = vehicle.data.augObsFRS_tau - tIAT;
+
+% Add last few obstacles
+vehicle.data.augFlatObsBRS = ...
+  cat(4, vehicle.data.augFlatObsBRS, augFlatObsBRS(2:end));
+vehicle.data.augFlatObsBRS_tau = [vehicle.data.augFlatObsBRS_tau, ...
+  vehicle.data.augObsFRS_tau(end-length(tau)+2:end)];
 end
