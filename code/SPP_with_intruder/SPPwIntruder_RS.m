@@ -22,8 +22,10 @@ t0 = 0;
 tMax = 5;
 % Set tau
 dt = 0.01;
-tIAT = 0.1;
 tau = t0:dt:tMax;
+
+tIAT = 0.1;
+tauIAT = 0:dt:tIAT;
 
 %% Problem parameters
 % Vehicle
@@ -31,10 +33,6 @@ vrange = [0.1 1];
 wMax = 1;
 Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
-
-% Intruder
-speedI = [0.25 0.75];
-UI = 0.5;
 
 %% initial States
 numVeh = 4;

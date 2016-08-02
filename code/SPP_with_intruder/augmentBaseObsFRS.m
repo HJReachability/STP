@@ -1,5 +1,5 @@
-function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
-% vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+function vehicle = augmentBaseObsFRS(vehicle, schemeData, tauIAT)
+% vehicle = augmentBaseObsFRS(vehicle, schemeData, tauIAT)
 %     Augments the base obstacles by computing the tIAT-FRS from each obstacle
 %     in time, and updates the vehicle object with fields .augObsFRS and
 %     .augObsFRS_tau
@@ -11,8 +11,8 @@ function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
 %     schemeData:
 %         parameters for the HJI PDE solver; must contain the fields .grid and
 %         .dynSys
-%     tIAT:
-%         maximum duration of the intruder
+%     tauIAT:
+%         0:dt:tIAT, maximum duration of the intruder
 %
 % Output
 %     vehicle:
@@ -27,12 +27,6 @@ numObs = length(vehicle.data.baseObs_tau);
 schemeData.uMode = 'max';
 schemeData.dMode = 'max';
 schemeData.tMode = 'forward';
-
-% Set tau for computation
-%   dt for computing augmentation; does not necessarily have to be the same as
-%   the global dt
-dt = 0.01;
-tau = 0:dt:tIAT;
 
 % Subtract the part of the obstacle that hits the target
 extraArgs.obstacles = vehicle.data.target;
@@ -50,7 +44,7 @@ for i = 1:numObs
   end
   
   augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
-    tau, schemeData, 'none', extraArgs);
+    tauIAT, schemeData, 'none', extraArgs);
   vehicle.data.augObsFRS(:,:,:,i) = augObsFRS(:, :, :, end);
   
   % Keep first FRS at every time step
@@ -60,11 +54,11 @@ for i = 1:numObs
 end
 
 % Shift time vector
-vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
+vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tauIAT(end);
 
 % Add the obstacles in the beginning
 vehicle.data.augObsFRS = ...
   cat(4, augObsFRS_beginning(:,:,:,1:end-1), vehicle.data.augObsFRS);
 vehicle.data.augObsFRS_tau = ...
-  [vehicle.data.baseObs_tau(1:(length(tau)-1)) vehicle.data.augObsFRS_tau];
+  [vehicle.data.baseObs_tau(1:(length(tauIAT)-1)) vehicle.data.augObsFRS_tau];
 end
