@@ -445,12 +445,13 @@ end
 vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
 end
 
-function vehicle = flatAugBOFRS(vehicle, capture_radius)
+function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
 % vehicle = flatAugBOFRS(vehicle, capture_radius)
 %     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture 
 %     radius, and then extends the 2D shape into 3D
 
 for i = 1:length(vehicle.data.augObsFRS_tau)
-  obs2D = 
+  obs2D = proj(schemeData.grid, vehicle.data.augObsFRS(:,:,:,i), [0 0 1]);
+  
 end
 end
