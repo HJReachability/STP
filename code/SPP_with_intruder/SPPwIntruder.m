@@ -1,5 +1,10 @@
+function SPPwIntruder(restart)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
+
+if nargin < 1
+  restart = false;
+end
 
 %% Add the appropriate functions to the path
 addpath(genpath('./obstacle_generation'));
@@ -8,19 +13,22 @@ addpath(genpath('./obstacle_generation'));
 grid_min = [-1; -1; 0]; % Lower corner of computation domain
 grid_max = [1; 1; 2*pi];    % Upper corner of computation domain
 N = [101; 101; 101];         % Number of grid points per dimension
-pdDims = 3;               % 3rd diemension is periodic
+pdDims = 3;               % 3rd dimension is periodic
 g = createGrid(grid_min, grid_max, N, pdDims);
 
-%% time vector
+%% Time parameters
 t0 = 0;
 tMax = 5;
 dt = 0.01;
 tIAT = 0.1;
 
-%% problem parameters
+% Set tau
+tau = 0:dt:tMax;
+
+%% Problem parameters
 % Vehicle
-speed = [0.1 1];
-U = 1;
+vrange = [0.1 1];
+wMax = 1;
 Rc = 0.1;
 dMax = [0.1 0.2];
 
@@ -28,52 +36,40 @@ dMax = [0.1 0.2];
 speedI = [0.25 0.75];
 UI = 0.5;
 
-%% Pack problem parameters
-schemeData.grid = g; % Grid MUST be specified!
-schemeData.wMax = U;
-schemeData.vrange = speed;
-schemeData.dMax = dMax;
-schemeData.accuracy = 'medium';
-
-% System dynamics
-schemeData.hamFunc = @dubins3Dham;
-schemeData.partialFunc = @dubins3Dpartial;
+%% initial States
+numVeh = 4;
+Q = cell(numVeh,1);
+Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
+Q{2} = Plane([ 0.1; 0; pi], wMax, vrange, dMax);
+Q{3} = Plane([-0.1; 0.1; 7*pi/4], wMax, vrange, dMax);
+Q{4} = Plane([ 0.1; 0.1; 5*pi/4], wMax, vrange, dMax);
 
 %% target sets
 R = 0.1;
-Q{1}.data0 = shapeCylinder(g, 3, [0.7; 0.2; 0], R);
-Q{2}.data0 = shapeCylinder(g, 3, [-0.7; 0.2; 0], R);
-Q{3}.data0 = shapeCylinder(g, 3, [0.7; -0.7; 0], R);
-Q{4}.data0 = shapeCylinder(g, 3, [-0.7; -0.7; 0], R);
+R1 = 0.1;
+Q{1}.data.target = shapeCylinder(g, 3, [0.7; 0.2; 0], R1);
+Q{2}.data.target = shapeCylinder(g, 3, [-0.7; 0.2; 0], R1);
+Q{3}.data.target = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
+Q{4}.data.target = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
 
-%% Reduced target set for the first BRS
-R1 = 0.03;
-Q{1}.redTar = shapeCylinder(g, 3, [0.7; 0.2; 0], R1);
-Q{2}.redTar = shapeCylinder(g, 3, [-0.7; 0.2; 0], R1);
-Q{3}.redTar = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
-Q{4}.redTar = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
-
-%% initial States
-% Q{1}.initState = [-0.5, 0, 0]';
-% Q{2}.initState = [ 0.5, 0, pi]';
-% Q{3}.initState = [-0.6, 0.6, 7*pi/4]';
-% Q{4}.initState = [ 0.6, 0.6, 5*pi/4]';
-% Chnaged because the above initial conditions were too far from the target
-% set
-Q{1}.initState = [-0.1, 0, 0]';
-Q{2}.initState = [ 0.1, 0, pi]';
-Q{3}.initState = [-0.1, 0.1, 7*pi/4]';
-Q{4}.initState = [ 0.1, 0.1, 5*pi/4]';
+% %% Reduced target set for the first BRS
+% % R1 = 0.03;
+% R1 = 0.1;
+% Q{1}.target = shapeCylinder(g, 3, [0.7; 0.2; 0], R1);
+% Q{2}.target = shapeCylinder(g, 3, [-0.7; 0.2; 0], R1);
+% Q{3}.target = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
+% Q{4}.target = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
 
 %% base obstacle data
 % reset radius
 resetR = [0.03, 0.03, 0.1]';
 
-numVeh = length(Q);
+%% Pack problem parameters
+schemeData.grid = g; % Grid MUST be specified!
 
 %% Start the computation of reachable sets
 for veh=1:numVeh
-  
+  schemeData.dynSys = Q{veh};
   %% Step-1: Find out the set of obstacles induced by the higher priority
   % vehicles. It consists of three steps. In step-1a, we compute the
   % obstacles that correspond to the intruder being currently present in
@@ -85,49 +81,8 @@ for veh=1:numVeh
   
   if veh ~= 1
     
-    %% Step-1a: The obstcales should simply be given by the base obstacles
-    % augmented by a tIAT-step FRS.
-    
-    % Extract the base obstacles
-    obstacles = Q{veh-1}.Obs;
-    numObs = size(obstacles, g.dim+1);
-    
-    % Append each of the base obstacles by a tIAT step FRS
-    % Set schemeData
-    schemeData.uMode = 'max';
-    schemeData.dMode = 'max';
-    schemeData.tMode = 'forward';
-    
-    % Set tau
-    tau = 0:dt:tIAT;
-    
-    % Reset extraArgs
-    extraArgs = [];
-    
-    % Set extraArgs
-    extraArgs.visualize = false;
-    extraArgs.plotData.plotDims = [1, 1, 0];
-    extraArgs.plotData.projpt = Q{veh-1}.initState(3);
-    
-    % Subtract the part of the obstacle that hits the target
-    extraArgs.obstacles = Q{veh-1}.data0;
-    
-    for i= 1:numObs
-      % Visualize the set every 20 time steps
-      if mod(i-1,20) == 0
-        extraArgs.visualize = true;
-      end
-      
-      [data, ~, ~] = HJIPDE_solve(obstacles(:, :, :, i), tau, schemeData,...
-        'none', extraArgs);
-      obstacles(:, :, :, i) = data(:, :, :, end);
-      
-      % Turn off the visualization
-      extraArgs.visualize = false;
-    end
-    
     %% Step-1b: The obstcales can be computed in a moving target fashion
-    % with the optimal control being given by the BRS2. 
+    % with the optimal control being given by the BRS2.
     
     % Set schemeData
     schemeDataBaseObs = schemeData;
@@ -149,8 +104,8 @@ for veh=1:numVeh
     extraArgs.plotData.plotDims = [1, 1, 0];
     extraArgs.plotData.projpt = Q{veh-1}.initState(3);
     
-    % Compute the time and the correspodning index at which the obstcales 
-    % corresponding to step-1b will start appear. 
+    % Compute the time and the correspodning index at which the obstcales
+    % corresponding to step-1b will start appear.
     tStart = tIAT;
     tStart_ind = find(Q{veh-1}.tau_BRS2 == tStart);
     
@@ -276,152 +231,227 @@ for veh=1:numVeh
   end
   
   %% Step-2b: Compute the BRS of the vehicle with the above obstacles
-  % Set schemeData
-  schemeData.uMode = 'min';
-  schemeData.dMode = 'max';
-  schemeData.tMode = 'backward';
-  
-  % Set tau
-  tau = 0:dt:tMax;
-  
-  % Reset extraArgs
-  extraArgs = [];
-  
-  % Set extraArgs
-  extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.initState(3);
-  
-  % Set obstacles
-  if veh~= 1
-    extraArgs.obstacles = obstacles(:, :, :, end:-1:1);
+  if veh == 1
+    obstacles = ones(N');
   end
   
-  % Computation should stop once it contains the initial state
-  extraArgs.stopInit = Q{veh}.initState;
+  filename = sprintf('SPPwIntruder_BRS1_%d.mat', veh);
   
-  [data, tau, ~] = HJIPDE_solve(Q{veh}.redTar, tau, schemeData,...
-    'zero', extraArgs);
-  
-  % Assign these sets to the vehicle
-  Q{veh}.data_BRS1 = data;
-  Q{veh}.tau_BRS1 = tau;
-  
-  %% Step-3a: Augment the BRS in Step-2 by a tIAT step FRS
-  
-  % Set schemeData
-  schemeData.uMode = 'max';
-  schemeData.dMode = 'max';
-  schemeData.tMode = 'forward';
-  
-  % Set extraArgs
-  extraArgs = [];
-  extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.initState(3);
-  extraArgs.obstacles = Q{veh}.data0;
-  
-  % Set tau
-  tau = 0:dt:tIAT;
-  
-  % Set the initial data
-  data0 = shapeDifference(data(:,:,:,end), Q{veh}.data0);
-  
-  dataFRS = HJIPDE_solve(data0, tau, schemeData,...
-    'zero', extraArgs);
-  
-  %% Step-3b: Compute a BRS that contains the FRS in Step-3a
-  
-  % Set schemeData
-  schemeData.uMode = 'min';
-  schemeData.dMode = 'max';
-  schemeData.tMode = 'backward';
-  
-  % Set tau
-  % Compute for atleast tIAT step ahead of the first BRS, irrespective of
-  % stopSet
-  tauBRS1 = max(Q{veh}.tau_BRS1);
-  tau = 0: dt: tauBRS1+tIAT;
-  
-  % Set extraArgs
-  extraArgs = [];
-  extraArgs.visualize = true;
-  extraArgs.plotData.plotDims = [1, 1, 0];
-  extraArgs.plotData.projpt = Q{veh}.initState(3);
-  
-  if veh ~= 1
-    extraArgs.obstacles = unionObs(:, :, :, end:-1:1);
+  if restart || ~exist(filename, 'file')
+    Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
   end
-  
-  [data, tau, ~] = HJIPDE_solve(Q{veh}.data0, tau, schemeData,...
-    'zero', extraArgs);
-  data_BRS2 = data;
-  tau_BRS2 = tau;
-  
-  % Now do the rest of the computation until the BRS includes the FRS 
-  % (and thus also contains the initial state)
-  extraArgs.stopSet = dataFRS(:,:,:,end);
-  extraArgs.stopLevel = 0.01; % Determined by an analysis by Mo Chen
-  
-  % Find index of the obstacle
-  obs_ind = length(tau_BRS2)-2;
-  
-  if veh ~= 1
-    extraArgs.obstacles = unionObs(:, :, :, end-obs_ind:-1:1);
-  end
-  
-  tau = max(tau_BRS2)-dt : dt : tMax;
-  
-  [data, tau, ~] = HJIPDE_solve(data(:, :, :, end-1), tau, schemeData,...
-    'zero', extraArgs);
-  
-  % Assign these sets to the vehicle
-  Q{veh}.data_BRS2 = cat(g.dim+1, data_BRS2(:, :, :, 1:end-2), data);
-  Q{veh}.tau_BRS2 = [tau_BRS2(1:end-2), tau];
-  
-  %   % For debugging purposes
-  %   filename = sprintf('SPPwIntruder_debug_FRSinclusionissue_try6');
-  %   save(filename, 'Q', 'dataFRS', '-v7.3');
-  %   break;
   
   %% Step-3c: Compute the base obstacles for vehicles
-  if (veh~=numVeh)
-    % Set schemeData
-    schemeDataBaseObs = schemeData;
-    schemeDataBaseObs.uMode = 'max';
-    schemeDataBaseObs.dMode = 'max';
-    schemeDataBaseObs.tMode = 'forward';
+  filename = sprintf('SPPwIntruder_BaseObs_%d.mat', veh);
+  
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = computeBaseObs(Q{veh}, schemeData, resetR);
+    end
     
-    % System dynamics
-    schemeDataBaseObs.hamFunc = @dubins3Dham_CCSObs;
-    schemeDataBaseObs.partialFunc = @dubins3Dpartial;
-    
-    % Set tau
-    % Obstacle is not computed at the last time step
-    tau = Q{veh}.tau_BRS1(1:end-1);
-    
-    % Set extraArgs
-    extraArgs = [];
-    extraArgs.visualize = true;
-    extraArgs.plotData.plotDims = [1, 1, 1];
-    extraArgs.plotData.projpt = [];
-    
-    extraArgs.genparams.data = Q{veh}.data_BRS1(:, :, :, end:-1:1);
-    extraArgs.genparams.reset_thresholds = resetR;
-    
-    obs0 = genBaseObs0(g, Q{veh}.initState, resetR);
-    
-    [data, tau, ~] = computeCCSObs(obs0, tau, schemeDataBaseObs,...
-      'none', extraArgs);
-    
-    % Assign these sets to the vehicle
-    Q{veh}.Obs = data;
-    Q{veh}.Obstau = tau;
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
   end
   
-  % Save the sets, just in case
-  filename = sprintf('SPPwIntruder_check3_%d', veh);
-  var2save = Q{veh};
-  save(filename, 'var2save', 'dataFRS', '-v7.3')
+  %% Step-1a: The obstcales should simply be given by the base obstacles
+  % augmented by a tIAT-step FRS.
+  filename = sprintf('SPPwIntruder_AugObsFRS_%d.mat', veh);
   
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tIAT);
+    end
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
+  end
+end
+end
+
+%% Compute BRS1
+function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+% vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+%     Computes the first BRS for a vehicle, and updates its data with
+%     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
+%     target despite the worst-case disturbances and moving obstacles induced by
+%     other vehicles
+%
+% Inputs
+%     vehicle:
+%         vehicle for which the BRS is computed
+%     tau:
+%         the times for which the BRS is computed; unused times will be cut off
+%     schemeData:
+%         parameters for HJI PDE solver, should contain the following fields:
+%         .dynSys, .grid
+%     obstacles:
+%         union of induced obstacles from higher-priority vehicles
+%
+% Output
+%     vehicle:
+%         updated vehicle object
+%
+
+% Set schemeData
+schemeData.uMode = 'min';
+schemeData.dMode = 'max';
+schemeData.tMode = 'backward';
+
+% Set extraArgs
+extraArgs.visualize = true;
+extraArgs.plotData.plotDims = [1, 1, 0];
+extraArgs.plotData.projpt = vehicle.x(3);
+
+% Set obstacles
+extraArgs.obstacles = obstacles;
+
+% Computation should stop once it contains the initial state
+extraArgs.stopInit = vehicle.x;
+
+[vehicle.data.BRS1, vehicle.data.BRS1_tau] = ...
+  HJIPDE_solve(vehicle.data.target, tau, schemeData, 'zero', extraArgs);
+
+t0 = vehicle.data.BRS1_tau(1);
+vehicle.data.BRS1_tau = 2*t0 - vehicle.data.BRS1_tau;
+
+% Reverse the order of time elements
+vehicle.data.BRS1_tau = flip(vehicle.data.BRS1_tau);
+vehicle.data.BRS1 = flip(vehicle.data.BRS1, 4);
+end
+
+%% computeBaseObs
+function vehicle = computeBaseObs(vehicle, schemeData, resetR)
+% vehicle = computeBaseObs(vehicle, schemeData, resetR)
+%     Computes the induced base obstacles by vehicle according to BRS1 and the
+%     centralized controller scheme; populates the .baseObs and .baseObs_tau
+%     fields of vehicle.data
+%
+% Inputs
+%     vehicle:
+%         vehicle object; should have the .data field populated with .BRS1 and
+%         .BRS1_tau
+%     schemeData:
+%         parameters for the HJI PDE solver; should contain the fields .grid and
+%         .dynSys
+%     resetR:
+%         minimum size for the reachable set during evolution; if the reachable
+%         set goes below this size, the reachable set will be propagated
+%         "maximally" until the size becomes large enough
+%
+% Output
+%     vehicle:
+%         updated vehicle object with .baseObs and .baseObs_tau populated in the
+%         vehicle.data field
+%
+
+% Set schemeData
+schemeData.dMode = 'max';
+schemeData.tMode = 'forward';
+
+% Set computation time
+tau = vehicle.data.BRS1_tau(1:end-1);
+
+% Create a small obstacle around current vehicle
+obs0 = genBaseObs0(schemeData.grid, vehicle.x, resetR);
+
+% Set extraArgs for visualization
+extraArgs.visualize = true;
+
+% Set extraArgs for centralized controller
+extraArgs.SDModFunc = @minIslandSize_SDFunc;
+extraArgs.SDModParams.resetR = resetR;
+extraArgs.SDModParams.BRS = vehicle.data.BRS1;
+extraArgs.SDModParams.tau = vehicle.data.BRS1_tau;
+
+colons = repmat({':'}, 1, schemeData.grid.dim);
+extraArgs.obstacles = -vehicle.data.BRS1(colons{:}, 1:length(tau));
+
+% Compute base obstacles
+[vehicle.data.baseObs, vehicle.data.baseObs_tau] = ...
+  HJIPDE_solve(obs0, tau, schemeData, 'none', extraArgs);
+
+end
+
+%% augmentBaseObsFRS
+function vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+% vehicle = augmentBaseObsFRS(vehicle, schemeData, tIAT)
+%     Augments the base obstacles by computing the tIAT-FRS from each obstacle
+%     in time, and updates the vehicle object with fields .augObsFRS and
+%     .augObsFRS_tau
+%
+% Inputs
+%     vehicle:
+%         vehicle object; must contains the fields .baseObs and .baseObs_tau in
+%         the .data field
+%     schemeData:
+%         parameters for the HJI PDE solver; must contain the fields .grid and
+%         .dynSys
+%     tIAT:
+%         maximum duration of the intruder
+%
+% Output
+%     vehicle:
+%         updated vehicle class; the fields .augObsFRS and .augObsFRS_tau will
+%         be populated
+
+% Extract the base obstacles
+numObs = size(vehicle.data.baseObs, schemeData.grid.dim+1);
+
+% Append each of the base obstacles by a tIAT step FRS
+% Set schemeData
+schemeData.uMode = 'max';
+schemeData.dMode = 'max';
+schemeData.tMode = 'forward';
+
+% Set tau for computation
+%   dt for computing augmentation; does not necessarily have to be the same as 
+%   the global dt
+dt = 0.01; 
+tau = 0:dt:tIAT;
+
+% Subtract the part of the obstacle that hits the target
+extraArgs.obstacles = vehicle.data.target;
+
+% Compute tIAT-FRS of every base obstacle
+vehicle.data.augObsFRS = zeros(size(vehicle.data.baseObs));
+for i = 1:numObs
+  fprintf('Augmenting obstacle %d out of %d...\n', i, numObs)
+  
+  % Visualize the set every 10 time steps
+  if ~mod(i-1, 10)
+    extraArgs.visualize = true;
+  else
+    extraArgs.visualize = false;
+  end
+  
+  augObsFRS = HJIPDE_solve(vehicle.data.baseObs(:, :, :, i), ...
+    tau, schemeData, 'none', extraArgs);
+  vehicle.data.augObsFRS(:,:,:,i) = augObsFRS(:, :, :, end);
+end
+
+% Shift time vector
+vehicle.data.augObsFRS_tau = vehicle.data.baseObs_tau + tIAT;
+end
+
+function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
+% vehicle = flatAugBOFRS(vehicle, capture_radius)
+%     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture 
+%     radius, and then extends the 2D shape into 3D
+
+for i = 1:length(vehicle.data.augObsFRS_tau)
+  obs2D = proj(schemeData.grid, vehicle.data.augObsFRS(:,:,:,i), [0 0 1]);
+  
+end
 end
