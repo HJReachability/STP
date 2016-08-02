@@ -1,0 +1,51 @@
+Reviewer 2 of CDC 16 submission 1584
+
+Comments to the author
+======================
+
+The paper proposes a prioritized algorithm for path
+planning of vehicles affected by disturbances, using a 
+Hamilton-Jacobi based reachability analysis. Low priority
+vehicles treat high priority ones as time-varying induced
+obstacles. The definition of these obstacle regions is
+performed again via reachability, by defining an
+appropriate auxiliary problem.
+
+This is an application paper that relies strongly on
+earlier work by the same authors and a combination of
+existing results in 
+the literature. My comments are the following:
+
+1) The idea of using an auxiliary reachability problem to
+identify obstacle or maneuverability envelopes is not
+novel. This has been already employed in [Kitsios, Lygeros,
+CDC 2005], [Panagou etal, CDC 2009].
+Also gaming formulations in a HJ context are well known.
+
+2) The double obstacle reachability problem, for which the
+authors refer to their earlier work in [17] has already
+appeared in the literature in [15], [16], and the authors
+should refer to these references as well.
+Moreover, the case of time-varying obstacles has been
+considered in [Bokanowski, Zidani, IFAC 2011] and 
+in [Margellos, Lygeros, IEEE TCST 2013]; in both these
+references the authors augment the state with \dot{t}=1 to
+inherit the proofs but then one need not append the
+additional "timer" equation when performing the
+reachability calculations.
+
+3) In eq. 4 a more traditional definition would be to write
+"\forall \gamma(\cdot), \exists u ... ", where now
+\gamma(\cdot) is the strategy of the adversarial player.
+Having the order of the quantifiers reversed implies that
+\gamma(u) are the valuations of the strategy for the given
+u. The min-max order in the Hamiltonian would remain the
+same; this would be coherent 
+with traditional representations. 
+
+4) Minor comment: The "x" variables in (6) should be
+replaced by "z".
+
+For the above reasons, the contribution of the paper
+compared to existing results in the literature and previous
+applications by the authors is not clear.

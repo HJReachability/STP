@@ -1,0 +1,15 @@
+Reviewer 6 of CDC 16 submission 1584
+
+Comments to the author
+======================
+
+This paper investigates the safe sequential path planning
+of multi-vehicle systems with disturbances and imperfect
+information, and the Hamilton-Jacobi reachability analysis
+is given. Three different methods of generating induced
+obstacles in the sequential path planning method are
+proposed. 
+
+The contribution of the paper is not clear, the authors
+should provide a comparison of contribution with their
+previous work and the existing results in the literature. 
