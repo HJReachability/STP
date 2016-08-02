@@ -230,7 +230,7 @@ for veh=1:numVeh
     save(filename, 'obstacles', '-v7.3')
   end
   
-  %% Step-2b: Compute the BRS of the vehicle with the above obstacles
+  %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if veh == 1
     obstacles = ones(N');
   end
@@ -247,7 +247,7 @@ for veh=1:numVeh
     Q = {Q1; Q2; Q3; Q4};
   end
   
-  %% Step-3c: Compute the base obstacles for vehicles
+  %% Compute the base obstacles for based on BRS1
   filename = sprintf('SPPwIntruder_BaseObs_%d.mat', veh);
   
   if restart || ~exist(filename, 'file')
@@ -262,8 +262,7 @@ for veh=1:numVeh
     Q = {Q1; Q2; Q3; Q4};
   end
   
-  %% Step-1a: The obstcales should simply be given by the base obstacles
-  % augmented by a tIAT-step FRS.
+  %% Augment base obstacles with t-IAT FRS
   filename = sprintf('SPPwIntruder_AugObsFRS_%d.mat', veh);
   
   if restart || ~exist(filename, 'file')
@@ -277,6 +276,22 @@ for veh=1:numVeh
     load(filename)
     Q = {Q1; Q2; Q3; Q4};
   end
+  
+  %% Flatten augmented obstacles to 3D, add capture radius, and unflatten to 3D
+  filename = sprintf('SPPwIntruder_flatObs_%d.mat', veh);
+  
+  if restart || ~exist(filename, 'file')
+    if veh < numVeh
+      Q{veh} = flatAugBOFRS(Q{veh}, schemeData, capture_radius);
+    end
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
+  else
+    load(filename)
+    Q = {Q1; Q2; Q3; Q4};
+  end
+  
 end
 end
 
@@ -448,10 +463,22 @@ end
 function vehicle = flatAugBOFRS(vehicle, schemeData, capture_radius)
 % vehicle = flatAugBOFRS(vehicle, capture_radius)
 %     Flattens and augments the tIAT-FRS-augmented obstacles, adds the capture 
-%     radius, and then extends the 2D shape into 3D
+%     radius, and then extends the 2D shape into 3D. Populates the .flatObs2D
+%     and .cylObs3D fields of vehicle.data
+%
+
+%% Parameters for adding capture radius
+g2D = proj(schemeData.grid, [], [0 0 1]);
+
+%% Initialize augmented-capture-radius flat obstacles
+vehicle.data.flatObs2D = zeros([g2D.N' length(vehicle.data.augObsFRS_tau)]);
+vehicle.data.cylObs3D = ...
+  zeros([schemeData.grid.N' length(vehicle.data.augObsFRS_tau)]);
 
 for i = 1:length(vehicle.data.augObsFRS_tau)
-  obs2D = proj(schemeData.grid, vehicle.data.augObsFRS(:,:,:,i), [0 0 1]);
-  
+  [~, obs2D] = proj(schemeData.grid, vehicle.data.augObsFRS(:,:,:,i), [0 0 1]);
+  vehicle.data.flatObs2D(:,:,i) = addCRadius(g2D, obs2D, capture_radius);
+  vehicle.data.cylObs3D(:,:,:,i) = ...
+    repmat(vehicle.data.flatObs2D(:,:,i), [1 1 schemeData.grid.N(3)]);
 end
 end
