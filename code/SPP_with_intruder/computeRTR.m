@@ -1,10 +1,9 @@
 function computeRTR()
 % Grid
-grid_min = [-0.1; -0.1; -pi]; % Lower corner of computation domain
-grid_max = [0.1; 0.1; pi];    % Upper corner of computation domain
+grid_min = [-0.1; -0.1; -pi/6]; % Lower corner of computation domain
+grid_max = [0.1; 0.1; pi/6];    % Upper corner of computation domain
 N = [101; 101; 101];         % Number of grid points per dimension
-pdDims = 3;               % 3rd dimension is periodic
-schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
+schemeData.grid = createGrid(grid_min, grid_max, N);
 
 % Time
 tMax = 1;
@@ -13,10 +12,10 @@ tau = 0:dt:tMax;
 
 % Vehicle
 vRangeA = [0.1 1];
-vReserved = [0.3 -0.3];
+vReserved = [0.4 -0.4];
 
 wMaxA = 1;
-wReserved = -0.3;
+wReserved = -0.2;
 dMaxA = [0.1 0.2];
 
 % Virtual vehicle to be tracked
