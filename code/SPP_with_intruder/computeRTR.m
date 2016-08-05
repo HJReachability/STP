@@ -2,7 +2,7 @@ function computeRTR()
 % Grid
 grid_min = [-0.1; -0.1; -pi]; % Lower corner of computation domain
 grid_max = [0.1; 0.1; pi];    % Upper corner of computation domain
-N = [51; 51; 51];         % Number of grid points per dimension
+N = [101; 101; 101];         % Number of grid points per dimension
 pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
 
@@ -34,4 +34,6 @@ schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
+
+save('RTR.mat', 'schemeData', 'data')
 end
