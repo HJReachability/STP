@@ -17,8 +17,8 @@ obstacles = inf([schemeData.grid.N', length(tau)]);
 
 % Go through each vehicle in the input
 for i = 1:length(vehicles)
-  [~, common_inds] = intersect(tau, vehicles{i}.data.augObsFRS_tau);
-  obstacles(:,:,:,common_inds) = ...
-    min(obstacles(:,:,:,common_inds), vehicles{i}.data.augFlatObsBRS);
+  [~, tau_inds, obs_inds] = intersect(tau, vehicles{i}.data.augObsFRS_tau);
+  obstacles(:,:,:,tau_inds) = min(obstacles(:,:,:,tau_inds), ...
+    vehicles{i}.data.augFlatObsBRS(:,:,:,obs_inds));
 end
 end
