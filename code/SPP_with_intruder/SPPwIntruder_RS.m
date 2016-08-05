@@ -44,19 +44,17 @@ Q{4} = Plane([ 0.1; 0.1; 5*pi/4], wMax, vrange, dMax);
 
 %% target sets
 R = 0.1;
-R1 = 0.1;
-Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R1);
-Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R1);
-Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R1);
-Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R1);
+Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
+Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
+Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
+Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
 
-% %% Reduced target set for the first BRS
-% % R1 = 0.03;
-% R1 = 0.1;
-% Q{1}.target = shapeCylinder(g, 3, [0.7; 0.2; 0], R1);
-% Q{2}.target = shapeCylinder(g, 3, [-0.7; 0.2; 0], R1);
-% Q{3}.target = shapeCylinder(g, 3, [0.7; -0.7; 0], R1);
-% Q{4}.target = shapeCylinder(g, 3, [-0.7; -0.7; 0], R1);
+%% Reduced target set for the first BRS
+Rsmall = 0.03;
+Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
+Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
+Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
+Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
 
 %% Reset radius for base obstacle computation
 resetR = [0.03, 0.03, 0.1]';

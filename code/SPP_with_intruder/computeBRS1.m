@@ -34,13 +34,13 @@ extraArgs.plotData.projpt = vehicle.x(3);
 extraArgs.obstacles = obstacles;
 
 % Min with target
-extraArgs.targets = vehicle.data.target;
+extraArgs.targets = vehicle.data.targetsm;
 
 % Computation should stop once it contains the initial state
 extraArgs.stopInit = vehicle.x;
 
 [vehicle.data.BRS1, vehicle.data.BRS1_tau] = ...
-  HJIPDE_solve(vehicle.data.target, tau, schemeData, 'none', extraArgs);
+  HJIPDE_solve(vehicle.data.targetsm, tau, schemeData, 'none', extraArgs);
 
 t0 = vehicle.data.BRS1_tau(1);
 vehicle.data.BRS1_tau = 2*t0 - vehicle.data.BRS1_tau;
