@@ -43,8 +43,7 @@ if strcmp(method, 'RTT')
   % state, then subtract the target set
   RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
   RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
-  vehicle.data.baseObs(:,:,:,1) = max(RTTRS, -vehicle.data.target);
-  
+  vehicle.data.baseObs(:,:,:,1) = RTTRS;
   % Compute trajectory
   small = 1e-3;
   for i = 1:length(vehicle.data.BRS1_tau)-1
@@ -61,7 +60,7 @@ if strcmp(method, 'RTT')
     % state, then subtract the target set
     RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
     RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
-    vehicle.data.baseObs(:,:,:,i) = max(RTTRS, -vehicle.data.target);
+    vehicle.data.baseObs(:,:,:,i) = RTTRS;
   end
   
   % Undo control bounds modification
