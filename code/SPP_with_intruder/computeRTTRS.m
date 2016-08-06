@@ -1,4 +1,4 @@
-function computeRTTRS()
+function computeRTR()
 % Grid
 grid_min = [-0.1; -0.1; -pi/6]; % Lower corner of computation domain
 grid_max = [0.1; 0.1; pi/6];    % Upper corner of computation domain
@@ -6,16 +6,16 @@ N = [101; 101; 101];         % Number of grid points per dimension
 schemeData.grid = createGrid(grid_min, grid_max, N);
 
 % Time
-tMax = 1;
+tMax = 2;
 dt = 0.01;
 tau = 0:dt:tMax;
 
 % Vehicle
 vRangeA = [0.1 1];
-vReserved = [0.4 -0.4];
+vReserved = [0.3 -0.3];
 
 wMaxA = 1;
-wReserved = -0.2;
+wReserved = -0.35;
 dMaxA = [0.1 0.2];
 
 % Virtual vehicle to be tracked
@@ -34,5 +34,7 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
-save('RTTRS.mat', 'schemeData', 'data')
+RTTRS.g = schemeData.g;
+RTTRS.data = data;
+save('RTTRS.mat', 'RTTRS')
 end
