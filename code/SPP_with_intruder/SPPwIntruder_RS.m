@@ -10,8 +10,8 @@ end
 addpath(genpath('./obstacle_generation'));
 
 %% Grid
-grid_min = [-1; -1; 0]; % Lower corner of computation domain
-grid_max = [1; 1; 2*pi];    % Upper corner of computation domain
+grid_min = [-1; -1; -3*pi/2]; % Lower corner of computation domain
+grid_max = [1; 1; pi/2];    % Upper corner of computation domain
 N = [101; 101; 101];         % Number of grid points per dimension
 pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
@@ -38,9 +38,9 @@ dMax = [0.1 0.2];
 numVeh = 4;
 Q = cell(numVeh,1);
 Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
-Q{2} = Plane([ 0.1; 0; pi], wMax, vrange, dMax);
-Q{3} = Plane([-0.1; 0.1; 7*pi/4], wMax, vrange, dMax);
-Q{4} = Plane([ 0.1; 0.1; 5*pi/4], wMax, vrange, dMax);
+Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
+Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
+Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
 
 %% target sets
 R = 0.1;
@@ -59,11 +59,18 @@ Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
 %% Base obstacle generation method
 baseObs_method = 'RTT';
 if strcmp(baseObs_method, 'RTT')
+  fprintf('Using %s method to generate base obstacles\n', baseObs_method)
   load('RTTRS.mat')
-  migRTTRS1 = migrateGrid(RTTRS.g, RTTRS.data, schemeData.grid);
-  RTTRS.g = shiftGrid(RTTRS.g, [0; 0; 2*pi]);
-  migRTTRS2 = migrateGrid(RTTRS.g, RTTRS.data, schemeData.grid);
-  baseObs_params.RTTRS = min(migRTTRS1, migRTTRS2);
+  baseObs_params.RTTRS = ...
+    migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
+  figure;
+  h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
+  h1.FaceAlpha = 0.5;
+  hold on
+
+  h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
+  h3.FaceAlpha = 0.5;
+  h3.FaceColor = 'b';
   %% Reduced speed if using robust tracker
   for i = 1:4
     Q{i}.data.vReserved = [0.3 -0.3];
