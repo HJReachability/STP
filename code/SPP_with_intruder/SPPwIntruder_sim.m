@@ -55,16 +55,14 @@ for i = 1:length(tau)
         end
       else
         % Liveness controller
-        deriv = eval_u(g, Q{j}.BRS1deriv, Q{j}.x);
-        u = Q{j}.optCtrl(tau(i), Q{j}.x, deriv, 'min');
+        %--> u = livenessCtrl();
         %--> d = ...
         Q{j}.updateState(u, dt, Q{j}.x, d);
       end
     else
       %% After intruder leaves airspace
       % Load or compute BRS2derivs
-      deriv = eval_u(g, Q{j}.BRS2deriv, Q{j}.x);
-      u = Q{j}.optCtrl(tau(i), Q{j}.x, deriv, 'min');
+      %--> u = ...
       %--> d = ...
       Q{j}.updateState(u, dt, Q{j}.x, d);
     end

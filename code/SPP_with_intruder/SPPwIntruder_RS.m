@@ -50,14 +50,33 @@ Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
 Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
 
 %% Reduced target set for the first BRS
-Rsmall = 0.03;
+Rsmall = 0.025;
 Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
 Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
 Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
 Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
 
-%% Reset radius for base obstacle computation
-resetR = [0.03, 0.03, 0.1]';
+%% Base obstacle generation method
+baseObs_method = 'RTT';
+if strcmp(baseObs_method, 'RTT')
+  load('RTTRS.mat')
+  migRTTRS1 = migrateGrid(RTTRS.g, RTTRS.data, schemeData.grid);
+  RTTRS.g = shiftGrid(RTTRS.g, [0; 0; 2*pi]);
+  migRTTRS2 = migrateGrid(RTTRS.g, RTTRS.data, schemeData.grid);
+  baseObs_params.RTTRS = min(migRTTRS1, migRTTRS2);
+  %% Reduced speed if using robust tracker
+  for i = 1:4
+    Q{i}.data.vReserved = [0.3 -0.3];
+    Q{i}.data.wReserved = -0.4;
+    Q{i}.data.RTT_radius = 0.075;
+  end
+  
+elseif strcmp(baseObs_method, 'CC')
+  %% Reset radius for base obstacle computation
+  baseObs_params.resetR = [0.03, 0.03, 0.1]';
+  
+end
+
 
 %% File names for saving
 
@@ -87,7 +106,7 @@ end
 %% Start the computation of reachable sets
 for veh=1:numVeh
   schemeData.dynSys = Q{veh};
-
+  
   %% Gather induced obstacles of higher-priority vehicles
   % Assume there's no static obstacle
   obstacles = gatherObstacles(Q(1:veh-1), schemeData, tau);
@@ -96,12 +115,14 @@ for veh=1:numVeh
   filename = sprintf('SPPwIntruder_BRS1_%d.mat', veh);
   
   if restart || ~exist(filename, 'file')
+    fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
     if strcmp(filename, last_filename)
+      fprintf('Loading BRS1 for vehicle %d\n', veh)
       load(filename)
       Q = {Q1; Q2; Q3; Q4};
     end
@@ -112,13 +133,16 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
-      Q{veh} = computeBaseObs(Q{veh}, schemeData, resetR);
+      fprintf('Computing base obstacles for vehicle %d\n', veh)
+      Q{veh} = ...
+        computeBaseObs(Q{veh}, schemeData, baseObs_method, baseObs_params);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
     if strcmp(filename, last_filename)
+      fprintf('Loading base obstacles for vehicle %d\n', veh)
       load(filename)
       Q = {Q1; Q2; Q3; Q4};
     end
@@ -129,6 +153,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
+      fprintf('Augmenting base obstacles with FRS for vehicle %d\n', veh)
       Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tauIAT);
     end
     
@@ -136,6 +161,7 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
     if strcmp(filename, last_filename)
+      fprintf('Loading FRS-augmented obstacles for vehicle %d\n', veh)
       load(filename)
       Q = {Q1; Q2; Q3; Q4};
     end
@@ -146,6 +172,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
+      fprintf('Flattening obstacles for vehicle %d\n', veh)
       Q{veh} = flatAugBOFRS(Q{veh}, schemeData, Rc);
     end
     
@@ -153,6 +180,7 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
     if strcmp(filename, last_filename)
+      fprintf('Loading flattened obstacles for vehicle %d\n', veh)
       load(filename)
       Q = {Q1; Q2; Q3; Q4};
     end
@@ -163,6 +191,7 @@ for veh=1:numVeh
   
   if restart || ~exist(filename, 'file')
     if veh < numVeh
+      fprintf('Augmenting flattening obstacles using BRS for vehicle %d\n', veh)
       Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tauIAT);
     end
     
@@ -170,6 +199,7 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
   else
     if strcmp(filename, last_filename)
+      fprintf('Loading BRS-augmented obstacles for vehicle %d\n', veh)
       load(filename)
       Q = {Q1; Q2; Q3; Q4};
     end

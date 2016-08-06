@@ -1,4 +1,4 @@
-function computeRTR()
+function computeRTTRS()
 % Grid
 grid_min = [-0.1; -0.1; -pi/6]; % Lower corner of computation domain
 grid_max = [0.1; 0.1; pi/6];    % Upper corner of computation domain
@@ -34,5 +34,5 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
-save('RTR.mat', 'schemeData', 'data')
+save('RTTRS.mat', 'schemeData', 'data')
 end
