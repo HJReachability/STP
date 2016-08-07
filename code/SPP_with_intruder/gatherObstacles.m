@@ -1,35 +1,24 @@
-function obstacles = gatherObstacles(vehicles, schemeData, tau)
-% obstacles = gatherObstacles(higherPVehicles, schemeData, tau);
-%     Computes the union of induced obstacles by a set of vehicles, with
-%     time-stamps synced to tau. This set of obstacles is used to compute BRS1
-
-% If there are no vehicles in the input, and there is no static obstacles...
-if isempty(vehicles)
-  obstacles = inf(schemeData.grid.N');
-  return
-end
-
+function obstacles = gatherObstacles(g, obsSet, obsSet_tau, common_tau)
 % Convert tau to absolute time
-tau = flip(-tau);
+common_tau = flip(-common_tau);
 
 % Initialize empty obstacle
-obstacles = inf([schemeData.grid.N', length(tau)]);
+obstacles = inf([g, length(common_tau)]);
 
 small = 1e-4;
 % Go through each vehicle in the input
-for i = 1:length(vehicles)
+for i = 1:length(obsSet)
   % Determine time bound
-  min_tau = min(vehicles{i}.data.augObsFRS_tau) - small;
-  max_tau = min(small, max(vehicles{i}.data.augObsFRS_tau) + small);
+  min_tau = min(obsSet_tau{i}) - small;
+  max_tau = min(small, max(obsSet_tau{i}) + small);
   
   % Determine indices within the time bound
-  tau_inds = tau > min_tau & tau < max_tau;
-  obs_inds = vehicles{i}.data.augObsFRS_tau > min_tau & ...
-    vehicles{i}.data.augObsFRS_tau < max_tau;
+  tau_inds = common_tau > min_tau & common_tau < max_tau;
+  obs_inds = obsSet_tau{i} > min_tau & obsSet_tau{i} < max_tau;
 
   % Take union with previous obstacles for obstacles within the time bound
-  obstacles(:,:,:,tau_inds) = min(obstacles(:,:,:,tau_inds), ...
-    vehicles{i}.data.augFlatObsBRS(:,:,:,obs_inds));
+  obstacles(:,:,:,tau_inds) = ...
+    min(obstacles(:,:,:,tau_inds), obsSet{i}(:,:,:,obs_inds));
 end
 
 % Flip the obstacles so that it goes backwards in time; this is needed since the
