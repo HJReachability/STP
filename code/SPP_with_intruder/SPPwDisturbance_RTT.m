@@ -27,7 +27,7 @@ wMax = 1;
 Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
 
-filename = sprintf('%s_checkpoint.mat', mfilename);
+filename = sprintf('%s_checkpoint2.mat', mfilename);
 numVeh = 4;
 if restart
   Q = cell(numVeh,1);
