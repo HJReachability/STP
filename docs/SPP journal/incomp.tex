@@ -1,5 +1,15 @@
 % !TEX root = SPP_journal.tex
-\section{Incomplete information \label{sec:incomp}}
+\section{SPP Under Disturbances and Incomplete information \label{sec:incomp}}
+In this section, we investigate SPP under the presence of disturbances and incomplete information. With disturbances, our joint system dynamics become in the form of \eqref{eq:dyn}, and the controls $\ctrl_i$ of the vehicles $\veh{i}$ must drive the state $\state_i$ into the target $\targetset_i$ while keeping all vehicles away from each other's danger zones despite the worst case disturbance.
+
+In a practical setting, incomplete information may arise due to a few reasons. For example, the presence of disturbances implies that exact trajectories $\state_i(\cdot)$ cannot be completely known \textit{a priori}, since disturbances will affect the evolution of the system trajectory at run time\MCnote{``at run time'' may not be appropriate here}. From the perspect of each vehicle $\veh{i}$, the effect of disturbances must be taken into account both in the dynamics the vehicle itself, and in the dynamics of other vehicles.
+
+Even ignoring disturbances, each vehicle $\veh{i}$ may not have information about the control strategy of the other vehicles $\veh{j}, j\neq i$. For example, there may be many different control strategies for each vehicle to reach its target on time, and different vehicles may be using different control strategies. In this situation, lower-priority vehicles may need to plan their paths while avoiding danger zones of higher-priority vehicles without knowing what control strategies higher-priority vehicles may be using. Furthermore, each vehicle may even change control strategies on the fly.
+
+We explore three different situations in which incomplete information may arise. In Section \ref{sec:incomp_optctrl}, we consider the situation in which all vehicles utilizes an optimal controller at all times. Next, in Section \ref{sec:incomp_LRctrl}, we assume that each vehicle only has information about the target sets of other vehicles, and no information about other vehicles' control strategies. Lastly, in Section \ref{sec:incomp_robust}, we consider the situation in which each vehicle divides its control input authority into a part that drives the vehicle towards the target, and a part that rejects disturbances.
+
+In all three cases, each vehicle $\veh{i}$ induces a moving obstacle $\ioset_k^i(t)$ for the lower priority vehicles $\veh{k}, k>i$, just like in the basic SPP algorithm described in Section \ref{sec:basic}. However, unlike in the basic SPP algorithm, computation of $\ioset_k^i(t)$ is no longer trival as in \eqref{eq:ioset}. We now describe how to compute $\ioset_k^i(t)$ in the three cases, which in turn will lead to different total obstacles $\obsset_i(t)$ that will be used to solve the HJ VI \eqref{eq:HJIVI_BRS}.
+
 Notation:
 \begin{itemize}
 \item Augmented obstacles $\tilde\obsset(t)$
@@ -8,4 +18,4 @@ Notation:
 
 \subsection{Optimal Controller} \label{sec:incomp_optctrl}
 \subsection{Least Restrictive Controller}  \label{sec:incomp_LRctrl}
-\subsection{Robust Tracking}
+\subsection{Robust Tracking} \label{sec:incomp_robust}
