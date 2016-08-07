@@ -11,7 +11,7 @@ g2D = proj(g, [], [0 0 1]);
 flatObs2D = zeros([g2D.N' length(obs_tau)]);
 cylObs3D = zeros([g.N' length(obs_tau)]);
 
-for i = 1:length(vehicle.data.augObsFRS_tau)
+for i = 1:length(obs_tau)
   [~, obs2D] = proj(g, obs(:,:,:,i), [0 0 1]);
   flatObs2D(:,:,i) = addCRadius(g2D, obs2D, rc);
   cylObs3D(:,:,:,i) = repmat(flatObs2D(:,:,i), [1 1 g.N(3)]);
