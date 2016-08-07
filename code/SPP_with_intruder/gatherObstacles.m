@@ -3,7 +3,7 @@ function obstacles = gatherObstacles(g, obsSet, obsSet_tau, common_tau)
 common_tau = flip(-common_tau);
 
 % Initialize empty obstacle
-obstacles = inf([g, length(common_tau)]);
+obstacles = inf([g'N', length(common_tau)]);
 
 small = 1e-4;
 % Go through each vehicle in the input
