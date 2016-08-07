@@ -35,26 +35,32 @@ Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
 
 %% initial States
+filename = 'last_checkpoint.mat';
 numVeh = 4;
-Q = cell(numVeh,1);
-Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
-Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
-Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
-Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
+if restart
+  Q = cell(numVeh,1);
+  Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
+  Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
+  Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
+  Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
 
-%% target sets
-R = 0.1;
-Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
-Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
-Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
-Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
+  %% target sets
+  R = 0.1;
+  Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
+  Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
+  Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
+  Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
 
-%% Reduced target set for the first BRS
-Rsmall = 0.025;
-Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
-Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
-Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
-Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
+  %% Reduced target set for the first BRS
+  Rsmall = 0.025;
+  Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
+  Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
+  Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
+  Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
+else
+  load(filename)
+  Q = {Q1; Q2; Q3; Q4};
+end
 
 %% Base obstacle generation method
 baseObs_method = 'RTT';
@@ -84,32 +90,6 @@ elseif strcmp(baseObs_method, 'CC')
   
 end
 
-
-%% File names for saving
-
-filenames = {'SPPwIntruder_BRS1_1.mat'; ...
-  'SPPwIntruder_BaseObs_1.mat'; ...
-  'SPPwIntruder_AugObsFRS_1.mat'; ...
-  'SPPwIntruder_FlatObs_1.mat'; ...
-  'SPPwIntruder_AugObsBRS_1.mat'; ...
-  'SPPwIntruder_BRS1_2.mat'; ...
-  'SPPwIntruder_BaseObs_2.mat'; ...
-  'SPPwIntruder_AugObsFRS_2.mat'; ...
-  'SPPwIntruder_FlatObs_2.mat'; ...
-  'SPPwIntruder_AugObsBRS_2.mat'; ...
-  'SPPwIntruder_BRS1_3.mat'; ...
-  'SPPwIntruder_BaseObs_3.mat'; ...
-  'SPPwIntruder_AugObsFRS_3.mat'; ...
-  'SPPwIntruder_FlatObs_3.mat'; ...
-  'SPPwIntruder_AugObsBRS_3.mat'; ...
-  'SPPwIntruder_BRS1_4.mat'};
-
-for fileNum = 1:length(filenames)
-  if exist(filenames{fileNum}, 'file')
-    last_filename = filenames{fileNum};
-  end
-end
-
 %% Start the computation of reachable sets
 for veh=1:numVeh
   schemeData.dynSys = Q{veh};
@@ -119,97 +99,56 @@ for veh=1:numVeh
   obstacles = gatherObstacles(Q(1:veh-1), schemeData, tau);
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
-  filename = sprintf('SPPwIntruder_BRS1_%d.mat', veh);
-  
-  if restart || ~exist(filename, 'file')
+  if ~isfield(Q{veh}.data, 'BRS1')
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
-  else
-    if strcmp(filename, last_filename)
-      fprintf('Loading BRS1 for vehicle %d\n', veh)
-      load(filename)
-      Q = {Q1; Q2; Q3; Q4};
-    end
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
   end
   
   %% Compute the base obstacles for based on BRS1
-  filename = sprintf('SPPwIntruder_BaseObs_%d.mat', veh);
-  
-  if restart || ~exist(filename, 'file')
+  if ~isfield(Q{veh}.data, 'baseObs')
     if veh < numVeh
       fprintf('Computing base obstacles for vehicle %d\n', veh)
       Q{veh} = ...
         computeBaseObs(Q{veh}, schemeData, baseObs_method, baseObs_params);
     end
-    
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
-  else
-    if strcmp(filename, last_filename)
-      fprintf('Loading base obstacles for vehicle %d\n', veh)
-      load(filename)
-      Q = {Q1; Q2; Q3; Q4};
-    end
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
   end
   
   %% Augment base obstacles with t-IAT FRS
-  filename = sprintf('SPPwIntruder_AugObsFRS_%d.mat', veh);
-  
-  if restart || ~exist(filename, 'file')
+  if ~isfield(Q{veh}.data, 'augObsFRS')
     if veh < numVeh
       fprintf('Augmenting base obstacles with FRS for vehicle %d\n', veh)
       Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tauIAT);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
-  else
-    if strcmp(filename, last_filename)
-      fprintf('Loading FRS-augmented obstacles for vehicle %d\n', veh)
-      load(filename)
-      Q = {Q1; Q2; Q3; Q4};
-    end
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
   end
   
   %% Flatten augmented obstacles to 3D, add capture radius, and unflatten to 3D
-  filename = sprintf('SPPwIntruder_FlatObs_%d.mat', veh);
-  
-  if restart || ~exist(filename, 'file')
+  if ~isfield(Q{veh}.data, 'flatObs2D')
     if veh < numVeh
       fprintf('Flattening obstacles for vehicle %d\n', veh)
       Q{veh} = flatAugBOFRS(Q{veh}, schemeData, Rc);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
-  else
-    if strcmp(filename, last_filename)
-      fprintf('Loading flattened obstacles for vehicle %d\n', veh)
-      load(filename)
-      Q = {Q1; Q2; Q3; Q4};
-    end
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
-  filename = sprintf('SPPwIntruder_AugObsBRS_%d.mat', veh);
-  
-  if restart || ~exist(filename, 'file')
+  if ~isfield(Q{veh}.data, 'augFlatObsBRS')
     if veh < numVeh
       fprintf('Augmenting flattening obstacles using BRS for vehicle %d\n', veh)
       Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tauIAT);
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'veh', '-v7.3')
-  else
-    if strcmp(filename, last_filename)
-      fprintf('Loading BRS-augmented obstacles for vehicle %d\n', veh)
-      load(filename)
-      Q = {Q1; Q2; Q3; Q4};
-    end
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
   end
 end
 end
