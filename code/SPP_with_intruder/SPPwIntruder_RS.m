@@ -104,7 +104,7 @@ for veh=1:numVeh
     Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
   %% Compute the base obstacles for based on BRS1
@@ -115,7 +115,7 @@ for veh=1:numVeh
         computeBaseObs(Q{veh}, schemeData, baseObs_method, baseObs_params);
     end
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
   %% Augment base obstacles with t-IAT FRS
@@ -126,7 +126,7 @@ for veh=1:numVeh
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
   %% Flatten augmented obstacles to 3D, add capture radius, and unflatten to 3D
@@ -137,7 +137,7 @@ for veh=1:numVeh
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
@@ -148,7 +148,7 @@ for veh=1:numVeh
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
 end
 end
