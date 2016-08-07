@@ -1,4 +1,28 @@
-function obstacles = gatherObstacles(g, obsSet, obsSet_tau, common_tau)
+function obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
+% obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
+%     Gathers obstacles by combining obstacles in the field obs_type of each
+%     vehicle in the vehicles list
+
+% If there are no vehicles in the input, and there is no static obstacles...
+if isempty(vehicles)
+  obstacles = inf(schemeData.grid.N');
+  return
+end
+
+% Gather the obstacle set
+obsSet = cell(length(vehicles), 1);
+obsSet_tau = cell(length(vehicles), 1);
+
+for i = 1:length(obsSet)
+  obsSet{i} = vehicles{i}.data.(obs_type);
+  obsSet_tau{i} = vehicles{i}.data.(sprintf('%s_tau', obs_type));
+end
+
+obstacles = gatherObstacles_helper(schemeData.grid, obsSet, obsSet_tau, tau);
+
+end
+
+function obstacles = gatherObstacles_helper(g, obsSet, obsSet_tau, common_tau)
 % Convert tau to absolute time
 common_tau = flip(-common_tau);
 

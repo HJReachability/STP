@@ -88,7 +88,7 @@ for veh=1:numVeh
   
   %% Gather induced obstacles of higher-priority vehicles
   % Assume there's no static obstacle
-  obstacles = gatherCylObs3D(Q(1:veh-1), schemeData, tau);
+  obstacles = gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylBO3D');
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
@@ -114,7 +114,7 @@ for veh=1:numVeh
   if ~isfield(Q{veh}.data, 'flatObs2D')
     if veh < numVeh
       fprintf('Flattening obstacles for vehicle %d\n', veh)
-      Q{veh} = flatAugBaseObs(Q{veh}, schemeData, Rc);
+      Q{veh} = flatAugObs(Q{veh}, schemeData, Rc, 'baseObs');
     end
     
     [Q1, Q2, Q3, Q4] = Q{:};
