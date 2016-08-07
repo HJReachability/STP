@@ -1,4 +1,4 @@
-function SPPwIntruder_RS(restart)
+function SPPwIntruder_RS(restart, chkpt_filename)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
@@ -35,7 +35,11 @@ Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
 
 %% initial States
-filename = sprintf('%s_checkpoint2.mat', mfilename);
+if nargin < 2
+  filename = sprintf('%s_checkpoint.mat', mfilename);
+else
+  filename = chkpt_filename ;
+end
 numVeh = 4;
 if restart
   Q = cell(numVeh,1);
