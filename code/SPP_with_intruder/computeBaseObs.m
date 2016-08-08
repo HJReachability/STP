@@ -39,11 +39,15 @@ if strcmp(method, 'RTT')
   vehicle.data.baseObs = ...
     zeros([schemeData.grid.N' length(vehicle.data.BRS1_tau)-1]);
   
+  % Initialize nominal trajectory
+  vehicle.data.nomTraj = zeros(3, length(vehicle.data.BRS1_tau)-1);
+  
   % Rotate and shift the robust trajectory tracking reachable set to the vehicle
   % state, then subtract the target set
   RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
   RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
   vehicle.data.baseObs(:,:,:,1) = RTTRS;
+  
   % Compute trajectory
   small = 1e-3;
   for i = 1:length(vehicle.data.BRS1_tau)-1
@@ -57,19 +61,22 @@ if strcmp(method, 'RTT')
     end
     
     % Rotate and shift the robust trajectory tracking reachable set to the vehicle
-    % state, then subtract the target set
+    % state
     RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
     RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
     vehicle.data.baseObs(:,:,:,i) = RTTRS;
+    
+    % Update nominal trajectory
+    vehicle.data.nomTraj(:,i) = vehicle.x;
   end
   
   % Undo control bounds modification
   vehicle.vrange = vehicle.vrange - vehicle.data.vReserved;
   vehicle.wMax = vehicle.wMax - vehicle.data.wReserved;
   
-%   % *May* need to undo state information
-%   vehicle.x = vehicle.xhist(:,1);
-%   vehicle.xhist = vehicle.xhist(:,1);
+  % Undo state information
+  vehicle.x = vehicle.xhist(:,1);
+  vehicle.xhist = vehicle.xhist(:,1);
   
 elseif strcmp(method, 'CC')
   % Set schemeData
