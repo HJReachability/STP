@@ -116,7 +116,7 @@ for veh=1:numVeh
   end
   
   %% Flatten obstacles to 3D, add capture radius, and unflatten to 3D
-  if ~isfield(Q{veh}.data, 'flatObs2D')
+  if ~isfield(Q{veh}.data, 'cylObs3D')
     if veh < numVeh
       fprintf('Flattening obstacles for vehicle %d\n', veh)
       Q{veh} = flatAugObs(Q{veh}, schemeData, Rc, 'baseObs');
