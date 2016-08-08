@@ -74,9 +74,9 @@ if strcmp(method, 'RTT')
   vehicle.vrange = vehicle.vrange - vehicle.data.vReserved;
   vehicle.wMax = vehicle.wMax - vehicle.data.wReserved;
   
-  % Undo state information
-  vehicle.x = vehicle.xhist(:,1);
-  vehicle.xhist = vehicle.xhist(:,1);
+%   % Undo state information
+%   vehicle.x = vehicle.xhist(:,1);
+%   vehicle.xhist = vehicle.xhist(:,1);
   
 elseif strcmp(method, 'CC')
   % Set schemeData
