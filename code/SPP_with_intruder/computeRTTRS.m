@@ -22,8 +22,8 @@ dMaxA = [0.1 0.2];
 vRangeB = vRangeA + vReserved;
 wMaxB = wMaxA + wReserved;
 dMaxB = [0 0];
-schemeData.dynSys = PlaneCAvoid( ...
-  zeros(3,1), wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
+dynSys = PlaneCAvoid(zeros(3,1), wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
+schemeData.dynSys = dynSys;
 
 % Initial conditions
 trackingRadius = 0.075;
@@ -36,5 +36,6 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 RTTRS.g = schemeData.grid;
 RTTRS.data = data;
+RTTRS.dynSys = dynSys;
 save('RTTRS.mat', 'RTTRS', '-v7.3')
 end
