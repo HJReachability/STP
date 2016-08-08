@@ -2,9 +2,9 @@ function vehicle = flatAugObs(vehicle, schemeData, rc, obs_field)
 % vehicle = flatAugObs(vehicle, schemeData, rc, obs_field)
 %     flattens and augments with capture radius to the obstacle in obs_field
 
-vehicle.data.cylBO3D_tau = vehicle.data.(sprintf('%s_tau', obs_field));
+vehicle.data.cylObs3D_tau = vehicle.data.(sprintf('%s_tau', obs_field));
 
-vehicle.data.cylBO3D = ...
+vehicle.data.cylObs3D = ...
   flatAugObs_helper(schemeData.grid, vehicle.data.(obs_field), rc);
 
 end

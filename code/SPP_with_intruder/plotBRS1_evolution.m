@@ -16,6 +16,7 @@ for i = length(Q{veh}.data.BRS1_tau):-1:1
   % Plot obstacle at each time step
   small = 1e-4;
   t = Q{veh}.data.BRS1_tau(i);
+
   for j = 1:veh-1
     % Determine the corresponding time index in the obstacles
     oInd = find(Q{j}.data.(sprintf('%s_tau', obs_field)) < t+small & ...
@@ -31,5 +32,6 @@ for i = length(Q{veh}.data.BRS1_tau):-1:1
   title(sprintf('t = %f', Q{veh}.data.BRS1_tau(i)))
   drawnow;
   hold off
+
 end
 end
