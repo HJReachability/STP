@@ -70,8 +70,7 @@ if strcmp(method, 'RTT')
       
       % Update nominal trajectory
       vehicle.data.nomTraj(:,obsInd) = vehicle.x;
-      
-      obsInd = obsInd + 1;
+      obsInd = obsInd + 1
     end
   end
   
