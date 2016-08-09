@@ -29,7 +29,14 @@ for i = 1:length(tau)
       % Our plane is vehicle A, trying to stay out of reachable set, and the 
       % reference virtual plane is vehicle B, trying to get into reachable set
       rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
+      
+      if eval_u(RTTRS.g, RTTRS.data(:,:,:,end)) <= 0
+        keyboard
+      end;
+      
       deriv = eval_u(RTTRS.g, Deriv, rel_x);
+      % I think RTTRS.dynSys has the wrong parameters; make sure there's enough 
+      % control authority
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance
