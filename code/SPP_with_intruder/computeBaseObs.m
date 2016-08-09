@@ -1,4 +1,4 @@
-function vehicle = computeBaseObs(vehicle, schemeData, method, params)
+function vehicle = computeBaseObs(vehicle, schemeData, method, params, trajOnly)
 % vehicle = computeBaseObs(vehicle, schemeData, resetR)
 %     Computes the induced base obstacles by vehicle according to BRS1 and the
 %     centralized controller scheme; populates the .baseObs and .baseObs_tau
@@ -21,9 +21,13 @@ function vehicle = computeBaseObs(vehicle, schemeData, method, params)
 %         updated vehicle object with .baseObs and .baseObs_tau populated in the
 %         vehicle.data field
 
+if nargin < 5
+  trajOnly = true;
+end
+
 if strcmp(method, 'RTT')
   % Robust trajectory tracker
-  Deriv = computeGradients(schemeData.grid, vehicle.data.BRS1);
+  dt = 0.0025;
   
   % Modify control bounds
   vehicle.vrange = vehicle.vrange + vehicle.data.vReserved;
@@ -32,41 +36,47 @@ if strcmp(method, 'RTT')
   % No disturbance when computing trajectory
   d = [0; 0; 0];
   
-  % Initialize obstacle
-  vehicle.data.baseObs_tau = vehicle.data.BRS1_tau(1:end-1);
-  vehicle.data.baseObs = ...
-    zeros([schemeData.grid.N' length(vehicle.data.BRS1_tau)-1]);
-  
   % Initialize nominal trajectory
-  vehicle.data.nomTraj = nan(3, length(vehicle.data.BRS1_tau)-1);
+  vehicle.data.nomTraj_tau = vehicle.data.BRS1_tau;  
+  vehicle.data.nomTraj = nan(3, length(vehicle.data.BRS1_tau));
+  vehicle.data.nomTraj(:,1) = vehicle.x;
   
-  % Rotate and shift the robust trajectory tracking reachable set to the vehicle
-  % state, then subtract the target set
-  RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
-  RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
-  vehicle.data.baseObs(:,:,:,1) = RTTRS;
+  % Initialize obstacle
+  if ~trajOnly
+    vehicle.data.baseObs_tau = vehicle.data.BRS1_tau(1:end-1);
+    vehicle.data.baseObs = ...
+      zeros([schemeData.grid.N' length(vehicle.data.BRS1_tau)-1]);
+  
+    % Rotate and shift the robust trajectory tracking reachable set to the vehicle
+    % state, then subtract the target set
+    RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
+    RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
+    vehicle.data.baseObs(:,:,:,1) = RTTRS;
+  end
   
   % Compute trajectory
-  small = 1e-3;
-  obsInd = 1;
+  small = 1e-4;
+  obsInd = 2;
   for i = 1:length(vehicle.data.BRS1_tau)-1
     while_loop = false;
+    Deriv = computeGradients(schemeData.grid, vehicle.data.BRS1(:,:,:,i));
+    
     while ...
         eval_u(schemeData.grid, vehicle.data.BRS1(:,:,:,i+1), vehicle.x) > small
       while_loop = true;
-      deriv = eval_u(schemeData.grid, ...
-        {Deriv{1}(:,:,:,i); Deriv{2}(:,:,:,i); Deriv{3}(:,:,:,i)}, vehicle.x);
+      deriv = eval_u(schemeData.grid, Deriv, vehicle.x);
       u = vehicle.optCtrl([], vehicle.x, deriv, 'min');
-      vehicle.updateState(u, ...
-        vehicle.data.BRS1_tau(i+1)-vehicle.data.BRS1_tau(i), vehicle.x, d);
+      vehicle.updateState(u, dt, vehicle.x, d);
     end
     
     if while_loop
-      % Rotate and shift the robust trajectory tracking reachable set to the vehicle
-      % state
-      RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
-      RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
-      vehicle.data.baseObs(:,:,:,obsInd) = RTTRS;
+      if ~trajOnly
+        % Rotate and shift the robust trajectory tracking reachable set to the vehicle
+        % state
+        RTTRS = rotateData(schemeData.grid, params.RTTRS, vehicle.x(3), [1 2], 3);
+        RTTRS = shiftData(schemeData.grid, RTTRS, vehicle.x([1 2]), [1 2]);
+        vehicle.data.baseObs(:,:,:,obsInd) = RTTRS;
+      end
       
       % Update nominal trajectory
       vehicle.data.nomTraj(:,obsInd) = vehicle.x;
@@ -75,17 +85,22 @@ if strcmp(method, 'RTT')
   end
   
   % Finalize output obstacles
+  vehicle.data.nomTraj_tau(obsInd:end) = [];
   vehicle.data.nomTraj(:,obsInd:end) = [];
-  vehicle.data.baseObs(:,:,:,obsInd:end) = [];
-  vehicle.data.baseObs_tau(obsInd:end) = [];
+  if ~trajOnly
+    vehicle.data.baseObs(:,:,:,obsInd:end) = [];
+    vehicle.data.baseObs_tau(obsInd:end) = [];
+  end
   
   % Undo control bounds modification
   vehicle.vrange = vehicle.vrange - vehicle.data.vReserved;
   vehicle.wMax = vehicle.wMax - vehicle.data.wReserved;
   
-  % Undo state information
+  % Undo state and control information
   vehicle.x = vehicle.xhist(:,1);
   vehicle.xhist = vehicle.xhist(:,1);
+  vehicle.u = [];
+  vehicle.uhist = [];
   
 elseif strcmp(method, 'CC')
   % Set schemeData
