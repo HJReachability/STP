@@ -9,10 +9,11 @@ Obstacles can be generated in many different ways depending on the assumptions m
 In general, the different methods of obstacle generation can be used in a single path planning problem, since different control strategies can be assumed for each vehicle independently. This means that $\ioset_i^j(t)$ can be computed using a different method for each $j$. For example, a more predictable vehicle may induce obstacles under the stronger assumptions in Section \ref{sec:cc}, while a vehicle that requires more control freedom may induce obstacles under the weaker assumptions in Section \ref{sec:lrc}.
 
 \subsection{Method 1: Centralized Controller \label{sec:cc}}
-In this obstacle generation method, the induced obstacle for a vehicle $\veh_j$ is computed assuming that $\veh_j$ is applying the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i}, which takes $\veh_j$ to the target in the optimal way according to the value function $V_j(t, x_j)$. If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. 
+In this obstacle generation method, the induced obstacle for a vehicle $\veh_i$ is computed assuming that $\veh_j$ is applying the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i}, which takes $\veh_j$ to the target in the optimal way according to the value function $V_j(t, x_j)$. If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. 
 
-From the perspective of a lower priority vehicle $\veh_i$, a higher priority vehicle $\veh_j, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ given that $\veh_j$ is executing the feedback controller $u_j^*(t, x_j)$. Determining this obstacle involves first solving a forward reachability problem. The solution gives us the forward reachable set (FRS) of $\veh_j$ starting from its initial state $x_j(\edt)$ at initial time $\edt$, denoted $\frs_j(t)$ and defined as follows:
+From the perspective of a lower priority vehicle $\veh_i$, a higher priority vehicle $\veh_j, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$, given that $\veh_j$ is executing the feedback controller $u_j^*(t, x_j)$. Determining this obstacle involves first solving a forward reachability problem. The solution gives us the forward reachable set (FRS) of $\veh_j$ starting from its initial state $x_j(\edt)$ at initial time $\edt$, denoted $\frs_j(t)$ and defined as follows:
 
+\SBnote{Let's write the traditional trajectory based definition of FRS. Also, the definition below is wrong as we discussed earlier. It should be there exist a disturbance and not for all disturbance.}
 \begin{equation}
 \label{eq:frs}
 \begin{aligned}
@@ -21,6 +22,7 @@ From the perspective of a lower priority vehicle $\veh_i$, a higher priority veh
 \end{aligned}
 \end{equation}
 
+\SBnote{It'd be helpful to write that the computation is done recursively and that there are no obstacles for $Q_1$. Currently, it's not clear how one will get the optimal control, as it seems a circular problem.}
 Conveniently, FRSs can be computed using a modified version of \eqref{eq:HJIVI_i}, defined in $\eqref{eq:FRS_j}$:
 
 \begin{equation}
@@ -32,7 +34,7 @@ Conveniently, FRSs can be computed using a modified version of \eqref{eq:HJIVI_i
 \end{aligned}
 \end{equation}
 
-\noindent where $l$ is chosen to be such that $\targetset = \{x_j(t_0)\}$. In practice, when there is uncertainty in the initial state of $\veh_j$, we set $\targetset_j$ to be a small region around $x_j(t_0)$. To impose that the optimal control is used, we substitute $u_j = u_j^*(t, x_j)$ into \eqref{eq:FRS_j} instead of minimizing over $u_j$.
+\noindent where $l$ is chosen to be such that $\targetset = \{x_j(t_0)\}$. \SBnote{The next line is not required; it will unnecessarily confuse the reader.} In practice, when there is uncertainty in the initial state of $\veh_j$, we set $\targetset_j$ to be a small region around $x_j(t_0)$. To impose that the optimal control is used, we substitute $u_j = u_j^*(t, x_j)$ into \eqref{eq:FRS_j} instead of minimizing over $u_j$. \SBnote{Why don't we qrite HJVI equations above with the optimal control plugged in? This is a bit confusing and indirect way to explain the same thing.}
 
 The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given the worst case disturbance $d_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $u_j^*(t, x)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\cradius$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\cradius$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher priority vehicle $\veh_j$ for a lower priority vehicle $\veh_i$ as follows:
 
