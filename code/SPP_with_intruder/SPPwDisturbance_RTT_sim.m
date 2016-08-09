@@ -1,7 +1,7 @@
 function SPPwDisturbance_RTT_sim()
 
 tMin = -3;
-dt = 0.1;
+dt = 0.005;
 tMax = 0;
 tau = tMin:dt:tMax;
 
@@ -19,7 +19,7 @@ small = 1e-4;
 
 figure
 for i = 1:length(tau)
-  for veh = 1:1
+  for veh = 1:1%length(Q)
     % Check if nominal trajectory has this t
     tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
       Q{veh}.data.nomTraj_tau < tau(i) + small);
@@ -30,13 +30,11 @@ for i = 1:length(tau)
       % reference virtual plane is vehicle B, trying to get into reachable set
       rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
       
-      if eval_u(RTTRS.g, RTTRS.data(:,:,:,end)) <= 0
+      if eval_u(RTTRS.g, RTTRS.data(:,:,:,end), rel_x) <= 0
         keyboard
       end;
       
       deriv = eval_u(RTTRS.g, Deriv, rel_x);
-      % I think RTTRS.dynSys has the wrong parameters; make sure there's enough 
-      % control authority
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance

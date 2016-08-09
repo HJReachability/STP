@@ -27,7 +27,7 @@ end
 
 if strcmp(method, 'RTT')
   % Robust trajectory tracker
-  Deriv = computeGradients(schemeData.grid, vehicle.data.BRS1);
+  dt = 0.0025;
   
   % Modify control bounds
   vehicle.vrange = vehicle.vrange + vehicle.data.vReserved;
@@ -37,8 +37,9 @@ if strcmp(method, 'RTT')
   d = [0; 0; 0];
   
   % Initialize nominal trajectory
-  vehicle.data.nomTraj_tau = vehicle.data.BRS1_tau(1:end-1);  
-  vehicle.data.nomTraj = nan(3, length(vehicle.data.BRS1_tau)-1);
+  vehicle.data.nomTraj_tau = vehicle.data.BRS1_tau;  
+  vehicle.data.nomTraj = nan(3, length(vehicle.data.BRS1_tau));
+  vehicle.data.nomTraj(:,1) = vehicle.x;
   
   % Initialize obstacle
   if ~trajOnly
@@ -54,18 +55,18 @@ if strcmp(method, 'RTT')
   end
   
   % Compute trajectory
-  small = 1e-3;
-  obsInd = 1;
+  small = 1e-4;
+  obsInd = 2;
   for i = 1:length(vehicle.data.BRS1_tau)-1
     while_loop = false;
+    Deriv = computeGradients(schemeData.grid, vehicle.data.BRS1(:,:,:,i));
+    
     while ...
         eval_u(schemeData.grid, vehicle.data.BRS1(:,:,:,i+1), vehicle.x) > small
       while_loop = true;
-      deriv = eval_u(schemeData.grid, ...
-        {Deriv{1}(:,:,:,i); Deriv{2}(:,:,:,i); Deriv{3}(:,:,:,i)}, vehicle.x);
+      deriv = eval_u(schemeData.grid, Deriv, vehicle.x);
       u = vehicle.optCtrl([], vehicle.x, deriv, 'min');
-      vehicle.updateState(u, ...
-        vehicle.data.BRS1_tau(i+1)-vehicle.data.BRS1_tau(i), vehicle.x, d);
+      vehicle.updateState(u, dt, vehicle.x, d);
     end
     
     if while_loop

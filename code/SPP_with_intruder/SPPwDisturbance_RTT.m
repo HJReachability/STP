@@ -106,11 +106,16 @@ for veh=1:numVeh
   
   %% Compute the base obstacles for based on BRS1
   if ~isfield(Q{veh}.data, 'baseObs')
+    fprintf('Computing base obstacles for vehicle %d\n', veh)
     if veh < numVeh
-      fprintf('Computing base obstacles for vehicle %d\n', veh)
-      Q{veh} = ...
-        computeBaseObs(Q{veh}, schemeData, baseObs_method, baseObs_params);
+      trajOnly = false;
+    else
+      trajOnly = true;
     end
+    
+    Q{veh} = computeBaseObs( ...
+      Q{veh}, schemeData, baseObs_method, baseObs_params, trajOnly);
+    
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
