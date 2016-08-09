@@ -1,4 +1,4 @@
-function SPPwDisturbance_RTT_sim(Q)
+function SPPwDisturbance_RTT_sim()
 
 tMin = -3;
 dt = 0.1;
@@ -9,18 +9,22 @@ tau = tMin:dt:tMax;
 load('RTTRS.mat')
 
 % Load path planning reachable set
-load('SPPwDisturbance_RTT_checkpoint.mat')
+load('SPPwDisturbance_RTT.mat')
+Q = {Q1;Q2;Q3;Q4};
 
 % Gradient
 Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
+small = 1e-4;
+
+figure
 for i = 1:length(tau)
-  for veh = 1:length(Q)
-    % Check if BRS1 has been computed for this t
-    tInd = find(Q{veh}.data.baseObs_tau > tau(i) - small & ...
-      Q{veh}.data.baseObs_tau < tau(i) + small);
+  for veh = 1:1
+    % Check if nominal trajectory has this t
+    tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+      Q{veh}.data.nomTraj_tau < tau(i) + small);
     
-    if ~isempty(tInd{veh})
+    if ~isempty(tInd)
       %% Get optimal control
       % Our plane is vehicle A, trying to stay out of reachable set, and the 
       % reference virtual plane is vehicle B, trying to get into reachable set
@@ -35,6 +39,8 @@ for i = 1:length(tau)
     
     Q{veh}.plotPosition();
   end
+  title(sprintf('t = %f', tau(i)))
+  drawnow;
 end
 
 end
