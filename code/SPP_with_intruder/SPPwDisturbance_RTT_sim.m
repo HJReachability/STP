@@ -1,7 +1,7 @@
 function SPPwDisturbance_RTT_sim()
 
 tMin = -3;
-dt = 0.005;
+dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
@@ -19,7 +19,7 @@ small = 1e-4;
 
 figure
 for i = 1:length(tau)
-  for veh = 1:1%length(Q)
+  for veh = 1:length(Q)
     % Check if nominal trajectory has this t
     tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
       Q{veh}.data.nomTraj_tau < tau(i) + small);
@@ -29,7 +29,7 @@ for i = 1:length(tau)
       % Our plane is vehicle A, trying to stay out of reachable set, and the 
       % reference virtual plane is vehicle B, trying to get into reachable set
       rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
-      
+      rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
       if eval_u(RTTRS.g, RTTRS.data(:,:,:,end), rel_x) <= 0
         keyboard
       end;
