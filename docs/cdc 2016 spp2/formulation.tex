@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $N$ vehicles \SBnote{We are using $Q_i$ to denopte vehicles in Fig 1 so we should introduce the vehicle notation before that.} whose joint dynamics described by the time-varying ordinary differential equation (ODE)
+Consider $N$ vehicles \SBnote{Use $Q_i$} whose joint dynamics described by the time-varying ordinary differential equation (ODE)
 
 \begin{equation}
 \label{eq:dyn}
@@ -21,6 +21,7 @@ Let $\edt_i$ and $\sta_i$ denote the earliest departure time and scheduled time 
 Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$, at some scheduled time of arrival $\sta_i$. On its way to $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. In this paper, we define $\dz_{ij}(t)$ as
 
 \SBnote{Shouldn't we add the time index for $\pos_i$ as well in this equation?}
+\MCnote{$p_i$ is part of $x_i$}
 \begin{equation}
 \dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \},
 \end{equation}

@@ -1,7 +1,7 @@
 % !TEX root = SPP2.tex
 \section{Solution via Double-Obstacle HJ VI and SPP\label{sec:solution}}
 \subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-\SBnote{I think we should remove this section and only keep the basic notations, like level sets, non-anticipative trajectories, BRS, and add the definition of solution trajectory.}
+\SBnote{remove this section except basic notations (level sets, non-anticipative trajectories, BRS}
 Our solution method takes advantage of the double-obstacle HJ variational inequality (VI) \cite{Fisac15}, in which one computes the backwards reachable set (BRS) $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacle $\obsset(t)$. Mathematically, given a system with state $z$ evolving according to
 
 \begin{equation}
@@ -86,7 +86,7 @@ Here, the target set $\targetset_i$, obstacle set $\obsset_i(t)$, and BRS $\brs_
 \end{equation}
 
 From the BRS, the optimal control for vehicle $\veh_i$ is then given as
-\SBnote{The equation below doesn't seem correct. $H$ is already optimized at this point. We should either use the un-optimized $H$ below or write it in a similar fashion to equation 7.}
+\SBnote{$H$ is already optimized at this point}
 \begin{equation}
 \label{eq:opt_ctrl_i}
 u_i^*(t, x_i) = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
