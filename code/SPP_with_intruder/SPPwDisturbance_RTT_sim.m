@@ -1,6 +1,6 @@
 function SPPwDisturbance_RTT_sim()
 
-tMin = -3;
+tMin = -2.5;
 dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
@@ -17,6 +17,7 @@ Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
 small = 1e-4;
 
+colors = lines(length(Q));
 figure
 for i = 1:length(tau)
   for veh = 1:length(Q)
@@ -42,10 +43,16 @@ for i = 1:length(tau)
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
     
-    Q{veh}.plotPosition();
+    Q{veh}.plotPosition(colors(veh, :));
+  end
+  
+  if i == 1
+    xlim([-1.2 1.2])
+    ylim([-1.2 1.2])
   end
   title(sprintf('t = %f', tau(i)))
   drawnow;
+  export_fig(sprintf('RTT_sim_fig/%d', i), '-png')
 end
 
 end
