@@ -39,11 +39,12 @@ for i = 1:length(tau)
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance
-      d = [0; 0; 0];
+      d = Q{veh}.GaussianDstb();
+
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
     
-    Q{veh}.plotPosition(colors(veh, :));
+    Q{veh}.plotPosition('.', 'color', colors(veh, :));
   end
   
   if i == 1

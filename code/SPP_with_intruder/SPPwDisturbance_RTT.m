@@ -35,10 +35,10 @@ end
 numVeh = 4;
 if restart
   Q = cell(numVeh,1);
-  Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
-  Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
-  Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
-  Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
+  Q{1} = Plane([-0.5; 0; 0], wMax, vrange, dMax);
+  Q{2} = Plane([ 0.5; 0; -pi], wMax, vrange, dMax);
+  Q{3} = Plane([-0.4; 0.4; -pi/4], wMax, vrange, dMax);
+  Q{4} = Plane([ 0.4; 0.4; -3*pi/4], wMax, vrange, dMax);
   
   %% target sets
   R = 0.1;
