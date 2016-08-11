@@ -1,7 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Solution via Double-Obstacle HJ VI and SPP\label{sec:solution}}
 \subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-\SBnote{remove this section except basic notations (level sets, non-anticipative trajectories, BRS}
 Our solution method takes advantage of the double-obstacle HJ variational inequality (VI) \cite{Fisac15}, in which one computes the backwards reachable set (BRS) $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacle $\obsset(t)$. Mathematically, given a system with state $z$ evolving according to
 
 \begin{equation}
@@ -12,7 +11,7 @@ z(0) &= z_0, \quad u \in \cset, d \in \dset
 \end{aligned}
 \end{equation}
 
-After defining some target set $\targetset(t)$, we compute $\brs(t)$, defined by \SBnote{Let's make the definition more traditional by interchanging the order of $u$ and $\gamma$.}
+After defining some target set $\targetset(t)$, we compute $\brs(t)$, defined by 
 %
 \begin{equation}
 \label{eq:brs}
@@ -23,7 +22,6 @@ After defining some target set $\targetset(t)$, we compute $\brs(t)$, defined by
 \end{equation}
 %
 \noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05} defined as follows:
-\SBnote{Let's reduce the space before equation 5. Also, it'd be helpful to add a line on the meaning of non-anticipative strategies.}
 \begin{equation}
 \begin{aligned}
 \gamma &\in \Gamma := \{\mathcal{N}: \mathbb{U}_1 \rightarrow \mathbb{U}_2 \mid  u_1(r) = \hat{u}_1(r) \text{ a. e. } r\in[t,s] \\
@@ -74,7 +72,7 @@ To obtain the optimal control for reaching the target we adapt \eqref{eq:HJIVI} 
 &H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
 \end{aligned}
 \end{equation}
-
+\MCnote{Hamiltonian depends on calculation; introduce later}
 Here, the target set $\targetset_i$, obstacle set $\obsset_i(t)$, and BRS $\brs_i(t)$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
 %
 \begin{equation}

@@ -1,10 +1,10 @@
 % !TEX root = SPP2.tex
 \subsection{Method 2: Least Restrictive Control \label{sec:lrc}}
-If there is no centralized controller to enforce the control policy for higher priority vehicles, weaker assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control \MCnote{LRC seems to be a common term} that would take them to their targets. This control would be given by 
+If there is no centralized controller to enforce the control policy for higher priority vehicles, weaker assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
-u_j \in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctrl_i}\} \text{ if } x_j\in \partial \brs_j(t), \\
+u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctrl_i}\} \text{ if } x_j\in \partial \brs_j(t), \\
 \cset_i  \text{ otherwise}
 \end{cases}
 \end{equation}
