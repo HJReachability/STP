@@ -15,6 +15,7 @@ Q = {Q1;Q2;Q3;Q4};
 % Gradient
 Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
+capture_radius = 0.1;
 small = 1e-4;
 
 % Plot targets
