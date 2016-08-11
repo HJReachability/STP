@@ -37,5 +37,6 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 RTTRS.g = schemeData.grid;
 RTTRS.data = data;
 RTTRS.dynSys = dynSys;
-save('RTTRS.mat', 'RTTRS', '-v7.3')
+RTTRS.trackingRadius = trackingRadius;
+save(sprintf('RTTRS_%f.mat', now), 'RTTRS', '-v7.3')
 end

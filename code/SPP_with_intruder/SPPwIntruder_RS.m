@@ -1,13 +1,13 @@
-function SPPwIntruder_RS(restart, chkpt_filename)
+function SPPwIntruder_RS(RTTRS_filename, restart, chkpt_filename)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
-if nargin < 1
+if nargin < 2
   restart = false;
 end
 
-if nargin < 2
-  filename = sprintf('%s_checkpoint.mat', mfilename);
+if nargin < 3
+  filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
 end

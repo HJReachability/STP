@@ -20,44 +20,6 @@ tMax = 5;
 dt = 0.01;
 tau = t0:dt:tMax;
 
-%% Problem parameters
-% Vehicle
-vrange = [0.5 1];
-wMax = 1;
-Rc = 0.1; % Capture radius
-dMax = [0.1 0.2];
-
-if nargin < 2
-  filename = sprintf('%s_checkpoint.mat', mfilename);
-else
-  filename = chkpt_filename ;
-end
-numVeh = 4;
-if restart
-  Q = cell(numVeh,1);
-  Q{1} = Plane([-0.5; 0; 0], wMax, vrange, dMax);
-  Q{2} = Plane([ 0.5; 0; -pi], wMax, vrange, dMax);
-  Q{3} = Plane([-0.6; 0.6; -pi/4], wMax, vrange, dMax);
-  Q{4} = Plane([ 0.6; 0.6; -3*pi/4], wMax, vrange, dMax);
-  
-  %% target sets
-  R = 0.1;
-  Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
-  Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
-  Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
-  Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
-  
-  %% Reduced target set for the first BRS
-  Rsmall = 0.025;
-  Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
-  Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
-  Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
-  Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
-else
-  load(filename)
-  Q = {Q1; Q2; Q3; Q4};
-end
-
 %% Base obstacle generation method
 baseObs_method = 'RTT';
 if strcmp(baseObs_method, 'RTT')
@@ -73,17 +35,52 @@ if strcmp(baseObs_method, 'RTT')
   h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
   h3.FaceAlpha = 0.5;
   h3.FaceColor = 'b';
-  %% Reduced speed if using robust tracker
-  for i = 1:4
-    Q{i}.data.vReserved = [0.25 -0.25];
-    Q{i}.data.wReserved = -0.4;
-    Q{i}.data.RTT_radius = 0.075;
-  end
-  
+
 elseif strcmp(baseObs_method, 'CC')
   %% Reset radius for base obstacle computation
   baseObs_params.resetR = [0.03, 0.03, 0.1]';
   
+end
+
+%% Problem parameters
+% Vehicle
+vrange = RTTRS.dynSys.vRangeA;
+wMax = RTTRS.dynSys.wMaxA;
+dMax = RTTRS.dynSys.dMaxA;
+
+Rc = 0.1; % Capture radius
+
+if nargin < 2
+  filename = sprintf('%s_%f.mat', mfilename, now);
+else
+  filename = chkpt_filename ;
+end
+numVeh = 4;
+if restart
+  initStates = ...
+    {[-0.5; 0; 0]; [ 0.5; 0; -pi]; [-0.6; 0.6; -pi/4]; [ 0.6; 0.6; -3*pi/4]};
+  targetCenters = ...
+    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
+  targetR = 0.1;
+  % Reduce target by the size of the RTT tracking radius
+  targetRsmall = targetR - RTTRS.trackingRadius;
+  
+  Q = cell(numVeh,1);
+  for i = 1:numVeh
+    Q{i} = Plane(initStates{i}, wMax, vrange, dMax);
+    Q{i}.data.target = ...
+      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetR);
+    Q{i}.data.targetsm = ...
+      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetRsmall);
+    Q{i}.data.targetCenter = targetCenters{i};
+    Q{i}.data.targetR = targetR{i};
+    Q{i}.data.targetRsmall = targetRsmall{i};
+    Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
+    Q{i}.data.wReserved = RTTRS.dynSys.wMaxB - RTTRS.dynSys.wMaxA;
+  end
+else
+  load(filename)
+  Q = {Q1; Q2; Q3; Q4};
 end
 
 %% Start the computation of reachable sets
