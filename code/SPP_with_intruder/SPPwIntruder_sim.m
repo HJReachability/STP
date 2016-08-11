@@ -56,7 +56,7 @@ for i = 1:length(tau)
     % Compute safety value
 %     safety_vals(i,veh) = eval_u(g, safety_vf, Q_intruder.x-Q{veh}.x);
     
-    if 0tau(i) <= tUpper
+    if 0%tau(i) <= tUpper
       %% Before intruder leaves airspace
       if safety_vals(i,veh) < safety_threshold
         % Safety controller

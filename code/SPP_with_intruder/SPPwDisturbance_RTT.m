@@ -22,7 +22,7 @@ tau = t0:dt:tMax;
 
 %% Problem parameters
 % Vehicle
-vrange = [0.1 1];
+vrange = [0.5 1];
 wMax = 1;
 Rc = 0.1; % Capture radius
 dMax = [0.1 0.2];
@@ -37,8 +37,8 @@ if restart
   Q = cell(numVeh,1);
   Q{1} = Plane([-0.5; 0; 0], wMax, vrange, dMax);
   Q{2} = Plane([ 0.5; 0; -pi], wMax, vrange, dMax);
-  Q{3} = Plane([-0.4; 0.4; -pi/4], wMax, vrange, dMax);
-  Q{4} = Plane([ 0.4; 0.4; -3*pi/4], wMax, vrange, dMax);
+  Q{3} = Plane([-0.6; 0.6; -pi/4], wMax, vrange, dMax);
+  Q{4} = Plane([ 0.6; 0.6; -3*pi/4], wMax, vrange, dMax);
   
   %% target sets
   R = 0.1;
@@ -75,7 +75,7 @@ if strcmp(baseObs_method, 'RTT')
   h3.FaceColor = 'b';
   %% Reduced speed if using robust tracker
   for i = 1:4
-    Q{i}.data.vReserved = [0.3 -0.3];
+    Q{i}.data.vReserved = [0.25 -0.25];
     Q{i}.data.wReserved = -0.4;
     Q{i}.data.RTT_radius = 0.075;
   end

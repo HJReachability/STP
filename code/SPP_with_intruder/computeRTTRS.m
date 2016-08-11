@@ -11,11 +11,11 @@ dt = 0.01;
 tau = 0:dt:tMax;
 
 % Vehicle
-vRangeA = [0.1 1];
-vReserved = [0.3 -0.3];
+vRangeA = [0.5 1];
+vReserved = [0.25 -0.25];
 
 wMaxA = 1;
-wReserved = -0.35;
+wReserved =  -0.4;
 dMaxA = [0.1 0.2];
 
 % Virtual vehicle to be tracked
