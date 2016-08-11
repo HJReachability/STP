@@ -19,6 +19,7 @@ capture_radius = 0.1;
 small = 1e-4;
 
 % Plot targets
+figure
 colors = lines(length(Q));
 for veh = 1:length(Q)
   [g2D, data2D] = proj(schemeData.grid, Q{veh}.data.target, [0 0 1]);
@@ -27,9 +28,6 @@ for veh = 1:length(Q)
   hold on
 end
 
-colors = lines(length(Q));
-
-figure
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
 for i = 1:length(tau)
