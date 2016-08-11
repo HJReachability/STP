@@ -57,7 +57,7 @@ for i = 1:length(tau)
       
       % Plot induced obstacle
       [g2D, data2D] = ...
-        proj(schemeData.g, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
+        proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
       visSetIm(g2D, data2D, colors(veh, :));
       
       % Plot position
