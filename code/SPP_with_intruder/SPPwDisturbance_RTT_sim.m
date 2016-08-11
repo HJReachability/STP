@@ -17,15 +17,14 @@ Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
 small = 1e-4;
 
-<<<<<<< Updated upstream
-=======
 % Plot targets
 colors = lines(length(Q));
 for veh = 1:length(Q)
-  
+  [g2D, data2D] = proj(schemeData.grid, Q{veh}.data.target, [0 0 1]);
+  ht = visSetIm(g2D, data2D, colors(veh,:));
+  ht.LineWidth = 3;
 end
 
->>>>>>> Stashed changes
 figure
 for i = 1:length(tau)
   for veh = 1:1%length(Q)
@@ -47,36 +46,27 @@ for i = 1:length(tau)
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance
-<<<<<<< Updated upstream
-      d = [0; 0; 0];
-=======
       d = Q{veh}.GaussianDstb();
 
       % Update state
->>>>>>> Stashed changes
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
       
       % Plot capture radius
       plotDisk(Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
       
       % Plot induced obstacle
-      [g2D, data2D] = proj(schemeData.g, Q{veh}.data.cylObs3D, [0 0 1]);
+      [g2D, data2D] = ...
+        proj(schemeData.g, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
       visSetIm(g2D, data2D, colors(veh, :));
       
       % Plot position
       Q{veh}.plotPosition(colors(veh, :));      
     end
-    
-<<<<<<< Updated upstream
-    Q{veh}.plotPosition();
-=======
-
   end
   
   if i == 1
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
->>>>>>> Stashed changes
   end
   title(sprintf('t = %f', tau(i)))
   drawnow;
