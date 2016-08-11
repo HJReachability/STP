@@ -73,7 +73,7 @@ for i = 1:length(tau)
           ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
           ho{veh}.LineStyle = '--';
         else
-          ho.ZData = data2D;
+          ho{veh}.ZData = data2D;
         end
       end
       
