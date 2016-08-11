@@ -7,6 +7,7 @@ Obstacles can be generated in many different ways depending on the assumptions m
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
+\MCnote{note first vehicle has no G_i(t)}
 In general, the different methods of obstacle generation can be used in a single path planning problem, since different control strategies can be assumed for each vehicle independently. This means that $\ioset_i^j(t)$ can be computed using a different method for each $j$. For example, a more predictable vehicle may induce obstacles under the stronger assumptions in Section \ref{sec:cc}, while a vehicle that requires more control freedom may induce obstacles under the weaker assumptions in Section \ref{sec:lrc}.
 
 \subsection{Method 1: Centralized Controller \label{sec:cc}}
@@ -22,7 +23,6 @@ From the perspective of a lower priority vehicle $\veh_i$, a higher priority veh
 \end{aligned}
 \end{equation}
 
-\MCnote{What does recursively mean?}
 Conveniently, FRSs can be computed using a modified version of \eqref{eq:HJIVI_i}, defined in $\eqref{eq:FRS_j}$:
 
 \begin{equation}
