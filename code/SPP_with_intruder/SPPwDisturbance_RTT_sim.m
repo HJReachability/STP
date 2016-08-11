@@ -33,7 +33,7 @@ figure
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
 for i = 1:length(tau)
-  fprintf('t = tau(%d)\n', tau(i))
+  fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
     tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
