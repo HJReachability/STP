@@ -47,14 +47,14 @@ if restart
   Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
   Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
   Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
-
+  
   %% target sets
   R = 0.1;
   Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
   Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
   Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
   Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
-
+  
   %% Reduced target set for the first BRS
   Rsmall = 0.025;
   Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
@@ -77,7 +77,7 @@ if strcmp(baseObs_method, 'RTT')
   h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
   h1.FaceAlpha = 0.5;
   hold on
-
+  
   h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
   h3.FaceAlpha = 0.5;
   h3.FaceColor = 'b';
@@ -114,11 +114,16 @@ for veh=1:numVeh
   
   %% Compute the base obstacles for based on BRS1
   if ~isfield(Q{veh}.data, 'baseObs')
+    fprintf('Computing base obstacles for vehicle %d\n', veh)
     if veh < numVeh
-      fprintf('Computing base obstacles for vehicle %d\n', veh)
-      Q{veh} = ...
-        computeBaseObs(Q{veh}, schemeData, baseObs_method, baseObs_params);
+      trajOnly = false;
+    else
+      trajOnly = true;
     end
+    
+    Q{veh} = computeBaseObs( ...
+      Q{veh}, schemeData, baseObs_method, baseObs_params, trajOnly);
+    
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
