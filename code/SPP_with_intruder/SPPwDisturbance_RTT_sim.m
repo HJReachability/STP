@@ -57,10 +57,12 @@ for i = 1:length(tau)
       % Plot capture radius
       plotDisk(Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
       
-      % Plot induced obstacle
-      [g2D, data2D] = ...
-        proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
-      visSetIm(g2D, data2D, colors(veh, :));
+      % Plot induced obstacle for vehicles 1 to 3
+      if veh < length(Q)
+        [g2D, data2D] = ...
+          proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
+        visSetIm(g2D, data2D, colors(veh, :));
+      end
       
       % Plot position
       Q{veh}.plotPosition(colors(veh, :));      
