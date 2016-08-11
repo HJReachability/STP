@@ -1,6 +1,6 @@
 function SPPwDisturbance_RTT_sim()
 
-tMin = -3.5;
+tMin = -2.2;
 dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
@@ -24,12 +24,16 @@ for veh = 1:length(Q)
   [g2D, data2D] = proj(schemeData.grid, Q{veh}.data.target, [0 0 1]);
   ht = visSetIm(g2D, data2D, colors(veh,:));
   ht.LineWidth = 3;
+  hold on
 end
 
 colors = lines(length(Q));
 
 figure
+hc = cell(length(Q), 1);
+ho = cell(length(Q), 1);
 for i = 1:length(tau)
+  fprintf('t = tau(%d)\n', tau(i))
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
     tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
@@ -55,13 +59,24 @@ for i = 1:length(tau)
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
       
       % Plot capture radius
-      plotDisk(Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
+      if isempty(hc{veh})
+        hc{veh} = plotDisk( ...
+          Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
+      else
+        [~, hc{veh}.XData, hc{veh}.YData] = plotDisk( ...
+          Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
+      end
       
       % Plot induced obstacle for vehicles 1 to 3
       if veh < length(Q)
         [g2D, data2D] = ...
           proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
-        visSetIm(g2D, data2D, colors(veh, :));
+        if isempty(ho{veh})
+          ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
+          ho{veh}.LineStyle = '--';
+        else
+          ho.ZData = data2D;
+        end
       end
       
       % Plot position
@@ -69,10 +84,8 @@ for i = 1:length(tau)
     end
   end
   
-  if i == 1
-    xlim([-1.2 1.2])
-    ylim([-1.2 1.2])
-  end
+  xlim([-1.2 1.2])
+  ylim([-1.2 1.2])
   
   title(sprintf('t = %f', tau(i)))
   drawnow;
