@@ -33,15 +33,43 @@ tau = t0:dt:tMax;
 tIAT = 0.1;
 tauIAT = 0:dt:tIAT;
 
+%% Base obstacle generation method
+baseObs_method = 'RTT';
+if strcmp(baseObs_method, 'RTT')
+  fprintf('Using %s method to generate base obstacles\n', baseObs_method)
+  load(RTTRS_filename)
+  baseObs_params.RTTRS = ...
+    migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
+  figure;
+  h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
+  h1.FaceAlpha = 0.5;
+  hold on
+  
+  h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
+  h3.FaceAlpha = 0.5;
+  h3.FaceColor = 'b';
+  %% Reduced speed if using robust tracker
+  for i = 1:4
+    Q{i}.data.vReserved = [0.3 -0.3];
+    Q{i}.data.wReserved = -0.4;
+    Q{i}.data.RTT_radius = 0.075;
+  end
+  
+elseif strcmp(baseObs_method, 'CC')
+  %% Reset radius for base obstacle computation
+  baseObs_params.resetR = [0.03, 0.03, 0.1]';
+  
+end
+
 %% Problem parameters
 % Vehicle
-vrange = [0.1 1];
-wMax = 1;
-Rc = 0.1;
-dMax = [0.1 0.2];
+vrange = RTTRS.dynSys.vRangeA;
+wMax = RTTRS.dynSys.wMaxA;
+dMax = RTTRS.dynSys.dMaxA;
+Rc = 0.1; % Capture radius
 
 %% initial States
-umVeh = 4;
+numVeh = 4;
 if restart
   % Initial conditions
   initStates = ...
@@ -65,34 +93,6 @@ if restart
 else
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
-end
-
-%% Base obstacle generation method
-baseObs_method = 'RTT';
-if strcmp(baseObs_method, 'RTT')
-  fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-  load('RTTRS.mat')
-  baseObs_params.RTTRS = ...
-    migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
-  figure;
-  h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
-  h1.FaceAlpha = 0.5;
-  hold on
-  
-  h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
-  h3.FaceAlpha = 0.5;
-  h3.FaceColor = 'b';
-  %% Reduced speed if using robust tracker
-  for i = 1:4
-    Q{i}.data.vReserved = [0.3 -0.3];
-    Q{i}.data.wReserved = -0.4;
-    Q{i}.data.RTT_radius = 0.075;
-  end
-  
-elseif strcmp(baseObs_method, 'CC')
-  %% Reset radius for base obstacle computation
-  baseObs_params.resetR = [0.03, 0.03, 0.1]';
-  
 end
 
 %% Start the computation of reachable sets

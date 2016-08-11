@@ -1,7 +1,13 @@
-function SPPwDisturbance_RTT(restart, chkpt_filename)
+function SPPwDisturbance_RTT(RTTRS_filename, restart, chkpt_filename)
 
-if nargin < 1
+if nargin < 2
   restart = false;
+end
+
+if nargin < 3
+  filename = sprintf('%s_%f.mat', mfilename, now);
+else
+  filename = chkpt_filename ;
 end
 
 % Computes reachable sets for getting to the target after intruder has passed
@@ -24,7 +30,7 @@ tau = t0:dt:tMax;
 baseObs_method = 'RTT';
 if strcmp(baseObs_method, 'RTT')
   fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-  load('RTTRS.mat')
+  load(RTTRS_filename)
   baseObs_params.RTTRS = ...
     migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
   figure;
@@ -47,14 +53,8 @@ end
 vrange = RTTRS.dynSys.vRangeA;
 wMax = RTTRS.dynSys.wMaxA;
 dMax = RTTRS.dynSys.dMaxA;
-
 Rc = 0.1; % Capture radius
 
-if nargin < 2
-  filename = sprintf('%s_%f.mat', mfilename, now);
-else
-  filename = chkpt_filename ;
-end
 numVeh = 4;
 if restart
   initStates = ...
