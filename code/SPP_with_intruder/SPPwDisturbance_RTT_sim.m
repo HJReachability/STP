@@ -44,7 +44,7 @@ for i = 1:length(tau)
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
     
-    Q{veh}.plotPosition('.', 'color', colors(veh, :));
+    Q{veh}.plotPosition(colors(veh, :));
   end
   
   if i == 1
