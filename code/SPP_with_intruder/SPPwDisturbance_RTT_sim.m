@@ -1,4 +1,12 @@
-function SPPwDisturbance_RTT_sim(RTTRS_file, RTT_file)
+function SPPwDisturbance_RTT_sim(RTTRS_file, RTT_file, save_png, save_fig)
+
+if nargin < 3
+  save_png = true;
+end
+
+if nargin < 4
+  save_fig = false;
+end
 
 tMin = -3;
 dt = 0.01;
@@ -19,7 +27,7 @@ capture_radius = 0.1;
 small = 1e-4;
 
 % Plot targets
-figure
+f = figure;
 colors = lines(length(Q));
 plotTargetSets(Q, schemeData, colors)
 
@@ -43,10 +51,7 @@ for i = 1:length(tau)
       % reference virtual plane is vehicle B, trying to get into reachable set
       rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
       rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
-      if eval_u(RTTRS.g, RTTRS.data(:,:,:,end), rel_x) <= 0
-        keyboard
-      end;
-      
+     
       deriv = eval_u(RTTRS.g, Deriv, rel_x);
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
@@ -87,7 +92,13 @@ for i = 1:length(tau)
   
   title(sprintf('t = %f', tau(i)))
   drawnow;
-  export_fig(sprintf('%s/%d', folder, i), '-png')
+  if save_png
+    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
+  end
+  
+  if save_fig
+    savefig(f, sprintf('%s/%d', folder, i), 'compact')
+  end
 end
 
 end
