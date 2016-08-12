@@ -69,7 +69,7 @@ for i = 1:length(tau)
       else
         % Liveness controller
         %--> u = livenessCtrl();
-        d = Q{veh}.uniformDstb();
+        d = Q{veh}.GaussianDstb();
         Q{veh}.updateState(u, dt, Q{veh}.x, d);
       end
     else

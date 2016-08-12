@@ -1,15 +1,15 @@
-function SPPwDisturbance_RTT_sim()
+function SPPwDisturbance_RTT_sim(RTTRS_file, RTT_file)
 
-tMin = -2.2;
+tMin = -3;
 dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
 % Load robust tracking reachable set
-load('RTTRS.mat')
+load(RTTRS_file)
 
 % Load path planning reachable set
-load('SPPwDisturbance_RTT.mat')
+load(RTT_file)
 Q = {Q1;Q2;Q3;Q4};
 
 % Gradient of RTTRS
