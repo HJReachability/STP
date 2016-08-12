@@ -1,9 +1,15 @@
-function SPPwIntruder_RS(restart, chkpt_filename)
+function SPPwIntruder_RS(RTTRS_filename, restart, chkpt_filename)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
-if nargin < 1
+if nargin < 2
   restart = false;
+end
+
+if nargin < 3
+  filename = sprintf('%s_%f.mat', mfilename, now);
+else
+  filename = chkpt_filename ;
 end
 
 %% Add the appropriate functions to the path
@@ -27,50 +33,11 @@ tau = t0:dt:tMax;
 tIAT = 0.1;
 tauIAT = 0:dt:tIAT;
 
-%% Problem parameters
-% Vehicle
-vrange = [0.1 1];
-wMax = 1;
-Rc = 0.1; % Capture radius
-dMax = [0.1 0.2];
-
-%% initial States
-if nargin < 2
-  filename = sprintf('%s_checkpoint.mat', mfilename);
-else
-  filename = chkpt_filename ;
-end
-numVeh = 4;
-if restart
-  Q = cell(numVeh,1);
-  Q{1} = Plane([-0.1; 0; 0], wMax, vrange, dMax);
-  Q{2} = Plane([ 0.1; 0; -pi], wMax, vrange, dMax);
-  Q{3} = Plane([-0.1; 0.1; -pi/4], wMax, vrange, dMax);
-  Q{4} = Plane([ 0.1; 0.1; -3*pi/4], wMax, vrange, dMax);
-  
-  %% target sets
-  R = 0.1;
-  Q{1}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], R);
-  Q{2}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], R);
-  Q{3}.data.target = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], R);
-  Q{4}.data.target = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], R);
-  
-  %% Reduced target set for the first BRS
-  Rsmall = 0.025;
-  Q{1}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; 0.2; 0], Rsmall);
-  Q{2}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; 0.2; 0], Rsmall);
-  Q{3}.data.targetsm = shapeCylinder(schemeData.grid, 3, [0.7; -0.7; 0], Rsmall);
-  Q{4}.data.targetsm = shapeCylinder(schemeData.grid, 3, [-0.7; -0.7; 0], Rsmall);
-else
-  load(filename)
-  Q = {Q1; Q2; Q3; Q4};
-end
-
 %% Base obstacle generation method
 baseObs_method = 'RTT';
 if strcmp(baseObs_method, 'RTT')
   fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-  load('RTTRS.mat')
+  load(RTTRS_filename)
   baseObs_params.RTTRS = ...
     migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
   figure;
@@ -92,6 +59,40 @@ elseif strcmp(baseObs_method, 'CC')
   %% Reset radius for base obstacle computation
   baseObs_params.resetR = [0.03, 0.03, 0.1]';
   
+end
+
+%% Problem parameters
+% Vehicle
+vrange = RTTRS.dynSys.vRangeA;
+wMax = RTTRS.dynSys.wMaxA;
+dMax = RTTRS.dynSys.dMaxA;
+Rc = 0.1; % Capture radius
+
+%% initial States
+numVeh = 4;
+if restart
+  % Initial conditions
+  initStates = ...
+    {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
+  targetCenters = ...
+    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
+  targetR = 0.1;
+  targetRsmall = 0.025; % Reduced target radius for first BRS computation
+  
+  Q = cell(numVeh,1);
+  for i = 1:numVeh
+    Q{i} = Plane(initStates{i}, wMax, vrange, dMax);
+    Q{i}.data.target = ...
+      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetR);
+    Q{i}.data.targetsm = ...
+      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetRsmall);
+    Q{i}.data.targetCenter = targetCenters{i};
+    Q{i}.data.targetR = targetR{i};
+    Q{i}.data.targetRsmall = targetRsmall{i};
+  end
+else
+  load(filename)
+  Q = {Q1; Q2; Q3; Q4};
 end
 
 %% Start the computation of reachable sets

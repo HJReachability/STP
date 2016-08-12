@@ -1,4 +1,4 @@
-function obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
+function obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type, tMode)
 % obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
 %     Gathers obstacles by combining obstacles in the field obs_type of each
 %     vehicle in the vehicles list
@@ -7,6 +7,11 @@ function obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
 if isempty(vehicles)
   obstacles = inf(schemeData.grid.N');
   return
+end
+
+% Assume obstacles are for BRS computation by default
+if nargin < 5
+  tMode = 'backward';
 end
 
 % Gather the obstacle set
@@ -18,13 +23,18 @@ for i = 1:length(obsSet)
   obsSet_tau{i} = vehicles{i}.data.(sprintf('%s_tau', obs_type));
 end
 
-obstacles = gatherObstacles_helper(schemeData.grid, obsSet, obsSet_tau, tau);
+obstacles = ...
+  gatherObstacles_helper(schemeData.grid, obsSet, obsSet_tau, tau, tMode);
 
 end
 
-function obstacles = gatherObstacles_helper(g, obsSet, obsSet_tau, common_tau)
+function obstacles = ...
+  gatherObstacles_helper(g, obsSet, obsSet_tau, common_tau, tMode)
+
 % Convert tau to absolute time
-common_tau = flip(-common_tau);
+if strcmp(tMode, 'backward')
+  common_tau = flip(-common_tau);
+end
 
 % Initialize empty obstacle
 obstacles = inf([g.N', length(common_tau)]);
@@ -47,5 +57,7 @@ end
 
 % Flip the obstacles so that it goes backwards in time; this is needed since the
 % BRS computation goes backwards in time
-obstacles = flip(obstacles, 4);
+if strcmp(tMode, 'backward')
+  obstacles = flip(obstacles, 4);
+end
 end

@@ -1,25 +1,38 @@
 function SPPwIntruder_sim()
 % Simulation, but for now just testing collision avoidance BRS computation
 
-% Grid
-grid_min = [-1; -1; 0]; % Lower corner of computation domain
-grid_max = [1; 1; 2*pi];    % Upper corner of computation domain
-N = [101; 101; 101];         % Number of grid points per dimension
-pdDims = 3;               % 3rd dimension is periodic
-g = createGrid(grid_min, grid_max, N, pdDims);
+tMin = -3;
+dt = 0.01;
+tMax = 0;
+tau = tMin:dt:tMax;
 
-% Time
-%--> tau = ...
 
-%% Load vehicles with gradient of BRS1 in the data field
-%--> load ...
+% Load robust tracking reachable set
+load('RTTRS.mat')
+
+% Load path planning reachable set
+load('SPPwDisturbance_RS.mat')
+Q = {Q1;Q2;Q3;Q4};
+
+% Gradient of RTTRS
+Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
+
+small = 1e-4;
+
+% Plot targets
+figure
+colors = lines(length(Q));
+plotTargetSets(Q, colors)
+
+hc = cell(length(Q), 1);
+ho = cell(length(Q), 1);
 
 %% Initialize intruder
 %--> Q_intruder = ...
 tUpper = inf;
 
 %% Load safety reachable set
-%--> load ...
+load('CA.mat')
 %--> safety_vf = ...
 
 
@@ -39,13 +52,13 @@ for i = 1:length(tau)
   end
   
   % Check safety
-  for j = 1:length(Q)
+  for veh = 1:length(Q)
     % Compute safety value
-    safety_vals(i,j) = eval_u(g, safety_vf, Q_intruder.x-Q{j}.x);
+%     safety_vals(i,veh) = eval_u(g, safety_vf, Q_intruder.x-Q{veh}.x);
     
-    if tau(i) <= tUpper
+    if 0%tau(i) <= tUpper
       %% Before intruder leaves airspace
-      if safety_vals(i,j) < safety_threshold
+      if safety_vals(i,veh) < safety_threshold
         % Safety controller
         % Record intruder's time of arrival and departure from the space
         if ~intruder_arrived
@@ -56,15 +69,15 @@ for i = 1:length(tau)
       else
         % Liveness controller
         %--> u = livenessCtrl();
-        %--> d = ...
-        Q{j}.updateState(u, dt, Q{j}.x, d);
+        d = Q{veh}.GaussianDstb();
+        Q{veh}.updateState(u, dt, Q{veh}.x, d);
       end
     else
       %% After intruder leaves airspace
       % Load or compute BRS2derivs
       %--> u = ...
       %--> d = ...
-      Q{j}.updateState(u, dt, Q{j}.x, d);
+      Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
   end
   
