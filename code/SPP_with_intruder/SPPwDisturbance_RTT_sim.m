@@ -25,6 +25,11 @@ plotTargetSets(Q, colors)
 
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
+
+% For saving graphics
+folder = sprintf('%s_%f', mfilename, now);
+system(sprintf('mkdir %s', folder));
+
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
@@ -82,7 +87,7 @@ for i = 1:length(tau)
   
   title(sprintf('t = %f', tau(i)))
   drawnow;
-  export_fig(sprintf('RTT_sim_fig/%d', i), '-png')
+  export_fig(sprintf('%s/%d', folder, i), '-png')
 end
 
 end
