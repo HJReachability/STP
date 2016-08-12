@@ -73,8 +73,8 @@ if restart
     Q{i}.data.targetsm = ...
       shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetRsmall);
     Q{i}.data.targetCenter = targetCenters{i};
-    Q{i}.data.targetR = targetR{i};
-    Q{i}.data.targetRsmall = targetRsmall{i};
+    Q{i}.data.targetR = targetR;
+    Q{i}.data.targetRsmall = targetRsmall;
     Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
     Q{i}.data.wReserved = RTTRS.dynSys.wMaxB - RTTRS.dynSys.wMaxA;
   end
