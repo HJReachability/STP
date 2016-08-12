@@ -14,10 +14,4 @@ docs/videos/SPP1 overview.mp4
 docs/SPP journal/SPP_journal.pdf
 code/SPP_with_intruder/RTT_sim_fig/
 *.gz(busy)
-<<<<<<< HEAD
-code/SPP_with_intruder/SPPwDisturbance_RTT_sim/
-code/SPP_with_intruder/SPPwDisturbance_RTT_sim_736553.895958/
-=======
-code/SPP_with_intruder/SPPwDisturbance_RTT_sim_*/
-code/SPP_with_intruder/SPPwDisturbance_RTT_sim/
->>>>>>> mo-in-progress-code
+code/SPP_with_intruder/SPPwDisturbance_RTT_sim*/
