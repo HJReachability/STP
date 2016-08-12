@@ -46,7 +46,7 @@ for i = 1:length(tau)
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance
-      d = Q{veh}.GaussianDstb();
+      d = Q{veh}.uniformDstb();
 
       % Update state
       Q{veh}.updateState(u, dt, Q{veh}.x, d);

@@ -1,4 +1,4 @@
-function SPPwIntruder_sim()
+function SPPwIntruder_sim_woIntruder()
 % Simulation, but for now just testing collision avoidance BRS computation
 
 tMin = -3;
