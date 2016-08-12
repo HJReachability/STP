@@ -21,7 +21,7 @@ small = 1e-4;
 % Plot targets
 figure
 colors = lines(length(Q));
-plotTargetSets(Q, colors)
+plotTargetSets(Q, schemeData, colors)
 
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
