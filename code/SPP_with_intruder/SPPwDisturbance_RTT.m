@@ -48,6 +48,7 @@ baseObs_params.RTTRS = ...
 
 %% Problem parameters
 Rc = 0.1; % Capture radius
+targetR = 0.1; % Target radius
 if restart
   Q = initRTT(initStates, targetCenters, targetR, RTTRS, schemeData);
 else
