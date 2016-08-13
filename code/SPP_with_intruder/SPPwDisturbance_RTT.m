@@ -65,7 +65,7 @@ for veh=1:numVeh
   %% Gather induced obstacles of higher-priority vehicles
   % Assume there's no static obstacle
   fprintf('Gathering obstacles for vehicle %d...\n', veh)
-  obstacles = gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D');
+  obstacles = gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'cylObs3D');
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')

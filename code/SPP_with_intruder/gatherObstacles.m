@@ -31,11 +31,6 @@ end
 function obstacles = ...
   gatherObstacles_helper(g, obsSet, obsSet_tau, common_tau, tMode)
 
-% Convert tau to absolute time
-if strcmp(tMode, 'backward')
-  common_tau = flip(-common_tau);
-end
-
 % Initialize empty obstacle
 obstacles = inf([g.N', length(common_tau)]);
 
