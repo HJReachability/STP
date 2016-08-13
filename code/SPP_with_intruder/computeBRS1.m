@@ -39,7 +39,7 @@ extraArgs.targets = vehicle.data.targetsm;
 % Computation should stop once it contains the initial state
 extraArgs.stopInit = vehicle.x;
 
-[vehicle.data.BRS, tau] = ...
+[vehicle.data.BRS1, tau] = ...
   HJIPDE_solve(vehicle.data.targetsm, BRS1_tau, schemeData, 'none', extraArgs);
 
 % Reverse the order of time elements
