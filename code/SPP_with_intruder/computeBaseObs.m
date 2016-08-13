@@ -29,6 +29,12 @@ if strcmp(method, 'RTT')
   % Robust trajectory tracker
   dt = 0.0025;
   
+  % Save state and control histories
+  x = vehicle.x;
+  xhist = vehicle.xhist;
+  u = vehicle.u;
+  uhist = vehicle.uhist;
+  
   % Modify control bounds
   vehicle.vrange = vehicle.vrange + vehicle.data.vReserved;
   vehicle.wMax = vehicle.wMax + vehicle.data.wReserved;
@@ -97,10 +103,10 @@ if strcmp(method, 'RTT')
   vehicle.wMax = vehicle.wMax - vehicle.data.wReserved;
   
   % Undo state and control information
-  vehicle.x = vehicle.xhist(:,1);
-  vehicle.xhist = vehicle.xhist(:,1);
-  vehicle.u = [];
-  vehicle.uhist = [];
+  vehicle.x = x;
+  vehicle.xhist = xhist;
+  vehicle.u = u;
+  vehicle.uhist = uhist;
   
 elseif strcmp(method, 'CC')
   % Set schemeData

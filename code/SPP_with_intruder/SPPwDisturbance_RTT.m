@@ -1,6 +1,11 @@
 function SPPwDisturbance_RTT(RTTRS_filename, restart, chkpt_filename, ...
   initStates, targetCenters)
+% SPPwDisturbance_RTT(RTTRS_filename, restart, chkpt_filename, ...
+%   initStates, targetCenters)
+%     Computes all the reachable sets required for running the SPP with
+%     disturbances problem using the robust trajectory tracking method
 
+%% Inputs
 if nargin < 2
   restart = false;
 end
@@ -21,7 +26,6 @@ if nargin < 5
     {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
 
-% Computes reachable sets for getting to the target after intruder has passed
 %% Grid
 grid_min = [-1; -1; -3*pi/2]; % Lower corner of computation domain
 grid_max = [1; 1; pi/2];    % Upper corner of computation domain
@@ -30,61 +34,22 @@ pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
 
 %% Time parameters
-t0 = 0;
-% Maximum time-horizon of computation (t = -tMax is the minimum absolute time)
-tMax = 5;
-% Set tau
+t0 = -5;
+tf = 0;
 dt = 0.01;
-tau = t0:dt:tMax;
+BRS1_tau = t0:dt:tf;
 
 %% Base obstacle generation method
 baseObs_method = 'RTT';
-if strcmp(baseObs_method, 'RTT')
-  fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-  load(RTTRS_filename)
-  baseObs_params.RTTRS = ...
-    migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
-  figure;
-  h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
-  h1.FaceAlpha = 0.5;
-  hold on
-  
-  h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
-  h3.FaceAlpha = 0.5;
-  h3.FaceColor = 'b';
-  
-elseif strcmp(baseObs_method, 'CC')
-  %% Reset radius for base obstacle computation
-  baseObs_params.resetR = [0.03, 0.03, 0.1]';
-  
-end
+fprintf('Using %s method to generate base obstacles\n', baseObs_method)
+load(RTTRS_filename)
+baseObs_params.RTTRS = ...
+  migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
 
 %% Problem parameters
-% Vehicle
-vrange = RTTRS.dynSys.vRangeA;
-wMax = RTTRS.dynSys.wMaxA;
-dMax = RTTRS.dynSys.dMaxA;
 Rc = 0.1; % Capture radius
-
-numVeh = 4;
 if restart
-  targetR = 0.1;
-  % Reduce target by the size of the RTT tracking radius
-  targetRsmall = targetR - RTTRS.trackingRadius;
-  
-  Q = cell(numVeh,1);
-  for i = 1:numVeh
-    Q{i} = Plane(initStates{i}, wMax, vrange, dMax);
-    Q{i}.data.target = ...
-      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetR);
-    Q{i}.data.targetsm = ...
-      shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetRsmall);
-    Q{i}.data.targetCenter = targetCenters{i};
-    Q{i}.data.targetR = targetR;
-    Q{i}.data.targetRsmall = targetRsmall;
-    Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
-    Q{i}.data.wReserved = RTTRS.dynSys.wMaxB - RTTRS.dynSys.wMaxA;
-  end
+  Q = initRTT(initStates, targetCenters, targetR, RTTRS, schemeData);
 else
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
@@ -102,7 +67,7 @@ for veh=1:numVeh
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
+    Q{veh} = computeBRS1(Q{veh}, BRS1_tau, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
@@ -135,4 +100,9 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
 end
+
+%% Trim vehicles for a smaller file
+Q = trimDataForSim(Q, {'BRS1', 'baseObs'});
+[Q1, Q2, Q3, Q4] = Q{:};
+save(mfilename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end
