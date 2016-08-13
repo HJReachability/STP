@@ -1,15 +1,14 @@
-function SPPwIntruder_replan_RS(RTTRS_filename, restart, chkpt_filename, ...
-  initStates, targetCenters)
+function SPPwIntruder_replan_RS(RTTRS_filename, restart, chkpt_filename, Q)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
 
-if nargin < 1
+if nargin < 2
   restart = false;
 end
 
-if nargin < 2
-  filename = sprintf('%s_checkpoint.mat', mfilename);
+if nargin < 3
+  filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
 end
@@ -19,17 +18,9 @@ load('SPPwIntruder_RS_bare.mat')
 
 %% Load RTT reachable set
 fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-load('RTTRS.mat')
+load(RTTRS_filename)
 baseObs_params.RTTRS = ...
   migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
-figure;
-h1 = visSetIm(RTTRS.g, -RTTRS.data(:,:,:,end));
-h1.FaceAlpha = 0.5;
-hold on
-
-h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
-h3.FaceAlpha = 0.5;
-h3.FaceColor = 'b';
 
 %% Time vector
 dt = 0.01;
@@ -42,7 +33,7 @@ if ~restart
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
 end
-
+numVeh = length(Q);
 
 %% Start the computation of reachable sets
 for veh=1:numVeh

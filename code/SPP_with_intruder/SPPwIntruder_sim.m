@@ -109,8 +109,7 @@ for i = 1:length(tau)
         currentStates{veh} = Q{veh}.x;
         targetCenters{veh} = Q{veh}.data.targetCenter;
       end
-      SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, ...
-        currentStates, targetCenters);
+      SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, Q);
     end
     load(AI_filename)
     
