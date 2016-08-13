@@ -56,6 +56,8 @@ else
   Q = {Q1; Q2; Q3; Q4};
 end
 
+numVeh = length(Q);
+
 %% Start the computation of reachable sets
 for veh=1:numVeh
   schemeData.dynSys = Q{veh};
