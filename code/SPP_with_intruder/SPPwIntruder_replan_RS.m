@@ -1,4 +1,5 @@
-function SPPwIntruder_replan_RS(restart, chkpt_filename)
+function SPPwIntruder_replan_RS(RTTRS_filename, restart, chkpt_filename, ...
+  initStates, targetCenters)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
@@ -54,7 +55,6 @@ for veh=1:numVeh
     obstacles = ...
       gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'forward');
     
-    
     %% Compute FRS to determine the ETA
     if ~isfield(Q{veh}.data, 'ETA')
       fprintf('Determining ETA for vehicle %d\n', veh)
@@ -73,7 +73,8 @@ for veh=1:numVeh
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh} = computeBRS1(Q{veh}, tau, schemeData, obstacles);
+    tauBRS = vehicle.data.ETA-tFRS_max:dt:vehicle.data.ETA;
+    Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')

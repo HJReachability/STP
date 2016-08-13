@@ -1,4 +1,5 @@
-function SPPwIntruder_RS(RTTRS_filename, restart, chkpt_filename)
+function SPPwIntruder_RS(RTTRS_filename, restart, chkpt_filename, ...
+  initStates, targetCenters)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
@@ -10,6 +11,16 @@ if nargin < 3
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
+end
+
+if nargin < 4
+  initStates = ...
+    {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
+end
+
+if nargin < 5
+  targetCenters = ...
+    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
 
 %% Add the appropriate functions to the path
@@ -48,12 +59,6 @@ if strcmp(baseObs_method, 'RTT')
   h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
   h3.FaceAlpha = 0.5;
   h3.FaceColor = 'b';
-  %% Reduced speed if using robust tracker
-  for i = 1:4
-    Q{i}.data.vReserved = [0.3 -0.3];
-    Q{i}.data.wReserved = -0.4;
-    Q{i}.data.RTT_radius = 0.075;
-  end
   
 elseif strcmp(baseObs_method, 'CC')
   %% Reset radius for base obstacle computation
@@ -68,16 +73,11 @@ wMax = RTTRS.dynSys.wMaxA;
 dMax = RTTRS.dynSys.dMaxA;
 Rc = 0.1; % Capture radius
 
-%% initial States
 numVeh = 4;
 if restart
-  % Initial conditions
-  initStates = ...
-    {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
-  targetCenters = ...
-    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
   targetR = 0.1;
-  targetRsmall = 0.025; % Reduced target radius for first BRS computation
+  % Reduce target by the size of the RTT tracking radius
+  targetRsmall = targetR - RTTRS.trackingRadius;
   
   Q = cell(numVeh,1);
   for i = 1:numVeh
@@ -89,6 +89,8 @@ if restart
     Q{i}.data.targetCenter = targetCenters{i};
     Q{i}.data.targetR = targetR{i};
     Q{i}.data.targetRsmall = targetRsmall{i};
+    Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
+    Q{i}.data.wReserved = RTTRS.dynSys.wMaxB - RTTRS.dynSys.wMaxA;
   end
 else
   load(filename)

@@ -43,7 +43,7 @@ for i = 1:length(tau)
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
     tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tau(i) + small);
+      Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
     
     if ~isempty(tInd)
       %% Get optimal control

@@ -1,4 +1,5 @@
-function SPPwDisturbance_RTT(RTTRS_filename, restart, chkpt_filename)
+function SPPwDisturbance_RTT(RTTRS_filename, restart, chkpt_filename, ...
+  initStates, targetCenters)
 
 if nargin < 2
   restart = false;
@@ -8,6 +9,16 @@ if nargin < 3
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
+end
+
+if nargin < 4
+  initStates = ...
+    {[-0.5; 0; 0]; [ 0.5; 0; -pi]; [-0.6; 0.6; -pi/4]; [ 0.6; 0.6; -3*pi/4]};
+end
+
+if nargin < 5
+  targetCenters = ...
+    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
 
 % Computes reachable sets for getting to the target after intruder has passed
@@ -41,7 +52,7 @@ if strcmp(baseObs_method, 'RTT')
   h3 = visSetIm(schemeData.grid, baseObs_params.RTTRS);
   h3.FaceAlpha = 0.5;
   h3.FaceColor = 'b';
-
+  
 elseif strcmp(baseObs_method, 'CC')
   %% Reset radius for base obstacle computation
   baseObs_params.resetR = [0.03, 0.03, 0.1]';
@@ -57,10 +68,6 @@ Rc = 0.1; % Capture radius
 
 numVeh = 4;
 if restart
-  initStates = ...
-    {[-0.5; 0; 0]; [ 0.5; 0; -pi]; [-0.6; 0.6; -pi/4]; [ 0.6; 0.6; -3*pi/4]};
-  targetCenters = ...
-    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
   targetR = 0.1;
   % Reduce target by the size of the RTT tracking radius
   targetRsmall = targetR - RTTRS.trackingRadius;

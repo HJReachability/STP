@@ -1,4 +1,4 @@
-function vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
+function vehicle = computeBRS1(vehicle, BRS1_tau, schemeData, obstacles)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
 %     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
@@ -39,13 +39,10 @@ extraArgs.targets = vehicle.data.targetsm;
 % Computation should stop once it contains the initial state
 extraArgs.stopInit = vehicle.x;
 
-[vehicle.data.BRS1, vehicle.data.BRS1_tau] = ...
-  HJIPDE_solve(vehicle.data.targetsm, tau, schemeData, 'none', extraArgs);
-
-t0 = vehicle.data.BRS1_tau(1);
-vehicle.data.BRS1_tau = 2*t0 - vehicle.data.BRS1_tau;
+[vehicle.data.BRS, tau] = ...
+  HJIPDE_solve(vehicle.data.targetsm, BRS1_tau, schemeData, 'none', extraArgs);
 
 % Reverse the order of time elements
-vehicle.data.BRS1_tau = flip(vehicle.data.BRS1_tau);
+vehicle.data.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
 vehicle.data.BRS1 = flip(vehicle.data.BRS1, 4);
 end
