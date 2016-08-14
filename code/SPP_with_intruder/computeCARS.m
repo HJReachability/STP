@@ -1,4 +1,4 @@
-function compute_CAvoid_RS()
+function computeCARS()
 % Just a simple file for computing collision avoidance reachable set...
 
 %% Problem parameters
@@ -36,6 +36,10 @@ tau = t0:dt:tIAT;
 %% Compute set
 extraArgs.visualize = true;
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
-save('CA.mat', 'schemeData', 'data')
+
+CARS.dynSys = schemeData.dynSys;
+CARS.g = schemeData.grid;
+CARS.data = data(:,:,:,end);
+save(sprintf('CARS_%f', now), 'CARS', '-v7.3')
 
 end
