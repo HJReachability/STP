@@ -5,6 +5,10 @@ if nargin < 5
   save_png = true;
 end
 
+if nargin < 6
+  save_fig = false;
+end
+
 small = 1e-4;
 
 tMin = -3;
@@ -13,6 +17,7 @@ tMax = 0;
 tau = tMin:dt:tMax;
 
 %% Load robust tracking reachable set
+fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
 
 % Gradient of RTTRS
@@ -25,7 +30,7 @@ Q = {Q1;Q2;Q3;Q4};
 % Plot targets
 figure
 colors = lines(length(Q));
-plotTargetSets(Q, colors)
+plotTargetSets(Q, schemeData, colors)
 
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
