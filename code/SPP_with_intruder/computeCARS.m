@@ -35,6 +35,11 @@ tau = t0:dt:tIAT;
 
 %% Compute set
 extraArgs.visualize = true;
+extraArgs.deleteLastPlot = true;
+folder = sprintf('%s_%f', mfilename, now);
+system(sprintf('mkdir %s', folder));
+extraArgs.fig_filename = sprintf('%s/', folder);
+
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 CARS.dynSys = schemeData.dynSys;
