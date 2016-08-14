@@ -14,9 +14,6 @@ else
   filename = chkpt_filename ;
 end
 
-%% Load data for replanning
-load(Replan_filename)
-
 %% Load RTT reachable set
 baseObs_method = 'RTT';
 fprintf('Using %s method to generate base obstacles\n', baseObs_method)
@@ -31,7 +28,10 @@ dt = 0.01;
 tFRS_max = 2;
 tauFRS = 0:dt:tFRS_max;
 
-if ~restart
+if restart
+  load(Replan_filename)
+  Q = {Q1; Q2; Q3; Q4};
+else
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
 end
