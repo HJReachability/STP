@@ -133,6 +133,8 @@ for i = 1:length(tau)
         currentStates{veh} = Q{veh}.x;
         targetCenters{veh} = Q{veh}.data.targetCenter;
       end
+      
+      saveReplanData(Q, schemeData, tNow);
       SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, Q);
     end
     
