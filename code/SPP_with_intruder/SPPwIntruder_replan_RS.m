@@ -33,7 +33,7 @@ dt = 0.01;
 
 % Time vector for FRS
 tFRS_max = 2;
-tauFRS = 0:dt:tFRS_max;
+tauFRS = tNow:dt:tFRS_max;
 
 numVeh = length(Q);
 
@@ -45,7 +45,7 @@ for veh=1:numVeh
   % Assume there's no static obstacle
   fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
   obstacles = ...
-    gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'forward');
+    gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObs3D', 'forward');
   
   %% Compute FRS to determine the ETA
   if ~isfield(Q{veh}.data, 'ETA')
