@@ -3,7 +3,7 @@ function plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
 for veh = 1:length(Q)
-  if ~isempty(tInds(veh))
+  if ~isempty(tInds{veh})
     % Plot capture radius
     if isempty(hc{veh})
       hc{veh} = plotDisk( ...
@@ -16,7 +16,7 @@ for veh = 1:length(Q)
     % Plot induced obstacle for vehicles 1 to 3
     if veh < length(Q)
       [g2D, data2D] = ...
-        proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
+        proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInds{veh}), [0 0 1]);
       if isempty(ho{veh})
         ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
         ho{veh}.LineStyle = '--';
