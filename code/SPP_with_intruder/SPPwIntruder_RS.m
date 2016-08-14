@@ -1,5 +1,5 @@
-function SPPwIntruder_RS(RTTRS_filename, restart, chkpt_filename, ...
-  initStates, targetCenters)
+function SPPwIntruder_RS(RTTRS_filename, Obs_Filename, restart, ...
+  chkpt_filename, initStates, targetCenters)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
@@ -23,12 +23,13 @@ if nargin < 5
     {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
 
-%% Grid
-grid_min = [-1; -1; -3*pi/2]; % Lower corner of computation domain
-grid_max = [1; 1; pi/2];    % Upper corner of computation domain
-N = [101; 101; 101];         % Number of grid points per dimension
-pdDims = 3;               % 3rd dimension is periodic
-schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
+%% Grids
+% Main Grid
+sDMain.grid = createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
+
+% Small grid for obstacle augmentation
+sDObs.grid = ...
+  createGrid([-0.5; -0.5; -3*pi/2], [0.5; 0.5; pi/2], [101; 101; 101], 3);
 
 %% Time parameters
 % For BRS
@@ -38,21 +39,16 @@ dt = 0.01;
 BRS1_tau = t0:dt:tf;
 
 % For Intruder
-tIAT = 0.1;
+tIAT = 0.25;
 tauIAT = 0:dt:tIAT;
 
 %% Base obstacle generation method
-baseObs_method = 'RTT';
-if strcmp(baseObs_method, 'RTT')
-  fprintf('Using %s method to generate base obstacles\n', baseObs_method)
-  load(RTTRS_filename)
-  baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
-  
-elseif strcmp(baseObs_method, 'CC')
-  %% Reset radius for base obstacle computation
-  baseObs_params.resetR = [0.03, 0.03, 0.1]';
-  
-end
+fprintf('Loading RTTRS...\n')
+load(RTTRS_filename)
+
+%% Augment obstacles
+sDObs
+
 
 %% Problem parameters
 Rc = 0.1; % Capture radius
