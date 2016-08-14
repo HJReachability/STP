@@ -67,7 +67,7 @@ for i = 1:length(tau)
     end
   end
   
-  plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius)
+  [hc, ho] = plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius);
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])

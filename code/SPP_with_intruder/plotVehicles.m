@@ -1,4 +1,5 @@
-function plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius)
+function [hc, ho] = ...
+  plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius)
 % plotVehicles(Q, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
