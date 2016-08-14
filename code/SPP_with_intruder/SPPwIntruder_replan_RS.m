@@ -58,7 +58,7 @@ for veh=1:numVeh
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
-    tauBRS = vehicle.data.FRS1_tau;
+    tauBRS = Q{veh}.data.FRS1_tau;
     fprintf('Gathering obstacles for vehicle %d for BRS computation...\n', veh)
     obstacles = ...
       gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs3D', 'backward');
