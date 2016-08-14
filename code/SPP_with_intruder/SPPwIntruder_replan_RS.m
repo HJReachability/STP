@@ -50,7 +50,7 @@ for veh=1:numVeh
   %% Compute FRS to determine the ETA
   if ~isfield(Q{veh}.data, 'ETA')
     fprintf('Determining ETA for vehicle %d\n', veh)
-    vehicle = determineETA(vehicle, tauFRS, schemeData, obstacles, tNow);
+    Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles, tNow);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
