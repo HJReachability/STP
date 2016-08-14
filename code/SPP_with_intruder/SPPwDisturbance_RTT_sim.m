@@ -41,18 +41,19 @@ ho = cell(length(Q), 1);
 folder = sprintf('%s_%f', mfilename, now);
 system(sprintf('mkdir %s', folder));
 
+tInds = zeros(length(Q), 1);
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInd = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+    tInds(veh) = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
       Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
     
-    if ~isempty(tInd)
+    if ~isempty(tInds(veh))
       %% Get optimal control
       % Our plane is vehicle A, trying to stay out of reachable set, and the
       % reference virtual plane is vehicle B, trying to get into reachable set
-      rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
+      rel_x = Q{veh}.data.nomTraj(:,tInds(veh)) - Q{veh}.x;
       rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
       
       deriv = eval_u(RTTRS.g, Deriv, rel_x);
@@ -66,7 +67,7 @@ for i = 1:length(tau)
     end
   end
   
-  plotVehicles(Q, tInd, schemeData, hc, ho, colors, capture_radius)
+  plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius)
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])
