@@ -134,7 +134,7 @@ for i = 1:length(tau)
         targetCenters{veh} = Q{veh}.data.targetCenter;
       end
       
-      saveReplanData(Q, schemeData, tNow);
+      saveReplanData(Q, schemeData, tau(i));
       SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, Q);
     end
     
