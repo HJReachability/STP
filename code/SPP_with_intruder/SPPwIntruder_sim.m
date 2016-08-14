@@ -30,10 +30,14 @@ plotTargetSets(Q, colors)
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
 
+% For saving graphics
+folder = sprintf('%s_%f', mfilename, now);
+system(sprintf('mkdir %s', folder));
+
 %% Initialize intruder
 % Load safety reachable set
 load(CA_filename)
-CARS.Deriv = computeGradients(CARS.g, CARS.data(:,:,:,end));
+CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
 Q_intruder = Plane( ...
   [0; -0.5; -pi], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
@@ -126,6 +130,7 @@ for i = 1:length(tau)
     
   end
   
+  % Visualize
   [hc, ho] = plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius);
   
   xlim([-1.2 1.2])
