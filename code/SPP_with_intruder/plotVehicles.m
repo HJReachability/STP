@@ -1,5 +1,8 @@
 function plotVehicles(Q, hc, ho, colors, capture_radius)
-for i = 1:length(Q)
+% plotVehicles(Q, hc, ho, colors, capture_radius)
+%     Updates the plot in the SPP simulation
+
+for veh = 1:length(Q)
   % Plot capture radius
   if isempty(hc{veh})
     hc{veh} = plotDisk( ...

@@ -14,7 +14,7 @@ dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
-fprintf('Loading data files')
+fprintf('Loading data files\n')
 % Load robust tracking reachable set
 load(RTTRS_file)
 
@@ -23,7 +23,7 @@ load(RTT_file)
 Q = {Q1;Q2;Q3;Q4};
 
 % Gradient of RTTRS
-fprintf('Computing gradient of RTTRS')
+fprintf('Computing gradient of RTTRS\n')
 Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
 capture_radius = 0.1;
