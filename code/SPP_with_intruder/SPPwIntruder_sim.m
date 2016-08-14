@@ -126,7 +126,7 @@ for i = 1:length(tau)
   else
     fprintf('Saving data for replanning.\n')
     saveReplanData(Q, schemeData, tau(i));
-    
+    return
   end
   
   % Visualize
