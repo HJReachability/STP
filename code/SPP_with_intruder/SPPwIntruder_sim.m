@@ -17,6 +17,8 @@ dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
+tIAT = 0.1;
+
 %% Load robust tracking reachable set
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
