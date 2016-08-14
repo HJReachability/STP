@@ -1,8 +1,8 @@
 function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
-  AI_filename, savepng)
+  AI_filename, save_png, save_fig)
 
 if nargin < 5
-  savepng = true;
+  save_png = true;
 end
 
 small = 1e-4;
@@ -16,7 +16,7 @@ tau = tMin:dt:tMax;
 load(RTTRS_filename)
 
 % Gradient of RTTRS
-RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
+RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 
 %% Load path planning reachable set
 load(RS_filename)
@@ -126,16 +126,20 @@ for i = 1:length(tau)
     
   end
   
-  % Plot vehicles
-  for veh = 1:length(Q)
-    % Plot capture radius
-    if isempty(hc{veh})
-      hc{veh} = plotDisk( ...
-        Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
-    else
-      [~, hc{veh}.XData, hc{veh}.YData] = plotDisk( ...
-        Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
-    end    
+  [hc, ho] = plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius);
+  
+  xlim([-1.2 1.2])
+  ylim([-1.2 1.2])
+  
+  title(sprintf('t = %f', tau(i)))
+  drawnow;
+  if save_png
+    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
   end
+  
+  if save_fig
+    savefig(f, sprintf('%s/%d', folder, i), 'compact')
+  end  
+  
 end
 end

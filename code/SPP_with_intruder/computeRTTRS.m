@@ -11,8 +11,8 @@ dt = 0.01;
 tau = 0:dt:tMax;
 
 % Vehicle
-vRangeA = [0.5 1];
-vReserved = [0.25 -0.25];
+vRangeA = [0.1 1];
+vReserved = [0.3 -0.3];
 
 wMaxA = 1;
 wReserved =  -0.4;
@@ -26,17 +26,21 @@ dynSys = PlaneCAvoid(zeros(3,1), wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
 schemeData.dynSys = dynSys;
 
 % Initial conditions
-trackingRadius = 0.075;
-data0 = -shapeCylinder(schemeData.grid, 3, [ 0; 0; 0 ], trackingRadius);
+RTTRS.trackingRadius = 0.075;
+data0 = -shapeCylinder(schemeData.grid, 3, [ 0; 0; 0 ], RTTRS.trackingRadius);
 schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
+
+folder = sprintf('%s_%f', mfilename, now);
+system(sprintf('mkdir %s', folder));
+extraArgs.fig_filename = sprintf('%s/', folder);
+
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 RTTRS.g = schemeData.grid;
 RTTRS.data = data(:,:,:,end);
 RTTRS.dynSys = dynSys;
-RTTRS.trackingRadius = trackingRadius;
 save(sprintf('RTTRS_%f.mat', now), 'RTTRS', '-v7.3')
 end
