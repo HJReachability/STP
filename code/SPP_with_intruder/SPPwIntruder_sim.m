@@ -24,6 +24,7 @@ load(RTTRS_filename)
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 
 %% Load path planning reachable set
+fprintf('Loading main RS...\n')
 load(RS_filename)
 Q = {Q1;Q2;Q3;Q4};
 
@@ -41,6 +42,7 @@ system(sprintf('mkdir %s', folder));
 
 %% Initialize intruder
 % Load safety reachable set
+fprintf('Loading CARS...\n')
 load(CA_filename)
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
@@ -58,7 +60,7 @@ intruder_arrived = false;
 u_intruder = [0.5; 0];
 
 %% Simulate
-tInds = zeros(length(Q),1);
+tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
 for i = 1:length(tau)
   %% Intruder
@@ -75,11 +77,11 @@ for i = 1:length(tau)
   % Check safety
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds(veh) = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
       Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
     
     % Compute safety value
-    if ~isempty(tInds(veh))
+    if ~isempty(tInds{veh})
       safety_rel_x{veh} = Q_intruder.x - Q{veh}.x;
       safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
       safety_vals(veh, i) = eval_u(g, safety_vf, safety_rel_x{veh});
@@ -98,7 +100,7 @@ for i = 1:length(tau)
   %% Control and disturbance for SPP Vehicles
   if tau(i) <= tUpper
     for veh = 1:length(Q)
-      if ~isempty(tInds(veh))
+      if ~isempty(tInds{veh})
         if safety_vals(veh, i) < safety_threshold
           % Safety controller
           u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, CARS.Deriv, 'max');
