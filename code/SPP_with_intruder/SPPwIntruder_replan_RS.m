@@ -61,7 +61,7 @@ for veh=1:numVeh
     tauBRS = vehicle.data.ETA-tFRS_max:dt:vehicle.data.ETA;
     fprintf('Gathering obstacles for vehicle %d for BRS computation...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'backward');
+      gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs3D', 'backward');
     
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
