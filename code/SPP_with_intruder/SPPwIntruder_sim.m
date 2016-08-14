@@ -105,10 +105,14 @@ for i = 1:length(tau)
       if ~isempty(tInds{veh})
         if safety_vals(veh, i) < safety_threshold
           % Safety controller
-          u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, CARS.Deriv, 'max');
+          deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
+          u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
+          
         else
           liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
           liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
+          deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
+          
           u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
         end
         % Random disturbance

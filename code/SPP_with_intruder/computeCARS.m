@@ -45,6 +45,6 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 CARS.dynSys = schemeData.dynSys;
 CARS.g = schemeData.grid;
 CARS.data = data(:,:,:,end);
-save(sprintf('CARS_%f', now), 'CARS', '-v7.3')
+save(sprintf('CARS_%f.mat', now), 'CARS', '-v7.3')
 
 end
