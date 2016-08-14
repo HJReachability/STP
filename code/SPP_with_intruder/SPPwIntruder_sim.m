@@ -107,12 +107,12 @@ for i = 1:length(tau)
           % Safety controller
           u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, CARS.Deriv, 'max');
         else
-          liveness_rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
+          liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
           liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
           u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
         end
         % Random disturbance
-        d = Q{veh}.GaussianDstb();
+        d = Q{veh}.uniformDstb();
         Q{veh}.updateState(u, dt, Q{veh}.x, d);
       end
     end
