@@ -1,4 +1,5 @@
-function SPPwIntruder_replan_RS(RTTRS_filename, restart, chkpt_filename, Q)
+function SPPwIntruder_replan_RS(RTTRS_filename, Replan_filename, ...
+  restart, chkpt_filename)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
@@ -13,8 +14,8 @@ else
   filename = chkpt_filename ;
 end
 
-%% Load "bare-bones" vehicles
-load('SPPwIntruder_RS_bare.mat')
+%% Load data for replanning
+load(Replan_filename)
 
 %% Load RTT reachable set
 baseObs_method = 'RTT';
