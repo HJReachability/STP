@@ -1,5 +1,9 @@
-function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, AI_filename)
-% Simulation, but for now just testing collision avoidance BRS computation
+function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
+  AI_filename, savepng)
+
+if nargin < 5
+  savepng = true;
+end
 
 small = 1e-4;
 
@@ -111,11 +115,27 @@ for i = 1:length(tau)
       end
       SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, Q);
     end
-    load(AI_filename)
+    
+    fprintf('Done for now')
+    return
+%     load(AI_filename)
+    
     
     %--> u = ...
     %--> d = ...
     
+  end
+  
+  % Plot vehicles
+  for veh = 1:length(Q)
+    % Plot capture radius
+    if isempty(hc{veh})
+      hc{veh} = plotDisk( ...
+        Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
+    else
+      [~, hc{veh}.XData, hc{veh}.YData] = plotDisk( ...
+        Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
+    end    
   end
 end
 end

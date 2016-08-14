@@ -1,4 +1,4 @@
-function plotVehicles(Q, hc, ho)
+function plotVehicles(Q, hc, ho, colors, capture_radius)
 for i = 1:length(Q)
   % Plot capture radius
   if isempty(hc{veh})

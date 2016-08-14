@@ -8,11 +8,13 @@ if nargin < 4
   save_fig = false;
 end
 
+% Simulation time
 tMin = -3;
 dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
+fprintf('Loading data files')
 % Load robust tracking reachable set
 load(RTTRS_file)
 
@@ -21,6 +23,7 @@ load(RTT_file)
 Q = {Q1;Q2;Q3;Q4};
 
 % Gradient of RTTRS
+fprintf('Computing gradient of RTTRS')
 Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
 
 capture_radius = 0.1;
@@ -60,32 +63,10 @@ for i = 1:length(tau)
 
       % Update state
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
-      
-      % Plot capture radius
-      if isempty(hc{veh})
-        hc{veh} = plotDisk( ...
-          Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
-      else
-        [~, hc{veh}.XData, hc{veh}.YData] = plotDisk( ...
-          Q{veh}.getPosition, capture_radius, '-', 'color', colors(veh,:));
-      end
-      
-      % Plot induced obstacle for vehicles 1 to 3
-      if veh < length(Q)
-        [g2D, data2D] = ...
-          proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInd), [0 0 1]);
-        if isempty(ho{veh})
-          ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
-          ho{veh}.LineStyle = '--';
-        else
-          ho{veh}.ZData = data2D;
-        end
-      end
-      
-      % Plot position
-      Q{veh}.plotPosition(colors(veh, :));      
     end
   end
+  
+  plotVehicles(Q, hc, ho, colors, capture_radius)
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])

@@ -70,15 +70,13 @@ numVeh = length(Q);
 %% Start the computation of reachable sets
 for veh=1:numVeh
   schemeData.dynSys = Q{veh};
-  
-  %% Gather induced obstacles of higher-priority vehicles
-  % Assume there's no static obstacle
-  fprintf('Gathering obstacles for vehicle %d...\n', veh)
-  obstacles = ...
-    gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'augFlatObsBRS');
-  
+   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
+    fprintf('Gathering obstacles for vehicle %d...\n', veh)
+    obstacles = ...
+      gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'augFlatObsBRS');
+  
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, BRS1_tau, schemeData, obstacles);
     
