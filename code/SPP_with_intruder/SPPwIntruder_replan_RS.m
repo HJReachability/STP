@@ -17,6 +17,7 @@ end
 load('SPPwIntruder_RS_bare.mat')
 
 %% Load RTT reachable set
+baseObs_method = 'RTT';
 fprintf('Using %s method to generate base obstacles\n', baseObs_method)
 load(RTTRS_filename)
 baseObs_params.RTTRS = ...

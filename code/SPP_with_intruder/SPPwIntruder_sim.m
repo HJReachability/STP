@@ -53,9 +53,10 @@ Q_intruder = Plane( ...
   [0.5; 0; -pi], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
+tLower = -2.5;
 tUpper = inf;
 
-safety_vals = nan(length(Q), length(tau));
+safety_vals = 1e3*ones(length(Q), length(tau));
 safety_threshold = 0.5;
 intruder_arrived = false;
 
@@ -67,38 +68,35 @@ tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
+  
+  % Check if nominal trajectory has this t
+  tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+    Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+  
   %% Intruder
-  d_intruder = [0; 0; 0];
-  Q_intruder.updateState(u_intruder, dt, Q_intruder.x, d_intruder);
-  
-  % Hide intruder if time is later than tUpper
-  if tau(i) > tUpper
-    Q_intruder.unplotPosition();
-  else
+  if tau(i) >= tLower && tau(i) <= tUpper
+    d_intruder = Q_intruder.uniformDstb();
+    Q_intruder.updateState(u_intruder, dt, Q_intruder.x, d_intruder);
     Q_intruder.plotPosition(intruder_color);
-  end
-  
-  % Check safety
-  for veh = 1:length(Q)
-    % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
-    
-    % Compute safety value
-    if ~isempty(tInds{veh})
-      safety_rel_x{veh} = Q_intruder.x - Q{veh}.x;
-      safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
-      safety_vals(veh, i) = eval_u(CARS.g, CARS.data, safety_rel_x{veh});
-    else
-      safety_vals(veh, i) = 1e3;
+
+    % Check safety
+    for veh = 1:length(Q)
+      % Compute safety value
+      if ~isempty(tInds{veh})
+        safety_rel_x{veh} = Q_intruder.x - Q{veh}.x;
+        safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
+        safety_vals(veh, i) = eval_u(CARS.g, CARS.data, safety_rel_x{veh});
+      end
     end
-  end
-  
-  % Mark time at which intruder shows up
-  if ~intruder_arrived && any(safety_vals(:, i) < safety_threshold)
-    tLower = tau(i);
-    tUpper = tLower + tIAT;
-    intruder_arrived = true;
+    
+    % Mark time at which intruder shows up
+    if ~intruder_arrived && any(safety_vals(:, i) < safety_threshold)
+      tUpper = tau(i) + tIAT;
+      intruder_arrived = true;
+    end
+  elseif tau(i) > tUpper
+    % Hide intruder if time is later than tUpper
+    Q_intruder.unplotPosition();
   end
   
   %% Control and disturbance for SPP Vehicles
@@ -124,27 +122,8 @@ for i = 1:length(tau)
       end
     end
   else
-    %% Control after intruder leaves airspace
-    % Load or compute BRS2derivs
-    if ~exist(AI_filename, 'file')
-      currentStates = cell(length(Q), 1);
-      targetCenters = cell(length(Q), 1);
-      for veh = 1:length(Q)
-        currentStates{veh} = Q{veh}.x;
-        targetCenters{veh} = Q{veh}.data.targetCenter;
-      end
-      
-      saveReplanData(Q, schemeData, tau(i));
-      SPPwIntruder_replan_RS(RTTRS_filename, true, AI_filename, Q);
-    end
-    
-    fprintf('Done for now')
-    return
-%     load(AI_filename)
-    
-    
-    %--> u = ...
-    %--> d = ...
+    fprintf('Saving data for replanning.\n')
+    saveReplanData(Q, schemeData, tau(i));
     
   end
   
@@ -162,7 +141,7 @@ for i = 1:length(tau)
   
   if save_fig
     savefig(f, sprintf('%s/%d', folder, i), 'compact')
-  end  
+  end
   
 end
 end

@@ -1,7 +1,7 @@
 function saveReplanData(Q, schemeData, tNow)
 % saveReplanData(Q, schemeData)
 %     Removes most of the fields of vehicle objects, except for those needed to
-%     do replanning after an intruder has come
+%     do replanning after an intruder has comels
 
 Qnew = cell(length(Q),1);
 for i = 1:length(Q)
@@ -14,6 +14,7 @@ for i = 1:length(Q)
   Qnew{i}.hpxpyhist = Q{i}.hpxpyhist;
   
   % Data
+  Qnew{i}.data.targetCenter = Q{i}.data.targetCenter;
   Qnew{i}.data.target = Q{i}.data.target;
   Qnew{i}.data.targetsm = Q{i}.data.targetsm;
   Qnew{i}.data.vReserved = Q{i}.data.vReserved;
@@ -23,6 +24,7 @@ end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};
 
-save('SPPwIntruder_RS_bare.mat', 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', ...
+
+save(sprintf('Replan_RS_%f.mat', now), 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', ...
   'tNow', '-v7.3')
 end
