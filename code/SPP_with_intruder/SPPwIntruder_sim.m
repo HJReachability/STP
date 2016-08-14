@@ -70,8 +70,10 @@ for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   
   % Check if nominal trajectory has this t
-  tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
-    Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+  for veh = 1:length(Q)
+    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+      Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+  end
   
   %% Intruder
   if tau(i) >= tLower && tau(i) <= tUpper
