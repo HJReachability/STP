@@ -50,7 +50,7 @@ for veh=1:numVeh
   %% Compute FRS to determine the ETA
   if ~isfield(Q{veh}.data, 'ETA')
     fprintf('Determining ETA for vehicle %d\n', veh)
-    Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles, tNow);
+    Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
@@ -58,7 +58,7 @@ for veh=1:numVeh
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
-    tauBRS = vehicle.data.ETA-tFRS_max:dt:vehicle.data.ETA;
+    tauBRS = vehicle.data.FRS1_tau;
     fprintf('Gathering obstacles for vehicle %d for BRS computation...\n', veh)
     obstacles = ...
       gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs3D', 'backward');
