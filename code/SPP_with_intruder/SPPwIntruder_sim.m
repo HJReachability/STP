@@ -64,6 +64,7 @@ u_intruder = [0.5; 0];
 tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
 for i = 1:length(tau)
+  fprintf('t = %f\n', tau(i))
   %% Intruder
   d_intruder = Q_intruder.uniformDstb();
   Q_intruder.updateState(u_intruder, dt, Q_intruder.x, d_intruder);
@@ -85,7 +86,7 @@ for i = 1:length(tau)
     if ~isempty(tInds{veh})
       safety_rel_x{veh} = Q_intruder.x - Q{veh}.x;
       safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
-      safety_vals(veh, i) = eval_u(g, safety_vf, safety_rel_x{veh});
+      safety_vals(veh, i) = eval_u(CARS.g, CARS.data, safety_rel_x{veh});
     else
       safety_vals(veh, i) = 1e3;
     end
