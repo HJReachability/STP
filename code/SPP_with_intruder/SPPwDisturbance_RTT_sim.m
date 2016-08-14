@@ -50,23 +50,23 @@ for i = 1:length(tau)
     
     if ~isempty(tInd)
       %% Get optimal control
-      % Our plane is vehicle A, trying to stay out of reachable set, and the 
+      % Our plane is vehicle A, trying to stay out of reachable set, and the
       % reference virtual plane is vehicle B, trying to get into reachable set
       rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
       rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
-     
+      
       deriv = eval_u(RTTRS.g, Deriv, rel_x);
       u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
       
       %% Get disturbance
       d = Q{veh}.uniformDstb();
-
+      
       % Update state
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
   end
   
-  plotVehicles(Q, hc, ho, colors, capture_radius, schemeData)
+  plotVehicles(Q, tInd, schemeData, hc, ho, colors, capture_radius)
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])
@@ -80,6 +80,7 @@ for i = 1:length(tau)
   if save_fig
     savefig(f, sprintf('%s/%d', folder, i), 'compact')
   end
+  
 end
 
 end
