@@ -111,8 +111,8 @@ for i = 1:length(tau)
         end
         % Random disturbance
         d = Q{veh}.GaussianDstb();
+        Q{veh}.updateState(u, dt, Q{veh}.x, d);
       end
-      Q{veh}.updateState(u, dt, Q{veh}.x, d);
     end
   else
     %% Control after intruder leaves airspace
