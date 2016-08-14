@@ -24,7 +24,7 @@ Q = {Q1;Q2;Q3;Q4};
 
 % Gradient of RTTRS
 fprintf('Computing gradient of RTTRS\n')
-Deriv = computeGradients(RTTRS.g, RTTRS.data(:,:,:,end));
+Deriv = computeGradients(RTTRS.g, RTTRS.data);
 
 capture_radius = 0.1;
 small = 1e-4;
@@ -66,7 +66,7 @@ for i = 1:length(tau)
     end
   end
   
-  plotVehicles(Q, hc, ho, colors, capture_radius)
+  plotVehicles(Q, hc, ho, colors, capture_radius, schemeData)
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])

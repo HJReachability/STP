@@ -35,7 +35,7 @@ extraArgs.deleteLastPlot = true;
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 RTTRS.g = schemeData.grid;
-RTTRS.data = data;
+RTTRS.data = data(:,:,:,end);
 RTTRS.dynSys = dynSys;
 RTTRS.trackingRadius = trackingRadius;
 save(sprintf('RTTRS_%f.mat', now), 'RTTRS', '-v7.3')
