@@ -48,7 +48,7 @@ load(CA_filename)
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
 Q_intruder = Plane( ...
-  [0; -0.5; -pi], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  [0.5; 0; -pi], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tUpper = inf;
@@ -104,6 +104,7 @@ for i = 1:length(tau)
     for veh = 1:length(Q)
       if ~isempty(tInds{veh})
         if safety_vals(veh, i) < safety_threshold
+          fprintf('Vehicle %d is performing avoidance.\n', veh)
           % Safety controller
           deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
           u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
