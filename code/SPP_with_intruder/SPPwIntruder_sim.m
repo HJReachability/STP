@@ -68,7 +68,7 @@ safety_rel_x = cell(length(Q),1);
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   %% Intruder
-  d_intruder = Q_intruder.uniformDstb();
+  d_intruder = [0; 0; 0];
   Q_intruder.updateState(u_intruder, dt, Q_intruder.x, d_intruder);
   
   % Hide intruder if time is later than tUpper
