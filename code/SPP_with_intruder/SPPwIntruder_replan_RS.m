@@ -26,8 +26,7 @@ end
 baseObs_method = 'RTT';
 fprintf('Using %s method to generate base obstacles\n', baseObs_method)
 load(RTTRS_filename)
-baseObs_params.RTTRS = ...
-  migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
+baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
 %% Time vector
 dt = 0.01;
@@ -44,30 +43,27 @@ for veh=1:numVeh
   
   %% Gather induced obstacles for FRS computation
   % Assume there's no static obstacle
-  if veh > 1
-    fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
-    obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'forward');
-    
-    %% Compute FRS to determine the ETA
-    if ~isfield(Q{veh}.data, 'ETA')
-      fprintf('Determining ETA for vehicle %d\n', veh)
-      vehicle = determineETA(vehicle, tauFRS, schemeData, obstacles, tNow);
-      
-      [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
-    end
-  end
-  
-  %% Gather induced obstacles for BRS computation
-  fprintf('Gathering obstacles for vehicle %d for BRS computation...\n', veh)
+  fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
   obstacles = ...
-    gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'backward');
+    gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'forward');
+  
+  %% Compute FRS to determine the ETA
+  if ~isfield(Q{veh}.data, 'ETA')
+    fprintf('Determining ETA for vehicle %d\n', veh)
+    vehicle = determineETA(vehicle, tauFRS, schemeData, obstacles, tNow);
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+  end
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
-    fprintf('Computing BRS1 for vehicle %d\n', veh)
     tauBRS = vehicle.data.ETA-tFRS_max:dt:vehicle.data.ETA;
+    fprintf('Gathering obstacles for vehicle %d for BRS computation...\n', veh)
+    obstacles = ...
+      gatherObstacles(Q(1:veh-1), schemeData, tau, 'cylObs3D', 'backward');
+    
+    fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};

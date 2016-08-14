@@ -46,8 +46,7 @@ baseObs_method = 'RTT';
 if strcmp(baseObs_method, 'RTT')
   fprintf('Using %s method to generate base obstacles\n', baseObs_method)
   load(RTTRS_filename)
-  baseObs_params.RTTRS = ...
-    migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
+  baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
   
 elseif strcmp(baseObs_method, 'CC')
   %% Reset radius for base obstacle computation

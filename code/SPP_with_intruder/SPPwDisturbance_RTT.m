@@ -43,8 +43,7 @@ BRS1_tau = t0:dt:tf;
 baseObs_method = 'RTT';
 fprintf('Using %s method to generate base obstacles\n', baseObs_method)
 load(RTTRS_filename)
-baseObs_params.RTTRS = ...
-  migrateGrid(RTTRS.g, -RTTRS.data(:,:,:,end), schemeData.grid);
+baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
 %% Problem parameters
 Rc = 0.1; % Capture radius
