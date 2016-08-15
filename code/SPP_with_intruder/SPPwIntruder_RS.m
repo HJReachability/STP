@@ -26,7 +26,7 @@ end
 %% Grids
 % Main Grid
 schemeData.grid = ...
-  createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
+  createGrid([-0.8; -0.8; -3*pi/2], [0.8; 0.8; pi/2], [81; 81; 81], 3);
 
 %% Time parameters
 % For BRS
@@ -45,11 +45,12 @@ load(RTTRS_filename)
 baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
 %% Augment obstacles
-fprintf('Loading obstacles...\n')
+fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-something = zeros([schemeData.grid.N' size(rawObs.data, 4)]);
-for i = 1:size(rawObs.data, 4)
-  something(:,:,:,4) = migrateGrid(rawObs.g, rawObs.data(:,:,:,i), schemeData.grid);
+rawObsBRS = zeros([schemeData.grid.N' length(tauIAT)]);
+for i = 1:length(tauIAT)
+  rawObsBRS(:,:,:,i) = ...
+    migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
 end
 
 %% Problem parameters
@@ -83,48 +84,17 @@ for veh=1:numVeh
   
   %% Compute the base obstacles for based on BRS1
   if ~isfield(Q{veh}.data, 'baseObs')
-    fprintf('Computing base obstacles for vehicle %d\n', veh)
-    if veh < numVeh
-      trajOnly = false;
-    else
-      trajOnly = true;
-    end
-    
-    Q{veh} = computeBaseObs( ...
-      Q{veh}, schemeData, baseObs_method, baseObs_params, trajOnly);
-    
-    [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
-  end
-  
-  %% Augment base obstacles with t-IAT FRS
-  if ~isfield(Q{veh}.data, 'augObsFRS')
-    if veh < numVeh
-      fprintf('Augmenting base obstacles with FRS for vehicle %d\n', veh)
-      Q{veh} = augmentBaseObsFRS(Q{veh}, schemeData, tauIAT);
-    end
-    
-    [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
-  end
-  
-  %% Flatten augmented obstacles to 3D, add capture radius, and unflatten to 3D
-  if ~isfield(Q{veh}.data, 'cylObs3D')
-    if veh < numVeh
-      fprintf('Flattening obstacles for vehicle %d\n', veh)
-      Q{veh} = flatAugObs(Q{veh}, schemeData, Rc, 'augObsFRS');
-    end
+    fprintf('Computing nominal trajectory for vehicle %d\n', veh)
+    Q{veh} = computeNomTraj(Q{veh}, schemeData);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
-  if ~isfield(Q{veh}.data, 'augFlatObsBRS')
-    if veh < numVeh
-      fprintf('Augmenting flattening obstacles using BRS for vehicle %d\n', veh)
-      Q{veh} = augmentFlatObsBRS(Q{veh}, schemeData, tauIAT);
-    end
+  if ~isfield(Q{veh}.data, 'cylObsBRS')
+    fprintf('Augmenting obstacles for vehicle %d\n', veh)
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, tauIAT);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')

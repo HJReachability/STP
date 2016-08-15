@@ -20,7 +20,7 @@ vRangeA = [0.1 1];
 vReserved = [0.3 -0.3];
 
 wMaxA = 1;
-wReserved =  -0.4;
+wReserved = -0.4;
 dMaxA = [0.1 0.2];
 
 % Virtual vehicle to be tracked
