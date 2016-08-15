@@ -46,18 +46,21 @@ load(RTTRS_filename)
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawObsBRS = zeros([schemeData.grid.N' length(tauIAT)]);
+rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
 for i = 1:length(tauIAT)
-  rawObsBRS(:,:,:,i) = ...
+  rawObsBRS.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
 end
+rawObsBRS.tauIAT = rawObs.tauIAT;
 
 %% Problem parameters
 Rc = 0.1; % Capture radius
 targetR = 0.1; % Target radius
 if restart
+  fprintf('Initializing vehicles...\n')
   Q = initRTT(initStates, targetCenters, targetR, RTTRS, schemeData);
 else
+  fprintf('Loading checkpoint...\n')
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
 end
@@ -93,7 +96,7 @@ for veh=1:numVeh
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
   if ~isfield(Q{veh}.data, 'cylObsBRS')
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObs);
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObsBRS);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')

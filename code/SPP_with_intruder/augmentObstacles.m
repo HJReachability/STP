@@ -1,4 +1,4 @@
-function vehicle = augmentObstacles(vehicle, schemeData, rawObs, debug)
+function vehicle = augmentObstacles(vehicle, schemeData, rawObsBRS, debug)
 % vehicle = computeBaseObs(vehicle, schemeData, resetR)
 %     Computes the induced base obstacles by vehicle according to BRS1 and the
 %     centralized controller scheme; populates the .baseObs and .baseObs_tau
@@ -29,7 +29,7 @@ if debug
   fprintf('Debugging %s...\n', mfilename)
   nomTraj_tau = 0:0.01:1;
 else
-  vehicle.data.cylObsBRS = zeros(size(rawObs.cylObsBRS));
+  vehicle.data.cylObsBRS = zeros(size(rawObsBRS.data));
   nomTraj_tau = vehicle.data.nomTraj_tau;
 end
 
@@ -39,11 +39,11 @@ for i = 1:length(nomTraj_tau)
   % state
   
   % For the last tauIAT time steps, use the i-step BRS
-  if nomTraj_tau(i) + max(rawObs.tauIAT) > max(nomTraj_tau)
-    obsInd = find(rawObs.tauIAT > max(nomTraj_tau)-nomTraj_tau(i) - small & ...
-      rawObs.tauIAT < max(nomTraj_tau)-nomTraj_tau(i) + small);
+  if nomTraj_tau(i) + max(rawObsBRS.tauIAT) > max(nomTraj_tau)
+    obsInd = find(rawObsBRS.tauIAT > max(nomTraj_tau)-nomTraj_tau(i) - small & ...
+      rawObsBRS.tauIAT < max(nomTraj_tau)-nomTraj_tau(i) + small);
   else
-    obsInd = length(rawObs.tauIAT);
+    obsInd = length(rawObsBRS.tauIAT);
   end
   
   if debug
@@ -52,7 +52,7 @@ for i = 1:length(nomTraj_tau)
     p = vehicle.data.nomTraj(1:2,i);
     t = vehicle.data.nomTraj(3,i);
     rawObsDatai = ...
-      rotateData(schemeData.grid, rawObs.cylObsBRS(:,:,:,obsInd), t, [1 2], 3);
+      rotateData(schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t, [1 2], 3);
     rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
     
     vehicle.data.cylObsBRS(:,:,:,i) = max(rawObsDatai, -vehicle.data.target);
