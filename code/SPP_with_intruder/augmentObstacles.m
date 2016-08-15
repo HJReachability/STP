@@ -30,6 +30,7 @@ if debug
   nomTraj_tau = 0:0.01:1;
 else
   vehicle.data.cylObsBRS = zeros(size(rawObs.cylObsBRS));
+  nomTraj_tau = vehicle.data.nomTraj_tau;
 end
 
 small = 1e-4;

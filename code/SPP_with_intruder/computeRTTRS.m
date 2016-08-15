@@ -11,7 +11,7 @@ N = [101; 101; 101];         % Number of grid points per dimension
 schemeData.grid = createGrid(grid_min, grid_max, N);
 
 % Time
-tMax = 3;
+tMax = 2;
 dt = 0.01;
 tau = 0:dt:tMax;
 
