@@ -1,5 +1,5 @@
 function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
-  AI_filename, save_png, save_fig)
+  save_png, save_fig)
 
 if nargin < 5
   save_png = true;
@@ -38,6 +38,20 @@ plotTargetSets(Q, schemeData, colors)
 
 hc = cell(length(Q), 1);
 ho = cell(length(Q), 1);
+
+% Add cylindrical obstacles for visualization
+fprintf('Loading ''raw'' obstacles...\n')
+load(Obs_filename)
+rawCylObs.data = zeros([schemeData.grid.N' length(tauIAT)]);
+for i = 1:length(tauIAT)
+  rawCylObs.data(:,:,:,i) = ...
+    migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
+end
+rawCylObs.tauIAT = rawObs.tauIAT;
+
+for veh = 1:length(Q)
+  Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
+end
 
 % For saving graphics
 folder = sprintf('%s_%f', mfilename, now);
