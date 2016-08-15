@@ -1,4 +1,9 @@
-function computeRTTRS()
+function computeRTTRS(save_png)
+
+if nargin < 1
+  save_png = false;
+end
+
 % Grid
 grid_min = [-0.1; -0.1; -pi/6]; % Lower corner of computation domain
 grid_max = [0.1; 0.1; pi/6];    % Upper corner of computation domain
@@ -33,9 +38,11 @@ schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
-extraArgs.fig_filename = sprintf('%s/', folder);
+if save_png
+  folder = sprintf('%s_%f', mfilename, now);
+  system(sprintf('mkdir %s', folder));
+  extraArgs.fig_filename = sprintf('%s/', folder);
+end
 
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 

@@ -25,11 +25,8 @@ end
 
 %% Grids
 % Main Grid
-sDMain.grid = createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
-
-% Small grid for obstacle augmentation
-sDObs.grid = ...
-  createGrid([-0.5; -0.5; -3*pi/2], [0.5; 0.5; pi/2], [101; 101; 101], 3);
+schemeData.grid = ...
+  createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
 
 %% Time parameters
 % For BRS
@@ -45,10 +42,15 @@ tauIAT = 0:dt:tIAT;
 %% Base obstacle generation method
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
+baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
 %% Augment obstacles
-sDObs
-
+fprintf('Loading obstacles...\n')
+load(Obs_filename)
+something = zeros([schemeData.grid.N' size(rawObs.data, 4)]);
+for i = 1:size(rawObs.data, 4)
+  something(:,:,:,4) = migrateGrid(rawObs.g, rawObs.data(:,:,:,i), schemeData.grid);
+end
 
 %% Problem parameters
 Rc = 0.1; % Capture radius
