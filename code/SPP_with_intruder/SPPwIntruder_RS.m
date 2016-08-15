@@ -3,22 +3,22 @@ function SPPwIntruder_RS( RTTRS_filename, ...
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
-if nargin < 2
+if nargin < 3
   restart = false;
 end
 
-if nargin < 3
+if nargin < 4
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
 end
 
-if nargin < 4
+if nargin < 5
   initStates = ...
     {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
 end
 
-if nargin < 5
+if nargin < 6
   targetCenters = ...
     {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
