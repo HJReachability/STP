@@ -39,6 +39,10 @@ BRS1_tau = t0:dt:tf;
 tIAT = 0.25;
 tauIAT = 0:dt:tIAT;
 
+%% Load robust tracking reachable set (needed for vehicle parameters)
+fprintf('Loading RTTRS...\n')
+load(RTTRS_filename)
+
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
