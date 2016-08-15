@@ -1,5 +1,5 @@
-function SPPwIntruder_RS(RTTRS_filename, Obs_Filename, restart, ...
-  chkpt_filename, initStates, targetCenters)
+function SPPwIntruder_RS( ...
+  Obs_filename, restart, chkpt_filename, initStates, targetCenters)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
@@ -39,12 +39,7 @@ BRS1_tau = t0:dt:tf;
 tIAT = 0.25;
 tauIAT = 0:dt:tIAT;
 
-%% Base obstacle generation method
-fprintf('Loading RTTRS...\n')
-load(RTTRS_filename)
-baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
-
-%% Augment obstacles
+%% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
 rawObsBRS = zeros([schemeData.grid.N' length(tauIAT)]);
@@ -73,7 +68,7 @@ for veh=1:numVeh
   if ~isfield(Q{veh}.data, 'BRS1')
     fprintf('Gathering obstacles for vehicle %d...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'augFlatObsBRS');
+      gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'cylObsBRS');
   
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh} = computeBRS1(Q{veh}, BRS1_tau, schemeData, obstacles);
@@ -82,8 +77,8 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
-  %% Compute the base obstacles for based on BRS1
-  if ~isfield(Q{veh}.data, 'baseObs')
+  %% Compute the nominal trajectories based on BRS1
+  if ~isfield(Q{veh}.data, 'nomTraj')
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
     Q{veh} = computeNomTraj(Q{veh}, schemeData);
     
@@ -94,7 +89,7 @@ for veh=1:numVeh
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
   if ~isfield(Q{veh}.data, 'cylObsBRS')
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh} = augmentObstacles(Q{veh}, schemeData, tauIAT);
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObs);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
@@ -102,7 +97,7 @@ for veh=1:numVeh
 end
 
 %% Trim vehicles for a smaller file
-Q = trimDataForSim(Q, {'BRS1', 'baseObs', 'augObsFRS', 'augFlatObsBRS'});
+Q = trimDataForSim(Q, {'BRS1', 'cylObsBRS'});
 [Q1, Q2, Q3, Q4] = Q{:};
 save(mfilename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end
