@@ -31,7 +31,7 @@ if debug
 else
   vehicle.data.cylObsBRS = zeros(size(rawObsBRS.data));
   nomTraj_tau = vehicle.data.nomTraj_tau;
-  vehicle.data.cylObsBRS = vehicle.data.nomTraj_tau;
+  vehicle.data.cylObsBRS_tau = vehicle.data.nomTraj_tau;
 end
 
 small = 1e-4;
