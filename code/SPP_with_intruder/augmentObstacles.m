@@ -31,10 +31,12 @@ if debug
 else
   vehicle.data.cylObsBRS = zeros(size(rawObsBRS.data));
   nomTraj_tau = vehicle.data.nomTraj_tau;
+  vehicle.data.cylObsBRS = vehicle.data.nomTraj_tau;
 end
 
 small = 1e-4;
 for i = 1:length(nomTraj_tau)
+  fprintf('  Augmenting obstacle %d of %d\n', i, length(nomTraj_tau))
   % Rotate and shift the robust trajectory tracking reachable set to the vehicle
   % state
   
