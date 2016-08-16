@@ -38,7 +38,7 @@ for i = 1:length(Q)
   Qnew{i}.data.replan = replan;
   
   if ~replan
-    fprintf('Re-populating augmented obstacles for vehicle %d\n', veh)
+    fprintf('Re-populating augmented obstacles for vehicle %d\n', i)
     Qnew{i} = augmentObstacles(Qnew{i}, schemeData, rawObsBRS);
   end
 end
