@@ -30,6 +30,7 @@ for i = 1:length(nomTraj_tau)
   if debug
     fprintf('i = %d; obsInd = %d\n', i, obsInd);
   else
+    % Rotate and shift raw obstacles
     p = vehicle.data.nomTraj(1:2,i);
     t = vehicle.data.nomTraj(3,i);
     rawObsDatai = rotateData( ...
@@ -46,6 +47,8 @@ for i = 1:length(nomTraj_tau)
       rawObsDatai = rotateData( ...
         schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t+2*pi, [1 2], 3);      
     end
+    rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
+    
     vehicle.data.cylObsBRS(:,:,:,i) = ...
       min(vehicle.data.cylObsBRS(:,:,:,i), rawObsDatai);
     
