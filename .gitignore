@@ -12,5 +12,11 @@ docs/cdc 2016 spp2.zip
 *.dvi
 docs/videos/SPP1 overview.mp4
 docs/SPP journal/SPP_journal.pdf
+<<<<<<< HEAD
 code/SPP_with_intruder/SPPwIntruder_sim_*/
 code/SPP_with_intruder/sim.txt
+=======
+code/SPP_with_intruder/RTT_sim_fig/
+*.gz(busy)
+code/SPP_with_intruder/SPPwDisturbance_RTT_sim*/
+>>>>>>> master

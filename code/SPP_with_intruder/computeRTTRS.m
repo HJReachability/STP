@@ -11,19 +11,19 @@ dt = 0.01;
 tau = 0:dt:tMax;
 
 % Vehicle
-vRangeA = [0.1 1];
-vReserved = [0.3 -0.3];
+vRangeA = [0.5 1];
+vReserved = [0.25 -0.25];
 
 wMaxA = 1;
-wReserved = -0.35;
+wReserved =  -0.4;
 dMaxA = [0.1 0.2];
 
 % Virtual vehicle to be tracked
 vRangeB = vRangeA + vReserved;
 wMaxB = wMaxA + wReserved;
 dMaxB = [0 0];
-schemeData.dynSys = PlaneCAvoid( ...
-  zeros(3,1), wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
+dynSys = PlaneCAvoid(zeros(3,1), wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
+schemeData.dynSys = dynSys;
 
 % Initial conditions
 trackingRadius = 0.075;
@@ -36,5 +36,7 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 RTTRS.g = schemeData.grid;
 RTTRS.data = data;
-save('RTTRS.mat', 'RTTRS', '-v7.3')
+RTTRS.dynSys = dynSys;
+RTTRS.trackingRadius = trackingRadius;
+save(sprintf('RTTRS_%f.mat', now), 'RTTRS', '-v7.3')
 end

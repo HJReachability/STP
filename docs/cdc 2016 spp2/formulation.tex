@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $N$ vehicles whose joint dynamics described by the time-varying ordinary differential equation (ODE)
+Consider $N$ vehicles \SBnote{Use $Q_i$} whose joint dynamics described by the time-varying ordinary differential equation (ODE)
 
 \begin{equation}
 \label{eq:dyn}
@@ -13,6 +13,7 @@ i &= 1,\ldots, N
 
 \noindent where $x_i \in \R^{n_i}$ is the state of the $i$th vehicle, $u_i$ is the control of the $i$th vehicle, and $d_i$ is the disturbance experienced by the $i$th vehicle. In general, the physical meaning of $x_i$ and the dynamics $f_i$ depend on the specific dynamic model of vehicle $i$, and need not be the same across the different vehicles.
 
+\MCnote{define control and disturbance sets, non-anticipative strategies}
 We assume that the control functions $u_i(\cdot), d_i(\cdot)$ are drawn from the set of measurable functions\footnote{
 A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}, and $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
 
@@ -33,7 +34,7 @@ Under the worst case disturbance, each vehicle aims to get to some set of target
   \label{fig:form}
 \end{figure}
 
-The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$.
+The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$.\SBnote{... $N>2$, even with $n_i$ as small as $3$.}
 
 In this paper, we assume assigned priorities of the vehicles as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
 

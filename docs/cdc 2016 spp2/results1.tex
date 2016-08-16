@@ -1,5 +1,7 @@
 % !TEX root = SPP2.tex
 \section{Numerical Simulations \label{sec:sim}}
+\SBnote{Final time in the BRS evolution figures in this section do not match with the stated $t_{LDT}$ in the description. For example $t_3^{LDT} = -1.96$ for centralized controller, while it seems to be $-1.94$ from Figure 4. Make sure those two number match for all three methods.} 
+
 We demonstrate our proposed methods using a four-vehicle example. Each vehicle has the following simple kinematics model:
 
 \begin{equation}
@@ -13,7 +15,7 @@ We demonstrate our proposed methods using a four-vehicle example. Each vehicle h
 \end{aligned}
 \end{equation}
 
-\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbances in the three states. The disturbance bounds are chosen as $d_{r} = 0.1$ and $\bar{d_{\theta}} = 0.2$. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles and cases in which each vehicle has different dynamic models.  %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
+\noindent where $p_i = (p_{x,i}, p_{y,i})$ represent vehicle $\veh_i$'s position, $\theta_i$ represents $\veh_i$'s heading, and $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represent the disturbances in the three states. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we chose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles and cases in which each vehicle has different dynamic models. The disturbance bounds are chosen as $d_{r} = 0.1$ and $\bar{d_{\theta}} = 0.2$. \SBnote{Should we mention that these bounds correspond to 10 percent disturbance?}  %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
 
 %\begin{equation}
 %\omega_i(t) = -\bar{\omega}_i \frac{D_{\theta_i}V_i(\bm{x}_i,t)}{\left| D_{\theta_i}V_i(\bm{x}_i,t) \right|},
@@ -55,7 +57,7 @@ Since the joint state space of this system is intractable for a direct applicati
   \caption{Initial configuration of the four-vehicle example.}
   \label{fig:init_setup}
 \end{figure}
-
+\SBnote{reduce extra space after figures.}
 For each proposed method of computing induced obstacles, we show the vehicles' entire trajectories (colored dotted lines), and overlay their positions (colored asterisks) and headings (arrows) at a point in time in which they are in relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time. In addition, we show the evolution of the BRS over time for $\veh_3$ (green boundaries) as well as the induced obstacles of higher-priority vehicles (black boundaries).
 
 \subsection{Centralized Controller}
@@ -68,7 +70,7 @@ Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a
   \label{fig:cc_traj}
 \end{figure}
 
-In this case, no vehicle appears to deviate slightly from a straight line trajectory towards, just enough to avoid higher priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
+\SBnote{This sentence doesn't seem correct.} In this case, no vehicle appears to deviate slightly from a straight line trajectory towards, just enough to avoid higher priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
 
 \begin{figure}[h]
   \centering
@@ -77,5 +79,5 @@ In this case, no vehicle appears to deviate slightly from a straight line trajec
   \label{fig:cc_rs3}
 \end{figure}
 
-Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher priority vehicles $\veh_1$ (blue) and $\veh_2$ (red). The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.96$ and $-2.04$, respectively. Numbers are relatively close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher priority vehicle are small and hence does not affect $\ldt$ of the lower priority vehicles significantly. 
+Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher priority vehicles $\veh_1$ (blue) and $\veh_2$ (red). The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.96$ and $-2.04$, respectively. Numbers are relatively close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher priority vehicle are small and hence do not affect $\ldt$ of the lower priority vehicles significantly. 
 

@@ -2,10 +2,8 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-%\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
-                                                          % if you need a4paper
-\documentclass[letterpaper, 10pt, conference]{ieeeconf}      % Use this line for a4
-                                                          % paper
+%\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+\documentclass[onecolumn, draftcls]{ieeeconf}      
 
  
 \IEEEoverridecommandlockouts                              % This command is only
@@ -23,12 +21,14 @@
 \usepackage{cancel}
 \usepackage{amssymb}
 \usepackage{color}
+\usepackage{cite}
 \usepackage{bm}
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
-\usepackage{todonotes} \setlength{\marginparwidth}{1.5cm} 
+\usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
 
 \newcommand{\JFFnote}{\todo[size=\small,author=JFF,color=green]}
 \newcommand{\MCnote}{\todo[size=\small,author=MC,color=cyan]}
+\newcommand{\SBnote}{\todo[size=\small,author=SB,color=pink]}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\cset}{\mathcal{U}}
@@ -70,7 +70,7 @@ Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturb
 
 %%%
 \begin{abstract}
-Recently, there has been an immense surge of interest in using unmanned aerial vehicles (UAVs) for civil purposes. Multi-UAV systems are safety-critical, and safety guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems of no more than two vehicles because of the exponential-scaling computation complexity. By assigning vehicle priorities, the sequential path planning (SPP) method allows multi-vehicle path planning to be done with a computation complexity that scales linearly with the number of vehicles. Previously the SPP method assumed no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods for accounting for disturbances in dynamics and imperfect knowledge of higher-priority vehicles. Each method has advantages and disadvantages with different assumptions about information sharing. We demonstrate our proposed methods in simulations.
+\MCnote{deleted first sentence (same as intro)}Multi-UAV systems are safety-critical, and safety guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems of no more than two vehicles because of the exponentially-scaling computation complexity. By assigning vehicle priorities, the sequential path planning (SPP) method allows multi-vehicle path planning to be done with a computation complexity that scales linearly with the number of vehicles. Previously the SPP method assumed no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods for accounting for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has advantages and disadvantages with different assumptions about information sharing. We demonstrate our proposed methods in simulations.
 \end{abstract}
 
 \input{introduction.tex}
@@ -112,6 +112,7 @@ Recently, there has been an immense surge of interest in using unmanned aerial v
                                   % This command does not take effect until the next page
                                   % so it should come on the page before the last. Make
                                   % sure that you do not shorten the textheight too much.
+\SBnote{Add additional references based on the reviewers' comments.}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
