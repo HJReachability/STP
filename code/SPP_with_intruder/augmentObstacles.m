@@ -21,8 +21,8 @@ for i = 1:length(nomTraj_tau)
   
   % For the last tauIAT time steps, use the i-step BRS
   if nomTraj_tau(i) + max(rawObsBRS.tauIAT) > max(nomTraj_tau)
-    obsInd = find(rawObsBRS.tauIAT > max(nomTraj_tau)-nomTraj_tau(i) - small & ...
-      rawObsBRS.tauIAT < max(nomTraj_tau)-nomTraj_tau(i) + small);
+    obsInd = find(rawObsBRS.tauIAT > max(nomTraj_tau)-nomTraj_tau(i)-small & ...
+      rawObsBRS.tauIAT < max(nomTraj_tau)-nomTraj_tau(i)+small);
   else
     obsInd = length(rawObsBRS.tauIAT);
   end
