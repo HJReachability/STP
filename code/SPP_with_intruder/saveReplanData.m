@@ -19,6 +19,7 @@ for veh = 1:length(Q)
   Qnew{veh}.data.targetsm = Q{veh}.data.targetsm;
   Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
   Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
+  Qnew{veh}.data.replan = Q{veh}.data.replan;
   
   if ~Q{veh}.data.replan
     Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
