@@ -43,7 +43,7 @@ ho = cell(length(Q), 1);
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
 rawCylObs.data = zeros([schemeData.grid.N' length(rawObs.tauIAT)]);
-for i = 1:length(tauIAT)
+for i = 1:length(rawObs.tauIAT)
   rawCylObs.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
 end
