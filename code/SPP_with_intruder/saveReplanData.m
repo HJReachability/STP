@@ -1,4 +1,4 @@
-function saveReplanData(Q, schemeData, tNow, safety_vals, safety_threshold)
+function saveReplanData(Q, schemeData, rawObs,tNow,safety_vals,safety_threshold)
 % saveReplanData(Q, schemeData)
 %     Removes most of the fields of vehicle objects, except for those needed to
 %     do replanning after an intruder has comels
@@ -32,8 +32,7 @@ for i = 1:length(Q)
     
     if ~exist('rawObsBRS', 'var')
       % Load obstacles
-      fprintf('Loading ''raw'' obstacles...\n')
-      load(Obs_filename)
+      fprintf('Populating ''raw'' obstacles...\n')
       rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
       for i = 1:length(tauIAT)
         rawObsBRS.data(:,:,:,i) = ...
