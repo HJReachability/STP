@@ -26,6 +26,11 @@ for i = 1:length(Q)
     replan = true;
   end
   Qnew{i}.data.replan = replan;
+  
+  if ~replan
+    Qnew{i}.data.cylObsBRS = Q{i}.data.cylObsBRS;
+    Qnew{i}.data.cylObsBRS_tau = Q{i}.data.cylObsBRS_tau;
+  end
 end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};
