@@ -11,6 +11,7 @@ u = vehicle.u;
 uhist = vehicle.uhist;
 
 % Modify control bounds
+maxDist = vehicle.vrange(2);
 vehicle.vrange = vehicle.vrange + vehicle.data.vReserved;
 vehicle.wMax = vehicle.wMax + vehicle.data.wReserved;
 
@@ -35,6 +36,11 @@ for i = 1:length(vehicle.data.BRS1_tau)-1
     deriv = eval_u(schemeData.grid, Deriv, vehicle.x);
     u = vehicle.optCtrl([], vehicle.x, deriv, 'min');
     vehicle.updateState(u, dt, vehicle.x, d);
+    
+    % Maximum distance per time-step
+    if norm(vehicle.x(1:2) - vehicle.data.nomTraj(1:2,tInd-1)) > maxDist
+      break
+    end
   end
   
   if while_loop
