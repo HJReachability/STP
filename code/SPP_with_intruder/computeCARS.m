@@ -55,6 +55,7 @@ CARS.dynSys = schemeData.dynSys;
 CARS.g = schemeData.grid;
 CARS.data = data(:,:,:,end);
 CARS.tau = tau;
+CARS.Rc = Rc;
 save(sprintf('CARS_%f.mat', now), 'CARS', '-v7.3')
 
 end
