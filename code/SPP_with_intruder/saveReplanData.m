@@ -20,7 +20,10 @@ for veh = 1:length(Q)
   Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
   Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
   
-  if Q{veh}.data.replan
+  if ~Q{veh}.data.replan
+    Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
+    Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
+    
     fprintf('Re-populating augmented obstacles for vehicle %d\n', veh)
     
     if ~exist('rawObsBRS', 'var')
