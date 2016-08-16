@@ -15,7 +15,7 @@ end
 
 if nargin < 6
   initStates = ...
-    {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
+    {[-0.6; 0; 0]; [ 0.6; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
 end
 
 if nargin < 7
@@ -26,7 +26,7 @@ end
 %% Grids
 % Main Grid
 schemeData.grid = ...
-  createGrid([-0.8; -0.8; -3*pi/2], [0.8; 0.8; pi/2], [81; 81; 81], 3);
+  createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
 
 %% Time parameters
 % For BRS
