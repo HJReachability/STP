@@ -17,8 +17,6 @@ dt = 0.01;
 tMax = 0;
 tau = tMin:dt:tMax;
 
-tIAT = 0.1;
-
 %% Load robust tracking reachable set
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
@@ -101,13 +99,14 @@ for i = 1:length(tau)
       if ~isempty(tInds{veh})
         safety_rel_x{veh} = Q_intruder.x - Q{veh}.x;
         safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
+        safety_rel_x{veh}(3) = wrapTo2Pi(safety_rel_x{veh}(3));
         safety_vals(veh, i) = eval_u(CARS.g, CARS.data, safety_rel_x{veh});
       end
     end
     
     % Mark time at which intruder shows up
     if ~intruder_arrived && any(safety_vals(:, i) < safety_threshold)
-      tUpper = tau(i) + tIAT;
+      tUpper = tau(i) + max(CARS.tau);
       intruder_arrived = true;
     end
   elseif tau(i) > tUpper
