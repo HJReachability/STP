@@ -1,5 +1,5 @@
 function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
-  save_png, save_fig)
+  Obs_filename, save_png, save_fig)
 
 if nargin < 5
   save_png = true;
