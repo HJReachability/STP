@@ -135,7 +135,7 @@ for i = 1:length(tau)
           deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
           u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
           
-          last_replan_veh = veh;
+          last_replan_veh = min(last_replan_veh, veh);
         else
           liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
           liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
