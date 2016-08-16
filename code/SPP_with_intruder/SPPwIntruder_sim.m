@@ -58,9 +58,11 @@ for veh = 1:length(Q)
   Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
 end
 
-% For saving graphics
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
+if save_png || save_fig
+  % For saving graphics
+  folder = sprintf('%s_%f', mfilename, now);
+  system(sprintf('mkdir %s', folder));
+end
 
 %% Initialize intruder
 Q_intruder = Plane( ...
@@ -94,7 +96,7 @@ for i = 1:length(tau)
     d_intruder = Q_intruder.uniformDstb();
     Q_intruder.updateState(u_intruder, dt, Q_intruder.x, d_intruder);
     Q_intruder.plotPosition(intruder_color);
-
+    
     % Check safety
     for veh = 1:length(Q)
       % Compute safety value
