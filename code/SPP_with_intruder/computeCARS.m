@@ -1,8 +1,12 @@
-function computeCARS(tIAT)
+function computeCARS(tIAT, save_png)
 % Just a simple file for computing collision avoidance reachable set...
 
 if nargin < 1
   tIAT = 0.25;
+end
+
+if nargin < 2
+  save_png = true;
 end
 
 %% Problem parameters
@@ -39,10 +43,12 @@ tau = t0:dt:tIAT;
 %% Compute set
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
-extraArgs.fig_filename = sprintf('%s/', folder);
 
+if save_png
+  folder = sprintf('%s_%f', mfilename, now);
+  system(sprintf('mkdir %s', folder));
+  extraArgs.fig_filename = sprintf('%s/', folder);
+end
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 CARS.dynSys = schemeData.dynSys;
