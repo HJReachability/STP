@@ -9,7 +9,6 @@ if nargin < 6
   save_fig = false;
 end
 
-capture_radius = 0.1;
 small = 1e-4;
 
 tMin = -3;
@@ -29,6 +28,7 @@ fprintf('Loading CARS...\n')
 load(CA_filename)
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 tauIAT = CARS.tau;
+capture_radius = CARS.Rc;
 
 %% Load path planning reachable set
 fprintf('Loading main RS...\n')
@@ -142,7 +142,7 @@ for i = 1:length(tau)
     end
   else
     fprintf('Saving data for replanning.\n')
-    saveReplanData(Q, schemeData, tau(i));
+    saveReplanData(Q, schemeData, tau(i), safety_vals);
     return
   end
   
