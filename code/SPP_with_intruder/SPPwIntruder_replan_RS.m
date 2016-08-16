@@ -15,18 +15,28 @@ else
 end
 
 if restart
+  fprintf('Loading from replan data file...\n')
   load(Replan_filename)
   Q = {Q1; Q2; Q3; Q4};
 else
+  fprintf('Loading from checkpoint file...\n')
   load(filename)
   Q = {Q1; Q2; Q3; Q4};
 end
 
-%% Load RTT reachable set
-baseObs_method = 'RTT';
-fprintf('Using %s method to generate base obstacles\n', baseObs_method)
+%% Load robust tracking reachable set (needed for vehicle parameters)
+fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
-baseObs_params.RTTRS = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
+
+%% Raw augmented obstacles
+fprintf('Loading ''raw'' obstacles...\n')
+load(Obs_filename)
+rawCylObs.data = zeros([schemeData.grid.N' length(tauIAT)]);
+for i = 1:length(tauIAT)
+  rawCylObs.data(:,:,:,i) = ...
+    migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
+end
+rawCylObs.tauIAT = tauIAT;
 
 %% Time vector
 dt = 0.01;
@@ -70,28 +80,19 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
-  %% Compute the base obstacles for based on BRS1
-  if ~isfield(Q{veh}.data, 'baseObs')
-    fprintf('Computing base obstacles for vehicle %d\n', veh)
-    if veh < numVeh
-      trajOnly = false;
-    else
-      trajOnly = true;
-    end
-    
-    Q{veh} = computeBaseObs( ...
-      Q{veh}, schemeData, baseObs_method, baseObs_params, trajOnly);
+  %% Compute the nominal trajectories based on BRS1
+  if ~isfield(Q{veh}.data, 'nomTraj')
+    fprintf('Computing nominal trajectory for vehicle %d\n', veh)
+    Q{veh} = computeNomTraj(Q{veh}, schemeData);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
-  %% Flatten obstacles to 3D, add capture radius, and unflatten to 3D
-  if ~isfield(Q{veh}.data, 'cylObs3D')
-    if veh < numVeh
-      fprintf('Flattening obstacles for vehicle %d\n', veh)
-      Q{veh} = flatAugObs(Q{veh}, schemeData, Rc, 'baseObs');
-    end
+  %% Compute cylindrical obstacles
+  if ~isfield(Q{veh}.data, 'cylObs')
+    fprintf('Augmenting obstacles for vehicle %d\n', veh)
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawCylObs);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
