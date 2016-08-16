@@ -8,9 +8,9 @@ if debug
   fprintf('Debugging %s...\n', mfilename)
   nomTraj_tau = 0:0.01:1;
 else
-  vehicle.data.cylObs3D = zeros(size(rawCylObs.data));
   nomTraj_tau = vehicle.data.nomTraj_tau;
   vehicle.data.cylObs3D_tau = vehicle.data.nomTraj_tau;
+  vehicle.data.cylObs3D = zeros([schemeData.grid.N' length(nomTraj_tau)]);
 end
 
 small = 1e-4;
@@ -35,7 +35,7 @@ for i = 1:length(nomTraj_tau)
       rotateData(schemeData.grid, rawCylObs.data(:,:,:,obsInd), t, [1 2], 3);
     rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
     
-    vehicle.data.cylObsBRS(:,:,:,i) = max(rawObsDatai, -vehicle.data.target);
+    vehicle.data.cylObs3D(:,:,:,i) = max(rawObsDatai, -vehicle.data.target);
   end
 end
 end

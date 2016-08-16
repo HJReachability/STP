@@ -8,9 +8,9 @@ if debug
   fprintf('Debugging %s...\n', mfilename)
   nomTraj_tau = 0:0.01:1;
 else
-  vehicle.data.cylObsBRS = zeros(size(rawObsBRS.data));
   nomTraj_tau = vehicle.data.nomTraj_tau;
   vehicle.data.cylObsBRS_tau = vehicle.data.nomTraj_tau;
+  vehicle.data.cylObsBRS = zeros([schemeData.grid.N' length(nomTraj_tau)]);
 end
 
 small = 1e-4;
