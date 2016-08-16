@@ -60,7 +60,7 @@ for veh=1:numVeh
     % Assume there's no static obstacle
     fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObs3D', 'forward');
+      gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObsBRS', 'forward');
     
     %% Compute FRS to determine the ETA
     if ~isfield(Q{veh}.data, 'ETA')
@@ -76,7 +76,7 @@ for veh=1:numVeh
       tauBRS = Q{veh}.data.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
-        gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs3D', 'backward');
+        gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObsBRS', 'backward');
       
       fprintf('Computing BRS1 for vehicle %d\n', veh)
       Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
