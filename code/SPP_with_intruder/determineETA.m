@@ -14,7 +14,7 @@ min_dx = min(schemeData.grid.dx);
 extraArgs.targets = shapeSphere(schemeData.grid, vehicle.x, min_dx);
 
 % Computation should stop once it contains the initial state
-extraArgs.stopInit = vehicle.data.targetCenter;
+extraArgs.stopSetIntersect = vehicle.data.targetsm;
 
 [vehicle.data.FRS1, vehicle.data.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'zero', extraArgs);
