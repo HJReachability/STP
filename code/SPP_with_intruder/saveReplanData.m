@@ -19,7 +19,6 @@ for i = 1:length(Q)
   Qnew{i}.data.targetsm = Q{i}.data.targetsm;
   Qnew{i}.data.vReserved = Q{i}.data.vReserved;
   Qnew{i}.data.wReserved = Q{i}.data.wReserved;
-  Qnew{i}.data.RTT_radius = Q{i}.data.RTT_radius;
 end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};

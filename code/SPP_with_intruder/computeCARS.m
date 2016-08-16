@@ -1,5 +1,9 @@
-function computeCARS()
+function computeCARS(tIAT)
 % Just a simple file for computing collision avoidance reachable set...
+
+if nargin < 1
+  tIAT = 0.25;
+end
 
 %% Problem parameters
 % Vehicle
@@ -30,7 +34,6 @@ data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], Rc);
 %% Time stamps
 t0 = 0;
 dt = 0.01;
-tIAT = 0.1;
 tau = t0:dt:tIAT;
 
 %% Compute set
@@ -45,6 +48,7 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 CARS.dynSys = schemeData.dynSys;
 CARS.g = schemeData.grid;
 CARS.data = data(:,:,:,end);
+CARS.tau = tau;
 save(sprintf('CARS_%f.mat', now), 'CARS', '-v7.3')
 
 end
