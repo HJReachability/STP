@@ -22,14 +22,24 @@ for i = 1:length(Q)
   Qnew{i}.data.wReserved = Q{i}.data.wReserved;
   
   % Determine which vehicles have been affected by intruder
-  if any(safety_vals(i, :) < safety_threshold)
+  if ~replan && any(safety_vals(i, :) < safety_threshold)
     replan = true;
+    
+    % Load obstacles
+    fprintf('Loading ''raw'' obstacles...\n')
+    load(Obs_filename)
+    rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
+    for i = 1:length(tauIAT)
+      rawObsBRS.data(:,:,:,i) = ...
+        migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
+    end
+    rawObsBRS.tauIAT = tauIAT;
   end
   Qnew{i}.data.replan = replan;
   
   if ~replan
-    Qnew{i}.data.cylObsBRS = Q{i}.data.cylObsBRS;
-    Qnew{i}.data.cylObsBRS_tau = Q{i}.data.cylObsBRS_tau;
+    fprintf('Re-populating augmented obstacles for vehicle %d\n', veh)
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObsBRS);
   end
 end
 
