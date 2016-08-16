@@ -34,8 +34,9 @@ figure
 colors = lines(length(Q));
 plotTargetSets(Q, schemeData, colors)
 
-hc = cell(length(Q), 1);
-ho = cell(length(Q), 1);
+hc = cell(length(Q), 1); % Capture radius
+ho = cell(length(Q), 1); % Obstacle
+hn = cell(length(Q), 1); % Nominal trajectory
 
 % Add cylindrical obstacles for visualization
 fprintf('Loading ''raw'' obstacles...\n')
@@ -143,7 +144,8 @@ for i = 1:length(tau)
   end
   
   % Visualize
-  [hc, ho] = plotVehicles(Q, tInds, schemeData, hc, ho, colors, capture_radius);
+  [hc, ho, hn] = plotVehicles(Q, t, tInds, schemeData, hc, ho, hn, ...
+    colors, capture_radius);
   
   xlim([-1.2 1.2])
   ylim([-1.2 1.2])
