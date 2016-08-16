@@ -32,11 +32,26 @@ for i = 1:length(nomTraj_tau)
   else
     p = vehicle.data.nomTraj(1:2,i);
     t = vehicle.data.nomTraj(3,i);
-    rawObsDatai = ...
-      rotateData(schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t, [1 2], 3);
+    rawObsDatai = rotateData( ...
+      schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t, [1 2], 3);
     rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
     
-    vehicle.data.cylObsBRS(:,:,:,i) = max(rawObsDatai, -vehicle.data.target);
+    vehicle.data.cylObsBRS(:,:,:,i) = rawObsDatai;
+    
+    % Dealing with periodicity
+    if t >= 0
+      rawObsDatai = rotateData( ...
+        schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t-2*pi, [1 2], 3);
+    else
+      rawObsDatai = rotateData( ...
+        schemeData.grid, rawObsBRS.data(:,:,:,obsInd), t+2*pi, [1 2], 3);      
+    end
+    vehicle.data.cylObsBRS(:,:,:,i) = ...
+      min(vehicle.data.cylObsBRS(:,:,:,i), rawObsDatai);
+    
+    % Exclude target set
+    vehicle.data.cylObsBRS(:,:,:,i) = ...
+      max(vehicle.data.cylObsBRS(:,:,:,i), -vehicle.data.target);
   end
 end
 end
