@@ -46,12 +46,12 @@ tauIAT = CARS.tau;
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawObsBRS.data = zeros([schemeData.grid.N' length(rawObs.tauIAT)]);
+rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
 for i = 1:length(tauIAT)
   rawObsBRS.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
 end
-rawObsBRS.tauIAT = rawObs.tauIAT;
+rawObsBRS.tauIAT = tauIAT;
 
 %% Problem parameters
 targetR = 0.1; % Target radius
