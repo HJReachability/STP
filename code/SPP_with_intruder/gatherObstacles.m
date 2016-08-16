@@ -38,8 +38,8 @@ small = 1e-4;
 % Go through each vehicle in the input
 for i = 1:length(obsSet)
   % Determine time bound
-  min_tau = min(obsSet_tau{i}) - small;
-  max_tau = min(small, max(obsSet_tau{i}) + small);
+  min_tau = max( min(obsSet_tau{i}), min(common_tau) ) - small;
+  max_tau = min( max(obsSet_tau{i}), max(common_tau) ) + small;
   
   % Determine indices within the time bound
   tau_inds = common_tau > min_tau & common_tau < max_tau;

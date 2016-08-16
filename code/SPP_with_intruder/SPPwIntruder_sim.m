@@ -55,7 +55,7 @@ end
 rawCylObs.tauIAT = tauIAT;
 
 for veh = 1:length(Q)
-  fprintf('Adding cylindrical obstacles for visualization...\n')
+  fprintf('Adding cylindrical obstacles vehicle %d for visualization...\n', veh)
   Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
 end
 
