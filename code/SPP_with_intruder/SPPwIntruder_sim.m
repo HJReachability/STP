@@ -24,6 +24,12 @@ load(RTTRS_filename)
 % Gradient of RTTRS
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 
+%% Load safety reachable set
+fprintf('Loading CARS...\n')
+load(CA_filename)
+CARS.Deriv = computeGradients(CARS.g, CARS.data);
+tauIAT = CARS.tau;
+
 %% Load path planning reachable set
 fprintf('Loading main RS...\n')
 load(RS_filename)
@@ -41,12 +47,12 @@ hn = cell(length(Q), 1); % Nominal trajectory
 % Add cylindrical obstacles for visualization
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawCylObs.data = zeros([schemeData.grid.N' length(rawObs.tauIAT)]);
-for i = 1:length(rawObs.tauIAT)
+rawCylObs.data = zeros([schemeData.grid.N' length(tauIAT)]);
+for i = 1:length(tauIAT)
   rawCylObs.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
 end
-rawCylObs.tauIAT = rawObs.tauIAT;
+rawCylObs.tauIAT = tauIAT;
 
 for veh = 1:length(Q)
   Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
@@ -57,11 +63,6 @@ folder = sprintf('%s_%f', mfilename, now);
 system(sprintf('mkdir %s', folder));
 
 %% Initialize intruder
-% Load safety reachable set
-fprintf('Loading CARS...\n')
-load(CA_filename)
-CARS.Deriv = computeGradients(CARS.g, CARS.data);
-
 Q_intruder = Plane( ...
   [-0.3; -0.75; 75*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
