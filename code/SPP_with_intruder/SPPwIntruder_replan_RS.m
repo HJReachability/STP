@@ -1,14 +1,14 @@
-function SPPwIntruder_replan_RS(RTTRS_filename, Obs_filename, ...
-  Replan_filename, restart, chkpt_filename)
+function SPPwIntruder_replan_RS(RTTRS_filename, CARS_filename, ...
+  Obs_filename, Replan_filename, restart, chkpt_filename)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
 
-if nargin < 4
+if nargin < 5
   restart = false;
 end
 
-if nargin < 5
+if nargin < 6
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
@@ -28,15 +28,19 @@ end
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
 
+fprintf('Loading CARS...\n')
+load(CARS_filename)
+tauIAT = CARS.tau;
+
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawCylObs.data = zeros([schemeData.grid.N' length(tauIAT)]);
+rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
 for i = 1:length(tauIAT)
-  rawCylObs.data(:,:,:,i) = ...
-    migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
+  rawObsBRS.data(:,:,:,i) = ...
+    migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
 end
-rawCylObs.tauIAT = tauIAT;
+rawObsBRS.tauIAT = tauIAT;
 
 %% Time vector
 dt = 0.01;
@@ -89,10 +93,10 @@ for veh=1:numVeh
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
-  %% Compute cylindrical obstacles
-  if ~isfield(Q{veh}.data, 'cylObs')
+  %% Compute t-IAT backward reachable set from flattened 3D obstacle
+  if ~isfield(Q{veh}.data, 'cylObsBRS')
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawCylObs);
+    Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObsBRS);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
