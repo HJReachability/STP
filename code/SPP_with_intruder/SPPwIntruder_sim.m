@@ -42,7 +42,7 @@ ho = cell(length(Q), 1);
 % Add cylindrical obstacles for visualization
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawCylObs.data = zeros([schemeData.grid.N' length(tauIAT)]);
+rawCylObs.data = zeros([schemeData.grid.N' length(rawObs.tauIAT)]);
 for i = 1:length(tauIAT)
   rawCylObs.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);

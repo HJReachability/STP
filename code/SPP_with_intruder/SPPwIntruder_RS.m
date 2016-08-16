@@ -35,10 +35,6 @@ tf = 0;
 dt = 0.01;
 BRS1_tau = t0:dt:tf;
 
-% For Intruder
-tIAT = 0.25;
-tauIAT = 0:dt:tIAT;
-
 %% Load robust tracking reachable set (needed for vehicle parameters)
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
@@ -46,7 +42,7 @@ load(RTTRS_filename)
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
-rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
+rawObsBRS.data = zeros([schemeData.grid.N' length(rawObs.tauIAT)]);
 for i = 1:length(tauIAT)
   rawObsBRS.data(:,:,:,i) = ...
     migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
