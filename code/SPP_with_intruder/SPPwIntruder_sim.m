@@ -62,7 +62,7 @@ load(CA_filename)
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
 Q_intruder = Plane( ...
-  [-0.3; -0.75; pi/3], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  [-0.3; -0.75; 75*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tLower = -2.5;
