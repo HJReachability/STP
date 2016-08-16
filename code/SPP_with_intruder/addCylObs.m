@@ -14,6 +14,7 @@ else
 end
 
 small = 1e-4;
+trajInd = 0;
 for i = 1:length(nomTraj_tau)
   % Rotate and shift the robust trajectory tracking reachable set to the vehicle
   % state
@@ -24,13 +25,15 @@ for i = 1:length(nomTraj_tau)
       rawCylObs.tauIAT < nomTraj_tau(i)-min(nomTraj_tau)+small);
   else
     obsInd = length(rawCylObs.tauIAT);
+    trajInd = trajInd + 1;
   end
   
+  trajInd = max(trajInd, 1);
   if debug
     fprintf('i = %d; obsInd = %d\n', i, obsInd);
   else
-    p = vehicle.data.nomTraj(1:2,i);
-    t = vehicle.data.nomTraj(3,i);
+    p = vehicle.data.nomTraj(1:2,trajInd);
+    t = vehicle.data.nomTraj(3,trajInd);
     rawObsDatai = ...
       rotateData(schemeData.grid, rawCylObs.data(:,:,:,obsInd), t, [1 2], 3);
     rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
