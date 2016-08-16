@@ -1,24 +1,24 @@
-function SPPwIntruder_RS( RTTRS_filename, ...
+function SPPwIntruder_RS(RTTRS_filename, CARS_filename, ...
   Obs_filename, restart, chkpt_filename, initStates, targetCenters)
 % This function initializes the simulation for solving the SPP problem in
 % the presence of intruder.
 
-if nargin < 3
+if nargin < 4
   restart = false;
 end
 
-if nargin < 4
+if nargin < 5
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
 end
 
-if nargin < 5
+if nargin < 6
   initStates = ...
     {[-0.4; 0; 0]; [ 0.4; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
 end
 
-if nargin < 6
+if nargin < 7
   targetCenters = ...
     {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
 end
@@ -39,6 +39,10 @@ BRS1_tau = t0:dt:tf;
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
 
+fprintf('Loading CARS...\n')
+load(CARS_filename)
+tauIAT = CARS.tau;
+
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
@@ -50,7 +54,6 @@ end
 rawObsBRS.tauIAT = rawObs.tauIAT;
 
 %% Problem parameters
-Rc = 0.1; % Capture radius
 targetR = 0.1; % Target radius
 if restart
   fprintf('Initializing vehicles...\n')
