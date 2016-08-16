@@ -144,7 +144,7 @@ for i = 1:length(tau)
   end
   
   % Visualize
-  [hc, ho, hn] = plotVehicles(Q, t, tInds, schemeData, hc, ho, hn, ...
+  [hc, ho, hn] = plotVehicles(Q, i, tInds, schemeData, hc, ho, hn, ...
     colors, capture_radius);
   
   xlim([-1.2 1.2])
