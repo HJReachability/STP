@@ -1,5 +1,5 @@
 function [hc, ho, hn] = ...
-  plotVehicles(Q, i, tInds, schemeData, hc, ho, hn, colors, capture_radius)
+  plotVehicles(Q, tInds, schemeData, hc, ho, hn, colors, capture_radius)
 % plotVehicles(Q, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
@@ -28,11 +28,11 @@ for veh = 1:length(Q)
     
     % Plot nominal trajectory
     if isempty(hn{veh})
-      hn{veh} = plot(Q{veh}.data.nomTraj(1,i), Q{veh}.data.nomTraj(2,i), ...
-        '*', 'color', colors(veh,:));
+      hn{veh} = plot(Q{veh}.data.nomTraj(1,tInds{veh}), ...
+        Q{veh}.data.nomTraj(2,tInds{veh}), '*', 'color', colors(veh,:));
     else
-      hn{veh}.XData = Q{veh}.data.nomTraj(1,i);
-      hn{veh}.YData = Q{veh}.data.nomTraj(2,i);
+      hn{veh}.XData = Q{veh}.data.nomTraj(1,tInds{veh});
+      hn{veh}.YData = Q{veh}.data.nomTraj(2,tInds{veh});
     end
     
     % Plot position
