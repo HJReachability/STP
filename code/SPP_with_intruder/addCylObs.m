@@ -19,7 +19,7 @@ for i = 1:length(nomTraj_tau)
   % state
   
   % For the first tauIAT time steps, use the i-step FRS projection
-  if nomTraj_tau(i) < max(rawCylObs.tauIAT)
+  if nomTraj_tau(i)-min(nomTraj_tau) < max(rawCylObs.tauIAT)
     obsInd = find(rawCylObs.tauIAT > nomTraj_tau(i)-min(nomTraj_tau)-small & ...
       rawCylObs.tauIAT < nomTraj_tau(i)-min(nomTraj_tau)+small);
   else
