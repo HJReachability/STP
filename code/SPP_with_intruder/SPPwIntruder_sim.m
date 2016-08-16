@@ -142,7 +142,7 @@ for i = 1:length(tau)
     end
   else
     fprintf('Saving data for replanning.\n')
-    saveReplanData(Q, schemeData, tau(i), safety_vals);
+    saveReplanData(Q, schemeData, tau(i), safety_vals, safety_threshold);
     return
   end
   
