@@ -27,8 +27,8 @@ schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 
 %% Grid and target set
-grid_min = [-0.15; -0.25; 0]; % Lower corner of computation domain
-grid_max = [0.25; 0.25; 2*pi];    % Upper corner of computation domain
+grid_min = [-0.3; -0.4; 0]; % Lower corner of computation domain
+grid_max = [0.5; 0.4; 2*pi];    % Upper corner of computation domain
 N = [101; 101; 101];         % Number of grid points per dimension
 pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
