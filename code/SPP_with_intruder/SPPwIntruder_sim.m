@@ -80,6 +80,12 @@ intruder_arrived = false;
 % Intruder control
 u_intruder = [0.5; 0];
 
+% Keep track of which vehicles need to replan
+last_replan_veh = length(Q)+1;
+for veh = 1:length(Q)
+  Q{veh}.data.replan = false;
+end
+
 %% Simulate
 tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
@@ -129,6 +135,7 @@ for i = 1:length(tau)
           deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
           u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
           
+          last_replan_veh = veh;
         else
           liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
           liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
@@ -143,7 +150,10 @@ for i = 1:length(tau)
     end
   else
     fprintf('Saving data for replanning.\n')
-    saveReplanData(Q, schemeData, rawObs, tau(i), safety_vals,safety_threshold);
+    for veh = last_replan_veh:length(Q)
+      Q{veh}.data.replan = true;
+    end
+    saveReplanData(Q, schemeData, rawObs, tauIAT, tau(i));
     return
   end
   

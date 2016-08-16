@@ -1,34 +1,27 @@
-function saveReplanData(Q, schemeData, rawObs,tNow,safety_vals,safety_threshold)
+function saveReplanData(Q, schemeData, rawObs, tauIAT, tNow)
 % saveReplanData(Q, schemeData)
 %     Removes most of the fields of vehicle objects, except for those needed to
 %     do replanning after an intruder has comels
 
 Qnew = cell(length(Q),1);
-replan = false;
-for i = 1:length(Q)
+for veh = 1:length(Q)
   % Basic class properties
-  Qnew{i} = Plane(Q{i}.x, Q{i}.wMax, Q{i}.vrange, Q{i}.dMax);
-  Qnew{i}.xhist = Q{i}.xhist;
-  Qnew{i}.u = Q{i}.u;
-  Qnew{i}.uhist = Q{i}.uhist;
-  Qnew{i}.hpxpy = Q{i}.hpxpy;
-  Qnew{i}.hpxpyhist = Q{i}.hpxpyhist;
+  Qnew{veh} = Plane(Q{veh}.x, Q{veh}.wMax, Q{veh}.vrange, Q{veh}.dMax);
+  Qnew{veh}.xhist = Q{veh}.xhist;
+  Qnew{veh}.u = Q{veh}.u;
+  Qnew{veh}.uhist = Q{veh}.uhist;
+  Qnew{veh}.hpxpy = Q{veh}.hpxpy;
+  Qnew{veh}.hpxpyhist = Q{veh}.hpxpyhist;
   
   % Data
-  Qnew{i}.data.targetCenter = Q{i}.data.targetCenter;
-  Qnew{i}.data.target = Q{i}.data.target;
-  Qnew{i}.data.targetsm = Q{i}.data.targetsm;
-  Qnew{i}.data.vReserved = Q{i}.data.vReserved;
-  Qnew{i}.data.wReserved = Q{i}.data.wReserved;
+  Qnew{veh}.data.targetCenter = Q{veh}.data.targetCenter;
+  Qnew{veh}.data.target = Q{veh}.data.target;
+  Qnew{veh}.data.targetsm = Q{veh}.data.targetsm;
+  Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
+  Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
   
-  % Determine which vehicles have been affected by intruder
-  if ~replan && any(safety_vals(i, :) < safety_threshold)
-    replan = true;
-  end
-  Qnew{i}.data.replan = replan;
-  
-  if ~replan
-    fprintf('Re-populating augmented obstacles for vehicle %d\n', i)
+  if Q{veh}.data.replan
+    fprintf('Re-populating augmented obstacles for vehicle %d\n', veh)
     
     if ~exist('rawObsBRS', 'var')
       % Load obstacles
@@ -40,7 +33,7 @@ for i = 1:length(Q)
       end
       rawObsBRS.tauIAT = tauIAT;
     end
-    Qnew{i} = augmentObstacles(Qnew{i}, schemeData, rawObsBRS);
+    Qnew{veh} = augmentObstacles(Qnew{veh}, schemeData, rawObsBRS);
   end
 end
 
