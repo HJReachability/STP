@@ -11,7 +11,7 @@ extraArgs.obstacles = obstacles;
 
 % Min with target
 extraArgs.targets = shapeEllipsoid(schemeData.grid, vehicle.x, ...
-  schemeData.grid.dx);
+  2*schemeData.grid.dx);
 
 % Computation should stop once it contains the initial state
 extraArgs.stopSetIntersect = vehicle.data.targetsm;
