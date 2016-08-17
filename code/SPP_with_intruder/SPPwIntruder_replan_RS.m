@@ -33,8 +33,8 @@ load(CARS_filename)
 
 % Flattening and adding capture radius to RTTRS
 RTTRS_temp = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
-[g2D, RTTRS2D] = proj(schemeData.grid, RTTRS_temp, [0 0 1]);
-augRTTRS2D = addCRadius(g2D, RTTRS2D, CARS.Rc);
+[augRTTRS2D.g, RTTRS2D] = proj(schemeData.grid, RTTRS_temp, [0 0 1]);
+augRTTRS2D.data = addCRadius(augRTTRS2D.g, RTTRS2D, CARS.Rc);
 
 %% Time vector
 dt = 0.01;
