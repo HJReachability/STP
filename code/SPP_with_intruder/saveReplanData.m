@@ -21,23 +21,10 @@ for veh = 1:length(Q)
   Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
   Qnew{veh}.data.replan = Q{veh}.data.replan;
   
+  % For vehicles that don't need to replan, copy over nominal trajectory
   if ~Q{veh}.data.replan
     Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
     Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
-    
-    fprintf('Re-populating augmented obstacles for vehicle %d\n', veh)
-    
-    if ~exist('rawObsBRS', 'var')
-      % Load obstacles
-      fprintf('Populating ''raw'' obstacles...\n')
-      rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
-      for i = 1:length(tauIAT)
-        rawObsBRS.data(:,:,:,i) = ...
-          migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
-      end
-      rawObsBRS.tauIAT = tauIAT;
-    end
-    Qnew{veh} = augmentObstacles(Qnew{veh}, schemeData, rawObsBRS);
   end
 end
 

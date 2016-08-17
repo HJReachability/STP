@@ -1,0 +1,28 @@
+function vehicle = computeCylObs(vehicle, schemeData, augRTTRS2D)
+% vehicle = computeCylObs(vehicle, schemeData, rawCylObs, debug)
+%     Computes cylindrical obstacles assuming the RTT method for SPP with
+%     disturbances or SPP with intruders
+% 
+%     Takes 2D RTTRS augmented with capture radius as input
+
+nomTraj_tau = vehicle.data.nomTraj_tau;
+vehicle.data.cylObs_tau = vehicle.data.nomTraj;
+vehicle.data.cylObs = zeros([schemeData.grid.N' length(nomTraj_tau)]);
+
+for i = 1:length(vehicle.data.nomTraj_tau)
+  fprintf('  Computing obstacle %d of %d\n', i, length(nomTraj_tau))
+  
+  % Rotate and shift raw obstacles
+  p = vehicle.data.nomTraj(1:2,i);
+  t = vehicle.data.nomTraj(3,i);
+  rawObsDatai = rotateData(schemeData.grid, augRTTRS2D, t, [1 2]);
+  rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
+  
+  vehicle.data.cylObs(:,:,:,i)= repmat(rawObsDatai, [1 1 schemeData.grid.N(3)]);
+  
+  % Exclude target set
+  vehicle.data.cylObs(:,:,:,i) = ...
+    max(vehicle.data.cylObs(:,:,:,i), -vehicle.data.target);
+end
+
+end

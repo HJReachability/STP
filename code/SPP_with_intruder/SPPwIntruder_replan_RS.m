@@ -32,6 +32,11 @@ fprintf('Loading CARS...\n')
 load(CARS_filename)
 tauIAT = CARS.tau;
 
+% Flattening and adding capture radius to RTTRS
+% Flatten RTTRS
+[g2D, RTTRS2D] = proj(RTTRS.g, RTTRS.data, [0 0 1]);
+augRTTRS2D = addCRadius(g2D, RTTRS2D, CARS.Rc);
+
 %% Raw augmented obstacles
 fprintf('Loading ''raw'' obstacles...\n')
 load(Obs_filename)
@@ -60,7 +65,7 @@ for veh=1:numVeh
     % Assume there's no static obstacle
     fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObsBRS', 'forward');
+      gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObs', 'forward');
     
     %% Compute FRS to determine the ETA
     if ~isfield(Q{veh}.data, 'ETA')
@@ -76,7 +81,7 @@ for veh=1:numVeh
       tauBRS = Q{veh}.data.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
-        gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObsBRS', 'backward');
+        gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs', 'backward');
       
       fprintf('Computing BRS1 for vehicle %d\n', veh)
       Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
@@ -93,16 +98,17 @@ for veh=1:numVeh
       [Q1, Q2, Q3, Q4] = Q{:};
       save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
     end
-    
-    %% Compute t-IAT backward reachable set from flattened 3D obstacle
-    if ~isfield(Q{veh}.data, 'cylObsBRS')
-      fprintf('Augmenting obstacles for vehicle %d\n', veh)
-      Q{veh} = augmentObstacles(Q{veh}, schemeData, rawObsBRS);
-      
-      [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
-    end
   end
+  
+  %% Compute induced obstacles
+  if ~isfield(Q{veh}.data, 'cylObs')
+    fprintf('Computing induced obstacles for vehicle %d\n', veh)
+    Q{veh} = computeCylObs(Q{veh}, schemeData, augRTTRS2D);
+    
+    [Q1, Q2, Q3, Q4] = Q{:};
+    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+  end
+  
 end
 
 end

@@ -1,5 +1,7 @@
 function vehicle = augmentObstacles(vehicle, schemeData, rawObsBRS, debug)
-
+% vehicle = augmentObstacles(vehicle, schemeData, rawObsBRS, debug)
+%     Computes the FRS + CR + BRS-augmented obstacles assuming the RTT method
+%     for SPP with intruders
 if nargin < 4
   debug = false;
 end
@@ -18,7 +20,6 @@ for i = 1:length(nomTraj_tau)
   fprintf('  Augmenting obstacle %d of %d\n', i, length(nomTraj_tau))
   % Rotate and shift the robust trajectory tracking reachable set to the vehicle
   % state
-  
   % For the last tauIAT time steps, use the i-step BRS
   if nomTraj_tau(i) + max(rawObsBRS.tauIAT) > max(nomTraj_tau)
     obsInd = find(rawObsBRS.tauIAT > max(nomTraj_tau)-nomTraj_tau(i)-small & ...
