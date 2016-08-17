@@ -15,7 +15,7 @@ for i = 1:length(vehicle.data.nomTraj_tau)
   % Rotate and shift raw obstacles
   p = vehicle.data.nomTraj(1:2,i);
   t = vehicle.data.nomTraj(3,i);
-  rawObsDatai = rotateData(augRTTRS2D.g, augRTTRS2D.data, t, [1 2]);
+  rawObsDatai = rotateData(augRTTRS2D.g, augRTTRS2D.data, t, [1 2], []);
   rawObsDatai = shiftData(augRTTRS2D.g, rawObsDatai, p, [1 2]);
   
   vehicle.data.cylObs(:,:,:,i)= repmat(rawObsDatai, [1 1 schemeData.grid.N(3)]);
