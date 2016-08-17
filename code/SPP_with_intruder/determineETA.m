@@ -10,8 +10,8 @@ schemeData.tMode = 'forward';
 extraArgs.obstacles = obstacles;
 
 % Min with target
-min_dx = min(schemeData.grid.dx);
-extraArgs.targets = shapeSphere(schemeData.grid, vehicle.x, 2*min_dx);
+extraArgs.targets = shapeEllipsoid(schemeData.grid, vehicle.x, ...
+  schemeData.grid.dx);
 
 % Computation should stop once it contains the initial state
 extraArgs.stopSetIntersect = vehicle.data.targetsm;
