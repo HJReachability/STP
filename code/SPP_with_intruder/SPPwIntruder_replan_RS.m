@@ -1,5 +1,5 @@
 function SPPwIntruder_replan_RS(RTTRS_filename, CARS_filename, ...
-  Obs_filename, Replan_filename, restart, chkpt_filename)
+  Replan_filename, restart, chkpt_filename)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
@@ -30,22 +30,11 @@ load(RTTRS_filename)
 
 fprintf('Loading CARS...\n')
 load(CARS_filename)
-tauIAT = CARS.tau;
 
 % Flattening and adding capture radius to RTTRS
 % Flatten RTTRS
 [g2D, RTTRS2D] = proj(RTTRS.g, RTTRS.data, [0 0 1]);
 augRTTRS2D = addCRadius(g2D, RTTRS2D, CARS.Rc);
-
-%% Raw augmented obstacles
-fprintf('Loading ''raw'' obstacles...\n')
-load(Obs_filename)
-rawObsBRS.data = zeros([schemeData.grid.N' length(tauIAT)]);
-for i = 1:length(tauIAT)
-  rawObsBRS.data(:,:,:,i) = ...
-    migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
-end
-rawObsBRS.tauIAT = tauIAT;
 
 %% Time vector
 dt = 0.01;
