@@ -6,7 +6,7 @@ function vehicle = computeCylObs(vehicle, schemeData, augRTTRS2D)
 %     Takes 2D RTTRS augmented with capture radius as input
 
 nomTraj_tau = vehicle.data.nomTraj_tau;
-vehicle.data.cylObs_tau = vehicle.data.nomTraj;
+vehicle.data.cylObs_tau = vehicle.data.nomTraj_tau;
 vehicle.data.cylObs = zeros([schemeData.grid.N' length(nomTraj_tau)]);
 
 for i = 1:length(vehicle.data.nomTraj_tau)
