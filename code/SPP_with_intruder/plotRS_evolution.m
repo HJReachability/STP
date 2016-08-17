@@ -12,7 +12,7 @@ if nargin < 6
   plotDim = 2;
 end
 
-if plotdim ~= 2 && plotDim ~= 3
+if plotDim ~= 2 && plotDim ~= 3
   error('plotDim must be 2 or 3!')
 end
 
