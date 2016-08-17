@@ -42,6 +42,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
     g = schemeData.grid;
     RS = Q{veh}.data.(RS_field)(:,:,:,i);
   end
+  visSetIm(g, RS);
   hold on
   
   % Plot obstacle at each time step
@@ -61,7 +62,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
       else
         Obs = Q{j}.data.(obs_field)(:,:,:,oInd);
       end
-      hObs = visSetIm(g, Obs, 'k');
+      visSetIm(g, Obs, 'k');
     end
   end
   title(sprintf('t = %f', Q{veh}.data.(sprintf('%s_tau', RS_field))(i)))
@@ -74,5 +75,6 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   if save_fig
     savefig(f, sprintf('%s/%d', folder, i), 'compact')
   end
-
+  
+  clf
 end
