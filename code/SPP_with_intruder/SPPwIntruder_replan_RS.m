@@ -4,11 +4,11 @@ function SPPwIntruder_replan_RS(RTTRS_filename, CARS_filename, ...
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
 
-if nargin < 5
+if nargin < 4
   restart = false;
 end
 
-if nargin < 6
+if nargin < 5
   filename = sprintf('%s_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
