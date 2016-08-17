@@ -19,7 +19,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   
   % Plot obstacle at each time step
   small = 1e-4;
-  t = Q{veh}.data.sprintf('%s_tau', RS_field)(i);
+  t = Q{veh}.data.(sprintf('%s_tau', RS_field))(i);
 
   for j = 1:veh-1
     % Determine the corresponding time index in the obstacles
@@ -33,7 +33,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
       visSetIm(g2D, Obs2D, 'k');
     end
   end
-  title(sprintf('t = %f', Q{veh}.data.sprintf('%s_tau', RS_field)(i)))
+  title(sprintf('t = %f', Q{veh}.data.(sprintf('%s_tau', RS_field))(i)))
   drawnow;
   hold off
 
