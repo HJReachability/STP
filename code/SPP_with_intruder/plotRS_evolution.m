@@ -68,7 +68,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   drawnow;
   
   if save_png
-    export_fig(sprintf('%s/%d', folder, i), '-png', '-m')
+    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
   end
   
   if save_fig
