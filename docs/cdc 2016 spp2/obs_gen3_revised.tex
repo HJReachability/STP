@@ -1,0 +1,62 @@
+% !TEX root = SPP2.tex
+\subsection{Method 3 (Revised): Robust Tracking of Nominal Trajectories \label{sec:rtt}}
+A third way of computing induced obstacles is to have vehicles commit to robustly tracking a feasible nominal trajectory. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacle. This induced obstacle computation can be done in two phases: the planning phase and the disturbance rejection phase. 
+In the planning phase, a nominal trajectory is computed that is feasible under the absence of disturbances. In the disturbance rejection phase, we then compute a bound on the tracking error, caused by the disturbances. 
+
+It is important to note that the planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances. Therefore, with this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
+
+In this paper, we use reachability to determine the tracking error bound and can be determined independently of the nominal trajectory. We first present the algorithm to compute this error bound. Intuitively, we wish to find a robust control-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily over time, and in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be viewed as a virtual evader vehicle that is optimally avoiding the actual vehicle to enlarge the tracking error. We therefore can model trajectory tracking as a pursuit-evasion game in which the actual vehicle is playing against the coordinated worst-case action of the virtual vehicle and the disturbance. In general, this game will be governed by dynamics of the form:
+
+\begin{equation}
+\label{eq:jdyn} % Joint dynamics
+\begin{aligned}
+\dot{x} &= f(t, x, u, d), \\
+\dot{x_r} &=f(t,x_r,u_r,0),\\
+u &\in \cset, u_r\in\cset^p, d \in \dset, \\
+&t \in [0, T],
+\end{aligned}
+\end{equation}
+
+where $x$ and $x_r$ represent the states of the actual vehicle and the virtual evader, respectively. Given an error bound $\errorbound(x_{r,i})$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ for this reachability problem to be the set of joint configurations where this bound is violated: $\targetset = \{(x, x_{r,i}): x\not\in\errorbound(x_{r,i})\}$. In this case, the BRS $\brs(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds, outside of $\errorbound(x_{r,i})$.
+
+With analogous definitions as those in Section \ref{sec:solution}, $\brs(t)$ can be characterized as the negative region of the solution $V$ to a simpler case of \eqref{eq:HJIVI}:
+
+\begin{equation}
+\label{eq:HJIVI_track}
+\begin{aligned}
+\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\&  t\in[0,T],\\
+&V(T, z) = l(T, z),\\
+&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d),
+\end{aligned}
+\end{equation}
+
+\noindent where for compactness of notation we denote $z=(x,x_r)$ and $f_z(t,z,u,u_r,d) = [f(t,x,u,d),f(t,x_r,u_r,0)]$. The complement of $\brs(0)$ is the maximal robust controlled-invariant set in $\targetset^\text{c}$. Letting $T\to\infty$ we obtain the infinite controlled-invariant set, which we denote by $\disckernel$. If this set is nonempty, then the tracking error $e$ at flight time is guaranteed to remain within $\errorbound$ provided that the vehicle starts inside $\disckernel$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
+\begin{equation}\label{eq:robust_tracking_law}
+\tracklaw(x,x_r) \in \arg\max_{u \in \cset} \min_{u_r \in\cset^p, d \in \dset} p \cdot f_z(t,z,u,u_r,d).
+\end{equation}
+
+In cases where the error dynamics are independent of the absolute state as in \eqref{eq:edyn}, $\disckernel$ can be computed in the state space of the tracking error $e$ to produce a feedback control law that also only depends on $e$ and to significantly reduce the problem dimensionality. We will present one such example in Section \ref{sec:sim}.
+
+\begin{equation}
+\label{eq:edyn} % Error dynamics
+\begin{aligned}
+\dot{e} &= f_e(t, e, u, u_r,d), \\
+u &\in \cset, u_r\in\cset^p, d \in \dset, \\
+&t \in [0, T],
+\end{aligned}
+\end{equation}
+
+Given $\errorbound$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound \subset \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\{x: \errorbound(x) \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^p$, that contains the initial state of the vehicle.
+
+\SBnote{Need to add the effect of $R_c$}
+Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_{r,i})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_{r,i})$ and $\errorbound(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds:
+\begin{equation}
+\ioset_i^j(t) = \errorbound(0) + \errorbound(x_{r,j}(t))
+\end{equation}
+\noindent where the $0$ denotes the origin. 
+
+%now requiring the state (error) to remain in $\errorbound$, so that the target simply becomes $\targetset = \mathbb{R}^n \setminus \errorbound$. In these cases, \eqref{eq:HJIVI_track} is defined on the lower-dimensional state space of relative (error) dynamics (i.e. over $e$ instead of $z$), and the resulting $\disckernel\subset \mathbb{R}^n$ is the discriminating kernel of $\errorbound$. The flight-time tracking error $e$ is then guaranteed to remain within $\errorbound$ provided that the initial error is contained in $\disckernel$ and the vehicle controller applies the optimally robust tracking feedback law \eqref{eq:robust_tracking_law}, which is now of the form $\tracklaw(e)$.
+
+%A price to be paid for using this method is that it imposes more stringent restrictions on the planning. At flight time, the vehicle will apply this robust tracking law around the nominal trajectory instead of the optimal control policy prescribed by the path planner; while constraint satisfaction is guaranteed for the nominal trajectory, this guarantee does not immediately extend to trajectories within the tracking error bound. The natural solution is to ``robustify" the planning by augmenting all obstacles as $\obsset^\errorbound(t) := \obsset(t) - \errorbound$ (with $-$ denoting the Minkowski difference). It then follows directly that if $x_r(t)$ remains clear of $\obsset^\errorbound(t)$ for all $t$, then $x(t)$ remains clear of the original obstacle $\obsset(t)$.
+
+%Based on this, it will be desirable to choose the tracking error bound $\errorbound$ to be as small as possible. The concrete choice of $\errorbound$ will generally correspond to the system designer, since it is specific to the vehicle dynamics, and should always ensure that the resulting discriminating kernel $\disckernel$ (a) is nonempty and (b) contains all expected errors in the initial configuration.
