@@ -32,7 +32,7 @@ end
 
 theta0 = Q{veh}.xhist(3,1);
 
-figure
+f = figure;
 for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   % Plot BRS
   if plotDim == 2
@@ -69,7 +69,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   drawnow;
   
   if save_png
-    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
+    export_fig(sprintf('%s/%d', folder, i), '-png', '-m')
   end
   
   if save_fig
