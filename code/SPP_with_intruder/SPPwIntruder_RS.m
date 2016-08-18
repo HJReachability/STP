@@ -8,19 +8,19 @@ if nargin < 4
 end
 
 if nargin < 5
-  filename = sprintf('%s_%f.mat', mfilename, now);
+  filename = sprintf('%s_chkpt_%f.mat', mfilename, now);
 else
   filename = chkpt_filename ;
 end
 
 if nargin < 6
   initStates = ...
-    {[-0.6; 0; 0]; [ 0.6; 0; -pi]; [-0.5; 0.5; -pi/4]; [ 0.5; 0.5; -3*pi/4]};
+    {[-0.6; 0; 0]; [ 0.6; 0; -pi]; [-0.5; 0.7; -pi/4]; [ 0.5; 0.7; -3*pi/4]};
 end
 
 if nargin < 7
   targetCenters = ...
-    {[0.7; 0.2; 0]; [-0.7; 0.2; 0]; [0.7; -0.7; 0]; [-0.7; -0.7; 0]};
+    {[0.7; 0.5; 0]; [-0.7; 0.5; 0]; [0.7; -0.5; 0]; [-0.7; -0.5; 0]};
 end
 
 %% Grids
@@ -105,5 +105,5 @@ end
 %% Trim vehicles for a smaller file
 Q = trimDataForSim(Q, {'BRS1', 'cylObsBRS'});
 [Q1, Q2, Q3, Q4] = Q{:};
-save(mfilename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+save(sprintf('%s_%f.mat', mfilename), 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end
