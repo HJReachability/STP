@@ -11,11 +11,6 @@ end
 
 small = 1e-4;
 
-tMin = -3;
-dt = 0.01;
-tMax = 0;
-tau = tMin:dt:tMax;
-
 %% Load robust tracking reachable set
 fprintf('Loading RTTRS...\n')
 load(RTTRS_filename)
@@ -35,8 +30,17 @@ fprintf('Loading main RS...\n')
 load(RS_filename)
 Q = {Q1;Q2;Q3;Q4};
 
+% Determine minimum time of simulation
+tMin = inf;
+for veh = 1:length(Q)
+  tMin = min(tMin, min(Q{veh}.data.nomTraj_tau));
+end
+dt = 0.01;
+tMax = 0;
+tau = tMin:dt:tMax;
+
 % Plot targets
-figure
+f = figure;
 colors = lines(length(Q));
 plotTargetSets(Q, schemeData, colors)
 
