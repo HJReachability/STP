@@ -97,4 +97,8 @@ for veh=1:numVeh
   
 end
 
+%% Trim vehicles for a smaller file
+Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'cylObs'});
+[Q1, Q2, Q3, Q4] = Q{:};
+save(mfilename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end

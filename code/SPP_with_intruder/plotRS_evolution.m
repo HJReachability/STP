@@ -30,7 +30,7 @@ if save_png || save_fig
   system(sprintf('mkdir %s', folder));
 end
 
-theta0 = Q{veh}.xhist(3,1);
+theta0 = Q{veh}.x;
 
 f = figure;
 for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
