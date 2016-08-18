@@ -11,11 +11,12 @@ extraArgs.obstacles = obstacles;
 
 % Min with target
 extraArgs.targets = shapeEllipsoid(schemeData.grid, vehicle.x, ...
-  2*schemeData.grid.dx);
+  2.5*schemeData.grid.dx);
 
 % Computation should stop once it contains the initial state
 extraArgs.stopSetIntersect = vehicle.data.targetsm;
 
+extraArgs.visualize = true;
 [vehicle.data.FRS1, vehicle.data.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 

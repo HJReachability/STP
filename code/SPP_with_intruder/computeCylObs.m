@@ -10,8 +10,6 @@ vehicle.data.cylObs_tau = vehicle.data.nomTraj_tau;
 vehicle.data.cylObs = zeros([schemeData.grid.N' length(nomTraj_tau)]);
 
 for i = 1:length(vehicle.data.nomTraj_tau)
-  fprintf('  Computing obstacle %d of %d\n', i, length(nomTraj_tau))
-  
   % Rotate and shift raw obstacles
   p = vehicle.data.nomTraj(1:2,i);
   t = vehicle.data.nomTraj(3,i);

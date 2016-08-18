@@ -62,7 +62,7 @@ for veh=1:numVeh
       Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
     end
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
@@ -76,7 +76,7 @@ for veh=1:numVeh
       Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
     end
     
     %% Compute the nominal trajectories based on BRS1
@@ -85,7 +85,7 @@ for veh=1:numVeh
       Q{veh} = computeNomTraj(Q{veh}, schemeData);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
     end
   end
   
@@ -93,9 +93,6 @@ for veh=1:numVeh
   if ~isfield(Q{veh}.data, 'cylObs')
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
     Q{veh} = computeCylObs(Q{veh}, schemeData, augRTTRS2D);
-    
-    [Q1, Q2, Q3, Q4] = Q{:};
-    save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
   end
   
 end
