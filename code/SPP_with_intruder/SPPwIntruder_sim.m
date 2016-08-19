@@ -71,7 +71,7 @@ end
 
 %% Initialize intruder
 Q_intruder = Plane( ...
-  [0.5; -0.55; 135*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  [-0.75; 0.25; 135*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tLower = -2.5;
@@ -82,7 +82,7 @@ safety_threshold = 0.5;
 intruder_arrived = false;
 
 % Intruder control
-u_intruder = [0.5; 0];
+u_intruder = [0.75; 0];
 
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
