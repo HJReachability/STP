@@ -31,18 +31,23 @@ if save_png || save_fig
 end
 
 theta0 = Q{veh}.x(3);
+if strcmp(RS_field, 'FRS1')
+  g = Q{veh}.data.FRS1_g;
+else
+  g = schemeData.grid;
+end
 
 f = figure;
 for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
   % Plot BRS
   if plotDim == 2
-    [g, RS] = ...
-      proj(schemeData.grid, Q{veh}.data.(RS_field)(:,:,:,i), [0 0 1], theta0);
+    [gPlot, RS] = ...
+      proj(g, Q{veh}.data.(RS_field)(:,:,:,i), [0 0 1], theta0);
   else
-    g = schemeData.grid;
+    gPlot = g;
     RS = Q{veh}.data.(RS_field)(:,:,:,i);
   end
-  visSetIm(g, RS);
+  visSetIm(gPlot, RS);
   hold on
   
   % Plot obstacle at each time step
@@ -62,7 +67,7 @@ for i = 1:length(Q{veh}.data.(sprintf('%s_tau', RS_field)))
       else
         Obs = Q{j}.data.(obs_field)(:,:,:,oInd);
       end
-      visSetIm(g, Obs, 'k');
+      visSetIm(gPlot, Obs, 'k');
     end
   end
   title(sprintf('t = %f', Q{veh}.data.(sprintf('%s_tau', RS_field))(i)))

@@ -37,6 +37,8 @@ extraArgs.visualize = true;
 [vehicle.data.FRS1, vehicle.data.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 
+vehicle.data.FRS1_g = schemeData.grid;
+
 % Extract ETA
 vehicle.data.ETA = vehicle.data.FRS1_tau(end);
 end
