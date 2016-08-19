@@ -71,7 +71,7 @@ end
 
 %% Initialize intruder
 Q_intruder = Plane( ...
-  [-0.75; 0.25; 135*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  [-0.75; 0; 15*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tLower = -2.5;
@@ -124,9 +124,6 @@ for i = 1:length(tau)
       tUpper = tau(i) + max(CARS.tau);
       intruder_arrived = true;
     end
-  elseif tau(i) > tUpper
-    % Hide intruder if time is later than tUpper
-    Q_intruder.unplotPosition();
   end
   
   %% Control and disturbance for SPP Vehicles
