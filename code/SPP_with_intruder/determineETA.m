@@ -29,8 +29,8 @@ for i = 1:size(obstacles, 4)
 end
 
 % Computation should stop once it contains the initial state
-extraArgs.stopSetIntersect = ...
-  migrateGrid(old_g, vehicle.data.targetsm, schemeData.grid);
+extraArgs.stopSetIntersect = shapeCylinder(schemeData.grid, 3, ...
+  vehicle.data.targetCenter, vehicle.data.targetRsmall);
 
 % Compute the FRS
 extraArgs.visualize = true;
