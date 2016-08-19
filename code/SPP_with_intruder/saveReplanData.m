@@ -15,8 +15,11 @@ for veh = 1:length(Q)
   
   % Data
   Qnew{veh}.data.targetCenter = Q{veh}.data.targetCenter;
+  Qnew{veh}.data.targetRsmall = Q{veh}.data.targetRsmall;
+  Qnew{veh}.data.targetR = Q{veh}.data.targetR;  
   Qnew{veh}.data.target = Q{veh}.data.target;
   Qnew{veh}.data.targetsm = Q{veh}.data.targetsm;
+
   Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
   Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
   Qnew{veh}.data.replan = Q{veh}.data.replan;
