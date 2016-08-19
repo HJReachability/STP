@@ -71,7 +71,7 @@ end
 
 %% Initialize intruder
 Q_intruder = Plane( ...
-  [-0.75; 0; 15*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  [-0.75; 0.15; 0*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tLower = -2.5;
