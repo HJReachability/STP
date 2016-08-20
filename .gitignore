@@ -20,3 +20,5 @@ code/SPP_with_intruder/computeRTTRS_*
 code/SPP_with_intruder/sim.txt
 code/SPP_with_intruder/computeCARS_*/
 code/SPP_with_intruder/plotRS_evolution_*/
+code/SPP_with_intruder/vehicle 3 FRS/
+code/SPP_with_intruder/vehicle 4 FRS/
