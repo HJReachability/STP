@@ -1,12 +1,16 @@
 function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
-  Obs_filename, Replan_filename, save_png, save_fig)
+  Obs_filename, Replan_filename, save_png, save_fig, intr_IS)
 
-if nargin < 5
+if nargin < 6
   save_png = true;
 end
 
-if nargin < 6
+if nargin < 7
   save_fig = false;
+end
+
+if nargin < 8
+  intr_IS = [-0.75; 0.1; 0*pi/180];
 end
 
 small = 1e-4;
@@ -71,7 +75,7 @@ end
 
 %% Initialize intruder
 Q_intruder = Plane( ...
-  [-0.75; 0.15; 0*pi/180], CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
+  intr_IS, CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 intruder_color = 'k';
 tLower = -2.5;
