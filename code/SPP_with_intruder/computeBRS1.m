@@ -36,7 +36,7 @@ extraArgs.plotData.projpt = vehicle.x(3);
 folder = sprintf('BRS_%f', now);
 system(sprintf('mkdir %s', folder));
 
-extraArgs.fig_filename = sprintf('%s_%f/', folder, now);
+extraArgs.fig_filename = sprintf('%s/', folder);
 % Set obstacles
 extraArgs.obstacles = obstacles;
 
