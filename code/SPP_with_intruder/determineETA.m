@@ -19,7 +19,7 @@ schemeData.grid = new_g;
 
 % Min with target
 extraArgs.targets = shapeEllipsoid(schemeData.grid, vehicle.x, ...
-  3*schemeData.grid.dx);
+  2*schemeData.grid.dx);
 
 % Set obstacles
 extraArgs.obstacles = zeros(size(obstacles));

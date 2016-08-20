@@ -43,6 +43,8 @@ dt = 0.01;
 tFRS_max = 2;
 tauFRS = tNow:dt:tFRS_max;
 
+tBRS_min = -5;
+
 numVeh = length(Q);
 
 %% Start the computation of reachable sets
@@ -67,7 +69,7 @@ for veh=1:numVeh
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     if ~isfield(Q{veh}.data, 'BRS1')
-      tauBRS = Q{veh}.data.FRS1_tau;
+      tauBRS = tBRS_min:dt:Q{veh}.data.ETA;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
         gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs', 'backward');

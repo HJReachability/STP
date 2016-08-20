@@ -20,6 +20,8 @@ function vehicle = computeBRS1(vehicle, BRS1_tau, schemeData, obstacles)
 %     vehicle:
 %         updated vehicle object
 
+% using same tau as FRS is causing BRS to not include target
+
 % Set schemeData
 schemeData.uMode = 'min';
 schemeData.dMode = 'max';
