@@ -1,5 +1,5 @@
 function SPPwIntruder_sim(RTTRS_filename, RS_filename, CA_filename, ...
-  Obs_filename, save_png, save_fig)
+  Obs_filename, Replan_filename, save_png, save_fig)
 
 if nargin < 5
   save_png = true;
@@ -83,6 +83,7 @@ intruder_arrived = false;
 
 % Intruder control
 u_intruder = [0.75; 0];
+replan_loaded = false;
 
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
@@ -150,12 +151,45 @@ for i = 1:length(tau)
       end
     end
   else
-    fprintf('Saving data for replanning.\n')
-    for veh = last_replan_veh:length(Q)
-      Q{veh}.data.replan = true;
+    if exist(Replan_filename, 'file')
+      if ~replan_loaded
+        fprintf('Loading replan file...\n')
+        load(Replan_filename)
+        replan_loaded = true;
+        
+        for veh = 1:length(Q)
+          if Q{veh}.data.replan
+            fprintf(['Adding cylindrical obstacles vehicle %d for ' ...
+              'visualization...\n'], veh)
+            Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
+            
+            tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
+              Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+          end
+        end
+      end
+      
+      for veh = 1:length(Q)
+        if ~isempty(tInds{veh})
+          liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
+          liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
+          deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
+          
+          u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
+          
+          % Random disturbance
+          d = Q{veh}.uniformDstb();
+          Q{veh}.updateState(u, dt, Q{veh}.x, d);
+        end
+      end
+    else
+      fprintf('Saving data for replanning.\n')
+      for veh = last_replan_veh:length(Q)
+        Q{veh}.data.replan = true;
+      end
+      saveReplanData(Q, schemeData, rawObs, tauIAT, tau(i));
+      return
     end
-    saveReplanData(Q, schemeData, rawObs, tauIAT, tau(i));
-    return
   end
   
   % Visualize
