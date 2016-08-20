@@ -28,10 +28,15 @@ schemeData.dMode = 'max';
 schemeData.tMode = 'backward';
 
 % Set extraArgs
+
 extraArgs.visualize = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = vehicle.x(3);
 
+folder = sprintf('BRS_%f', now);
+system(sprintf('mkdir %s', folder));
+
+extraArgs.fig_filename = sprintf('%s_%f/', folder, now);
 % Set obstacles
 extraArgs.obstacles = obstacles;
 

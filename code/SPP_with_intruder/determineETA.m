@@ -37,7 +37,10 @@ extraArgs.visualize = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = vehicle.x(3);
 
-extraArgs.fig_filename = sprintf('FRS_%f_', now);
+folder = sprintf('FRS_%f', now);
+system(sprintf('mkdir %s', folder));
+
+extraArgs.fig_filename = sprintf('%s_%f/', folder, now);
 [vehicle.data.FRS1, vehicle.data.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 

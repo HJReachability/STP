@@ -26,7 +26,7 @@ end
 %% Grids
 % Main Grid
 schemeData.grid = ...
-  createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [101; 101; 101], 3);
+  createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [71; 71; 71], 3);
 
 %% Time parameters
 % For BRS
@@ -54,7 +54,7 @@ end
 rawObsBRS.tauIAT = tauIAT;
 
 %% Problem parameters
-targetR = 0.1; % Target radius
+targetR = 0.15; % Target radius
 if restart
   fprintf('Initializing vehicles...\n')
   Q = initRTT(initStates, targetCenters, targetR, RTTRS, schemeData);
