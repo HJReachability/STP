@@ -57,7 +57,7 @@ end
 
 %% Post process loaded data
 % Compute gradients used for optimal control
-fprintf('Computing gradients...')
+fprintf('Computing gradients...\n')
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
@@ -176,7 +176,7 @@ for i = 1:length(tau)
         end
         % Random disturbance
         d = Q{veh}.uniformDstb();
-        Q{veh}.updateState(u, dt, Q{veh}.x, d);
+        Q{veh}.updateState(u, SPPP.dt, Q{veh}.x, d);
       end
     end
     
