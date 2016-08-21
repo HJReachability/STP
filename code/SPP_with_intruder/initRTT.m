@@ -4,6 +4,7 @@ function Q = initRTT(SPPP, RTTRS)
 
 numVeh = length(SPPP.initStates);
 Q = cell(numVeh, 1);
+targetRsmall = SPPP.targetR - RTTRS.trackingRadius;
 for i = 1:numVeh
   % Initial state and parameters
   Q{i} = Plane(SPPP.initStates{i}, ...
@@ -16,7 +17,7 @@ for i = 1:numVeh
     shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, targetRsmall);
   Q{i}.data.targetCenter = SPPP.targetCenters{i};
   Q{i}.data.targetR = SPPP.targetR;
-  Q{i}.data.targetRsmall = SPPP.targetR - RTTRS.trackingRadius;
+  Q{i}.data.targetRsmall = targetRsmall;
   
   % Reserved control authorities
   Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
