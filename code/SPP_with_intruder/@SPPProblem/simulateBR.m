@@ -126,7 +126,12 @@ tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
 
 for i = 1:length(tauBR)
-  fprintf('t = %f\n', tauBR(i))
+  if tauBR(i) > tReplan
+    break
+  end
+  
+  % tauBR(i) <= tReplan after this point
+  fprintf('t = %f\n', tauBR(i)) 
   
   % Check if nominal trajectory has this t
   for veh = 1:length(Q)
@@ -135,7 +140,7 @@ for i = 1:length(tauBR)
   end
   
   %% Intruder
-  if tauBR(i) >= tIntr && tauBR(i) <= tReplan
+  if tauBR(i) >= tIntr
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
@@ -158,66 +163,98 @@ for i = 1:length(tauBR)
     end
   end
   
-  if tauBR(i) <= tReplan
-    %% Control and disturbance for SPP Vehicles
-    for veh = 1:length(Q)
-      if ~isempty(tInds{veh})
-        Q{veh}.data.tauBRmin = min(Q{veh}.data.tauBRmin, tauBR(i));
-        Q{veh}.data.tauBRmax = max(Q{veh}.data.tauBRmax, tauBR(i));
-        if safety_vals(veh, i) < safety_threshold
-          fprintf('Vehicle %d is performing avoidance.\n', veh)
-          
-          % Safety controller
-          deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
-          u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
-          
-          last_replan_veh = min(last_replan_veh, veh);
-        else
-          liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
-          liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
-          deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
-          
-          u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
-        end
-        % Random disturbance
-        d = Q{veh}.uniformDstb();
-        Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
+  %% Control and disturbance for SPP Vehicles
+  for veh = 1:length(Q)
+    if ~isempty(tInds{veh})
+      Q{veh}.data.tauBRmin = min(Q{veh}.data.tauBRmin, tauBR(i));
+      Q{veh}.data.tauBRmax = max(Q{veh}.data.tauBRmax, tauBR(i));
+      if safety_vals(veh, i) < safety_threshold
+        fprintf('Vehicle %d is performing avoidance.\n', veh)
+        
+        % Safety controller
+        deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
+        u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
+        
+        last_replan_veh = min(last_replan_veh, veh);
+      else
+        liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
+        liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
+        deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
+        
+        u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
       end
+      % Random disturbance
+      d = Q{veh}.uniformDstb();
+      Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
     end
+  end
+  
+  %% Visualize
+  if save_png || save_fig
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g, hc, ho, hn, colors, CARS.Rc);
     
-    %% Visualize
-    if save_png || save_fig
-      [hc, ho, hn] = plotVehicles(Q, tInds, obj.g, hc, ho, hn, colors, CARS.Rc);
-      
-      xlim([-1.2 1.2])
-      ylim([-1.2 1.2])
-      
-      title(sprintf('t = %f', tauBR(i)))
-      drawnow;
-    end
+    xlim([-1.2 1.2])
+    ylim([-1.2 1.2])
     
-    % Save plots
-    if save_png
-      export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
-    end
-    
-    if save_fig
-      savefig(f, sprintf('%s/%d', folder, i), 'compact')
-    end
-  else
-    fprintf('Saving data for replanning.\n')
-    for veh = last_replan_veh:length(Q)
-      Q{veh}.data.replan = true;
-    end
-    
-    obj.tIntr = tIntr;
-    obj.tReplan = tauBR(i);
-    obj.tauIntr = obj.tIntr:obj.dt:obj.tReplan;
-    obj.tauBR = tauBR;
-    
-    obj.BR_sim_filename = sprintf('Replan_RS_%f.mat', now);
-    saveReplanData(Q, Qintr, obj.BR_sim_filename);
-    return
+    title(sprintf('t = %f', tauBR(i)))
+    drawnow;
+  end
+  
+  % Save plots
+  if save_png
+    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
+  end
+  
+  if save_fig
+    savefig(f, sprintf('%s/%d', folder, i), 'compact')
   end
 end
+
+%% Save data
+fprintf('Saving data for replanning.\n')
+for veh = last_replan_veh:length(Q)
+  Q{veh}.data.replan = true;
+end
+
+Qintr.data.tauIntr = obj.tIntr:obj.dt:obj.tReplan;
+
+obj.tIntr = tIntr;
+obj.tReplan = tauBR(i);
+obj.tauBR = tauBR;
+
+obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
+
+Qnew = cell(length(Q),1);
+for veh = 1:length(Q)
+  % Basic class properties
+  Qnew{veh} = Plane(Q{veh}.x, Q{veh}.wMax, Q{veh}.vrange, Q{veh}.dMax);
+  Qnew{veh}.xhist = Q{veh}.xhist;
+  Qnew{veh}.u = Q{veh}.u;
+  Qnew{veh}.uhist = Q{veh}.uhist;
+  Qnew{veh}.hpxpy = Q{veh}.hpxpy;
+  Qnew{veh}.hpxpyhist = Q{veh}.hpxpyhist;
+  
+  % Data
+  Qnew{veh}.data.targetCenter = Q{veh}.data.targetCenter;
+  Qnew{veh}.data.targetRsmall = Q{veh}.data.targetRsmall;
+  Qnew{veh}.data.targetR = Q{veh}.data.targetR;
+  Qnew{veh}.data.target = Q{veh}.data.target;
+  Qnew{veh}.data.targetsm = Q{veh}.data.targetsm;
+  
+  Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
+  Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
+  
+  Qnew{veh}.data.tauBR = Q{veh}.data.tauBRmin:obj.dt:Q{veh}.data.tauBRmax;
+  Qnew{veh}.data.replan = Q{veh}.data.replan;
+  
+  % For vehicles that don't need to replan, copy over nominal trajectory
+  if ~Q{veh}.data.replan
+    Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
+    Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
+  end
+end
+
+[Q1, Q2, Q3, Q4] = Qnew{:};
+
+save(obj.BR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
 end
