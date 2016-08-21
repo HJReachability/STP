@@ -176,7 +176,7 @@ for i = 1:length(tau)
         end
         % Random disturbance
         d = Q{veh}.uniformDstb();
-        Q{veh}.updateState(u, SPPP.dt, Q{veh}.x, d);
+        Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
       end
     end
     
