@@ -1,4 +1,4 @@
-classdef SPPProblem
+classdef SPPProblem < handle
   properties
     % Problem parameters
     initStates
