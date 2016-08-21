@@ -105,7 +105,7 @@ for i = 1:length(tauAR)
     if ~isempty(tInd)
       Q{veh}.data.tauARmin = min(Q{veh}.data.tauARmin, tauAR(i));
       Q{veh}.data.tauARmax = max(Q{veh}.data.tauARmax, tauAR(i));
-      liveness_rel_x = Q{veh}.data.nomTraj(:,tInd}) - Q{veh}.x;
+      liveness_rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
       
