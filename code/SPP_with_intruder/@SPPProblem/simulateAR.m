@@ -112,7 +112,7 @@ for i = 1:length(tauAR)
       u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
       % Random disturbance
       d = Q{veh}.uniformDstb();
-      Q{veh}.updateState(u, dt, Q{veh}.x, d);
+      Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
     end
   end
   
