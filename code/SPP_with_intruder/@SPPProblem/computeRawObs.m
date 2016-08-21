@@ -1,10 +1,10 @@
-function computeRawObs(RTTRS_filename, CARS_filename)
+function computeRawObs(obj)
 % [cylObs3D, cylObsBRS] = computeRawObs(RTTRS_filename, tauIAT)
 %     Augments the raw obstacles (for translation on nominal trajectory)
 
 %% Load and migrate RTTRS
 fprintf('Loading RTTRS...\n')
-load(RTTRS_filename)
+load(obj.RTTRS_filename)
 
 schemeData.grid = ...
   createGrid([-0.4; -0.5; -3*pi/2], [0.6; 0.5; pi/2], [51; 51; 51], 3);
@@ -13,10 +13,7 @@ RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
 %% Load CARS
 fprintf('Loading CARS...\n')
-load(CARS_filename)
-
-tauIAT = CARS.tau;
-Rc = CARS.Rc;
+load(obj.CARS_filename)
 
 % Initialize dynamical system based on RTTRS parameters
 schemeData.dynSys = Plane([0; 0; 0], ...
@@ -24,18 +21,19 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 % Compute the sets
 fprintf('Computing FRS of raw obstacle...\n')
-rawObsFRS = computeRawObs_FRS_helper(RTTRSdata, schemeData, tauIAT);
+rawObsFRS = computeRawObs_FRS_helper(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
-rawObs.cylObs3D = computeRawObs_cylObs_helper(rawObsFRS, schemeData, Rc);
+rawObs.cylObs3D = computeRawObs_cylObs_helper(rawObsFRS, schemeData, CARS.Rc);
 
 fprintf('Computing BRS of cylObs3D...\n')
 rawObs.cylObsBRS = ...
-  computeRawObs_BRS_helper(rawObs.cylObs3D(:,:,:,end), schemeData, tauIAT);
+  computeRawObs_BRS_helper(rawObs.cylObs3D(:,:,:,end), schemeData, CARS.tau);
 
 rawObs.g = schemeData.grid;
 
-save(sprintf('rawObs_%f.mat', now), 'rawObs', '-v7.3')
+obj.rawObs_filename = sprintf('rawObs_%f.mat', now);
+save(obj.rawObs_filename, 'rawObs', '-v7.3')
 
 end
 
