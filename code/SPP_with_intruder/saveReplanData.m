@@ -1,4 +1,4 @@
-function saveReplanData(Q, schemeData, rawObs, tauIAT, tNow)
+function saveReplanData(Q, Qintr, replan_filename)
 % saveReplanData(Q, schemeData)
 %     Removes most of the fields of vehicle objects, except for those needed to
 %     do replanning after an intruder has comels
@@ -33,6 +33,5 @@ end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};
 
-save(sprintf('Replan_RS_%f.mat', now), 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', ...
-  'tNow', '-v7.3')
+save(replan_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
 end

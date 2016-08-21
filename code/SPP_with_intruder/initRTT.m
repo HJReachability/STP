@@ -1,25 +1,25 @@
-function Q = initRTT(initStates, targetCenters, targetR, RTTRS, schemeData)
+function Q = initRTT(SPPP, RTTRS)
 % initRTT(initStates, targetCenters, targetR, RTTRS)
 %     Initializes Plane objects for the RTT method SPP problem
 
 % Reduce target by the size of the RTT tracking radius
-targetRsmall = targetR - RTTRS.trackingRadius;
+targetRsmall = SPPP.targetR - RTTRS.trackingRadius;
 
-numVeh = length(initStates);
+numVeh = length(SPPP.initStates);
 Q = cell(numVeh, 1);
 for i = 1:numVeh
   % Initial state and parameters
-  Q{i} = Plane(initStates{i}, ...
+  Q{i} = Plane(SPPP.initStates{i}, ...
     RTTRS.dynSys.wMaxA, RTTRS.dynSys.vRangeA, RTTRS.dynSys.dMaxA);
   
-  % Target set
+  % Target set (for convenience)
   Q{i}.data.target = ...
-    shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetR);
+    shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, SPPP.targetR);
   Q{i}.data.targetsm = ...
-    shapeCylinder(schemeData.grid, 3, targetCenters{i}, targetRsmall);
-  Q{i}.data.targetCenter = targetCenters{i};
-  Q{i}.data.targetR = targetR;
-  Q{i}.data.targetRsmall = targetRsmall;
+    shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, targetRsmall);
+  Q{i}.data.targetCenter = SPPP.targetCenters{i};
+  Q{i}.data.targetR = SPPP.targetR;
+  Q{i}.data.targetRsmall = SPPP.targetRsmall;
   
   % Reserved control authorities
   Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;

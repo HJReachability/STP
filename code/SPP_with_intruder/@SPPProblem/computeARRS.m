@@ -1,10 +1,9 @@
-function SPPwIntruder_replan_RS(RTTRS_filename, CARS_filename, ...
-  Replan_filename, restart, chkpt_filename)
+function computeARRS(obj, restart)
 % SPPwIntruder_replan_RS(restart, chkpt_filename)
 %     Computes BRSs for replanning after an intruder has passed
 %     CAUTION: This function assumes that the RTT method is used!
 
-if nargin < 4
+if nargin < 2
   restart = false;
 end
 
@@ -24,31 +23,33 @@ else
   Q = {Q1; Q2; Q3; Q4};
 end
 
-%% Load robust tracking reachable set (needed for vehicle parameters)
-fprintf('Loading RTTRS...\n')
-load(RTTRS_filename)
+%% Load files
+if exist(obj.RTTRS_filename, 'file')
+  fprintf('Loading RTTRS...\n')
+  load(obj.RTTRS_filename)
+else
+  error('RTTRS file not found!')
+end
 
-fprintf('Loading CARS...\n')
-load(CARS_filename)
+if exist(obj.CARS_filename, 'file')
+  fprintf('Loading CARS...\n')
+  load(obj.CARS_filename)
+else
+  error('CARS file not found!')
+end
 
-% Flattening and adding capture radius to RTTRS
+%% Grid and time
+schemeData.grid = obj.g;
+tFRS_max = 2;
+tauFRS = obj.tReplan:obj.dt:tFRS_max;
+
+%% Flattening and adding capture radius to RTTRS
 RTTRS_temp = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 [augRTTRS2D.g, RTTRS2D] = proj(schemeData.grid, RTTRS_temp, [0 0 1]);
 augRTTRS2D.data = addCRadius(augRTTRS2D.g, RTTRS2D, CARS.Rc);
 
-%% Time vector
-dt = 0.01;
-
-% Time vector for FRS
-tFRS_max = 2;
-tauFRS = tNow:dt:tFRS_max;
-
-tBRS_min = -5;
-
-numVeh = length(Q);
-
 %% Start the computation of reachable sets
-for veh=1:numVeh
+for veh=1:length(Q)
   if Q{veh}.data.replan
     schemeData.dynSys = Q{veh};
     
@@ -64,12 +65,12 @@ for veh=1:numVeh
       Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
+      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
     end
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     if ~isfield(Q{veh}.data, 'BRS1')
-      tauBRS = tBRS_min:dt:Q{veh}.data.ETA;
+      tauBRS = Q{veh}.data.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
         gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs', 'backward');
@@ -78,16 +79,13 @@ for veh=1:numVeh
       Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
+      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
     end
     
     %% Compute the nominal trajectories based on BRS1
     if ~isfield(Q{veh}.data, 'nomTraj')
       fprintf('Computing nominal trajectory for vehicle %d\n', veh)
       Q{veh} = computeNomTraj(Q{veh}, schemeData);
-      
-      [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', 'tNow', '-v7.3')
     end
   end
   
@@ -96,11 +94,11 @@ for veh=1:numVeh
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
     Q{veh} = computeCylObs(Q{veh}, schemeData, augRTTRS2D);
   end
-  
 end
 
 %% Trim vehicles for a smaller file
 Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'cylObs'});
 [Q1, Q2, Q3, Q4] = Q{:};
-save(sprintf('%s_%f.mat', mfilename, now), 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+obj.AR_RS_filename = sprintf('%s_%f.mat', mfilename, now);
+save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end

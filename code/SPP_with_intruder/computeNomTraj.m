@@ -2,7 +2,7 @@ function vehicle = computeNomTraj(vehicle, schemeData)
 % Computes nominal trajectory of to be robustly tracked
 
 % Robust trajectory tracker
-dt = 0.001;
+dt = 0.0025;
 
 % Save state and control histories
 x = vehicle.x;
