@@ -32,6 +32,18 @@ else
   error('rawObs file not found!')
 end
 
+if restart || ~exist(obj.BR_RS_filename, 'file')
+  fprintf('Initializing vehicles and restarting BR RS computation...\n')
+  Q = initRTT(obj, RTTRS);
+  
+  % File name to save RS data
+  obj.BR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
+else
+  fprintf('Loading BR RS checkpoint...\n')
+  load(obj.BR_RS_filename)
+  Q = {Q1; Q2; Q3; Q4};
+end
+
 %% Grid and time
 schemeData.grid = obj.g;
 BRS1_tau = obj.tMin:obj.dt:obj.tTarget;
@@ -43,19 +55,6 @@ for i = 1:length(CARS.tau)
     migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
 end
 rawObsBRS.tauIAT = CARS.tau;
-
-%% Problem parameters
-if restart || ~exist(obj.BR_RS_filename, 'file')
-  fprintf('Initializing vehicles and restarting BR RS computation...\n')
-  Q = initRTT(obj, RTTRS);
-  
-  % File name to save RS data
-  obj.BR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
-else
-  fprintf('Loading checkpoint...\n')
-  load(obj.BR_RS_filename)
-  Q = {Q1; Q2; Q3; Q4};
-end
 
 %% Start the computation of reachable sets
 for veh=1:length(Q)

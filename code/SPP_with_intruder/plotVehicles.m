@@ -1,5 +1,5 @@
 function [hc, ho, hn] = ...
-  plotVehicles(Q, tInds, schemeData, hc, ho, hn, colors, capture_radius)
+  plotVehicles(Q, tInds, g, hc, ho, hn, colors, capture_radius)
 % plotVehicles(Q, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
@@ -16,7 +16,7 @@ for veh = 1:length(Q)
     
     % Plot induced obstacles
     [g2D, data2D] = ...
-      proj(schemeData.grid, Q{veh}.data.cylObs3D(:,:,:,tInds{veh}), [0 0 1]);
+      proj(g, Q{veh}.data.cylObs3D(:,:,:,tInds{veh}), [0 0 1]);
     if isempty(ho{veh})
       ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
       ho{veh}.LineStyle = '--';

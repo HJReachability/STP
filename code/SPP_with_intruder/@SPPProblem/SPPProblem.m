@@ -33,6 +33,7 @@ classdef SPPProblem
     
     BR_sim_filename % before replanning simulation file
     AR_sim_filename % after replanning simulation file
+    resim_filename % resimulation file name
   end
   
   methods

@@ -1,4 +1,4 @@
-function vehicle = addCylObs(vehicle, schemeData, rawCylObs, debug)
+function vehicle = addCylObs(vehicle, g, rawCylObs, debug)
 
 if nargin < 4
   debug = false;
@@ -10,7 +10,7 @@ if debug
 else
   nomTraj_tau = vehicle.data.nomTraj_tau;
   vehicle.data.cylObs3D_tau = vehicle.data.nomTraj_tau;
-  vehicle.data.cylObs3D = zeros([schemeData.grid.N' length(nomTraj_tau)]);
+  vehicle.data.cylObs3D = zeros([g.N' length(nomTraj_tau)]);
 end
 
 small = 1e-4;
@@ -35,8 +35,8 @@ for i = 1:length(nomTraj_tau)
     p = vehicle.data.nomTraj(1:2,trajInd);
     t = vehicle.data.nomTraj(3,trajInd);
     rawObsDatai = ...
-      rotateData(schemeData.grid, rawCylObs.data(:,:,:,obsInd), t, [1 2], 3);
-    rawObsDatai = shiftData(schemeData.grid, rawObsDatai, p, [1 2]);
+      rotateData(g, rawCylObs.data(:,:,:,obsInd), t, [1 2], 3);
+    rawObsDatai = shiftData(g, rawObsDatai, p, [1 2]);
     
     vehicle.data.cylObs3D(:,:,:,i) = max(rawObsDatai, -vehicle.data.target);
   end

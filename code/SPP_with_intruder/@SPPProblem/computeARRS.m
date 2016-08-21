@@ -7,19 +7,15 @@ if nargin < 2
   restart = false;
 end
 
-if nargin < 5
-  filename = sprintf('%s_%f.mat', mfilename, now);
+if restart || ~exist(obj.AR_RS_filename, 'file')
+  fprintf('Loading BR sim file and restarting AR RS computation...\n')
+  load(obj.BR_sim_filename)
+  
+  % File name to save RS data
+  obj.AR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
 else
-  filename = chkpt_filename ;
-end
-
-if restart
-  fprintf('Loading from replan data file...\n')
-  load(Replan_filename)
-  Q = {Q1; Q2; Q3; Q4};
-else
-  fprintf('Loading from checkpoint file...\n')
-  load(filename)
+  fprintf('Loading AR RS checkpoint...\n')
+  load(obj.AR_RS_filename)
   Q = {Q1; Q2; Q3; Q4};
 end
 
@@ -99,6 +95,6 @@ end
 %% Trim vehicles for a smaller file
 Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'cylObs'});
 [Q1, Q2, Q3, Q4] = Q{:};
-obj.AR_RS_filename = sprintf('%s_%f.mat', mfilename, now);
-save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+obj.AR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
+save(obj.AR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
 end

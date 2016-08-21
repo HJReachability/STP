@@ -40,7 +40,7 @@ else
 end
 
 % Load path planning reachable set
-if exist(obj.CARS_filename, 'file')
+if exist(obj.BR_RS_filename, 'file')
   fprintf('Loading before-replanning RS...\n')
   load(obj.BR_RS_filename)
 else
@@ -73,16 +73,16 @@ tau = tStart:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
-  rawCylObs.data = zeros([schemeData.grid.N' length(CARS.tau)]);
+  rawCylObs.data = zeros([obj.g.N' length(CARS.tau)]);
   for i = 1:length(CARS.tau)
     rawCylObs.data(:,:,:,i) = ...
-      migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), schemeData.grid);
+      migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), obj.g);
   end
   rawCylObs.tauIAT = CARS.tau;
   
   for veh = 1:length(Q)
     fprintf('Adding cylindrical obstacles vehicle %d for visualization...\n', veh)
-    Q{veh} = addCylObs(Q{veh}, schemeData, rawCylObs);
+    Q{veh} = addCylObs(Q{veh}, obj.g, rawCylObs);
   end
   
   % For saving graphics
@@ -93,9 +93,8 @@ end
 %% Initialize figure
 if save_png || save_fig
   f = figure;
-  schemeData.grid = obj.g;
   colors = lines(length(Q));
-  plotTargetSets(Q, schemeData, colors)
+  plotTargetSets(Q, obj.g, colors)
   
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
@@ -183,8 +182,7 @@ for i = 1:length(tau)
     
     %% Visualize
     if save_png || save_fig
-      [hc, ho, hn] = plotVehicles(Q, tInds, schemeData, hc, ho, hn, ...
-        colors, CARS.Rc);
+      [hc, ho, hn] = plotVehicles(Q, tInds, obj.g, hc, ho, hn, colors, CARS.Rc);
       
       xlim([-1.2 1.2])
       ylim([-1.2 1.2])
