@@ -117,13 +117,14 @@ intruder_arrived = false;
 last_replan_veh = length(Q)+1;
 for veh = 1:length(Q)
   Q{veh}.data.replan = false;
+  Q{veh}.data.tauBRmin = inf;
+  Q{veh}.data.tauBRmax = -inf;
 end
 
 %% Simulate
 tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
-tauBRmin = inf(length(Q),1);
-tauBRmax = -inf(length(Q),1);
+
 for i = 1:length(tauBR)
   fprintf('t = %f\n', tauBR(i))
   
@@ -161,8 +162,8 @@ for i = 1:length(tauBR)
     %% Control and disturbance for SPP Vehicles
     for veh = 1:length(Q)
       if ~isempty(tInds{veh})
-        tauBRmin(veh) = min(tauBRmin(veh), tau(i));
-        tauBRmax(veh) = max(tauBRmax(veh), tau(i));
+        Q{veh}.data.tauBRmin = min(Q{veh}.data.tauBRmin, tauBR(i));
+        Q{veh}.data.tauBRmax = max(Q{veh}.data.tauBRmax, tauBR(i));
         if safety_vals(veh, i) < safety_threshold
           fprintf('Vehicle %d is performing avoidance.\n', veh)
           

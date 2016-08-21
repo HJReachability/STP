@@ -45,7 +45,7 @@ end
 
 %% Post process loaded data
 % Compute gradients used for optimal control
-fprintf('Computing gradients...')
+fprintf('Computing gradients...\n')
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
@@ -88,33 +88,28 @@ if save_png || save_fig
 end
 
 %% Simulate
-tInds = cell(length(Q),1);
-safety_rel_x = cell(length(Q),1);
+for veh = 1:length(Q)
+  Q{veh}.data.tauARmin = inf;
+  Q{veh}.data.tauARmax = -inf;
+end
+
 for i = 1:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
+    tInd = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
       Q{veh}.data.nomTraj_tau < tauAR(i) + small, 1);
     
-    if ~isempty(tInds{veh})
-      if safety_vals(veh, i) < safety_threshold
-        fprintf('Vehicle %d is performing avoidance.\n', veh)
-        
-        % Safety controller
-        deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
-        u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
-        
-        last_replan_veh = min(last_replan_veh, veh);
-      else
-        liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
-        liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
-        deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
-        
-        u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
-      end
+    if ~isempty(tInd)
+        Q{veh}.data.tauARmin = min(Q{veh}.data.tauARmin, tau(i));
+        Q{veh}.data.tauARmax = max(Q{veh}.data.tauARmax, tau(i));
+      liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
+      liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
+      deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
+
+      u = RTTRS.dynSys.optCtrl([], liveness_rel_x, deriv, 'max');
       % Random disturbance
       d = Q{veh}.uniformDstb();
       Q{veh}.updateState(u, dt, Q{veh}.x, d);
