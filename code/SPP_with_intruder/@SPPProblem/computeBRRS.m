@@ -45,20 +45,16 @@ end
 rawObsBRS.tauIAT = CARS.tau;
 
 %% Problem parameters
-if restart
+if restart || ~exist(obj.BR_RS_filename, 'file')
   fprintf('Initializing vehicles and restarting BR RS computation...\n')
   Q = initRTT(obj, RTTRS);
   
   % File name to save RS data
-  obj.BR_RS_filename = sprintf('%s_chkpt_%f.mat', mfilename, now);  
+  obj.BR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
 else
-  if exist(obj.BR_RS_filename, 'file')
-    fprintf('Loading checkpoint...\n')
-    load(obj.BR_RS_filename)
-    Q = {Q1; Q2; Q3; Q4};
-  else
-    error('BR_RS file (checkpoint) not found!')
-  end
+  fprintf('Loading checkpoint...\n')
+  load(obj.BR_RS_filename)
+  Q = {Q1; Q2; Q3; Q4};
 end
 
 %% Start the computation of reachable sets
@@ -94,6 +90,6 @@ end
 %% Trim vehicles for a smaller file
 Q = trimDataForSim(Q, {'BRS1', 'cylObsBRS'});
 [Q1, Q2, Q3, Q4] = Q{:};
-obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
+obj.BR_sim_filename = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.BR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
 end
