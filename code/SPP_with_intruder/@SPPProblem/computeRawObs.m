@@ -2,6 +2,12 @@ function computeRawObs(obj)
 % [cylObs3D, cylObsBRS] = computeRawObs(RTTRS_filename, tauIAT)
 %     Augments the raw obstacles (for translation on nominal trajectory)
 
+if exist(obj.rawObs_filename, 'file')
+  fprintf(['The rawObs file %s already exists. Skipping rawObs' ...
+  'computation.\n'], obj.rawObs_filename)
+  return
+end
+
 %% Load and migrate RTTRS
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)

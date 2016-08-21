@@ -30,7 +30,7 @@ if nargin < 5
 end
 
 if exist(obj.RTTRS_filename, 'file')
-  fprintf('The RTTRS file %s already exists. Skipping CARS computation.\n', ...
+  fprintf('The RTTRS file %s already exists. Skipping RTTRS computation.\n', ...
     obj.RTTRS_filename)
   return
 end
