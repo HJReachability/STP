@@ -61,7 +61,7 @@ for veh=1:length(Q)
       Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
     end
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
@@ -75,7 +75,7 @@ for veh=1:length(Q)
       Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
     end
     
     %% Compute the nominal trajectories based on BRS1

@@ -32,7 +32,7 @@ if exist(obj.AR_RS_filename_small, 'file')
   fprintf('Loading after-replanning RS...\n')
   load(obj.AR_RS_filename_small)
 else
-  error('Before-replanning RS file not found!')
+  error('After-replanning RS file not found!')
 end
 
 % Load raw obstacles file
