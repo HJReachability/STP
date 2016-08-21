@@ -38,7 +38,7 @@ end
 % Load raw obstacles file
 if exist(obj.rawObs_filename, 'file')
   fprintf('Loading ''raw'' obstacles...\n')
-  load(Obs_filename)
+  load(obj.rawObs_filename)
 else
   error('Raw obstacles file not found!')
 end
