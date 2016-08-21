@@ -213,6 +213,5 @@ for i = 1:length(tau)
     saveReplanData(Q, Qintr, obj.BR_sim_filename);
     return
   end
-
 end
 end
