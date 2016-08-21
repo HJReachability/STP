@@ -16,8 +16,8 @@ if restart || ~exist(obj.AR_RS_filename, 'file')
 else
   fprintf('Loading AR RS checkpoint...\n')
   load(obj.AR_RS_filename)
-  Q = {Q1; Q2; Q3; Q4};
 end
+Q = {Q1; Q2; Q3; Q4};
 
 %% Load files
 if exist(obj.RTTRS_filename, 'file')
