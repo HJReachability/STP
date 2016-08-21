@@ -92,20 +92,20 @@ for veh = 1:length(Q)
   Q{veh}.data.tauARmin = inf;
   Q{veh}.data.tauARmax = -inf;
 end
-
+tInds = cell(length(Q), 1);
 for i = 1:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInd = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
+    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
       Q{veh}.data.nomTraj_tau < tauAR(i) + small, 1);
     
-    if ~isempty(tInd)
+    if ~isempty(tInds{veh})
       Q{veh}.data.tauARmin = min(Q{veh}.data.tauARmin, tauAR(i));
       Q{veh}.data.tauARmax = max(Q{veh}.data.tauARmax, tauAR(i));
-      liveness_rel_x = Q{veh}.data.nomTraj(:,tInd) - Q{veh}.x;
+      liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
       
