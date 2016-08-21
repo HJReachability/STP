@@ -29,10 +29,12 @@ classdef SPPProblem < handle
     rawObs_filename % raw obstacles file name
     
     BR_RS_filename % before replanning reachable sets
+    BR_RS_filename_small
     AR_RS_filename % after replanning reachable sets
+    AR_RS_filename_small
     
-    BR_sim_filename % before replanning simulation file
-    AR_sim_filename % after replanning simulation file
+    BR_sim_filename % before replanning simulation file (simulation results)
+    AR_sim_filename % after replanning simulation file (simulation results)
     resim_filename % resimulation file name
   end
   

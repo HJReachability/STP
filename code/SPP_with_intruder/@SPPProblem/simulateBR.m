@@ -40,9 +40,9 @@ else
 end
 
 % Load path planning reachable set
-if exist(obj.BR_RS_filename, 'file')
+if exist(obj.BR_RS_filename_small, 'file')
   fprintf('Loading before-replanning RS...\n')
-  load(obj.BR_RS_filename)
+  load(obj.BR_RS_filename_small)
 else
   error('Before-replanning RS file not found!')
 end
