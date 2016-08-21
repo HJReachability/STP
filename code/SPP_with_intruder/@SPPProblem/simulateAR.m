@@ -55,7 +55,7 @@ tEnd = -inf;
 for veh = 1:length(Q)
   tEnd = max(tEnd, max(Q{veh}.data.nomTraj_tau));
 end
-tau = obj.tReplan:obj.dt:tEnd;
+tauAR = obj.tReplan:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
@@ -90,14 +90,14 @@ end
 %% Simulate
 tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
-for i = 1:length(tau)
-  fprintf('t = %f\n', tau(i))
+for i = 1:length(tauAR)
+  fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
+      Q{veh}.data.nomTraj_tau < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
       if safety_vals(veh, i) < safety_threshold
@@ -128,7 +128,7 @@ for i = 1:length(tau)
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
     
-    title(sprintf('t = %f', tau(i)))
+    title(sprintf('t = %f', tauAR(i)))
     drawnow;
   end
   
@@ -143,6 +143,8 @@ for i = 1:length(tau)
 end
 
 [Q1, Q2, Q3, Q4] = Q{:};
+obj.tauAR = tauAR;
+obj.tau = [obj.tauBR obj.tauAR];
 obj.resim_filename = sprintf('resim_%f', now);
 save(obj.resim_filename, 'Q1', 'Q2', 'Q3', 'Q4');
 end

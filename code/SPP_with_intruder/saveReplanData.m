@@ -22,6 +22,8 @@ for veh = 1:length(Q)
 
   Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
   Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
+  
+  Qnew{veh}.data.tauBR = Q{veh}.data.tauBR;
   Qnew{veh}.data.replan = Q{veh}.data.replan;
   
   % For vehicles that don't need to replan, copy over nominal trajectory

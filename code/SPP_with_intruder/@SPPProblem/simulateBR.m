@@ -69,7 +69,7 @@ for veh = 1:length(Q)
   tStart = min(tStart, min(Q{veh}.data.nomTraj_tau));
   tEnd = max(tEnd, max(Q{veh}.data.nomTraj_tau));
 end
-tau = tStart:obj.dt:tEnd;
+tauBR = tStart:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
@@ -109,7 +109,7 @@ Qintr = Plane(intrIS, CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, ...
 
 tReplan = inf;
 
-safety_vals = 1e3*ones(length(Q), length(tau));
+safety_vals = 1e3*ones(length(Q), length(tauBR));
 safety_threshold = 0.5;
 intruder_arrived = false;
 
@@ -122,17 +122,19 @@ end
 %% Simulate
 tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
-for i = 1:length(tau)
-  fprintf('t = %f\n', tau(i))
+tauBRmin = inf(length(Q),1);
+tauBRmax = -inf(length(Q),1);
+for i = 1:length(tauBR)
+  fprintf('t = %f\n', tauBR(i))
   
   % Check if nominal trajectory has this t
   for veh = 1:length(Q)
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tau(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tau(i) + small, 1);
+    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauBR(i) - small & ...
+      Q{veh}.data.nomTraj_tau < tauBR(i) + small, 1);
   end
   
   %% Intruder
-  if tau(i) >= tIntr && tau(i) <= tReplan
+  if tauBR(i) >= tIntr && tauBR(i) <= tReplan
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
@@ -150,15 +152,17 @@ for i = 1:length(tau)
     
     % Mark time at which intruder shows up
     if ~intruder_arrived && any(safety_vals(:, i) < safety_threshold)
-      tReplan = tau(i) + max(CARS.tau);
+      tReplan = tauBR(i) + max(CARS.tau);
       intruder_arrived = true;
     end
   end
   
-  if tau(i) <= tReplan
+  if tauBR(i) <= tReplan
     %% Control and disturbance for SPP Vehicles
     for veh = 1:length(Q)
       if ~isempty(tInds{veh})
+        tauBRmin(veh) = min(tauBRmin(veh), tau(i));
+        tauBRmax(veh) = max(tauBRmax(veh), tau(i));
         if safety_vals(veh, i) < safety_threshold
           fprintf('Vehicle %d is performing avoidance.\n', veh)
           
@@ -187,7 +191,7 @@ for i = 1:length(tau)
       xlim([-1.2 1.2])
       ylim([-1.2 1.2])
       
-      title(sprintf('t = %f', tau(i)))
+      title(sprintf('t = %f', tauBR(i)))
       drawnow;
     end
     
@@ -206,7 +210,10 @@ for i = 1:length(tau)
     end
     
     obj.tIntr = tIntr;
-    obj.tReplan = tau(i);
+    obj.tReplan = tauBR(i);
+    obj.tauIntr = obj.tIntr:obj.dt:ob.jtReplan;
+    obj.tauBR = tauBR;
+    
     obj.BR_sim_filename = sprintf('Replan_RS_%f.mat', now);
     saveReplanData(Q, Qintr, obj.BR_sim_filename);
     return

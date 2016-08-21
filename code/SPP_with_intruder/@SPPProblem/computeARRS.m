@@ -95,6 +95,6 @@ end
 %% Trim vehicles for a smaller file
 Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'cylObs'});
 [Q1, Q2, Q3, Q4] = Q{:};
-obj.AR_RS_filename_small = sprintf('%s_%f.mat', mfilename, now);
-save(obj.AR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', 'schemeData', '-v7.3')
+obj.AR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
+save(obj.AR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
 end

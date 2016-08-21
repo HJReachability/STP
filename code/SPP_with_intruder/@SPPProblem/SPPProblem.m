@@ -23,6 +23,10 @@ classdef SPPProblem < handle
     tReplan      % time at which replanning is done (intruder disappearance)
     g = createGrid([-1; -1; -3*pi/2], [1; 1; pi/2], [71; 71; 71], 3); % grid
     
+    tauBR        % Time vector before replanning
+    tauAR        % Time vector after replanning 
+    tau          % Time vector for entire simulation
+    
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
