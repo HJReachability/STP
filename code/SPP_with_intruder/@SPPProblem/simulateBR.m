@@ -212,7 +212,7 @@ for i = 1:length(tauBR)
     
     obj.tIntr = tIntr;
     obj.tReplan = tauBR(i);
-    obj.tauIntr = obj.tIntr:obj.dt:ob.jtReplan;
+    obj.tauIntr = obj.tIntr:obj.dt:obj.tReplan;
     obj.tauBR = tauBR;
     
     obj.BR_sim_filename = sprintf('Replan_RS_%f.mat', now);
