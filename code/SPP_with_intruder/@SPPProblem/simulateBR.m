@@ -134,7 +134,7 @@ for i = 1:length(tau)
   %% Intruder
   if tau(i) >= tIntr && tau(i) <= tReplan
     intrDstb = Qintr.uniformDstb();
-    Qintr.updateState(intrCtrl, dt, Qintr.x, intrDstb);
+    Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
     
     % Check safety
