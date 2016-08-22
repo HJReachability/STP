@@ -139,9 +139,14 @@ for i = 1:length(tauAR)
   end
 end
 
+for veh = 1:length(Q)
+  Q{veh}.data.tauAR = Q{veh}.data.tauARmin:obj.dt:Q{veh}.data.tauARmax;
+  Q{veh}.data.tau = [Q{veh}.data.tauBR Q{veh}.data.tauAR];
+end
 [Q1, Q2, Q3, Q4] = Q{:};
+
 obj.tauAR = tauAR;
 obj.tau = [obj.tauBR obj.tauAR];
 obj.resim_filename = sprintf('resim_%f.mat', now);
-save(obj.resim_filename, 'Q1', 'Q2', 'Q3', 'Q4');
+save(obj.resim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
 end
