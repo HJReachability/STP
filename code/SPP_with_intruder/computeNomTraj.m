@@ -55,6 +55,16 @@ end
 vehicle.data.nomTraj_tau(tInd:end) = [];
 vehicle.data.nomTraj(:,tInd:end) = [];
 
+% Pad based on FRS1_tau, if available
+if isfield(vehicle.data, 'FRS1')
+  indsBeforeBRS1 = find(vehicle.data.FRS1_tau < vehicle.data.BRS1_tau-small);
+  pad_tau = vehicle.data.FRS1_tau(indsBeforeBRS1);
+  pad_nomTraj = repmat(vehicle.data.nomTraj(:,1), 1, length(indsBeforeBRS1));
+  
+  vehicle.data.nomTraj_tau = [pad_tau vehicle.data.nomTraj_tau];
+  vehicle.data.nomTraj = [pad_nomTraj vehicle.data.nomTraj];
+end
+
 % Undo control bounds modification
 vehicle.vrange = vehicle.vrange - vehicle.data.vReserved;
 vehicle.wMax = vehicle.wMax - vehicle.data.wReserved;
