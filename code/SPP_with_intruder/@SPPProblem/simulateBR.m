@@ -247,11 +247,8 @@ for veh = 1:length(Q)
   Qnew{veh}.data.tauBR = Q{veh}.data.tauBRmin:obj.dt:Q{veh}.data.tauBRmax;
   Qnew{veh}.data.replan = Q{veh}.data.replan;
   
-  % For vehicles that don't need to replan, copy over nominal trajectory
-  if ~Q{veh}.data.replan
-    Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
-    Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
-  end
+  Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
+  Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
 end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};

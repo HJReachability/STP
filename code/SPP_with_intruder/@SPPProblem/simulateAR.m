@@ -61,16 +61,13 @@ tauAR = obj.tReplan:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
-  rawCylObs.data = zeros([obj.g.N' length(CARS.tau)]);
-  for i = 1:length(CARS.tau)
-    rawCylObs.data(:,:,:,i) = ...
-      migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), obj.g);
-  end
-  rawCylObs.tauIAT = CARS.tau;
+  obs3D = migrateGrid(RTTRS.g, -RTTRS.data, obj.g);
+  obs2D = proj(obj.g, obs3D, [0 0 1]);
+  obs2D = addCRadius(obj.g, obs2D, CARS.Rc);
   
   for veh = 1:length(Q)
-    fprintf('Adding cylindrical obstacles vehicle %d for visualization...\n', veh)
-    Q{veh} = addCylObs(Q{veh}, obj.g, rawCylObs);
+    fprintf('Adding obstacles vehicle %d for visualization...\n', veh)
+    
   end
   
   % For saving graphics
