@@ -51,6 +51,7 @@ for i = 1:length(obj.nomTraj_tau)
   rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
   
   % Subtract target set
-  obj.obs2D(:,:,i) = max(rawObsDatai, -obj.target);
+  target2D = shapeSphere(g2D, obj.targetCenter, obj.targetR);
+  obj.obs2D(:,:,i) = max(rawObsDatai, -target2D);
 end
 end
