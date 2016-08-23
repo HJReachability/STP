@@ -30,11 +30,11 @@ for i = 1:length(obj.nomTraj_tau)
   p = obj.nomTraj(1:2, i);
   t = obj.nomTraj(3, i);
   
-  if replan && tauNow < SPPP.tReplan
+  if replan && obj.nomTraj_tau(i) < SPPP.tReplan
     % Before replanning:
     %     for the first tauIAT time steps, use the i-step FRS projection
     tauElapsed = obj.nomTraj_tau(i) - min(obj.nomTraj_tau);
-    if tauNow-min(obj.nomTraj_tau) < max(tauIAT)
+    if tauElapsed < max(tauIAT)
       obsInd = find(CARS.tau > tauElapsed-small & CARS.tau < tauElapsed+small);
     else
       obsInd = length(tauIAT);
