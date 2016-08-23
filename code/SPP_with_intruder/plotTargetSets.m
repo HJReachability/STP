@@ -1,8 +1,8 @@
-function plotTargetSets(Q, g, colors)
+function plotTargetSets(Q, g2D, colors)
 
 for veh = 1:length(Q)
-  [g2D, data2D] = proj(g, Q{veh}.data.target, [0 0 1]);
-  ht = visSetIm(g2D, data2D, colors(veh,:));
+  target2D = shapeSphere(g2D, Q{veh}.targetCenter, Q{veh}.targetR);
+  ht = visSetIm(g2D, target2D, colors(veh,:));
   ht.LineWidth = 3;
   hold on
 end
