@@ -63,7 +63,7 @@ obs3D = zeros(size(augObsFRS));
 
 for i = 1:size(augObsFRS,4)
   obs2D(:,:,i) = addCRadius(g2D, obs2D(:,:,i), Rc);
-  obs3D(:,:,:,i) = repmat(obs2D, [1 1 g.N(3)]);
+  obs3D(:,:,:,i) = repmat(obs2D(:,:,i), [1 1 g.N(3)]);
 end
 end
 

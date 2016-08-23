@@ -1,6 +1,4 @@
 function simulateAR(obj, save_png, save_fig)
-% NEED TO USE RTTRS AS OBSTACLES INSTEAD OF RAWOBS
-
 %% Default inputs
 if nargin < 2
   save_png = true;

@@ -10,5 +10,5 @@ obj.computeBRRS;
 obj.simulateBR;
 obj.computeARRS;
 obj.simulateAR;
-obj.resimulate;
+obj.simulateFull;
 end

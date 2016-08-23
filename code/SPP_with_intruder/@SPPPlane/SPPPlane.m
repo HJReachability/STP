@@ -34,6 +34,7 @@ classdef SPPPlane < Plane
     replan = false % Whether replan is done
     tauBR
     tauAR
+    tau
   end
   
   methods
