@@ -34,10 +34,10 @@ for i = 1:length(obj.nomTraj_tau)
     % Before replanning:
     %     for the first tauIAT time steps, use the i-step FRS projection
     tauElapsed = obj.nomTraj_tau(i) - min(obj.nomTraj_tau);
-    if tauElapsed < max(tauIAT)
+    if tauElapsed < max(CARS.tau)
       obsInd = find(CARS.tau > tauElapsed-small & CARS.tau < tauElapsed+small);
     else
-      obsInd = length(tauIAT);
+      obsInd = length(CARS.tau);
     end
     
     rawObsToRotate = rawAugObs2D(:,:,obsInd);
