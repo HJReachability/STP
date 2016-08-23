@@ -4,9 +4,7 @@ function Q = trimDataForSim(Q, fieldsToRemove)
 
 for veh = 1:length(Q)
   for i = 1:length(fieldsToRemove)
-    if isfield(Q{veh}.data, fieldsToRemove{i})
-      Q{veh}.data = rmfield(Q{veh}.data, fieldsToRemove{i});
-    end
+    Q{veh}.(fieldsToRemove{i}) = [];
   end
 end
 end

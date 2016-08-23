@@ -1,4 +1,4 @@
-function vehicle = computeBRS1(vehicle, BRS1_tau, schemeData, obstacles)
+function computeBRS1(obj, BRS1_tau, schemeData, obstacles)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
 %     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
@@ -31,7 +31,7 @@ schemeData.tMode = 'backward';
 
 extraArgs.visualize = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
-extraArgs.plotData.projpt = vehicle.x(3);
+extraArgs.plotData.projpt = obj.x(3);
 
 folder = sprintf('BRS_%f', now);
 system(sprintf('mkdir %s', folder));
@@ -41,15 +41,15 @@ extraArgs.fig_filename = sprintf('%s/', folder);
 extraArgs.obstacles = obstacles;
 
 % Min with target
-extraArgs.targets = vehicle.data.targetsm;
+extraArgs.targets = obj.targetsm;
 
 % Computation should stop once it contains the initial state
-extraArgs.stopInit = vehicle.x;
+extraArgs.stopInit = obj.x;
 
-[vehicle.data.BRS1, tau] = ...
-  HJIPDE_solve(vehicle.data.targetsm, BRS1_tau, schemeData, 'none', extraArgs);
+[BRS1, tau] = HJIPDE_solve(obj.targetsm, BRS1_tau, schemeData, 'none', ...
+  extraArgs);
 
 % Reverse the order of time elements
-vehicle.data.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
-vehicle.data.BRS1 = flip(vehicle.data.BRS1, 4);
+obj.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
+obj.BRS1 = flip(BRS1, 4);
 end

@@ -1,4 +1,4 @@
-function vehicle = determineETA(vehicle, tauFRS, schemeData, obstacles)
+function determineETA(obj, tauFRS, schemeData, obstacles)
 % ETA = determineETA(vehicle, tauFRS, schemeData, obstacles)
 %     Computes the ETA of a vehicle
 
@@ -7,7 +7,7 @@ schemeData.dMode = 'min';
 schemeData.tMode = 'forward';
 
 % Center the grid between target and current vehicle state
-center = 0.5*(vehicle.data.targetCenter + vehicle.x);
+center = 0.5*(obj.targetCenter + obj.x);
 
 new_gmin = center - 1;
 new_gmin(3) = schemeData.grid.min(3); 
@@ -18,7 +18,7 @@ old_g = schemeData.grid;
 schemeData.grid = new_g;
 
 % Min with target
-extraArgs.targets = shapeEllipsoid(schemeData.grid, vehicle.x, ...
+extraArgs.targets = shapeEllipsoid(schemeData.grid, obj.x, ...
   2*schemeData.grid.dx);
 
 % Set obstacles
@@ -30,22 +30,22 @@ end
 
 % Computation should stop once it contains the initial state
 extraArgs.stopSetIntersect = shapeCylinder(schemeData.grid, 3, ...
-  vehicle.data.targetCenter, vehicle.data.targetRsmall);
+  obj.data.targetCenter, obj.data.targetRsmall);
 
 % Compute the FRS
 extraArgs.visualize = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
-extraArgs.plotData.projpt = vehicle.x(3);
+extraArgs.plotData.projpt = obj.x(3);
 
 folder = sprintf('FRS_%f', now);
 system(sprintf('mkdir %s', folder));
 
 extraArgs.fig_filename = sprintf('%s/', folder);
-[vehicle.data.FRS1, vehicle.data.FRS1_tau] = ...
+[obj.data.FRS1, obj.data.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 
-vehicle.data.FRS1_g = schemeData.grid;
+obj.data.FRS1_g = schemeData.grid;
 
 % Extract ETA
-vehicle.data.ETA = vehicle.data.FRS1_tau(end);
+obj.data.ETA = obj.data.FRS1_tau(end);
 end
