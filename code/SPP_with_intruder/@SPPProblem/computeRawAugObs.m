@@ -4,7 +4,7 @@ function computeRawAugObs(obj, RTTRS)
 
 if exist(obj.rawAugObs_filename, 'file')
   fprintf(['The rawObs file %s already exists. Skipping rawObs' ...
-  'computation.\n'], obj.rawObs_filename)
+  'computation.\n'], obj.rawAugObs_filename)
   return
 end
 
