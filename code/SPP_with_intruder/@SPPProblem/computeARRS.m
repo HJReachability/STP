@@ -80,7 +80,7 @@ for veh = 1:length(Q)
   %% Compute induced obstacles
   if ~isfield(Q{veh}.data, 'obsForRTT')
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
-    Q{veh} = computeObsForRTT(Q{veh}, SPPP, CARS.Rc, RTTRS);
+    Q{veh}.computeObsForRTT(obj, CARS.Rc, RTTRS);
   end
 end
 
