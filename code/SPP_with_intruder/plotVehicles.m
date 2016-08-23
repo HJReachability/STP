@@ -1,5 +1,5 @@
 function [hc, ho, hn] = ...
-  plotVehicles(Q, tInds, g, hc, ho, hn, colors, capture_radius)
+  plotVehicles(Q, tInds, g2D, hc, ho, hn, colors, capture_radius)
 % plotVehicles(Q, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
@@ -15,22 +15,20 @@ for veh = 1:length(Q)
     end
     
     % Plot induced obstacles
-    [g2D, data2D] = ...
-      proj(g, Q{veh}.data.cylObs3D(:,:,:,tInds{veh}), [0 0 1]);
     if isempty(ho{veh})
-      ho{veh} = visSetIm(g2D, data2D, colors(veh, :));
+      ho{veh} = visSetIm(g2D, Q{veh}.obs2D(:,:,tInds{veh}), colors(veh, :));
       ho{veh}.LineStyle = '--';
     else
-      ho{veh}.ZData = data2D;
+      ho{veh}.ZData = Q{veh}.obs2D(:,:,tInds{veh});
     end
     
     % Plot nominal trajectory
     if isempty(hn{veh})
-      hn{veh} = plot(Q{veh}.data.nomTraj(1,tInds{veh}), ...
-        Q{veh}.data.nomTraj(2,tInds{veh}), '*', 'color', colors(veh,:));
+      hn{veh} = plot(Q{veh}.nomTraj(1,tInds{veh}), ...
+        Q{veh}.nomTraj(2,tInds{veh}), '*', 'color', colors(veh,:));
     else
-      hn{veh}.XData = Q{veh}.data.nomTraj(1,tInds{veh});
-      hn{veh}.YData = Q{veh}.data.nomTraj(2,tInds{veh});
+      hn{veh}.XData = Q{veh}.nomTraj(1,tInds{veh});
+      hn{veh}.YData = Q{veh}.nomTraj(2,tInds{veh});
     end
     
     % Plot position
