@@ -1,11 +1,11 @@
-function obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type, tMode)
+function obstacles = gatherObstacles(vehicles, g, tau, obs_type, tMode)
 % obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
 %     Gathers obstacles by combining obstacles in the field obs_type of each
 %     vehicle in the vehicles list
 
 % If there are no vehicles in the input, and there is no static obstacles...
 if isempty(vehicles)
-  obstacles = inf(schemeData.grid.N');
+  obstacles = inf(g.N');
   return
 end
 
@@ -19,12 +19,12 @@ obsSet = cell(length(vehicles), 1);
 obsSet_tau = cell(length(vehicles), 1);
 
 for i = 1:length(obsSet)
-  obsSet{i} = vehicles{i}.data.(obs_type);
-  obsSet_tau{i} = vehicles{i}.data.(sprintf('%s_tau', obs_type));
+  obsSet{i} = vehicles{i}.(obs_type);
+  obsSet_tau{i} = vehicles{i}.(sprintf('%s_tau', obs_type));
 end
 
 obstacles = ...
-  gatherObstacles_helper(schemeData.grid, obsSet, obsSet_tau, tau, tMode);
+  gatherObstacles_helper(g, obsSet, obsSet_tau, tau, tMode);
 
 end
 

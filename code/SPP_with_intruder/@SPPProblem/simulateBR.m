@@ -48,9 +48,9 @@ else
 end
 
 % Load raw obstacles file
-if exist(obj.rawObs_filename, 'file')
+if exist(obj.rawAugObs_filename, 'file')
   fprintf('Loading ''raw'' obstacles...\n')
-  load(obj.rawObs_filename)
+  load(obj.rawAugObs_filename)
 else
   error('Raw obstacles file not found!')
 end
@@ -66,23 +66,16 @@ Q = {Q1;Q2;Q3;Q4};
 tStart = inf;
 tEnd = -inf;
 for veh = 1:length(Q)
-  tStart = min(tStart, min(Q{veh}.data.nomTraj_tau));
-  tEnd = max(tEnd, max(Q{veh}.data.nomTraj_tau));
+  tStart = min(tStart, min(Q{veh}.nomTraj_tau));
+  tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
 end
 tauBR = tStart:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
-  rawCylObs.data = zeros([obj.g.N' length(CARS.tau)]);
-  for i = 1:length(CARS.tau)
-    rawCylObs.data(:,:,:,i) = ...
-      migrateGrid(rawObs.g, rawObs.cylObs3D(:,:,:,i), obj.g);
-  end
-  rawCylObs.tauIAT = CARS.tau;
-  
   for veh = 1:length(Q)
-    fprintf('Adding cylindrical obstacles vehicle %d for visualization...\n', veh)
-    Q{veh} = addCylObs(Q{veh}, obj.g, rawCylObs);
+    fprintf('Adding obstacles for vehicle %d for visualization...\n', veh)
+    Q{veh}.addObs2D(obj, RTTRS, CARS, rawAugObs);
   end
   
   % For saving graphics
@@ -104,8 +97,8 @@ if save_png || save_fig
 end
 
 %% Initialize intruder
-Qintr = Plane(intrIS, CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, ...
-  CARS.dynSys.dMaxB);
+Qintr = ...
+  SPPPlane(intrIS, CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
 tReplan = inf;
 
@@ -115,11 +108,8 @@ intruder_arrived = false;
 
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
-for veh = 1:length(Q)
-  Q{veh}.data.replan = false;
-  Q{veh}.data.tauBRmin = inf;
-  Q{veh}.data.tauBRmax = -inf;
-end
+tauBRmin = inf(length(Q), 1);
+tauBRmax = -inf(length(Q), 1);
 
 %% Simulate
 tInds = cell(length(Q),1);
@@ -135,8 +125,8 @@ for i = 1:length(tauBR)
   
   % Check if nominal trajectory has this t
   for veh = 1:length(Q)
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauBR(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tauBR(i) + small, 1);
+    tInds{veh} = find(Q{veh}.nomTraj_tau > tauBR(i) - small & ...
+      Q{veh}.nomTraj_tau < tauBR(i) + small, 1);
   end
   
   %% Intruder
@@ -166,8 +156,8 @@ for i = 1:length(tauBR)
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     if ~isempty(tInds{veh})
-      Q{veh}.data.tauBRmin = min(Q{veh}.data.tauBRmin, tauBR(i));
-      Q{veh}.data.tauBRmax = max(Q{veh}.data.tauBRmax, tauBR(i));
+      tauBRmin(veh) = min(tauBRmin(veh), tauBR(i));
+      tauBRmax(veh) = max(tauBRmax(veh), tauBR(i));
       if safety_vals(veh, i) < safety_threshold
         fprintf('Vehicle %d is performing avoidance.\n', veh)
         
@@ -177,7 +167,7 @@ for i = 1:length(tauBR)
         
         last_replan_veh = min(last_replan_veh, veh);
       else
-        liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
+        liveness_rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
         liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
         deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
         
@@ -213,7 +203,7 @@ end
 %% Save data
 fprintf('Saving data for replanning.\n')
 for veh = last_replan_veh:length(Q)
-  Q{veh}.data.replan = true;
+  Q{veh}.replan = true;
 end
 
 Qintr.data.tauBR = obj.tIntr:obj.dt:obj.tReplan;
@@ -227,7 +217,7 @@ obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 Qnew = cell(length(Q),1);
 for veh = 1:length(Q)
   % Basic class properties
-  Qnew{veh} = Plane(Q{veh}.x, Q{veh}.wMax, Q{veh}.vrange, Q{veh}.dMax);
+  Qnew{veh} = SPPPlane(Q{veh}.x, Q{veh}.wMax, Q{veh}.vrange, Q{veh}.dMax);
   Qnew{veh}.xhist = Q{veh}.xhist;
   Qnew{veh}.u = Q{veh}.u;
   Qnew{veh}.uhist = Q{veh}.uhist;
@@ -235,20 +225,20 @@ for veh = 1:length(Q)
   Qnew{veh}.hpxpyhist = Q{veh}.hpxpyhist;
   
   % Data
-  Qnew{veh}.data.targetCenter = Q{veh}.data.targetCenter;
-  Qnew{veh}.data.targetRsmall = Q{veh}.data.targetRsmall;
-  Qnew{veh}.data.targetR = Q{veh}.data.targetR;
-  Qnew{veh}.data.target = Q{veh}.data.target;
-  Qnew{veh}.data.targetsm = Q{veh}.data.targetsm;
+  Qnew{veh}.targetCenter = Q{veh}.targetCenter;
+  Qnew{veh}.targetRsmall = Q{veh}.targetRsmall;
+  Qnew{veh}.targetR = Q{veh}.targetR;
+  Qnew{veh}.target = Q{veh}.target;
+  Qnew{veh}.targetsm = Q{veh}.targetsm;
   
-  Qnew{veh}.data.vReserved = Q{veh}.data.vReserved;
-  Qnew{veh}.data.wReserved = Q{veh}.data.wReserved;
+  Qnew{veh}.vReserved = Q{veh}.vReserved;
+  Qnew{veh}.wReserved = Q{veh}.wReserved;
   
-  Qnew{veh}.data.tauBR = Q{veh}.data.tauBRmin:obj.dt:Q{veh}.data.tauBRmax;
-  Qnew{veh}.data.replan = Q{veh}.data.replan;
+  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:tauBRmax(veh);
+  Qnew{veh}.replan = Q{veh}.replan;
   
-  Qnew{veh}.data.nomTraj = Q{veh}.data.nomTraj;
-  Qnew{veh}.data.nomTraj_tau = Q{veh}.data.nomTraj_tau;
+  Qnew{veh}.nomTraj = Q{veh}.nomTraj;
+  Qnew{veh}.nomTraj_tau = Q{veh}.nomTraj_tau;
 end
 
 [Q1, Q2, Q3, Q4] = Qnew{:};

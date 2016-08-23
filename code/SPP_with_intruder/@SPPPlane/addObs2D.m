@@ -1,16 +1,17 @@
-function addObs2D(obj, SPPP, RTTRS, CARS, rawAugmentedObs)
+function addObs2D(obj, SPPP, RTTRS, CARS, rawAugObs)
+% addObs2D(obj, SPPP, RTTRS, CARS, rawAugmentedObs)
+%     Adds 2D obstacles for visualization. If replanning was done, then the
+%     appropriately augmented obstacles are added for the times before
+%     replanning
 
 g = SPPP.g;
 g2D = SPPP.g2D;
 
-% If there's a replan time, then migrate and flatten augmented obstacles
-if ~isempty(SPPP.tReplan)
-  tauIAT = rawAugmentedObs.tauIAT;
-  rawAugmentedObs2D = zeros([g2D.N' length(tauIAT)]);
-  for i = 1:length(tauIAT);
-    [~, rawAugmentedObs2D(:,:,i)] = ...
-      proj(g, rawAugmentedObs.data(:,:,:,i), [0 0 1]);
-  end
+% If there's a replan time, then migrate flattened augmented obstacles
+replan = false;
+if ~isempty(SPPP.tReplan) && nargin > 4
+  replan = true;
+  rawAugObs2D = migrateGrid(rawAugObs.g2D, rawAugObs.data2D, g2D);
 end
 
 % Migrate and add capture radius to RTTRS
@@ -25,10 +26,11 @@ obj.obs2D = zeros([g2D.N' length(obj.nomTraj_tau)]);
 small = 1e-4;
 trajInd = 0;
 for i = 1:length(obj.nomTraj_tau)
-  
+  % Shift and rotation amounts
   p = obj.nomTraj(1:2, trajInd);
+  t = obj.nomTraj(3, trajInd);
   
-  if obj.nomTraj_tau(i) < tReplan
+  if replan && obj.nomTraj_tau(i) < SPPP.tReplan
     % If we haven't replanned yet, add the augmented obstacles (only applicable
     % to SPP with intruder
     
@@ -42,11 +44,12 @@ for i = 1:length(obj.nomTraj_tau)
     end
     trajInd = max(trajInd, 1);
     
-    rawObsDatai = shiftData(g2D, rawAugmentedObs2D(:,:,obsInd), p, [1 2]);
+    rawObsDatai = rotateData(g2D, rawAugObs2D(:,:,obsInd), t, [1 2], []);
+    rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
     
   else
-    
-    rawObsDatai = shiftData(g2D, rawObs2D, p, [1 2]);
+    rawObsDatai = rotateData(g2D, rawObs2D, t, [1 2], []);
+    rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
   end
   
   % Subtract target set

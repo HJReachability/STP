@@ -34,31 +34,23 @@ else
   error('CARS file not found!')
 end
 
-%% Grid and time
-schemeData.grid = obj.g;
+%% Time
 tFRS_max = 2;
 tauFRS = obj.tReplan:obj.dt:tFRS_max;
 
-%% Flattening and adding capture radius to RTTRS
-RTTRS_temp = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
-[augRTTRS2D.g, RTTRS2D] = proj(schemeData.grid, RTTRS_temp, [0 0 1]);
-augRTTRS2D.data = addCRadius(augRTTRS2D.g, RTTRS2D, CARS.Rc);
-
 %% Start the computation of reachable sets
-for veh=1:length(Q)
-  if Q{veh}.data.replan
-    schemeData.dynSys = Q{veh};
-    
+for veh = 1:length(Q)
+  if Q{veh}.replan
     %% Gather induced obstacles for FRS computation
     % Assume there's no static obstacle
     fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, tauFRS, 'cylObs', 'forward');
+      gatherObstacles(Q(1:veh-1), obj.g, tauFRS, 'obsForRTT', 'forward');
     
     %% Compute FRS to determine the ETA
-    if ~isfield(Q{veh}.data, 'ETA')
-      fprintf('Determining ETA for vehicle %d\n', veh)
-      Q{veh} = determineETA(Q{veh}, tauFRS, schemeData, obstacles);
+    if ~isfield(Q{veh}.data, 'FRS1')
+      fprintf('Computing FRS1 for vehicle %d\n', veh)
+      Q{veh}.computeFRS1(tauFRS, obj.g, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
       save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
@@ -69,10 +61,10 @@ for veh=1:length(Q)
       tauBRS = Q{veh}.data.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
-        gatherObstacles(Q(1:veh-1), schemeData, tauBRS, 'cylObs', 'backward');
+        gatherObstacles(Q(1:veh-1), obj.g, tauBRS, 'obsForRTT', 'backward');
       
       fprintf('Computing BRS1 for vehicle %d\n', veh)
-      Q{veh} = computeBRS1(Q{veh}, tauBRS, schemeData, obstacles);
+      Q{veh}.computeBRS1(tauBRS, obj.g, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
       save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
@@ -81,19 +73,19 @@ for veh=1:length(Q)
     %% Compute the nominal trajectories based on BRS1
     if ~isfield(Q{veh}.data, 'nomTraj')
       fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-      Q{veh} = computeNomTraj(Q{veh}, schemeData);
+      Q{veh}.computeNomTraj(obj.g);
     end
   end
   
   %% Compute induced obstacles
-  if ~isfield(Q{veh}.data, 'cylObs')
+  if ~isfield(Q{veh}.data, 'obsForRTT')
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
-    Q{veh} = computeCylObs(Q{veh}, schemeData, augRTTRS2D);
+    Q{veh} = computeObsForRTT(Q{veh}, SPPP, CARS.Rc, RTTRS);
   end
 end
 
 %% Trim vehicles for a smaller file
-Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'cylObs'});
+Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'obsForRTT'});
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.AR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.AR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')

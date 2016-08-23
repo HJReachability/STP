@@ -1,4 +1,4 @@
-function computeBRS1(obj, BRS1_tau, schemeData, obstacles)
+function computeBRS1(obj, BRS1_tau, g, obstacles)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
 %     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
@@ -23,9 +23,11 @@ function computeBRS1(obj, BRS1_tau, schemeData, obstacles)
 % using same tau as FRS is causing BRS to not include target
 
 % Set schemeData
+schemeData.grid = g;
 schemeData.uMode = 'min';
 schemeData.dMode = 'max';
 schemeData.tMode = 'backward';
+schemeData.dynSys = obj;
 
 % Set extraArgs
 

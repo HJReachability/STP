@@ -1,5 +1,5 @@
 classdef SPPPlane < Plane
-  % Specialized Plane class for the SPP project
+  % Specialized Plane class with SPP-related properties for the SPP project 
   
   properties
     vReserved
@@ -19,6 +19,7 @@ classdef SPPPlane < Plane
     
     FRS1
     FRS1_tau
+    FRS1_g
     
     obs2D
     obs2D_tau
@@ -26,6 +27,13 @@ classdef SPPPlane < Plane
     target
     targetsm
     targetCenter
+    targetR
+    targetRsmall
+    
+    % Replanning
+    replan = false % Whether replan is done
+    tauBR
+    tauAR
   end
   
   methods

@@ -3,24 +3,25 @@ function Q = initRTT(SPPP, RTTRS)
 %     Initializes Plane objects for the RTT method SPP problem
 
 numVeh = length(SPPP.initStates);
-Q = cell(numVeh, 1);
 targetRsmall = SPPP.targetR - RTTRS.trackingRadius;
+wMax = RTTRS.dynSys.wMaxA;
+vrange = RTTRS.dynSys.vRangeA;
+dMax = RTTRS.dynSys.dMaxA;
+
+Q = cell(numVeh, 1);
 for i = 1:numVeh
   % Initial state and parameters
-  Q{i} = Plane(SPPP.initStates{i}, ...
-    RTTRS.dynSys.wMaxA, RTTRS.dynSys.vRangeA, RTTRS.dynSys.dMaxA);
+  Q{i} = SPPPlane(SPPP.initStates{i}, wMax, vrange, dMax);
   
   % Target set (for convenience)
-  Q{i}.data.target = ...
-    shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, SPPP.targetR);
-  Q{i}.data.targetsm = ...
-    shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, targetRsmall);
-  Q{i}.data.targetCenter = SPPP.targetCenters{i};
-  Q{i}.data.targetR = SPPP.targetR;
-  Q{i}.data.targetRsmall = targetRsmall;
+  Q{i}.target = shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, SPPP.targetR);
+  Q{i}.targetsm = shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, targetRsmall);
+  Q{i}.targetCenter = SPPP.targetCenters{i};
+  Q{i}.targetR = SPPP.targetR;
+  Q{i}.targetRsmall = targetRsmall;
   
   % Reserved control authorities
-  Q{i}.data.vReserved = RTTRS.dynSys.vRangeB - RTTRS.dynSys.vRangeA;
-  Q{i}.data.wReserved = RTTRS.dynSys.wMaxB - RTTRS.dynSys.wMaxA;
+  Q{i}.vReserved = RTTRS.dynSys.vRangeB - vrange;
+  Q{i}.wReserved = RTTRS.dynSys.wMaxB - wMax;
 end
 end

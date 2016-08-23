@@ -38,9 +38,9 @@ else
 end
 
 % Load raw obstacles file
-if exist(obj.rawObs_filename, 'file')
-  fprintf('Loading ''raw'' obstacles...\n')
-  load(obj.rawObs_filename)
+if exist(obj.rawAugObs_filename, 'file')
+  fprintf('Loading ''raw'' augmented obstacles...\n')
+  load(obj.rawAugObs_filename)
 else
   error('Raw obstacles file not found!')
 end
@@ -61,13 +61,9 @@ tauAR = obj.tReplan:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
-  obs3D = migrateGrid(RTTRS.g, -RTTRS.data, obj.g);
-  obs2D = proj(obj.g, obs3D, [0 0 1]);
-  obs2D = addCRadius(obj.g, obs2D, CARS.Rc);
-  
   for veh = 1:length(Q)
     fprintf('Adding obstacles vehicle %d for visualization...\n', veh)
-    
+    Q{veh}.addObs2D(obj, RTTRS, CARS);
   end
   
   % For saving graphics
@@ -87,24 +83,22 @@ if save_png || save_fig
 end
 
 %% Simulate
-for veh = 1:length(Q)
-  Q{veh}.data.tauARmin = inf;
-  Q{veh}.data.tauARmax = -inf;
-end
-tInds = cell(length(Q), 1);
+tauARmin = inf(length(Q), 1);
+tauARmax = -inf(length(Q), 1);
+
 for i = 1:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.data.nomTraj_tau > tauAR(i) - small & ...
-      Q{veh}.data.nomTraj_tau < tauAR(i) + small, 1);
+    tInds{veh} = find(Q{veh}.nomTraj_tau > tauAR(i) - small & ...
+      Q{veh}.nomTraj_tau < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
-      Q{veh}.data.tauARmin = min(Q{veh}.data.tauARmin, tauAR(i));
-      Q{veh}.data.tauARmax = max(Q{veh}.data.tauARmax, tauAR(i));
-      liveness_rel_x = Q{veh}.data.nomTraj(:,tInds{veh}) - Q{veh}.x;
+      tauARmin(veh) = min(tauARmin(veh), tauAR(i));
+      tauARmax(veh) = max(tauARmax(veh), tauAR(i));
+      liveness_rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
       
@@ -137,13 +131,13 @@ for i = 1:length(tauAR)
 end
 
 for veh = 1:length(Q)
-  Q{veh}.data.tauAR = Q{veh}.data.tauARmin:obj.dt:Q{veh}.data.tauARmax;
-  Q{veh}.data.tau = [Q{veh}.data.tauBR Q{veh}.data.tauAR];
+  Q{veh}.tauAR = tauARmin(veh):obj.dt:tauARmax(veh);
+  Q{veh}.tau = [Q{veh}.tauBR Q{veh}.tauAR];
 end
 [Q1, Q2, Q3, Q4] = Q{:};
 
 obj.tauAR = tauAR;
 obj.tau = [obj.tauBR obj.tauAR];
-obj.resim_filename = sprintf('resim_%f.mat', now);
-save(obj.resim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
+obj.full_sim_filename = sprintf('resim_%f.mat', now);
+save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
 end

@@ -36,7 +36,7 @@ classdef SPPProblem < handle
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
-    rawObs_filename % raw obstacles file name
+    rawAugObs_filename % raw augmented obstacles file name
     
     BR_RS_filename % before replanning reachable sets
     BR_RS_filename_small
@@ -44,8 +44,7 @@ classdef SPPProblem < handle
     AR_RS_filename_small
     
     BR_sim_filename % before replanning simulation file (simulation results)
-    AR_sim_filename % after replanning simulation file (simulation results)
-    resim_filename % resimulation file name
+    full_sim_filename % full simulation file (simulation results)
   end
   
   methods

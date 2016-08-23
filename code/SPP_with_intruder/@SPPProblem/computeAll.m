@@ -5,7 +5,7 @@ function computeAll(obj)
 
 obj.computeRTTRS;
 obj.computeCARS;
-obj.computeRawObs;
+obj.computeRawAugObs;
 obj.computeBRRS;
 obj.simulateBR;
 obj.computeARRS;

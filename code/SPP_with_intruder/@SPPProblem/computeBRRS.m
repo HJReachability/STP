@@ -50,30 +50,19 @@ else
   Q = {Q1; Q2; Q3; Q4};
 end
 
-%% Grid and time
-schemeData.grid = obj.g;
+%% Time
 BRS1_tau = obj.tMin:obj.dt:obj.tTarget;
-
-%% Migrate raw augmented obstacles
-rawObsBRS.data = zeros([schemeData.grid.N' length(CARS.tau)]);
-for i = 1:length(CARS.tau)
-  rawObsBRS.data(:,:,:,i) = ...
-    migrateGrid(rawObs.g, rawObs.cylObsBRS(:,:,:,i), schemeData.grid);
-end
-rawObsBRS.tauIAT = CARS.tau;
 
 %% Start the computation of reachable sets
 for veh=1:length(Q)
-  schemeData.dynSys = Q{veh};
-  
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if ~isfield(Q{veh}.data, 'BRS1')
     fprintf('Gathering obstacles for vehicle %d...\n', veh)
     obstacles = ...
-      gatherObstacles(Q(1:veh-1), schemeData, BRS1_tau, 'cylObsBRS');
+      gatherObstacles(Q(1:veh-1), obj.g, BRS1_tau, 'obsForIntr');
     
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(BRS1_tau, schemeData, obstacles);
+    Q{veh}.computeBRS1(BRS1_tau, SPPP.g, obstacles);
     
     [Q1, Q2, Q3, Q4] = Q{:};
     save(obj.BR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
@@ -82,18 +71,20 @@ for veh=1:length(Q)
   %% Compute the nominal trajectories based on BRS1
   if ~isfield(Q{veh}.data, 'nomTraj')
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-    Q{veh}.computeNomTraj(schemeData);
+    Q{veh}.computeNomTraj(SPPP.g);
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
-  if ~isfield(Q{veh}.data, 'cylObsBRS')
+  if ~isfield(Q{veh}.data, 'obsForIntr')
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh}.augmentObstacles(schemeData, rawObsBRS);
+    Q{veh}.computeObsForIntr(SPPP.g, CARS, rawObsBRS);
   end
 end
 
 %% Trim vehicles for a smaller file
-Q = trimDataForSim(Q, {'BRS1', 'cylObsBRS'});
+for veh = 1:length(Q)
+  Q{veh}.trimData({'BRS1', 'obsForIntr'});
+end
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.BR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.BR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')

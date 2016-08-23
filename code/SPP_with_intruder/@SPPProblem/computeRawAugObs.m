@@ -1,8 +1,8 @@
-function computeRawObs(obj)
-% [cylObs3D, cylObsBRS] = computeRawObs(RTTRS_filename, tauIAT)
+function computeRawAugObs(obj, RTTRS)
+% computeRawAugObs(obj)
 %     Augments the raw obstacles (for translation on nominal trajectory)
 
-if exist(obj.rawObs_filename, 'file')
+if exist(obj.rawAugObs_filename, 'file')
   fprintf(['The rawObs file %s already exists. Skipping rawObs' ...
   'computation.\n'], obj.rawObs_filename)
   return
@@ -12,8 +12,8 @@ end
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
-schemeData.grid = ...
-  createGrid([-0.4; -0.5; -3*pi/2], [0.6; 0.5; pi/2], [51; 51; 51], 3);
+g = createGrid([-0.4; -0.5; -3*pi/2], [0.6; 0.5; pi/2], [51; 51; 51], 3);
+schemeData.grid = g;
 
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
 
@@ -27,23 +27,23 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 % Compute the sets
 fprintf('Computing FRS of raw obstacle...\n')
-rawObsFRS = computeRawObs_FRS_helper(RTTRSdata, schemeData, CARS.tau);
+rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
-rawObs.cylObs3D = computeRawObs_cylObs_helper(rawObsFRS, schemeData, CARS.Rc);
+[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, CARS.Rc);
+rawAugObs.g2D = g2D;
+rawAugObs.data2D = obs2D;
 
 fprintf('Computing BRS of cylObs3D...\n')
-rawObs.cylObsBRS = ...
-  computeRawObs_BRS_helper(rawObs.cylObs3D(:,:,:,end), schemeData, CARS.tau);
+rawAugObs.data = computeRawObs_BRS(obs3D(:,:,:,end), schemeData, CARS.tau);
+rawAugObs.g = g;
 
-rawObs.g = schemeData.grid;
-
-obj.rawObs_filename = sprintf('rawObs_%f.mat', now);
-save(obj.rawObs_filename, 'rawObs', '-v7.3')
+obj.rawAugObs_filename = sprintf('rawObs_%f.mat', now);
+save(obj.rawAugObs_filename, 'rawAugObs', '-v7.3')
 
 end
 
-function rawObsFRS = computeRawObs_FRS_helper(RTTRSdata, schemeData, tauIAT)
+function rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, tauIAT)
 % Computes FRS of RTTRS
 schemeData.uMode = 'max';
 schemeData.dMode = 'max';
@@ -56,18 +56,18 @@ rawObsFRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData, 'none', extraArgs);
 
 end
 
-function cylObs3D = computeRawObs_cylObs_helper(augObsFRS, schemeData, Rc)
+function [obs3D, g2D, obs2D] = computeRawObs_cylObs(augObsFRS, g, Rc)
 % Makes 3D cylindrical obstacles from FRS of RTTRS
-cylObs3D = zeros(size(augObsFRS));
-g2D = proj(schemeData.grid, [], [0 0 1]);
+obs3D = zeros(size(augObsFRS));
+[g2D, obs2D] = proj(g, augObsFRS, [0 0 1]);
+
 for i = 1:size(augObsFRS,4)
-  [~, obs2D] = proj(schemeData.grid, augObsFRS(:,:,:,i), [0 0 1]);
-  obs2D = addCRadius(g2D, obs2D, Rc);
-  cylObs3D(:,:,:,i) = repmat(obs2D, [1 1 schemeData.grid.N(3)]);
+  obs2D(:,:,i) = addCRadius(g2D, obs2D(:,:,i), Rc);
+  obs3D(:,:,:,i) = repmat(obs2D, [1 1 g.N(3)]);
 end
 end
 
-function cylObsBRS = computeRawObs_BRS_helper(cylObs3D_last, schemeData, tauIAT)
+function cylObsBRS = computeRawObs_BRS(cylObs3D_last, schemeData, tauIAT)
 % Computes BRS or cylindrical obstacles
 schemeData.uMode = 'min';
 schemeData.dMode = 'min';
