@@ -31,9 +31,9 @@ else
   error('CARS file not found!')
 end
 
-if exist(obj.rawObs_filename, 'file')
+if exist(obj.rawAugObs_filename, 'file')
   fprintf('Loading ''raw'' obstacles...\n')
-  load(obj.rawObs_filename)
+  load(obj.rawAugObs_filename)
 else
   error('rawObs file not found!')
 end
