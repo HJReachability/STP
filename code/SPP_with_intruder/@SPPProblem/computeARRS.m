@@ -48,7 +48,7 @@ for veh = 1:length(Q)
       gatherObstacles(Q(1:veh-1), obj.g, tauFRS, 'obsForRTT', 'forward');
     
     %% Compute FRS to determine the ETA
-    if ~isfield(Q{veh}.data, 'FRS1')
+    if isempty(Q{veh}.FRS1)
       fprintf('Computing FRS1 for vehicle %d\n', veh)
       Q{veh}.computeFRS1(tauFRS, obj.g, obstacles);
       
@@ -57,8 +57,8 @@ for veh = 1:length(Q)
     end
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
-    if ~isfield(Q{veh}.data, 'BRS1')
-      tauBRS = Q{veh}.data.FRS1_tau;
+    if isempty(Q{veh}.BRS1)
+      tauBRS = Q{veh}.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
       obstacles = ...
         gatherObstacles(Q(1:veh-1), obj.g, tauBRS, 'obsForRTT', 'backward');
@@ -71,14 +71,13 @@ for veh = 1:length(Q)
     end
     
     %% Compute the nominal trajectories based on BRS1
-    if ~isfield(Q{veh}.data, 'nomTraj')
-      fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-      Q{veh}.computeNomTraj(obj.g);
-    end
+    % Continued from before replanning!
+    fprintf('Computing nominal trajectory for vehicle %d\n', veh)
+    Q{veh}.computeNomTraj(obj.g);
   end
   
   %% Compute induced obstacles
-  if ~isfield(Q{veh}.data, 'obsForRTT')
+  if isempty(Q{veh}.obsForRTT)
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
     Q{veh}.computeObsForRTT(obj, CARS.Rc, RTTRS);
   end
