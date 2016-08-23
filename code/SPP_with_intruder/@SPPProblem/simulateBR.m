@@ -70,6 +70,7 @@ for veh = 1:length(Q)
   tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
 end
 tauBR = tStart:obj.dt:tEnd;
+obj.tReplan = inf;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
@@ -100,8 +101,6 @@ end
 Qintr = ...
   SPPPlane(intrIS, CARS.dynSys.wMaxB, CARS.dynSys.vRangeB, CARS.dynSys.dMaxB);
 
-tReplan = inf;
-
 safety_vals = 1e3*ones(length(Q), length(tauBR));
 safety_threshold = 0.5;
 intruder_arrived = false;
@@ -116,7 +115,7 @@ tInds = cell(length(Q),1);
 safety_rel_x = cell(length(Q),1);
 
 for i = 1:length(tauBR)
-  if tauBR(i) > tReplan
+  if tauBR(i) > obj.tReplan
     break
   end
   
@@ -148,7 +147,7 @@ for i = 1:length(tauBR)
     
     % Mark time at which intruder shows up
     if ~intruder_arrived && any(safety_vals(:, i) < safety_threshold)
-      tReplan = tauBR(i) + max(CARS.tau);
+      obj.tReplan = tauBR(i) + max(CARS.tau);
       intruder_arrived = true;
     end
   end

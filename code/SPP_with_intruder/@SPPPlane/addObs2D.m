@@ -24,33 +24,31 @@ obj.obs2D_tau = obj.nomTraj_tau;
 obj.obs2D = zeros([g2D.N' length(obj.nomTraj_tau)]);
 
 small = 1e-4;
-trajInd = 0;
+
 for i = 1:length(obj.nomTraj_tau)
   % Shift and rotation amounts
-  p = obj.nomTraj(1:2, trajInd);
-  t = obj.nomTraj(3, trajInd);
+  p = obj.nomTraj(1:2, i);
+  t = obj.nomTraj(3, i);
   
-  if replan && obj.nomTraj_tau(i) < SPPP.tReplan
-    % If we haven't replanned yet, add the augmented obstacles (only applicable
-    % to SPP with intruder
-    
-    % For the first tauIAT time steps, use the i-step FRS projection
-    if obj.nomTraj_tau(i)-min(obj.nomTraj_tau) < max(tauIAT)
-      obsInd = find(tauIAT > obj.nomTraj_tau(i)-min(obj.nomTraj_tau)-small & ...
-        tauIAT < obj.nomTraj_tau(i)-min(obj.nomTraj_tau)+small);
+  if replan && tauNow < SPPP.tReplan
+    % Before replanning:
+    %     for the first tauIAT time steps, use the i-step FRS projection
+    tauElapsed = obj.nomTraj_tau(i) - min(obj.nomTraj_tau);
+    if tauNow-min(obj.nomTraj_tau) < max(tauIAT)
+      obsInd = find(CARS.tau > tauElapsed-small & CARS.tau < tauElapsed+small);
     else
       obsInd = length(tauIAT);
-      trajInd = trajInd + 1;
     end
-    trajInd = max(trajInd, 1);
     
-    rawObsDatai = rotateData(g2D, rawAugObs2D(:,:,obsInd), t, [1 2], []);
-    rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
-    
+    rawObsToRotate = rawAugObs2D(:,:,obsInd);
   else
-    rawObsDatai = rotateData(g2D, rawObs2D, t, [1 2], []);
-    rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
+    % After replanning: always use the same 2D obstacle
+    rawObsToRotate = rawObs2D;
   end
+  
+  % Rotate and shift 2D obstacle
+  rawObsDatai = rotateData(g2D, rawObsToRotate, t, [1 2], []);
+  rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
   
   % Subtract target set
   obj.obs2D(:,:,i) = max(rawObsDatai, -obj.target);
