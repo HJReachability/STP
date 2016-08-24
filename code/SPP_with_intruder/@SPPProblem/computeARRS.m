@@ -51,7 +51,7 @@ for veh = 1:length(Q)
       Q{veh}.computeFRS1(tauFRS, obj.g, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
     end
     
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
@@ -65,7 +65,7 @@ for veh = 1:length(Q)
       Q{veh}.computeBRS1(tauBRS, obj.g, obstacles);
       
       [Q1, Q2, Q3, Q4] = Q{:};
-      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+      save(obj.AR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
     end
     
     %% Compute the nominal trajectories based on BRS1

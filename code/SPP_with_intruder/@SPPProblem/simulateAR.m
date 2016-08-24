@@ -53,7 +53,7 @@ CARS.Deriv = computeGradients(CARS.g, CARS.data);
 Q = {Q1;Q2;Q3;Q4};
 tEnd = -inf;
 for veh = 1:length(Q)
-  tEnd = max(tEnd, max(Q{veh}.data.nomTraj_tau));
+  tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
 end
 tauAR = obj.tReplan:obj.dt:tEnd;
 
