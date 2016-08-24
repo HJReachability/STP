@@ -11,7 +11,7 @@ u = obj.u;
 uhist = obj.uhist;
 
 % Modify control bounds
-maxVel = obj.vrange(2);
+maxVel = 0.9*max(obj.vrange);
 vrange = obj.vrange;
 wMax = obj.wMax;
 obj.vrange = vrange + obj.vReserved;
@@ -81,9 +81,9 @@ if ~isempty(obj.FRS1)
 end
 
 % Attach old reachable set if needed
-overwriteInds = find(oldNomTraj_tau < min(obj.nomTraj_tau) - small);
-obj.nomTraj_tau = [oldNomTraj_tau(overwriteInds) obj.nomTraj_tau];
-obj.nomTraj = [oldNomTraj(:,overwriteInds) obj.nomTraj];
+keepInds = find(oldNomTraj_tau < min(obj.nomTraj_tau) - small);
+obj.nomTraj_tau = [oldNomTraj_tau(keepInds) obj.nomTraj_tau];
+obj.nomTraj = [oldNomTraj(:,keepInds) obj.nomTraj];
 
 % Undo control bounds modification
 obj.vrange = vrange;
