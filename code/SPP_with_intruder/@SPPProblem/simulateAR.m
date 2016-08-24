@@ -109,7 +109,7 @@ for i = 1:length(tauAR)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g, hc, ho, hn, colors, CARS.Rc);
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, CARS.Rc);
     
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
