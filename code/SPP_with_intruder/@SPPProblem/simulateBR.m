@@ -66,6 +66,10 @@ Q = {Q1;Q2;Q3;Q4};
 tStart = inf;
 tEnd = -inf;
 for veh = 1:length(Q)
+  Q{veh}.x = Q{veh}.xhist(:,1);
+  Q{veh}.xhist = Q{veh}.x;
+  Q{veh}.u = [];
+  Q{veh}.uhist = [];
   tStart = min(tStart, min(Q{veh}.nomTraj_tau));
   tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
 end
