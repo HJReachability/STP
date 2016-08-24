@@ -12,7 +12,7 @@ if restart || ~exist(obj.AR_RS_filename, 'file')
   load(obj.BR_sim_filename)
   
   % File name to save RS data
-  obj.AR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
+  obj.AR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);
 else
   fprintf('Loading AR RS checkpoint...\n')
   load(obj.AR_RS_filename)
@@ -41,14 +41,12 @@ tauFRS = obj.tReplan:obj.dt:tFRS_max;
 %% Start the computation of reachable sets
 for veh = 1:length(Q)
   if Q{veh}.replan
-    %% Gather induced obstacles for FRS computation
-    % Assume there's no static obstacle
-    fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
-    obstacles = ...
-      gatherObstacles(Q(1:veh-1), obj.g, tauFRS, 'obsForRTT', 'forward');
-    
     %% Compute FRS to determine the ETA
     if isempty(Q{veh}.FRS1)
+      % Assume there's no static obstacle
+      fprintf('Gathering obstacles for vehicle %d for FRS computation...\n', veh)
+      obstacles = ...
+        gatherObstacles(Q(1:veh-1), obj.g, tauFRS, 'obsForRTT', 'forward');
       fprintf('Computing FRS1 for vehicle %d\n', veh)
       Q{veh}.computeFRS1(tauFRS, obj.g, obstacles);
       
@@ -84,7 +82,9 @@ for veh = 1:length(Q)
 end
 
 %% Trim vehicles for a smaller file
-Q = trimDataForSim(Q, {'FRS1', 'BRS1', 'obsForRTT'});
+for veh = 1:length(Q)
+  Q{veh}.trimData({'FRS1', 'BRS1', 'obsForRTT'});
+end
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.AR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.AR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
