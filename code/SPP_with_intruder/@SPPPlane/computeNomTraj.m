@@ -32,6 +32,7 @@ obj.nomTraj(:,1) = obj.x;
 % Compute trajectory
 small = 1e-4;
 tInd = 2;
+reachedTarget = false;
 for i = 1:length(obj.BRS1_tau)-1
   while_loop = false;
   Deriv = computeGradients(g, obj.BRS1(:,:,:,i));
@@ -47,12 +48,21 @@ for i = 1:length(obj.BRS1_tau)-1
         maxVel*(obj.BRS1_tau(i+1)-obj.BRS1_tau(i))
       break
     end
+    
+    if norm(obj.x(1:2) - obj.targetCenter(1:2)) < obj.targetRsmall + small
+      reachedTarget = true;
+      break
+    end
   end
   
   if while_loop
     % Update nominal trajectory
     obj.nomTraj(:,tInd) = obj.x;
     tInd = tInd + 1;
+  end
+  
+  if reachedTarget
+    break
   end
 end
 
