@@ -73,7 +73,7 @@ end
 if save_png || save_fig
   f = figure;
   colors = lines(length(Q));
-  plotTargetSets(Q, obj.g, colors)
+  plotTargetSets(Q, colors)
   
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
@@ -81,6 +81,7 @@ if save_png || save_fig
 end
 
 %% Simulate
+tInds = cell(length(Q),1);
 tauARmin = inf(length(Q), 1);
 tauARmax = -inf(length(Q), 1);
 

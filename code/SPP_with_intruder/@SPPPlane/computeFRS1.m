@@ -12,10 +12,10 @@ schemeData.tMode = 'forward';
 center = 0.5*(obj.targetCenter + obj.x);
 
 new_gmin = center - 1;
-new_gmin(3) = schemeData.grid.min(3); 
+new_gmin(3) = g.min(3); 
 new_gmax = center + 1;
-new_gmax(3) = schemeData.grid.max(3);
-new_g = createGrid(new_gmin, new_gmax, schemeData.grid.N, 3);
+new_gmax(3) = g.max(3);
+new_g = createGrid(new_gmin, new_gmax, g.N, 3);
 old_g = schemeData.grid;
 schemeData.grid = new_g;
 
@@ -41,5 +41,5 @@ extraArgs.fig_filename = sprintf('%s/', folder);
 [obj.FRS1, obj.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 
-obj.FRS1_g = schemeData.grid;
+obj.FRS1_g = new_g;
 end
