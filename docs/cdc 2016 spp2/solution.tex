@@ -22,9 +22,9 @@ Under the above convention, each vehicle $\veh_i$ must take into account time-va
 \end{equation}
 
 Such an optimal path planning problem can be solved by computing a backward reachable set (BRS) $\brs_i(t)$ from a target set $\targetset_i$ using formulations of HJ variational inequalities such as \cite{Bokanowski11, Fisac15}. In particular, we will utilize the formulation in \cite{Fisac15}, which does not require augmentation of the state space with the time variable.
-
+\SBnote{...so that we do not increase the problem dimension.}
 Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_1(t)$, from which the optimal control and optimal trajectory $x_1(\cdot)$ to the target $\targetset_1$ can be obtained. Under the absence of disturbances and perfect information, the obstacles induced by $\veh_1$ for lower-priority vehicle $\veh_i$ is simply the danger zone centered around the position of each point $p_1(\cdot)$ on the trajectory:
-
+\SBnote{ I will add a line on methods in [16] and [18], and state why we are using 18. Probably in the introduction.}
 \begin{equation}
 \ioset_i^1(t) = \{x_j: \|p_j - p_1(\cdot)\|\le\cradius\}
 \end{equation}
