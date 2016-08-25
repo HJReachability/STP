@@ -1,5 +1,5 @@
 % !TEX root = SPP2.tex
-\section{Obstacle Generation \label{sec:obs_gen}}
+\section{SPP with Disturbances and Incomplete Information \label{sec:obs_gen}}
 \SBnote{Use traj.-based notation}
 Obstacles can be generated in many different ways depending on the assumptions made about the information the vehicles have about each other. In each of the three obstacle generation methods that we present, the goal is to compute, for each lower priority vehicle $\veh_i$, the time-varying obstacle induced by each higher priority vehicle $\veh_j, j < i$, denoted by $\ioset_i^j(t)$. Once $\ioset_i^j(t)$ is computed, we can then solve \eqref{eq:HJIVI_i} with the union of all obstacles induced by higher priority vehicles as the total obstacle set $\obsset_i(t)$:
 
