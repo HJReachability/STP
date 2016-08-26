@@ -96,7 +96,7 @@ for i = 1:length(tau)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, SPPP.Rc);
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
