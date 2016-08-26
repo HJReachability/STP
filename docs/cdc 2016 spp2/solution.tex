@@ -15,18 +15,38 @@ i &= 1,\ldots, N
 
 In order to make the $N$-vehicle path planning problem safe and tractable, a reasonable structure is imposed to the problem: each vehicle is assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower priority vehicle. In contrast, a lower priority vehicle must take into account the presence of all higher priority vehicles, and plan its trajectory in a way that avoids the higher priority vehicles' danger zones. For convenience and without lost of generality, let vehicle $i$ have the $i$th highest priority and denote it as $\veh_i$. 
 
-Under the above convention, each vehicle $\veh_i$ must take into account time-varying obstacles induced by vehicles $\veh_j, j<i$, denoted $\ioset_i^j(t)$. Optimal safe path planning of each lower-priority vehicle $\veh_i$ then consists of determining the optimal path that allows $\veh_i$ to each its target $\targetset_i$ while avoiding the moving obstacles $\obsset_j$, defined by
+Under the above convention, each vehicle $\veh_i$ must take into account time-varying obstacles induced by vehicles $\veh_j, j<i$, denoted $\ioset_i^j(t)$. Optimal safe path planning of each lower-priority vehicle $\veh_i$ then consists of determining the optimal path that allows $\veh_i$ to each its target $\targetset_i$ while avoiding the time-varying obstacles $\obsset_i$, defined by
 
 \begin{equation}
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
-Such an optimal path planning problem can be solved by computing a backward reachable set (BRS) $\brs_i(t)$ from a target set $\targetset_i$ using formulations of HJ variational inequalities such as \cite{Bokanowski11, Fisac15}. In particular, we will utilize the formulation in \cite{Fisac15}, which does not require augmentation of the state space with the time variable.
-\SBnote{...so that we do not increase the problem dimension.}
+Such an optimal path planning problem can be solved by computing a backward reachable set (BRS) $\brs_i(t)$ from a target set $\targetset_i$ using formulations of HJ variational inequalities (VI) such as \cite{Bokanowski11, Fisac15}. To compute BRSs under the presence of time-varying obstacles, the authors in \cite{Bokanowski11} augmented system with the time variable, and then applied reachability theory for time-invariant systems. To avoid increasing the problem dimension and save computation time, for the simulations of this paper we utilized the formulation in \cite{Fisac15}, which does not require augmentation of the state space with the time variable. \MCnote{Added brief comparison of the two methods}
+
 Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_1(t)$, from which the optimal control and optimal trajectory $x_1(\cdot)$ to the target $\targetset_1$ can be obtained. Under the absence of disturbances and perfect information, the obstacles induced by $\veh_1$ for lower-priority vehicle $\veh_i$ is simply the danger zone centered around the position of each point $p_1(\cdot)$ on the trajectory:
-\SBnote{ I will add a line on methods in [16] and [18], and state why we are using 18. Probably in the introduction.}
+
 \begin{equation}
 \ioset_i^1(t) = \{x_j: \|p_j - p_1(\cdot)\|\le\cradius\}
 \end{equation}
 
 Given $\ioset_i^j(t), j<i$, and continuing with $i = 2$, the optimal safe trajectories for each vehicle $\veh_i$ can be computed. All of the trajectories are optimal in the sense that given the requirement that $\veh_i$ must arrive at $\targetset_i$ at time $\sta_i$, the latest departure time $\ldt_i$ and the optimal control $u^*_i(\cdot)$ that guarantees arrival at $\sta_i$ can be obtained.
+
+To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the following HJ VI:
+
+\begin{equation}
+\label{eq:HJIVI}
+\begin{aligned}
+\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
+&l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
+&\quad t\in[\edt,\sta]\\
+&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\} \\ 
+&H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} p \cdot f_i(t, x_i, u_i)
+\end{aligned}
+\end{equation}
+
+\noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i$, and the backward reachable set $\brs_i(t)$, respectively. The optimal control that produces the optimal trajectory is given by
+
+\begin{equation}
+\label{eq:optCtrl}
+u^*_i\left(t, x_i\right) = \arg \min_{u_i \in \cset} D_{x_i} V_i(t,x_i) \cdot f_i(t, x_i, u_i)
+\end{equation}
