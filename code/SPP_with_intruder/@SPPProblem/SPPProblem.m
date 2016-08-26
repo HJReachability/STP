@@ -27,7 +27,7 @@ classdef SPPProblem < handle
     % Space
     grid_min = [-1; -1; -3*pi/2]
     grid_max = [1; 1; pi/2]
-    grid_N = [51; 51; 51]
+    grid_N = [65; 65; 65]
     g
     g2D
     
