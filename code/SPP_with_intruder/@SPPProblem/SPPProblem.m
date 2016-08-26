@@ -42,6 +42,7 @@ classdef SPPProblem < handle
     
     NI_RS_filename % no intruder reachable sets
     NI_RS_filename_small
+    NI_sim_filename
     
     BR_RS_filename % before replanning reachable sets
     BR_RS_filename_small

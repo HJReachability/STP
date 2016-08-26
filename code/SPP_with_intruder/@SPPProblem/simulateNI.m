@@ -112,6 +112,9 @@ for i = 1:length(tau)
   if save_fig
     savefig(f, sprintf('%s/%d', folder, i), 'compact')
   end
-  
 end
+
+obj.NI_sim_filename = sprintf('%s_%f.mat', mfilename, now);
+[Q1, Q2, Q3, Q4] = Q{:};
+save(obj.NI_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
 end
