@@ -81,7 +81,7 @@ for i = 1:length(tau)
       d = Q{veh}.uniformDstb();
       
       % Update state
-      Q{veh}.updateState(u, dt, Q{veh}.x, d);
+      Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
     end
   end
   
