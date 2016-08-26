@@ -1,4 +1,4 @@
-function computeCARS(obj, Qintr, Rc, tIAT, save_png)
+function computeCARS(obj, Qintr, tIAT, save_png)
 % computeCARS(obj, Rc, tIAT, save_png)
 %     Computes collision avoidance reachable set and updates the SPPP object
 %     with the CARS file name
@@ -6,7 +6,6 @@ function computeCARS(obj, Qintr, Rc, tIAT, save_png)
 % Inputs:
 %     obj - SPP problem object
 %     Qintr - intruder vehicle object (just for extracting vehicle parameters)
-%     Rc - capture radius
 %     tIAT - intruder avoidance time
 %     save_png - set to true to save computation figures
 
@@ -17,14 +16,10 @@ if nargin < 2
 end
 
 if nargin < 3
-  Rc = 0.1;
-end
-
-if nargin < 4
   tIAT = 0.25;
 end
 
-if nargin < 5
+if nargin < 4
   save_png = true;
 end
 
@@ -48,7 +43,7 @@ N = [101; 101; 101];         % Number of grid points per dimension
 pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
 
-data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], Rc);
+data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], obj.Rc);
 
 %% Time stamps
 tau = 0:obj.dt:tIAT;
@@ -69,7 +64,6 @@ CARS.dynSys = schemeData.dynSys;
 CARS.g = schemeData.grid;
 CARS.data = data(:,:,:,end);
 CARS.tau = tau;
-CARS.Rc = Rc;
 
 % Update SPPP and save
 obj.CARS_filename = sprintf('CARS_%f.mat', now);

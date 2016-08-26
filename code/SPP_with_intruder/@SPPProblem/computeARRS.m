@@ -77,7 +77,7 @@ for veh = 1:length(Q)
   %% Compute induced obstacles
   if isempty(Q{veh}.obsForRTT)
     fprintf('Computing induced obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForRTT(obj, CARS.Rc, RTTRS);
+    Q{veh}.computeObsForRTT(obj, RTTRS);
   end
 end
 

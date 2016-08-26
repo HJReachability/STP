@@ -10,6 +10,8 @@ classdef SPPProblem < handle
     intrIS
     intrCtrl
     
+    Rc = 0.1 % collision radius
+    
     % SPP vehicle parameters
     vRangeA = [0.1 1];
     wMaxA = 1;
@@ -25,7 +27,7 @@ classdef SPPProblem < handle
     % Space
     grid_min = [-1; -1; -3*pi/2]
     grid_max = [1; 1; pi/2]
-    grid_N = [71; 71; 71]
+    grid_N = [51; 51; 51]
     g
     g2D
     
@@ -37,6 +39,9 @@ classdef SPPProblem < handle
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
     rawAugObs_filename % raw augmented obstacles file name
+    
+    NI_RS_filename % no intruder reachable sets
+    NI_RS_filename_small
     
     BR_RS_filename % before replanning reachable sets
     BR_RS_filename_small

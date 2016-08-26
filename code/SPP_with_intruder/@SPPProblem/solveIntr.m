@@ -1,4 +1,4 @@
-function computeAll(obj)
+function solveIntr(obj)
 % computeAll(obj)
 %     Performs all SPP with intruder calculations using defaults in all
 %     computations

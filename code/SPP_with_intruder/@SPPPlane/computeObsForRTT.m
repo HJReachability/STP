@@ -1,4 +1,4 @@
-function computeObsForRTT(obj, SPPP, Rc, RTTRS)
+function computeObsForRTT(obj, SPPP, RTTRS)
 % vehicle = computeCylObs(vehicle, schemeData, rawCylObs, debug)
 %     Computes cylindrical obstacles assuming the RTT method for SPP with
 %     disturbances or SPP with intruders
@@ -10,7 +10,7 @@ g = SPPP.g;
 
 % Migrate RTTRS set
 [RTTRS2D_g, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);
-RTTRS2D = addCRadius(RTTRS2D_g, RTTRS2D, Rc);
+RTTRS2D = addCRadius(RTTRS2D_g, RTTRS2D, SPPP.Rc + RTTRS.trackingRadius);
 RTTRS2D = migrateGrid(RTTRS2D_g, RTTRS2D, g2D);
 
 obj.obsForRTT_tau = obj.nomTraj_tau;

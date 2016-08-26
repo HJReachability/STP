@@ -30,7 +30,8 @@ fprintf('Computing FRS of raw obstacle...\n')
 rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
-[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, CARS.Rc);
+tR = RTTRS.trackingRadius;
+[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, CARS.Rc, tR);
 rawAugObs.g2D = g2D;
 rawAugObs.data2D = obs2D;
 
@@ -56,13 +57,13 @@ rawObsFRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData, 'none', extraArgs);
 
 end
 
-function [obs3D, g2D, obs2D] = computeRawObs_cylObs(augObsFRS, g, Rc)
+function [obs3D, g2D, obs2D] = computeRawObs_cylObs(augObsFRS, g, Rc, tR)
 % Makes 3D cylindrical obstacles from FRS of RTTRS
 obs3D = zeros(size(augObsFRS));
 [g2D, obs2D] = proj(g, augObsFRS, [0 0 1]);
 
 for i = 1:size(augObsFRS,4)
-  obs2D(:,:,i) = addCRadius(g2D, obs2D(:,:,i), Rc);
+  obs2D(:,:,i) = addCRadius(g2D, obs2D(:,:,i), Rc+tR);
   obs3D(:,:,:,i) = repmat(obs2D(:,:,i), [1 1 g.N(3)]);
 end
 end
