@@ -53,13 +53,18 @@ if save_png || save_fig
     Q{veh}.addObs2D(obj, RTTRS);
   end
   
-  hc = cell(length(Q), 1); % Capture radius
-  ho = cell(length(Q), 1); % Obstacle
-  hn = cell(length(Q), 1); % Nominal trajectory
-  
   % For saving graphics
   folder = sprintf('%s_%f', mfilename, now);
   system(sprintf('mkdir %s', folder));
+  
+  % Initialize figure
+  f = figure;
+  colors = lines(length(Q));
+  plotTargetSets(Q, colors)
+  
+  hc = cell(length(Q), 1); % Capture radius
+  ho = cell(length(Q), 1); % Obstacle
+  hn = cell(length(Q), 1); % Nominal trajectory
 end
 
 small = 1e-4;

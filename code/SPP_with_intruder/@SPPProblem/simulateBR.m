@@ -86,10 +86,8 @@ if save_png || save_fig
   % For saving graphics
   folder = sprintf('%s_%f', mfilename, now);
   system(sprintf('mkdir %s', folder));
-end
-
-%% Initialize figure
-if save_png || save_fig
+  
+  % Initialize figure
   f = figure;
   colors = lines(length(Q));
   plotTargetSets(Q, colors)
@@ -98,7 +96,7 @@ if save_png || save_fig
   ho = cell(length(Q), 1); % Obstacle
   hn = cell(length(Q), 1); % Nominal trajectory
   
-  intruder_color = 'k';
+  intruder_color = 'k';  
 end
 
 %% Initialize intruder
