@@ -14,7 +14,8 @@ function computeRTTRS(obj, vR, wR, tR, save_png)
 %     SPPP - SPP problem object updated with RTTRS file name
 
 if nargin < 2
-  vR = [0.3 -0.3];
+%   vR = [0.3 -0.3];
+  vR = [0.25 -0.25];  
 end
 
 if nargin < 3

@@ -13,7 +13,8 @@ classdef SPPProblem < handle
     Rc = 0.1 % collision radius
     
     % SPP vehicle parameters
-    vRangeA = [0.1 1];
+    %     vRangeA = [0.1 1];
+    vRangeA = [0.5 1];
     wMaxA = 1;
     dMaxA = [0.1 0.2];
     
@@ -27,12 +28,12 @@ classdef SPPProblem < handle
     % Space
     grid_min = [-1; -1; -3*pi/2]
     grid_max = [1; 1; pi/2]
-    grid_N = [81; 81; 81]
+    grid_N = [101; 101; 101]
     g
     g2D
     
     tauBR        % Time vector before replanning
-    tauAR        % Time vector after replanning 
+    tauAR        % Time vector after replanning
     tau          % Time vector for entire simulation
     
     % Files to load
@@ -57,23 +58,34 @@ classdef SPPProblem < handle
     %% Contructor
     function obj = SPPProblem(initStates, targetCenters, targetR)
       if nargin < 1
+        %         initStates = { ...
+        %           [-0.6; 0.2;  0]; ...
+        %           [ 0.6; 0.2; -pi]; ...
+        %           [-0.5; 0.9; -pi/4]; ...
+        %           [ 0.5; 0.9; -3*pi/4]};
         initStates = { ...
-          [-0.6; 0.2;  0]; ...
-          [ 0.6; 0.2; -pi]; ...
-          [-0.5; 0.9; -pi/4]; ...
-          [ 0.5; 0.9; -3*pi/4]};
+          [-0.5; 0;  0]; ...
+          [ 0.5; 0; -pi]; ...
+          [-0.6; 0.6; -pi/4]; ...
+          [ 0.6; 0.6; -3*pi/4]};
       end
       
       if nargin < 2
+        %         targetCenters = { ...
+        %           [ 0.7;  0.7; 0]; ...
+        %           [-0.7;  0.7; 0]; ...
+        %           [ 0.7; -0.7; 0]; ...
+        %           [-0.7; -0.7; 0]};
         targetCenters = { ...
-          [ 0.7;  0.7; 0]; ...
-          [-0.7;  0.7; 0]; ...
+          [ 0.7;  0.2; 0]; ...
+          [-0.7;  0.2; 0]; ...
           [ 0.7; -0.7; 0]; ...
           [-0.7; -0.7; 0]};
       end
       
       if nargin < 3
-        targetR = 0.15;
+        %         targetR = 0.15;
+        targetR = 0.1;
       end
       
       obj.initStates = initStates;
@@ -81,7 +93,9 @@ classdef SPPProblem < handle
       obj.targetR = targetR;
       
       obj.g = createGrid(obj.grid_min, obj.grid_max, obj.grid_N, 3);
-      obj.g2D=createGrid(obj.grid_min(1:2), obj.grid_max(1:2), obj.grid_N(1:2));      
+      obj.g2D=createGrid(obj.grid_min(1:2), obj.grid_max(1:2), obj.grid_N(1:2));
+      
+      
     end
   end
 end
