@@ -11,11 +11,12 @@ u = obj.u;
 uhist = obj.uhist;
 
 % Modify control bounds
-maxVel = 0.9*max(obj.vrange);
+
 vrange = obj.vrange;
 wMax = obj.wMax;
 obj.vrange = vrange + obj.vReserved;
 obj.wMax = wMax + obj.wReserved;
+maxVel = 1.1*max(obj.vrange);
 
 % No disturbance when computing trajectory
 d = [0; 0; 0];
