@@ -23,7 +23,9 @@ A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigm
 \end{aligned}
 \end{equation}
 
-Furthermore, we assume that $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
+For convenience, we will use the sets $\cfset_i, \dfset_i$ to denote the set of functions from which the control and disturbance functions $u_i(\cdot), d_i(\cdot)$ can be drawn.
+
+We assume that $f_i(t,x_i, u_i, d_i)$ is bounded, Lipschitz continuous in $x_i$ for any fixed $t, u_i, d_i$, and measurable in $t, u_i, d_i$ for each $x_i$. Given any initial state $x_i^0$ and any control function $u_i(\cdot)$, there exists a unique continuous trajectory $x_i(\cdot)$ solving \eqref{eq:dyn} \cite{Coddington55}.
 
 Let $\edt_i$ and $\sta_i$ denote the earliest departure time and scheduled time of arrival, respectively, of vehicle $i$. Let $\pos_i \in \R^\pos$ denote the position of vehicle $i$; note that $\pos_i$ in most practical cases would be a subset of the state $x_i$. Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. 
 

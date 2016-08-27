@@ -18,6 +18,7 @@ In order to make the $N$-vehicle path planning problem safe and tractable, a rea
 Under the above convention, each vehicle $\veh_i$ must take into account time-varying obstacles induced by vehicles $\veh_j, j<i$, denoted $\ioset_i^j(t)$. Optimal safe path planning of each lower-priority vehicle $\veh_i$ then consists of determining the optimal path that allows $\veh_i$ to each its target $\targetset_i$ while avoiding the time-varying obstacles $\obsset_i$, defined by
 
 \begin{equation}
+\label{eq:ioset}
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
@@ -39,12 +40,26 @@ To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the followin
 \max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
 &l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
 &\quad t\in[\edt,\sta]\\
-&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\} \\ 
-&H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} p \cdot f_i(t, x_i, u_i)
+&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}, \text{with}\\ 
 \end{aligned}
 \end{equation}
 
-\noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i$, and the backward reachable set $\brs_i(t)$, respectively. The optimal control that produces the optimal trajectory is given by
+\begin{equation}
+H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} p \cdot f_i(t, x_i, u_i)
+\end{equation}
+
+\noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i(t)$, and the backward reachable set $\brs_i(t)$, respectively: 
+
+\begin{equation}
+\label{eq:impl_surf}
+\begin{aligned}
+x_i \in \targetset_i &\Leftrightarrow l_i(x_i) \le 0 \\
+x_i(t) \in \obsset_i(t) &\Leftrightarrow g_i(t,x_i) \le 0 \\
+x_i(t) \in \brs_i(t) &\Leftrightarrow V_i(t, x_i) \le 0
+\end{aligned}
+\end{equation}
+
+The optimal control that produces the optimal trajectory is given by
 
 \begin{equation}
 \label{eq:optCtrl}
