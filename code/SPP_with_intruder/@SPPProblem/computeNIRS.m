@@ -10,7 +10,7 @@ if nargin < 2
   restart = false;
 end
 
-if exist(obj.NI_RS_filename_small, 'file')
+if ~restart && exist(obj.NI_RS_filename_small, 'file')
   fprintf('The NI RS file %s already exists. Skipping NI RS computation.\n', ...
     obj.NI_RS_filename_small)
   return

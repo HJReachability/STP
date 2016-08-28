@@ -10,7 +10,7 @@ if nargin < 2
   restart = false;
 end
 
-if exist(obj.BR_RS_filename_small, 'file')
+if ~restart && exist(obj.BR_RS_filename_small, 'file')
   fprintf('The BR RS file %s already exists. Skipping BR RS computation.\n', ...
     obj.BR_RS_filename_small)
   return
