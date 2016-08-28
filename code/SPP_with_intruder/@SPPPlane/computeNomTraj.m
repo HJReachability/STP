@@ -2,7 +2,7 @@ function computeNomTraj(obj, g)
 % Computes nominal trajectory of to be robustly tracked
 
 % Robust trajectory tracker
-dt = 0.0025;
+dt = 0.002;
 
 % Save state and control histories
 x = obj.x;
