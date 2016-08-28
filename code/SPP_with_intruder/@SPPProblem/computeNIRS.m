@@ -44,8 +44,7 @@ for veh=1:length(Q)
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if isempty(Q{veh}.BRS1)
     fprintf('Gathering obstacles for vehicle %d...\n', veh)
-    obstacles = ...
-      gatherObstacles(Q(1:veh-1), obj.g, BRS1_tau, 'obsForRTT');
+    obstacles = gatherObstacles(Q(1:veh-1), obj.g, BRS1_tau, 'obsForRTT');
     
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh}.computeBRS1(BRS1_tau, obj.g, obstacles);

@@ -10,8 +10,8 @@ g = SPPP.g;
 
 % Migrate RTTRS set
 [RTTRS2D_g, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);
-RTTRS2D = addCRadius(RTTRS2D_g, RTTRS2D, SPPP.Rc + RTTRS.trackingRadius);
 RTTRS2D = migrateGrid(RTTRS2D_g, RTTRS2D, g2D);
+RTTRS2D = addCRadius(g2D, RTTRS2D, SPPP.Rc + RTTRS.trackingRadius);
 
 obj.obsForRTT_tau = obj.nomTraj_tau;
 obj.obsForRTT = zeros([g.N' length(obj.nomTraj_tau)]);

@@ -23,13 +23,11 @@ for i = 1:length(obsSet)
   obsSet_tau{i} = vehicles{i}.(sprintf('%s_tau', obs_type));
 end
 
-obstacles = ...
-  gatherObstacles_helper(g, obsSet, obsSet_tau, tau, tMode);
+obstacles = gO_helper(g, obsSet, obsSet_tau, tau, tMode);
 
 end
 
-function obstacles = ...
-  gatherObstacles_helper(g, obsSet, obsSet_tau, common_tau, tMode)
+function obstacles = gO_helper(g, obsSet, obsSet_tau, common_tau, tMode)
 
 % Initialize empty obstacle
 obstacles = inf([g.N', length(common_tau)]);
