@@ -8,11 +8,11 @@ In the past, trajectory planning and collision avoidance problems in safety-crit
 
 Despite the advantages of reachability analysis, it cannot be directly applied to scenarios involving complex high dimensional systems such as multi-vehicle systems. The computation of reachable sets involves solving a Hamilton-Jacobi (HJ) partial differential equation (PDE) on a grid representing a discretization of the state space, causing an exponential scaling of computation complexity with respect to the dimension of the system, or roughly speaking, with the number of vehicles present. In \cite{Chen15}, the authors presented the sequential path planning (SPP), in which vehicles are assigned a strict priority ordering. \MCnote{NASA motivation?} Higher-priority vehicles ignore the lower-priority vehicles, who must take into account the presence of higher-priority vehicles by treating them as induced time-varying obstacles. Under this structure, computation complexity scales just \textit{linearly} with the number of vehicles. However, the previous formulation assumes an absense of disturbances and perfect information about all vehicles. Unfortunately, perfect information about other vehicles' states and control strategies cannot be realistically assumed, and disturbances would make it impossible to commit to exact trajectories as required in \cite{Chen15}.
 
-In order for any safe path planning scheme to be practically viable, perfect information cannot be assumed, and disturbances must be accounted for. To take advantage of the computation benefits of the SPP scheme while resolving some of its practical challenge, in this paper we accomplish the following:
+In order for any path planning scheme to be viable, perfect information cannot be assumed, and disturbances must be accounted for. To take advantage of the computation benefits of the SPP scheme while resolving some of its practical challenge, in this paper we accomplish the following:
 
 \begin{itemize}
 \item Incorporate disturbances into the vehicle models,
 \item analyze three different assumptions on the information to which each vehicle may have access.
 \end{itemize}
 
-For each of the assumed information patterns, we propose a reachability-based method to compute the induced obstacles that would guarantee collision avoidance as well as successful transit to the destination. We demonstrate and compare our proposed methods through numerical simulations.
+For each assumed information pattern, we propose a reachability-based method to compute the induced obstacles that would guarantee collision avoidance as well as successful transit to the destination. We demonstrate and compare our proposed methods through numerical simulations.

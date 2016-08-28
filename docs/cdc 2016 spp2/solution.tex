@@ -1,13 +1,12 @@
 % !TEX root = SPP2.tex
 \section{Background \label{sec:background}}
-This section provides a brief summary of the work in \cite{Chen15}, in which SPP scheme is proposed under perfect information and absence of disturbance. Here, the dynamics of vehicle $\veh_i$ becomes
+This section provides a brief summary of \cite{Chen15}, in which SPP scheme is proposed under perfect information and absence of disturbance. Here, the dynamics of $\veh_i$ becomes
 
 \begin{equation}
 \label{eq:dyn_no_dstb}
 \begin{aligned}
 \dot{x}_i &= f_i(t, x_i, u_i), \quad t \in [\edt_i, \sta_i] \\
-u_i &\in \cset_i \\
-i &= 1,\ldots, N
+u_i &\in \cset_i, \quad i = 1,\ldots, N
 \end{aligned}
 \end{equation}
 
@@ -59,7 +58,7 @@ x_i(t) \in \brs_i(t) &\Leftrightarrow V_i(t, x_i) \le 0
 \end{aligned}
 \end{equation}
 
-The optimal control that produces the optimal trajectory is given by
+The optimal control is given by
 
 \begin{equation}
 \label{eq:optCtrl}
