@@ -1,8 +1,12 @@
-function computeNomTraj(obj, g)
+function computeNomTraj(obj, SPPP)
 % Computes nominal trajectory of to be robustly tracked
 
-% Robust trajectory tracker
-dt = 0.0025;
+% Variables needed from SPPP class
+g = SPPP.g;
+dt = SPPP.dt;
+
+subSamples = 4;
+dtSmall = dt/subSamples;
 
 % Save state and control histories
 x = obj.x;
@@ -11,12 +15,10 @@ u = obj.u;
 uhist = obj.uhist;
 
 % Modify control bounds
-
 vrange = obj.vrange;
 wMax = obj.wMax;
 obj.vrange = vrange + obj.vReserved;
 obj.wMax = wMax + obj.wReserved;
-maxVel = 1.25*max(obj.vrange);
 
 % No disturbance when computing trajectory
 d = [0; 0; 0];
@@ -32,45 +34,49 @@ obj.nomTraj(:,1) = obj.x;
 
 % Compute trajectory
 small = 1e-4;
-tInd = 2;
-reachedTarget = false;
 
-for i = 1:length(obj.BRS1_tau)-1
-  while_loop = false;
-  Deriv = computeGradients(g, obj.BRS1(:,:,:,i));
+t = 1;
+nomTraj_t = 2;
+
+folder = sprintf('nomTraj_%f', now);
+system(sprintf('mkdir %s', folder));
+
+figure
+while t < length(obj.BRS1_tau)
+  % Determine the earliest time that the current state is in the reachable set
+  for tEarliest = length(obj.BRS1_tau):-1:t
+    valueAtX = eval_u(g, obj.BRS1(:,:,:,tEarliest), obj.x);
+    if valueAtX < small
+      break
+    end
+  end
   
-  while eval_u(g, obj.BRS1(:,:,:,i+1), obj.x) > small
-    while_loop = true;
+  % Compute gradient and integrate trajectory
+  BRS1t = obj.BRS1(:,:,:,tEarliest);
+  Deriv = computeGradients(g, BRS1t);
+  for j = 1:subSamples
     deriv = eval_u(g, Deriv, obj.x);
     u = obj.optCtrl([], obj.x, deriv, 'min');
-    obj.updateState(u, dt, obj.x, d);
-    
-    % Maximum distance per time-step
-    if norm(obj.x(1:2) - obj.nomTraj(1:2,tInd-1)) > ...
-        maxVel*(obj.BRS1_tau(i+1)-obj.BRS1_tau(i))
-      break
-    end
-    
-    if norm(obj.x(1:2) - obj.targetCenter(1:2)) < obj.targetRsmall + small
-      reachedTarget = true;
-      break
-    end
+    obj.updateState(u, dtSmall, obj.x, d);
   end
   
-  if while_loop
-    % Update nominal trajectory
-    obj.nomTraj(:,tInd) = obj.x;
-    tInd = tInd + 1;
-  end
+  % Record new point on nominal trajectory
+  obj.nomTraj(:,nomTraj_t) = obj.x;
+  nomTraj_t = nomTraj_t + 1;
+  t = tEarliest + 1;
   
-  if reachedTarget
-    break
-  end
+  % Plot
+  plot(obj.nomTraj(1,nomTraj_t), obj.nomTraj(2,nomTraj_t), 'k.')
+  hold on
+  [g2D, data2D] = proj(g, BRS1t, [0 0 1], obj.nomTraj(3,nomTraj_t));
+  visSetIm(g2D, data2D);
+  export_fig(sprintf('%s/%d', folder, nomTraj_t), '-png')
+  hold off
 end
 
 % Delete unused indices
-obj.nomTraj_tau(tInd:end) = [];
-obj.nomTraj(:,tInd:end) = [];
+obj.nomTraj_tau(nomTraj_t:end) = [];
+obj.nomTraj(:,nomTraj_t:end) = [];
 
 % Pad based on FRS1_tau, if available
 if ~isempty(obj.FRS1)
@@ -96,18 +102,4 @@ obj.x = x;
 obj.xhist = xhist;
 obj.u = u;
 obj.uhist = uhist;
-
-% Plot result
-folder = sprintf('nomTraj_%f', now);
-system(sprintf('mkdir %s', folder));
-
-figure
-for i = 1:length(obj.nomTraj_tau)-1
-  plot(obj.nomTraj(1,i), obj.nomTraj(2,i), 'k.')
-  hold on
-  [g2D, data2D] = proj(g, obj.BRS1(:,:,:,i), [0 0 1], obj.nomTraj(3,i));
-  visSetIm(g2D, data2D);
-  export_fig(sprintf('%s/%d', folder, i), '-png')
-  hold off
-end
 end

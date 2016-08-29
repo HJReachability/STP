@@ -56,7 +56,7 @@ for veh=1:length(Q)
   %% Compute the nominal trajectories based on BRS1
   if isempty(Q{veh}.nomTraj)
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-    Q{veh}.computeNomTraj(obj.g);
+    Q{veh}.computeNomTraj(obj);
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
