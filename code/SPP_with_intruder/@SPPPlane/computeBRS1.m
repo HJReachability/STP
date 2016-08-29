@@ -30,8 +30,8 @@ schemeData.tMode = 'backward';
 schemeData.dynSys = obj;
 
 % Set extraArgs
-
 extraArgs.visualize = true;
+extraArgs.deleteLastPlot = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = obj.x(3);
 

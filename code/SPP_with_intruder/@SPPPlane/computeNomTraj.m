@@ -34,6 +34,7 @@ obj.nomTraj(:,1) = obj.x;
 small = 1e-4;
 tInd = 2;
 reachedTarget = false;
+
 for i = 1:length(obj.BRS1_tau)-1
   while_loop = false;
   Deriv = computeGradients(g, obj.BRS1(:,:,:,i));
@@ -95,4 +96,18 @@ obj.x = x;
 obj.xhist = xhist;
 obj.u = u;
 obj.uhist = uhist;
+
+% Plot result
+folder = sprintf('nomTraj_%f', now);
+system(sprintf('mkdir %s', folder));
+
+figure
+for i = 1:length(obj.BRS1_tau)-1
+  plot(obj.nomTraj(1,i), obj.nomTraj(2,i), 'k.')
+  hold on
+  [g2D, data2D] = proj(g, obj.BRS1(:,:,:,i), [0 0 1], obj.nomTraj(3,i));
+  visSetIm(g2D, data2D);
+  export_fig(sprintf('%s/%d', folder, i), '-png')
+  hold off
+end
 end
