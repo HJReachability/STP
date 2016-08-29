@@ -62,8 +62,6 @@ while t < length(obj.BRS1_tau)
   
   % Record new point on nominal trajectory
   obj.nomTraj(:,nomTraj_t) = obj.x;
-  nomTraj_t = nomTraj_t + 1;
-  t = tEarliest + 1;
   
   % Plot
   plot(obj.nomTraj(1,nomTraj_t), obj.nomTraj(2,nomTraj_t), 'k.')
@@ -72,6 +70,10 @@ while t < length(obj.BRS1_tau)
   visSetIm(g2D, data2D);
   export_fig(sprintf('%s/%d', folder, nomTraj_t), '-png')
   hold off
+  
+  % Update time stamps
+  nomTraj_t = nomTraj_t + 1;
+  t = tEarliest + 1;  
 end
 
 % Delete unused indices
