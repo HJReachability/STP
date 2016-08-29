@@ -102,7 +102,7 @@ folder = sprintf('nomTraj_%f', now);
 system(sprintf('mkdir %s', folder));
 
 figure
-for i = 1:length(obj.BRS1_tau)-1
+for i = 1:length(obj.nomTraj_tau)-1
   plot(obj.nomTraj(1,i), obj.nomTraj(2,i), 'k.')
   hold on
   [g2D, data2D] = proj(g, obj.BRS1(:,:,:,i), [0 0 1], obj.nomTraj(3,i));
