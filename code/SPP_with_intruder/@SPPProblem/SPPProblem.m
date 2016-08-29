@@ -26,9 +26,9 @@ classdef SPPProblem < handle
     tReplan      % time at which replanning is done (intruder disappearance)
     
     % Space
-    grid_min = [-1.5; -1; -3*pi/2]
-    grid_max = [1; 1.5; pi/2]
-    grid_N = [151; 151; 101]
+    grid_min = [-1; -1; -3*pi/2]
+    grid_max = [1; 1; pi/2]
+    grid_N = [101; 101; 101]
     g
     g2D
     
