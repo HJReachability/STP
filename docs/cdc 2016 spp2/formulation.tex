@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $N$ vehicles \SBnote{Use $Q_i$} whose joint dynamics described by the time-varying ordinary differential equation (ODE)
+Consider $N$ vehicles, $\veh_i ~i\in \{1,\ldots,n\}$, whose joint dynamics described by the time-varying ordinary differential equation (ODE)
 
 \begin{equation}
 \label{eq:dyn}
@@ -43,7 +43,7 @@ Under the worst case disturbance, each vehicle aims to get to some set of target
   \label{fig:form}
 \end{figure}
 
-The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$.\SBnote{... $N>2$, even with $n_i$ as small as $3$.}
+The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$ with $n_i$ as small as $3$.
 
 In this paper, we assume assigned priorities of the vehicles as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
 
