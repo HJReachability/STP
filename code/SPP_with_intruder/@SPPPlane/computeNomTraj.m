@@ -7,19 +7,18 @@ small = 1e-4;
 oldNomTraj = obj.nomTraj;
 oldNomTraj_tau = obj.nomTraj_tau;
 
-folder = sprintf('nomTraj_%f', now);
-system(sprintf('mkdir %s', folder));
+% Modify control bounds
+nom_vrange = obj.vrange + obj.vReserved;
+nom_wMax = obj.wMax + obj.wReserved;
+dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 
-% Compute trajectory
-vrange = obj.vrange + obj.vReserved;
-wMax = obj.wMax + obj.wReserved;
-dynSys = Plane(obj.x, wMax, vrange);
-
+% Set extraArgs
 extraArgs.uMode = 'min';
 extraArgs.visualize = true;
 extraArgs.projDim = [1 1 0];
 extraArgs.save_png = true;
 
+% Compute trajectory
 [obj.nomTraj, obj.nomTraj_tau] = ...
   computeOptTraj(g, obj.BRS1, obj.BRS1_tau, dynSys, extraArgs);
 

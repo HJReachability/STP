@@ -27,13 +27,9 @@ schemeData.grid = g;
 schemeData.uMode = 'min';
 
 % Modify control bounds
-vrange = obj.vrange;
-wMax = obj.wMax;
-obj.vrange = vrange + obj.vReserved;
-obj.wMax = wMax + obj.wReserved;
-obj.dMax = [0; 0];
-
-schemeData.dynSys = obj;
+nom_vrange = obj.vrange + obj.vReserved;
+nom_wMax = obj.wMax + obj.wReserved;
+schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 
 % Set extraArgs
 extraArgs.visualize = true;
@@ -41,10 +37,11 @@ extraArgs.deleteLastPlot = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = obj.x(3);
 
-folder = sprintf('BRS_%f', now);
+folder = sprintf('%s_%f', mfilename, now);
 system(sprintf('mkdir %s', folder));
 
 extraArgs.fig_filename = sprintf('%s/', folder);
+
 % Set obstacles
 extraArgs.obstacles = obstacles;
 
@@ -60,8 +57,4 @@ extraArgs.stopInit = obj.x;
 % Reverse the order of time elements
 obj.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
 obj.BRS1 = flip(BRS1, 4);
-
-% Undo control bounds modification
-obj.vrange = vrange;
-obj.wMax = wMax;
 end

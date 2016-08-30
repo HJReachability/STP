@@ -13,9 +13,7 @@ fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
 g = createGrid([-0.4; -0.5; -3*pi/2], [0.6; 0.5; pi/2], [51; 51; 51], 3);
-schemeData.grid = g;
-
-RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
+RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
 fprintf('Loading CARS...\n')
@@ -27,6 +25,7 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 % Compute the sets
 fprintf('Computing FRS of raw obstacle...\n')
+schemeData.grid = g;
 rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
