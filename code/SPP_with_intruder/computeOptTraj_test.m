@@ -42,7 +42,9 @@ if strcmp(whatTest, 'DubinsCar')
   %% Compute trajectory
   extraArgs.projDim = [1 1 0];
   extraArgs.save_png = true;
-  computeOptTraj(g, data, tau, dynSys, extraArgs);
+  [traj, traj_tau] = computeOptTraj(g, data, tau, dynSys, extraArgs);
+  fprintf('Length of traj = %d; length of traj_tau = %d\n', size(traj, 2), ...
+    length(traj_tau))
 end
 
 if strcmp(whatTest, 'Plane')

@@ -1,4 +1,4 @@
-function traj = computeOptTraj(g, data, tau, dynSys, extraArgs)
+function [traj, traj_tau] = computeOptTraj(g, data, tau, dynSys, extraArgs)
 
 if nargin < 5
   extraArgs = [];
@@ -96,4 +96,5 @@ end
 
 % Delete unused indices
 traj(:,traj_t:end) = [];
+traj_tau = tau(1:traj_t-1);
 end

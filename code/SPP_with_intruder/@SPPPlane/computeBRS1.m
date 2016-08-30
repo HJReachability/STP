@@ -22,11 +22,17 @@ function computeBRS1(obj, BRS1_tau, g, obstacles)
 
 % using same tau as FRS is causing BRS to not include target
 
-% Set schemeData
+%% Set schemeData
 schemeData.grid = g;
 schemeData.uMode = 'min';
-schemeData.dMode = 'max';
-schemeData.tMode = 'backward';
+
+% Modify control bounds
+vrange = obj.vrange;
+wMax = obj.wMax;
+obj.vrange = vrange + obj.vReserved;
+obj.wMax = wMax + obj.wReserved;
+obj.dMax = [0; 0];
+
 schemeData.dynSys = obj;
 
 % Set extraArgs
@@ -54,4 +60,8 @@ extraArgs.stopInit = obj.x;
 % Reverse the order of time elements
 obj.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
 obj.BRS1 = flip(BRS1, 4);
+
+% Undo control bounds modification
+obj.vrange = vrange;
+obj.wMax = wMax;
 end
