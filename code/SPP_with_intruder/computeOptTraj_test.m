@@ -59,7 +59,7 @@ if strcmp(whatTest, 'Plane')
   schemeData.grid = g;
   schemeData.dynSys = dynSys;
   schemeData.uMode = 'min';
-  tau = 0:0.01:1;
+  tau = -5:0.01:0;
   data0 = shapeCylinder(g, 3, [0.7; 0.2; 0], 0.025);
   extraArgs.stopInit = dynSys.x;
 
