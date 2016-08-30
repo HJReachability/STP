@@ -1,93 +1,66 @@
 % !TEX root = SPP2.tex
-\section{Solution via Double-Obstacle HJ VI and SPP\label{sec:solution}}
-\subsection{Double-Obstacle Hamilton-Jacobi Variational Inequality}
-Our solution method takes advantage of the double-obstacle HJ variational inequality (VI) \cite{Fisac15}, in which one computes the backwards reachable set (BRS) $\brs(t)$ in the presence of a time-varying target set $\targetset(t)$ and time-varying obstacle $\obsset(t)$. Mathematically, given a system with state $z$ evolving according to
+\section{Background \label{sec:background}}
+This section provides a brief summary of \cite{Chen15}, in which SPP scheme is proposed under perfect information and absence of disturbance. Here, the dynamics of $\veh_i$ becomes
 
 \begin{equation}
-\label{eq:fdyn} % Full dynamics
+\label{eq:dyn_no_dstb}
 \begin{aligned}
-\dot{z} &= f(t, z, u, d), \quad t \in [0, T] \\
-z(0) &= z_0, \quad u \in \cset, d \in \dset
+\dot{x}_i &= f_i(t, x_i, u_i), \quad t \in [\edt_i, \sta_i] \\
+u_i &\in \cset_i, \quad i = 1,\ldots, N
 \end{aligned}
 \end{equation}
 
-After defining some target set $\targetset(t)$, we compute $\brs(t)$, defined by 
-%
+\noindent where the difference compared to \eqref{eq:dyn} is that the disturbance $d_i$ is no longer part of the dynamics.
+
+In order to make the $N$-vehicle path planning problem safe and tractable, a reasonable structure is imposed to the problem: each vehicle is assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower priority vehicle. In contrast, a lower priority vehicle must take into account the presence of all higher priority vehicles, and plan its trajectory in a way that avoids the higher priority vehicles' danger zones. For convenience and without lost of generality, let vehicle $i$ have the $i$th highest priority and denote it as $\veh_i$. 
+
+Under the above convention, each vehicle $\veh_i$ must take into account time-varying obstacles induced by vehicles $\veh_j, j<i$, denoted $\ioset_i^j(t)$. Optimal safe path planning of each lower-priority vehicle $\veh_i$ then consists of determining the optimal path that allows $\veh_i$ to each its target $\targetset_i$ while avoiding the time-varying obstacles $\obsset_i$, defined by
+
 \begin{equation}
-\label{eq:brs}
-\begin{aligned}
-&\brs(t) = \{z: \exists u \in \cfset, \forall \gamma[u] \in \Gamma, \eqref{eq:fdyn} \\
-&\Rightarrow \exists s \in [t, T], z(s) \in \targetset(s) \wedge z(\tau) \notin \obsset(\tau) \forall \tau \in [t, s]\}
-\end{aligned}
-\end{equation}
-%
-\noindent where $\cfset$ is the set of measurable functions satisfying control constraints at every $t$, and $\Gamma$ is the set of non-anticipative strategies \cite{Mitchell05} defined as follows:
-\begin{equation}
-\begin{aligned}
-\gamma &\in \Gamma := \{\mathcal{N}: \mathbb{U}_1 \rightarrow \mathbb{U}_2 \mid  u_1(r) = \hat{u}_1(r) \text{ a. e. } r\in[t,s] \\
-& \Rightarrow \mathcal{N}[u_1](r) = \mathcal{N}[\hat{u}_1](r) \text{ a. e. } r\in[t,s]\}
-\end{aligned}
+\label{eq:ioset}
+\obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
 \end{equation}
 
-Informally, the BRS is the set of states from which there exists a control such that for all non-anticipative disturbances, the system is driven into the target set $\targetset(t)$ in the time horizon $[t, T]$ without first entering the obstacle set $\obsset(t)$.
+Such an optimal path planning problem can be solved by computing a backward reachable set (BRS) $\brs_i(t)$ from a target set $\targetset_i$ using formulations of HJ variational inequalities (VI) such as \cite{Bokanowski11, Fisac15}. To compute BRSs under the presence of time-varying obstacles, the authors in \cite{Bokanowski11} augmented system with the time variable, and then applied reachability theory for time-invariant systems. To avoid increasing the problem dimension and save computation time, for the simulations of this paper we utilized the formulation in \cite{Fisac15}, which does not require augmentation of the state space with the time variable. \MCnote{Added brief comparison of the two methods}
 
-Given the target set $\targetset(t)$ specified as an implicit surface function such that $\targetset(t) = \{z: l(t, z) \le 0\}$, the BRS can be obtained as the implicit surface function $V(t, z)$ such that $\brs(t) = \{z: V(t, z) \le 0\}$, where $V(t, z)$ is the viscosity solution \cite{Crandall83} to the following HJ VI:
-%
+Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_1(t)$, from which the optimal control and optimal trajectory $x_1(\cdot)$ to the target $\targetset_1$ can be obtained. Under the absence of disturbances and perfect information, the obstacles induced by $\veh_1$ for lower-priority vehicle $\veh_i$ is simply the danger zone centered around the position of each point $p_1(\cdot)$ on the trajectory:
+
+\begin{equation}
+\ioset_i^1(t) = \{x_j: \|p_j - p_1(\cdot)\|\le\cradius\}
+\end{equation}
+
+Given $\ioset_i^j(t), j<i$, and continuing with $i = 2$, the optimal safe trajectories for each vehicle $\veh_i$ can be computed. All of the trajectories are optimal in the sense that given the requirement that $\veh_i$ must arrive at $\targetset_i$ at time $\sta_i$, the latest departure time $\ldt_i$ and the optimal control $u^*_i(\cdot)$ that guarantees arrival at $\sta_i$ can be obtained.
+
+To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the following HJ VI:
+
 \begin{equation}
 \label{eq:HJIVI}
 \begin{aligned}
-\max\Big\{&\min\big\{D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}\\
-& -g(t, z) - V(t, z)\Big\} = 0, \quad t\in[0,T]\\
-&V(T, z) = \max\big\{l(T, z), -g(T, z)\big\} \\ 
-&H\left(t, z, p\right) = \min_{u \in \cset} \max_{d \in \dset} p \cdot f(t, z, u, d)
+\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
+&l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
+&\quad t\in[\edt,\sta]\\
+&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}, \text{with}\\ 
 \end{aligned}
 \end{equation}
-%
-\noindent where $g(t, z)$ is the implicit surface function representing obstacle, $\obsset(t)$: $\obsset(t) = \{z: g(t, z) \le 0\}$. After the BRS is computed, the optimal control can be obtained as follows:
-%
+
 \begin{equation}
-\label{eq:opt_ctrl}
-u^*(t, z) = \arg \min_{u \in \cset} \max_{d \in \dset} H\left(t, z, D_z V\right)
+H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} p \cdot f_i(t, x_i, u_i)
 \end{equation}
 
-In theory, one could define the state to be the joint states of all vehicles, $z = (x_1, x_2, \ldots, x_N)$, define the dynamics \eqref{eq:fdyn} to follow $\eqref{eq:dyn}$, the target set $\targetset$ to correspond to the situation in which all vehicles have arrived at their targets $\targetset_i, i = 1, \ldots, N$, and the obstacle set $\obsset$ to correspond to the combination of all the danger zones $\dz_{ij}$. Then, \eqref{eq:HJIVI} could be solved to obtain $\brs(t)$, and then the joint optimal control would be given by \eqref{eq:opt_ctrl}.
+\noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i(t)$, and the backward reachable set $\brs_i(t)$, respectively: 
 
-However, practically, the dimensionality of the joint state $z$ would be extremely high. In fact, for even the simplest vehicle models, solving \eqref{eq:HJIVI} would be intractable for more than two vehicles. Therefore, we propose \SBnote{I think use will be a better word than propose here. We are not proposing SPP; you have already done it earlier.} the sequential path planning method, which allows \eqref{eq:HJIVI} to be solved in the state space of each vehicle, making the computation complexity scale linearly, as opposed to exponentially, with the number of vehicles.
-
-\subsection{Sequential Path Planning}
-In order to make the $N$-vehicle path planning problem safe and tractable, we impose a reasonable structure to the problem: each vehicle is assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower priority vehicle. In contrast, a lower priority vehicle must take into account the presence of all higher priority vehicles, and plan its trajectory in a way that avoids the higher priority vehicles' danger zones. For convenience and without lost of generality, let vehicle $i$ have the $i$th highest priority and denote it as $\veh_i$.
-
-Optimal path planning in this setting is enabled by a HJ VI which computes the BRS $\brs_i(t)$ from a target set $\targetset_i$ in the presence of time-varying obstacles $\obsset_i(t)$. In the sequential path planning application, the time-varying obstacles represent regions of the state space of $\veh_i$ that must be avoided in order to ensure that $\veh_i$ does not enter any danger zones of higher priority vehicles. We present three different ways to compute $\obsset_i$, obstacles induced by higher priority vehicles in Section \ref{sec:obs_gen}. For now, we proceed assuming $\obsset_i$ is given.
-
-To obtain the optimal control for reaching the target we adapt \eqref{eq:HJIVI} to $\veh_i$ and solve the following HJ VI:
-\SBnote{Do we really need to write these equations again? They are only slightly different from equation 6.}
-%
 \begin{equation}
-\label{eq:HJIVI_i}
+\label{eq:impl_surf}
 \begin{aligned}
-\max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V\right),\\
-& l_i(t, x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0, \\
-& t \in [\edt, \sta]\\
-&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(\sta, x_i)\big\} \\
-&H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f(t, x_i, u_i, d_i)
-\end{aligned}
-\end{equation}
-\MCnote{Hamiltonian depends on calculation; introduce later}
-Here, the target set $\targetset_i$, obstacle set $\obsset_i(t)$, and BRS $\brs_i(t)$ are related to $l_i(x_i), g_i(t, x_i), V_i(t, x_i)$ as follows:
-%
-\begin{equation}
-\begin{aligned}
-\targetset_i &= \{x_i: l_i(x_i) \le 0\} \\
-\obsset_i(t) &= \{x_i: g_i(t, x_i) \le 0\} \\
-\brs_i(t) &= \{x_i: V_i(t, x_i) \le 0\}
+x_i \in \targetset_i &\Leftrightarrow l_i(x_i) \le 0 \\
+x_i(t) \in \obsset_i(t) &\Leftrightarrow g_i(t,x_i) \le 0 \\
+x_i(t) \in \brs_i(t) &\Leftrightarrow V_i(t, x_i) \le 0
 \end{aligned}
 \end{equation}
 
-From the BRS, the optimal control for vehicle $\veh_i$ is then given as
-\SBnote{$H$ is already optimized at this point}
-\begin{equation}
-\label{eq:opt_ctrl_i}
-u_i^*(t, x_i) = \arg \min_{u_i \in \cset_i} H_i\left(t, x_i, D_{x_i} V_i\right)
-\end{equation}
+The optimal control is given by
 
-If $\veh_i$ uses the optimal control given by \eqref{eq:opt_ctrl_i}, then $\veh_i$ can be guaranteed to reach the target $\targetset_i$ as long as $\veh_i$ departs by the latest departure time $\ldt_i$, defined as $\inf_t V_i(t, x_i) \le 0$. \SBnote{Shouldn't it be $\sup_t V_i(t, x_i^o) \leq 0$?}  
+\begin{equation}
+\label{eq:optCtrl}
+u^*_i\left(t, x_i\right) = \arg \min_{u_i \in \cset} D_{x_i} V_i(t,x_i) \cdot f_i(t, x_i, u_i)
+\end{equation}
