@@ -51,7 +51,7 @@ if strcmp(whatTest, 'Plane')
   %% Grid
   grid_min = [-1; -1; -3*pi/2];
   grid_max = [1; 1; pi/2];
-  grid_N = [101; 101; 101];
+  grid_N = [95; 95; 95];
   g = createGrid(grid_min, grid_max, grid_N, 3);
   dynSys = Plane([-0.5; 0; 0], 0.6, [0.75 0.75]);
   
