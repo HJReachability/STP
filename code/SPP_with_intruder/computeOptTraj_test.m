@@ -74,6 +74,7 @@ if strcmp(whatTest, 'Plane')
   
   %% Compute trajectory
   extraArgs.projDim = [1 1 0];
+  extraArgs.save_png = true;
   computeOptTraj(g, data, tau, dynSys, extraArgs);
 end
 
