@@ -1,6 +1,8 @@
 function computeNomTraj(obj, g)
 % Computes nominal trajectory of to be robustly tracked
 
+small = 1e-4;
+
 % Save nominal trajectory if it already exists
 oldNomTraj = obj.nomTraj;
 oldNomTraj_tau = obj.nomTraj_tau;
