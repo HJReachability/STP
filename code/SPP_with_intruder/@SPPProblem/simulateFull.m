@@ -93,8 +93,8 @@ for i = 1:length(obj.tau)
         
         hHeading{veh}.XData = x;
         hHeading{veh}.YData = y;
-        hHeading{veh}.UData = cos(t);
-        hHeading{veh}.VData = sin(t);
+        hHeading{veh}.UData = arrowSize*cos(t);
+        hHeading{veh}.VData = arrowSize*sin(t);
         
         if veh < length(Q)
           hObstacles{veh}.ZData = obs2D;

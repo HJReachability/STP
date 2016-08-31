@@ -28,6 +28,9 @@ trackingRadius = 0.075;
 
 SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams);
 
+fprintf('Enter any modifications to the SPPProblem...\n')
+keyboard
+
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
 SPPP.computeRawAugObs;
