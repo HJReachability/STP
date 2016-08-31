@@ -76,7 +76,7 @@ for i = 1:length(obj.tau)
           'color', colors(veh,:));
         
         if veh < length(Q)
-          % SPP Vehicle extra plots
+          % SPP Vehicle obstacles
           hObstacles{veh} = visSetIm(obj.g2D, obs2D, colors(veh,:));
         else
           % Intruder extra plots
