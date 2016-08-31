@@ -39,7 +39,8 @@ classdef SPPPlane < Plane
   
   methods
     function obj = SPPPlane(varargin)
-      % Simply call Plane constructor
+      % obj = SPPPlane(x, wMax, vrange, dMax)
+      %   Simply call Plane constructor
       obj@Plane(varargin{:});
     end
   end

@@ -44,7 +44,7 @@ hCapRadius = cell(length(Q), 1);
 hObstacles = cell(length(Q), 1);
 
 figure
-arrowSize = 0.2;
+arrowSize = 0.1;
 plotTargetSets(Q(1:end-1), colors(1:4, :));
 hold on
 
@@ -64,7 +64,7 @@ for i = 1:length(obj.tau)
       x = xTraj(end);
       y = yTraj(end);
       
-      t = Q{veh}.getHeading();
+      t = Q{veh}.xhist(3,tInd);
       
       if firstPlot(veh)
         % Position, capture radius, heading
