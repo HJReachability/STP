@@ -38,8 +38,11 @@ fprintf('Computing BRS of cylObs3D...\n')
 rawAugObs.data = computeRawObs_BRS(obs3D(:,:,:,end), schemeData, CARS.tau);
 rawAugObs.g = g;
 
-obj.rawAugObs_filename = sprintf('rawObs_%f.mat', now);
+obj.rawAugObs_filename = sprintf('%s_%f.mat', mfilename, now);
 save(obj.rawAugObs_filename, 'rawAugObs', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 
 end
 

@@ -101,5 +101,4 @@ for i = 1:length(obj.tau)
     end
   end
 end
-
 end

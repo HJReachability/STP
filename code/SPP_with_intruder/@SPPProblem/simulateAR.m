@@ -139,4 +139,7 @@ obj.tauAR = tauAR;
 obj.tau = [obj.tauBR obj.tauAR];
 obj.full_sim_filename = sprintf('resim_%f.mat', now);
 save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

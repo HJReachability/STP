@@ -245,4 +245,7 @@ end
 [Q1, Q2, Q3, Q4] = Qnew{:};
 
 save(obj.BR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end
