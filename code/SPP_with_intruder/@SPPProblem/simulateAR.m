@@ -85,7 +85,7 @@ tInds = cell(length(Q),1);
 tauARmin = inf(length(Q), 1);
 tauARmax = -inf(length(Q), 1);
 
-for i = 1:length(tauAR)
+for i = 2:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles

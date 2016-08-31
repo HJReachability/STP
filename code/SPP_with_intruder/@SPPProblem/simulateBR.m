@@ -211,7 +211,7 @@ Qintr.tauBR = obj.tIntr:obj.dt:obj.tReplan;
 
 obj.tIntr = tIntr;
 obj.tReplan = tauBR(i);
-obj.tauBR = tauBR;
+obj.tauBR = tStart:obj.dt:tReplan;
 
 obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 

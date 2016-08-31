@@ -22,7 +22,7 @@ if exist(obj.full_sim_filename, 'file')
   fprintf('Loading saved simulation results...\n')
   load(obj.full_sim_filename)
 else
-  error('Simulate reults file not found!')
+  error('Simulate results file not found!')
 end
 
 % Load raw obstacles file
@@ -43,7 +43,10 @@ hHeading = cell(length(Q), 1);
 hCapRadius = cell(length(Q), 1);
 hObstacles = cell(length(Q), 1);
 
-plotTargetSets(Q(1:end-1), obj.g, colors(1:4, :));
+figure
+arrowSize = 0.2;
+plotTargetSets(Q(1:end-1), colors(1:4, :));
+hold on
 
 for veh = 1:length(Q)-1
   fprintf('Adding obstacles for vehicle %d for visualization...\n', veh)
@@ -68,13 +71,13 @@ for i = 1:length(obj.tau)
       if firstPlot(veh)
         % Position, capture radius, heading
         hPosition{veh} = plot(xTraj, yTraj, '.', 'color', colors(veh,:));
-        hCapRadius{veh} = plotDisk([x; y], CARS.Rc, 'color', colors(veh,:));
-        hHeading{veh} = quiver(x, y, cos(t), sin(t), 'color', colors(veh,:));
+        hCapRadius{veh} = plotDisk([x; y], obj.Rc, 'color', colors(veh,:));
+        hHeading{veh} = quiver(x, y, arrowSize*cos(t), arrowSize*sin(t), ...
+          'color', colors(veh,:));
         
         if veh < length(Q)
           % SPP Vehicle extra plots
-          hObstacles{veh} = visSetIm(obj.g2D, obs2D);
-          
+          hObstacles{veh} = visSetIm(obj.g2D, obs2D, colors(veh,:));
         else
           % Intruder extra plots
         end
@@ -84,7 +87,7 @@ for i = 1:length(obj.tau)
         hPosition{veh}.XData = xTraj;
         hPosition{veh}.YData = yTraj;
         
-        [~, diskX, diskY] = plotDisk([x; y], CARS.Rc);
+        [~, diskX, diskY] = plotDisk([x; y], obj.Rc);
         hCapRadius{veh}.XData = diskX;
         hCapRadius{veh}.YData = diskY;
         
@@ -100,5 +103,7 @@ for i = 1:length(obj.tau)
       end
     end
   end
+  title(sprintf('t = %.2f', obj.tau(i)))
+  drawnow
 end
 end
