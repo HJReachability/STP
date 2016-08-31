@@ -30,7 +30,7 @@ rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
 tR = RTTRS.trackingRadius;
-[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, CARS.Rc, tR);
+[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, obj.Rc, tR);
 rawAugObs.g2D = g2D;
 rawAugObs.data2D = obs2D;
 
