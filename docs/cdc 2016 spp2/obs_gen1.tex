@@ -15,7 +15,7 @@ We present three methods for address the above issues. Each method has its advan
 \item Robust trajectory tracking: Each vehicle declares a nominal trajectory which can be robustly tracked under disturbances.
 \end{itemize}
 
-In general, the above methods can be used in combination in a single path planning problem, with each vehicle independently having different assumptions about each higher-priority vehicle. For clarity though, we will present each method as if all vehicles are using the same method of path planning.
+In general, the above methods can be used in combination in a single path planning problem, with each vehicle independently having different assumptions about each higher-priority vehicle. For clarity, we will present each method as if all vehicles are using the same method of path planning.
 
 In addition, for simplicity and clarity of explanation, we will assume that no static obstacles exist. In the situations where static obstacles do exist, the time-varying obstacles $\obsset_i(t)$ simply becomes the union of the induced obstacles $\ioset_i^j(t)$ in \eqref{eq:ioset} and the static obstacles.
 

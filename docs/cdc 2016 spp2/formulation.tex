@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Problem Formulation \label{sec:formulation}}
-Consider $N$ vehicles, $\veh_i ~i\in \{1,\ldots,n\}$, whose joint dynamics described by the time-varying ordinary differential equation (ODE)
+Consider $N$ vehicles, $\veh_i ~i\in \{1,\ldots,n\}$, whose joint dynamics described by the ordinary differential equation
 
 \begin{equation}
 \label{eq:dyn}
@@ -12,7 +12,6 @@ u_i &\in \cset_i, d_i \in \dset_i, \quad i = 1,\ldots, N
 
 \noindent where $x_i \in \R^{n_i}$ is the state of the $i$th vehicle, $u_i$ is the control of the $i$th vehicle, and $d_i$ is the disturbance experienced by the $i$th vehicle. In general, the physical meaning of $x_i$ and the dynamics $f_i$ depend on the specific dynamic model of vehicle $i$, and need not be the same across the different vehicles.
 
-\MCnote{Read this again}
 We assume that the control functions $u_i(\cdot), d_i(\cdot)$ are drawn from the set of measurable functions\footnote{
 A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}. In addition, we assume that the disturbances $d_i(\cdot)$ are drawn from $\Gamma$, the set of non-anticipative strategies \cite{Mitchell05}, defined as follows:
 \begin{equation}

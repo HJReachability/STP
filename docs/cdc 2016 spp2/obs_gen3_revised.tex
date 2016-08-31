@@ -10,10 +10,8 @@ In this paper, we use reachability to determine the tracking error bound and can
 \begin{equation}
 \label{eq:jdyn} % Joint dynamics
 \begin{aligned}
-\dot{x} &= f(t, x, u, d), \\
-\dot{x_r} &=f(t,x_r,u_r,0),\\
-u &\in \cset, u_r\in\cset^p, d \in \dset, \\
-&t \in [0, T],
+\dot{x} &= f(t, x, u, d), \quad \dot{x_r} =f(t,x_r,u_r,0),\\
+u &\in \cset, u_r\in\cset^p, d \in \dset, \quad t \in [0, T]
 \end{aligned}
 \end{equation}
 
@@ -24,9 +22,9 @@ With analogous definitions as those in Section \ref{sec:background}, $\brs(t)$ c
 \begin{equation}
 \label{eq:HJIVI_track}
 \begin{aligned}
-\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\&  t\in[0,T],\\
-&V(T, z) = l(T, z),\\
-&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d),
+\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\
+&t\in[0,T], \qquad V(T, z) = l(T, z) \\
+&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d)
 \end{aligned}
 \end{equation}
 
@@ -41,8 +39,7 @@ In cases where the error dynamics are independent of the absolute state as in \e
 \label{eq:edyn} % Error dynamics
 \begin{aligned}
 \dot{e} &= f_e(t, e, u, u_r,d), \\
-u &\in \cset, u_r\in\cset^p, d \in \dset, \\
-&t \in [0, T],
+u &\in \cset, u_r\in\cset^p, d \in \dset, \quad t \in [0, T],
 \end{aligned}
 \end{equation}
 
