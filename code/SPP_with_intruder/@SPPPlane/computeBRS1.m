@@ -22,12 +22,14 @@ function computeBRS1(obj, BRS1_tau, g, obstacles)
 
 % using same tau as FRS is causing BRS to not include target
 
-% Set schemeData
+%% Set schemeData
 schemeData.grid = g;
 schemeData.uMode = 'min';
-schemeData.dMode = 'max';
-schemeData.tMode = 'backward';
-schemeData.dynSys = obj;
+
+% Modify control bounds
+nom_vrange = obj.vrange + obj.vReserved;
+nom_wMax = obj.wMax + obj.wReserved;
+schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 
 % Set extraArgs
 extraArgs.visualize = true;
@@ -35,10 +37,11 @@ extraArgs.deleteLastPlot = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = obj.x(3);
 
-folder = sprintf('BRS_%f', now);
+folder = sprintf('%s_%f', mfilename, now);
 system(sprintf('mkdir %s', folder));
 
 extraArgs.fig_filename = sprintf('%s/', folder);
+
 % Set obstacles
 extraArgs.obstacles = obstacles;
 

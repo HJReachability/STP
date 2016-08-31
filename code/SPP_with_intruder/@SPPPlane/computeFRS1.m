@@ -3,10 +3,13 @@ function computeFRS1(obj, tauFRS, g, obstacles)
 %     Computes the ETA of a vehicle
 
 schemeData.grid = g;
-schemeData.dynSys = obj;
 schemeData.uMode = 'max';
-schemeData.dMode = 'min';
 schemeData.tMode = 'forward';
+
+% Modify control bounds
+nom_vrange = obj.vrange + obj.vReserved;
+nom_wMax = obj.wMax + obj.wReserved;
+schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 
 % Center the grid between target and current vehicle state
 center = 0.5*(obj.targetCenter + obj.x);
@@ -34,7 +37,7 @@ extraArgs.visualize = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = obj.x(3);
 
-folder = sprintf('FRS_%f', now);
+folder = sprintf('%s_%f', mfilename, now);
 system(sprintf('mkdir %s', folder));
 
 extraArgs.fig_filename = sprintf('%s/', folder);

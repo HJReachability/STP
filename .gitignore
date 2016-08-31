@@ -14,16 +14,11 @@ docs/videos/SPP1 overview.mp4
 docs/SPP journal/SPP_journal.pdf
 code/SPP_with_intruder/RTT_sim_fig/
 *.gz(busy)
-code/SPP_with_intruder/SPPwDisturbance_RTT_sim*/
-code/SPP_with_intruder/SPPwIntruder_sim_*/
 code/SPP_with_intruder/computeRTTRS_*
-code/SPP_with_intruder/sim.txt
 code/SPP_with_intruder/computeCARS_*/
 code/SPP_with_intruder/plotRS_evolution_*/
-code/SPP_with_intruder/vehicle 3 FRS/
-code/SPP_with_intruder/vehicle 4 FRS/
 code/SPP_with_intruder/simulateBR_*/
 code/SPP_with_intruder/simulateAR_*/
-code/SPP_with_intruder/BRS_*/
 code/SPP_with_intruder/simulateNI_*/
 code/SPP_with_intruder/nomTraj_*/
+code/SPP_with_intruder/computeOptTraj_*/

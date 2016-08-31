@@ -56,7 +56,7 @@ for veh=1:length(Q)
   %% Compute the nominal trajectories based on BRS1
   if isempty(Q{veh}.nomTraj)
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-    Q{veh}.computeNomTraj(obj);
+    Q{veh}.computeNomTraj(obj.g);
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
@@ -73,4 +73,7 @@ end
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.NI_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.NI_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

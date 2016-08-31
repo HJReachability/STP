@@ -117,4 +117,7 @@ end
 obj.NI_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 [Q1, Q2, Q3, Q4] = Q{:};
 save(obj.NI_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

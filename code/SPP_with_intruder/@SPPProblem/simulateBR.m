@@ -182,7 +182,7 @@ for i = 1:length(tauBR)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, SPPP.Rc);
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
@@ -245,4 +245,7 @@ end
 [Q1, Q2, Q3, Q4] = Qnew{:};
 
 save(obj.BR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

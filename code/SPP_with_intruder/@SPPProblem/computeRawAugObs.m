@@ -13,9 +13,7 @@ fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
 g = createGrid([-0.4; -0.5; -3*pi/2], [0.6; 0.5; pi/2], [51; 51; 51], 3);
-schemeData.grid = g;
-
-RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, schemeData.grid);
+RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
 fprintf('Loading CARS...\n')
@@ -27,11 +25,12 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 % Compute the sets
 fprintf('Computing FRS of raw obstacle...\n')
+schemeData.grid = g;
 rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
 fprintf('Computing cylObs3D of raw obstacle FRS...\n')
 tR = RTTRS.trackingRadius;
-[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, CARS.Rc, tR);
+[obs3D, g2D, obs2D] = computeRawObs_cylObs(rawObsFRS, g, obj.Rc, tR);
 rawAugObs.g2D = g2D;
 rawAugObs.data2D = obs2D;
 
@@ -39,8 +38,11 @@ fprintf('Computing BRS of cylObs3D...\n')
 rawAugObs.data = computeRawObs_BRS(obs3D(:,:,:,end), schemeData, CARS.tau);
 rawAugObs.g = g;
 
-obj.rawAugObs_filename = sprintf('rawObs_%f.mat', now);
+obj.rawAugObs_filename = sprintf('%s_%f.mat', mfilename, now);
 save(obj.rawAugObs_filename, 'rawAugObs', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 
 end
 

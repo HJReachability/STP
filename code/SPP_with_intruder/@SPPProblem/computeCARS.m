@@ -68,4 +68,7 @@ CARS.tau = tau;
 % Update SPPP and save
 obj.CARS_filename = sprintf('CARS_%f.mat', now);
 save(obj.CARS_filename, 'CARS', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end
