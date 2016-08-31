@@ -61,7 +61,7 @@ tauAR = obj.tReplan:obj.dt:tEnd;
 if save_png || save_fig
   for veh = 1:length(Q)
     fprintf('Adding obstacles vehicle %d for visualization...\n', veh)
-    Q{veh}.addObs2D(obj, RTTRS, CARS);
+    Q{veh}.addObs2D(obj, RTTRS);
   end
   
   % For saving graphics
