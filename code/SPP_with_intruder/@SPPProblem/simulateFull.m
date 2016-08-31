@@ -34,7 +34,7 @@ else
 end
 
 Q = {Q1;Q2;Q3;Q4;Qintr};
-colors = lines(4);
+colors = lines(5);
 small = 1e-4;
 
 firstPlot = true(length(Q), 1);
@@ -59,14 +59,12 @@ for i = 1:length(obj.tau)
       find(Q{veh}.tau > obj.tau(i)-small &  Q{veh}.tau < obj.tau(i)+small, 1);
     
     if ~isempty(tInd)
-      xTraj = Q{veh}.xhist(1,1:tInd+1);
-      yTraj = Q{veh}.xhist(2,1:tInd+1);
+      xTraj = Q{veh}.xhist(1,1:tInd);
+      yTraj = Q{veh}.xhist(2,1:tInd);
       x = xTraj(end);
       y = yTraj(end);
       
       t = Q{veh}.getHeading();
-      
-      obs2D = Q{veh}.obs2D(:,:,tInd);
       
       if firstPlot(veh)
         % Position, capture radius, heading
@@ -77,6 +75,7 @@ for i = 1:length(obj.tau)
         
         if veh < length(Q)
           % SPP Vehicle obstacles
+          obs2D = Q{veh}.obs2D(:,:,tInd);
           hObstacles{veh} = visSetIm(obj.g2D, obs2D, colors(veh,:));
         else
           % Intruder extra plots
@@ -97,6 +96,7 @@ for i = 1:length(obj.tau)
         hHeading{veh}.VData = arrowSize*sin(t);
         
         if veh < length(Q)
+          obs2D = Q{veh}.obs2D(:,:,tInd);
           hObstacles{veh}.ZData = obs2D;
         else
         end

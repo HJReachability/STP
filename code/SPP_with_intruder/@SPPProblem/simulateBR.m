@@ -109,8 +109,8 @@ intruder_arrived = false;
 
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
-tauBRmin = inf(length(Q), 1);
-tauBRmax = -inf(length(Q), 1);
+tauBRmin = inf(length(Q)+1, 1);
+tauBRmax = -inf(length(Q)+1, 1);
 
 %% Simulate
 tInds = cell(length(Q),1);
@@ -132,6 +132,8 @@ for i = 1:length(tauBR)
   
   %% Intruder
   if tauBR(i) >= tIntr
+    tauBRmin(end) = min(tauBRmin(end), tauBR(i));
+    tauBRmax(end) = max(tauBRmax(end), tauBR(i));    
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
@@ -207,7 +209,7 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.tauBR = obj.tIntr:obj.dt:obj.tReplan;
+Qintr.tauBR = tauBRmin(end):obj.dt:tauBRmax(end);
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
