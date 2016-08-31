@@ -58,7 +58,7 @@ for veh = 1:length(Q)
     if isempty(Q{veh}.BRS1)
       tauBRS = Q{veh}.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
-      obstacles = 
+      obstacles = ...
         gatherObstacles(Q(1:veh-1), obj.g, tauBRS, 'obsForRTT', 'backward');
       
       fprintf('Computing BRS1 for vehicle %d\n', veh)
