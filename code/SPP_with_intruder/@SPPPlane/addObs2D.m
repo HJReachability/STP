@@ -12,10 +12,6 @@ replan = false;
 if ~isempty(SPPP.tReplan) && nargin > 3
   replan = true;
   rawAugObs2D = migrateGrid(rawAugObs.g2D, rawAugObs.data2D, g2D);
-  
-  for i = 1:length(CARS.tau)
-    rawAugObs2D(:,:,i) = addCRadius(g2D, rawAugObs2D(:,:,i), SPPP.Rc);
-  end
 end
 
 % Migrate and add capture radius to RTTRS
@@ -52,10 +48,6 @@ for i = 1:length(obj.nomTraj_tau)
   
   % Rotate and shift 2D obstacle
   rawObsDatai = rotateData(g2D, rawObsToRotate, t, [1 2], []);
-  rawObsDatai = shiftData(g2D, rawObsDatai, p, [1 2]);
-  
-  % Subtract target set
-  target2D = shapeSphere(g2D, obj.targetCenter, obj.targetR);
-  obj.obs2D(:,:,i) = max(rawObsDatai, -target2D);
+  obj.obs2D(:,:,i) = shiftData(g2D, rawObsDatai, p, [1 2]);
 end
 end

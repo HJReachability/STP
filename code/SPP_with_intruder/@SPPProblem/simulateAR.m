@@ -61,7 +61,7 @@ tauAR = obj.tReplan:obj.dt:tEnd;
 if save_png || save_fig
   for veh = 1:length(Q)
     fprintf('Adding obstacles vehicle %d for visualization...\n', veh)
-    Q{veh}.addObs2D(obj, RTTRS, CARS);
+    Q{veh}.addObs2D(obj, RTTRS);
   end
   
   % For saving graphics
@@ -85,7 +85,7 @@ tInds = cell(length(Q),1);
 tauARmin = inf(length(Q), 1);
 tauARmax = -inf(length(Q), 1);
 
-for i = 1:length(tauAR)
+for i = 2:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
@@ -110,7 +110,7 @@ for i = 1:length(tauAR)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, CARS.Rc);
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
@@ -136,7 +136,10 @@ end
 [Q1, Q2, Q3, Q4] = Q{:};
 
 obj.tauAR = tauAR;
-obj.tau = [obj.tauBR obj.tauAR];
+obj.tau = [obj.tauBR obj.tauAR(2:end)];
 obj.full_sim_filename = sprintf('resim_%f.mat', now);
 save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

@@ -14,8 +14,8 @@ function computeRTTRS(obj, vR, wR, tR, save_png)
 %     SPPP - SPP problem object updated with RTTRS file name
 
 if nargin < 2
-%   vR = [0.3 -0.3];
-  vR = [0.25 -0.25];  
+  vR = [0.3 -0.3];
+%   vR = [0.25 -0.25];  
 end
 
 if nargin < 3
@@ -78,4 +78,7 @@ RTTRS.dynSys = dynSys;
 % Save results
 obj.RTTRS_filename = sprintf('RTTRS_%f.mat', now);
 save(obj.RTTRS_filename, 'RTTRS', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

@@ -69,6 +69,9 @@ end
 
 small = 1e-4;
 tInds = cell(length(Q), 1);
+taumin = inf(length(Q), 1);
+taumax = -inf(length(Q), 1);
+
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
@@ -77,6 +80,9 @@ for i = 1:length(tau)
       Q{veh}.nomTraj_tau < tau(i) + small, 1);
     
     if ~isempty(tInds{veh})
+      taumin(veh) = min(taumin(veh), tau(i));
+      taumax(veh) = max(taumax(veh), tau(i));
+      
       %% Get optimal control
       % Our plane is vehicle A, trying to stay out of reachable set, and the
       % reference virtual plane is vehicle B, trying to get into reachable set
@@ -114,7 +120,16 @@ for i = 1:length(tau)
   end
 end
 
+%% Save data
+obj.tau = tau;
+for veh = 1:length(Q)
+  Q{veh}.tau = taumin(veh):obj.dt:taumax(veh);
+end
+
 obj.NI_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 [Q1, Q2, Q3, Q4] = Q{:};
 save(obj.NI_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end
