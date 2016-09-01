@@ -58,7 +58,7 @@ for veh = 1:length(Q)
     if isempty(Q{veh}.BRS1)
       tauBRS = Q{veh}.FRS1_tau;
       fprintf('Gathering obstacles for vehicle %d for BRS computation...\n',veh)
-      obstacles = 
+      obstacles = ...
         gatherObstacles(Q(1:veh-1), obj.g, tauBRS, 'obsForRTT', 'backward');
       
       fprintf('Computing BRS1 for vehicle %d\n', veh)
@@ -88,4 +88,7 @@ end
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.AR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.AR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

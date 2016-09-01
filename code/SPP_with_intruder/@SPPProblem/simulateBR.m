@@ -109,8 +109,8 @@ intruder_arrived = false;
 
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
-tauBRmin = inf(length(Q), 1);
-tauBRmax = -inf(length(Q), 1);
+tauBRmin = inf(length(Q)+1, 1);
+tauBRmax = -inf(length(Q)+1, 1);
 
 %% Simulate
 tInds = cell(length(Q),1);
@@ -132,6 +132,8 @@ for i = 1:length(tauBR)
   
   %% Intruder
   if tauBR(i) >= tIntr
+    tauBRmin(end) = min(tauBRmin(end), tauBR(i));
+    tauBRmax(end) = max(tauBRmax(end), tauBR(i));    
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
@@ -182,7 +184,7 @@ for i = 1:length(tauBR)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, SPPP.Rc);
+    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
     ylim([-1.2 1.2])
@@ -207,11 +209,12 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.data.tauBR = obj.tIntr:obj.dt:obj.tReplan;
+Qintr.tauBR = tauBRmin(end):obj.dt:tauBRmax(end);
+Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
 obj.tReplan = tauBR(i);
-obj.tauBR = tauBR;
+obj.tauBR = tStart:obj.dt:obj.tReplan;
 
 obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 
@@ -245,4 +248,7 @@ end
 [Q1, Q2, Q3, Q4] = Qnew{:};
 
 save(obj.BR_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end

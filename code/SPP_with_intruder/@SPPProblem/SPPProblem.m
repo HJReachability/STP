@@ -13,8 +13,8 @@ classdef SPPProblem < handle
     Rc = 0.1 % collision radius
     
     % SPP vehicle parameters
-    %     vRangeA = [0.1 1];
-    vRangeA = [0.5 1];
+    vRangeA = [0.1 1];
+%     vRangeA = [0.5 1];
     wMaxA = 1;
     dMaxA = [0.1 0.2];
     
@@ -36,6 +36,9 @@ classdef SPPProblem < handle
     tauAR        % Time vector after replanning
     tau          % Time vector for entire simulation
     
+    % File to store this SPPProblem instance
+    this_filename
+    
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
@@ -56,7 +59,7 @@ classdef SPPProblem < handle
   
   methods
     %% Contructor
-    function obj = SPPProblem(initStates, targetCenters, targetR)
+    function obj = SPPProblem(initStates, targetCenters, targetR, vehParams)
       if nargin < 1
         initStates = { ...
           [-0.6; 0.2;  0]; ...
@@ -74,16 +77,28 @@ classdef SPPProblem < handle
       end
       
       if nargin < 3
-        %         targetR = 0.15;
+%         targetR = 0.15;
         targetR = 0.1;
+      end
+     
+      if nargin < 4
+        vehParams.vRangeA = [0.5 1];
+        vehParams.wMaxA = 1;
+        vehParams.dMaxA = [0.1 0.2];        
       end
       
       obj.initStates = initStates;
       obj.targetCenters = targetCenters;
       obj.targetR = targetR;
       
+      obj.vRangeA = vehParams.vRangeA;
+      obj.wMaxA = vehParams.wMaxA;
+      obj.dMaxA = vehParams.dMaxA;
+      
       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+      
+      obj.this_filename = sprintf('%s_%f.mat', mfilename, now);
     end
   end
 end

@@ -88,4 +88,7 @@ end
 [Q1, Q2, Q3, Q4] = Q{:};
 obj.BR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
 save(obj.BR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+
+SPPP = obj;
+save(obj.this_filename, 'SPPP', '-v7.3')
 end
