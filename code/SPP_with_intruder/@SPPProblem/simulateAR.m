@@ -136,7 +136,7 @@ end
 [Q1, Q2, Q3, Q4] = Q{:};
 
 obj.tauAR = tauAR;
-obj.tau = [obj.tauBR obj.tauAR];
+obj.tau = [obj.tauBR obj.tauAR(2:end)];
 obj.full_sim_filename = sprintf('resim_%f.mat', now);
 save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
 
