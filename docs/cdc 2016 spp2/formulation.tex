@@ -29,6 +29,7 @@ Let $\edt_i$ and $\sta_i$ denote the earliest departure time and scheduled time 
 
 Under the worst case disturbance, each vehicle aims to get to some set of target states, denoted $\targetset_i \subset \R^{n_i}$, at some scheduled time of arrival $\sta_i$. On its way to $\targetset_i$, each vehicle must avoid the danger zones $\dz_{ij}(t)$ of all other vehicles $j\neq i$ for all time. In general, the danger zone can be defined to capture any undesirable configuration between vehicle $i$ and vehicle $j$. In this paper, we define $\dz_{ij}(t)$ as
 
+\vspace{-0.5em} 
 \begin{equation}
 \dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \},
 \end{equation}
@@ -40,8 +41,9 @@ Under the worst case disturbance, each vehicle aims to get to some set of target
   \includegraphics[width=0.25\textwidth]{"fig/formulation"}
   \caption{Problem setup.}
   \label{fig:form}
+  \vspace{-1.5em}
 \end{figure}
-
+ 
 The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. Due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$ with $n_i$ as small as $3$.
 
 In this paper, we assume assigned priorities of the vehicles as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:

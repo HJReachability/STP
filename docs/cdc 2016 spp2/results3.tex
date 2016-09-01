@@ -4,16 +4,19 @@ Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where ea
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.45\textwidth]{"fig/rtt_traj"}
+  \includegraphics[width=0.40\textwidth]{"fig/rtt_traj"}
   \caption{Simulated trajectories for the robust trajectory tracking method.}
   \label{fig:rtt_traj}
+  \vspace{-2em}
 \end{figure}
 
 $\ldt_i$ numbers for the four vehicles in this case are $-1.61, -3.16, -3.57$ and $-2.47$ respectively. In this method, vehicles use reduced control authority for path planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have higher $\ldt$ compared to the other two methods, as evident from $\ldt_1$. Because of this ``sacrifice" by the higher-priority vehicles during the path planning phase, the $\ldt$ of lower priority vehicles may increase compared to that in the other methods, as evident from $\ldt_4$. Overall, it is unclear whether $\ldt_i$ for a vehicle would increase or decrease compared to the other methods, as $\ldt_i$ is increased by a conservative path planning by higher-priority vehicles, and decreased by a conservative path planning of $\veh_i$. 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.45\textwidth]{"fig/rtt_rs3"}
+  \includegraphics[width=0.40\textwidth]{"fig/rtt_rs3"}
   \caption{Evolution of the BRS for $\veh_3$ in the robust trajectory tracking method. As the BRS grows in time, the induced obstacles carve out a channel. Note that a smaller target set is used to compute the BRS to ensure that the vehicle reaches the target set by $t=0$ for any allowed tracking error.}
   \label{fig:rtt_rs3}
+  \vspace{-1em}
 \end{figure}
+\vspace{-0.2em}
