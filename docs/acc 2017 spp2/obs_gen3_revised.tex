@@ -1,51 +1,51 @@
 % !TEX root = SPP2.tex
 \subsection{Method 3: Robust Tracking of Nominal Trajectories \label{sec:rtt}}
-A third way of computing induced obstacles\MCnote{Moved away from just computing induced obstacles in new method} is to have vehicles commit to robustly tracking a feasible nominal trajectory. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacles. This computation can be done in two phases: the planning phase and the disturbance rejection phase. 
+Even though it is not possible to commit and track an exact trajectory in presence of disturbances unlike in \cite{Chen15}, it might still be possible to \textit{robustly} track a feasible nominal trajectory instead. If a vehicle can be guaranteed to track a trajectory with a bounded error at all times, then this bound can be used to determine the induced obstacles. This computation can be done in two phases: the planning phase and the disturbance rejection phase. 
 In the planning phase, a nominal trajectory is computed that is feasible in the absence of disturbances. In the disturbance rejection phase, we then compute a bound on the tracking error, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
-It is important to note that the planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
+It is important to note that the planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
 
 In this paper, we use reachability to determine the tracking error bound, which can be determined independently of the nominal trajectory. To compute this error bound, we wish to find a robust control-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be viewed as a virtual evader vehicle that is optimally avoiding the actual vehicle to enlarge the tracking error. We therefore can model trajectory tracking as a pursuit-evasion game in which the actual vehicle is playing against the coordinated worst-case action of the virtual vehicle and the disturbance. In general, this game will be governed by dynamics of the form:
 
 \begin{equation}
 \label{eq:jdyn} % Joint dynamics
 \begin{aligned}
-\dot{x} &= f(t, x, u, d), \quad \dot{x_r} =f(t,x_r,u_r,0),\\
-u &\in \cset, u_r\in\cset^p, d \in \dset, \quad t \in [0, T]
+\dot{x_j} &= f_j(t, x_j, u_j, d_j), \quad \dot{x_r} =f_j(t,x_r,u_r,0),\\
+u_j &\in \cset_j, u_r\in\cset^p_j, d \in \dset_j, \quad t \in [0, T]
 \end{aligned}
 \end{equation}
 
-where $x$ and $x_r$ represent the state of the actual vehicle and the virtual evader, respectively. Given an error bound $\errorbound(x_{r,i})$ on the tracking error $e=x-x_r$, we define the target set $\targetset$ for this reachability problem to be the set of joint configurations where this bound is violated: $\targetset = \{(x, x_{r,i}): x\not\in\errorbound(x_{r,i})\}$. In this case, the BRS $\brs(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds, outside of $\errorbound(x_{r,i})$.
+where $x_j$ and $x_r$ represent the state of the actual vehicle $\veh_j$ and the virtual evader, respectively. Given an error bound $\errorbound_j(x_{r,j})$ on the tracking error $e_j=x_j-x_r$, we define the target set $\targetset_j$ for this reachability problem to be the set of joint configurations where this bound is violated: $\targetset_j = \{(x_j, x_{r,i}): x_j\not\in\errorbound_j(x_{r,j})\}$. In this case, the BRS $\brs_j(t)$ represents the set of states from which the vehicle may be driven to violate the tracking error bounds, outside of $\errorbound_j(x_{r,j})$. With analogous definitions as those in Section \ref{sec:background}, $\brs_j(t)$ can be characterized as the negative region of the solution $V_j$ to a simpler case of \eqref{eq:HJIVI} without obstacles:
+\vspace{-0.2em}
 
-With analogous definitions as those in Section \ref{sec:background}, $\brs(t)$ can be characterized as the negative region of the solution $V$ to a simpler case of \eqref{eq:HJIVI}:
-\vspace{-0.4em}
+\begin{small}
 \begin{equation}
 \label{eq:HJIVI_track}
 \begin{aligned}
-\min\big\{&D_t V(t, z) + H\left(t, z, D_z V\right), l(t,z) - V(t, z)\big\}= 0,\\
-&t\in[0,T], \qquad V(T, z) = l(T, z) \\
-&H\left(t, z, p\right) = \max_{u \in \cset} \min_{u_r \in\cset^p} \min_{d \in \dset} p \cdot f_z(t,z,u,u_r,d)
+\min\big\{&D_t V_j(t, z_j) + H_j\left(t, z_j, D_{z_j} V_j\right), l(t,z_j) - V_j(t, z_j)\big\}= 0,\\
+&t\in[0,T], \qquad V_j(T, z_j) = l_j(T, z_j) \\
+&H_j\left(t, z_j, p\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j} \min_{d_j \in \dset_j} p \cdot f_{z_j}(t,z_j,u_j,u_r,d_j)
 \end{aligned}
 \end{equation}
-\MCnote{say without obstacles to be consistent?}
-\noindent where for compactness of notation we denote $z=(x,x_r)$ and $f_z(t,z,u,u_r,d) = [f(t,x,u,d),f(t,x_r,u_r,0)]$. The complement of $\brs(0)$ is the maximal robust controlled-invariant set in $\targetset^\text{c}$. Letting $T\to\infty$ we obtain the infinite controlled-invariant set, which we denote by $\disckernel$\MCnote{Is $\Omega$ being used anywhere?}. If this set is nonempty, then the tracking error $e$ at flight time is guaranteed to remain within $\errorbound$ provided that the vehicle starts inside $\disckernel$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
+\end{small}
+
+\noindent where for compactness of notation we denote $z_j=(x_j,x_r)$ and $f_{z_j}(t,z_j,u_j,u_r,d_j) = [f_j(t,x_j,u_j,d_j),f_j(t,x_r,u_r,0)]$. The complement of $\brs_j(0)$ is the maximal robust controlled-invariant set in $\targetset_j^\text{c}$. Letting $T\to\infty$ we obtain the infinite controlled-invariant set, which we denote by $\disckernel_j$. If this set is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
 \begin{equation}\label{eq:robust_tracking_law}
-\tracklaw(x,x_r) \in \arg\max_{u \in \cset} \min_{u_r \in\cset^p, d \in \dset} p \cdot f_z(t,z,u,u_r,d).
+\tracklaw_j(x_j,x_r) \in \arg\max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} p \cdot f_{z_j}(t,z_j,u_j,u_r,d_j).
 \end{equation}
 
-In cases where the error dynamics are independent of the absolute state as in \eqref{eq:edyn}, $\disckernel$ can be computed in the state space of the tracking error $e$ to produce a feedback control law that also only depends on $e$, and to significantly reduce the problem dimensionality. We will present one such example in Section \ref{sec:sim}.
-\MCnote{equation not explicitly referred to}
+In cases where the error dynamics are independent of the absolute state as in \eqref{eq:edyn}, $\disckernel_j$ can be computed in the state space of the tracking error $e_j$ to significantly reduce the problem dimensionality and to produce a feedback control law that also only depends on $e_j$ (see (7) in \cite{Mitchell05} for an example).
 \begin{equation}
 \label{eq:edyn} % Error dynamics
 \begin{aligned}
-\dot{e} &= f_e(t, e, u, u_r,d), \\
-u &\in \cset, u_r\in\cset^p, d \in \dset, \quad t \in [0, T],
+\dot{e_j} &= f_{e_j}(t, e_j, u_j, u_r,d_j), \\
+u_j &\in \cset_j, u_r\in\cset^p_j, d_j \in \dset_j, \quad t \in [0, T],
 \end{aligned}
 \end{equation}
 
-Given $\errorbound$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound \subset \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\{x: \errorbound(x) \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^p$, that contains the initial state of the vehicle. The overall control policy to reach the destination is given by \ref{eq:robust_tracking_law}.
+Given $\errorbound_j$, we can guarantee that $\veh_j$ will reach its target $\targetset_j$ if $\errorbound_j \subset \targetset_j$; thus, in the path planning phase, we modify $\targetset_j$ to be $\{x_j: \errorbound_j(x_j) \subseteq \targetset_j\}$, and compute a BRS, with the control authority $\cset^p_j$, that contains the initial state of the vehicle. The overall control policy to reach the destination is given by \eqref{eq:robust_tracking_law}.
 
-Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_{r,i})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_{r,i})$ and $\errorbound(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$}. Thus,
+Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\errorbound_j(x_{r,j})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i(x_{r,i})$ and $\errorbound_j(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$}. Thus,
 \vspace{-0.3em}
 \begin{equation}
 \ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \},
