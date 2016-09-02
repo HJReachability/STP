@@ -22,12 +22,12 @@ Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles 
 \end{aligned}
 \end{equation}
 
-This FRS can be computed by solving \eqref{eq:FRS_HJIVI} with
+This FRS can be computed by solving \eqref{eq:FRS_HJIVI} without obstacles, and with
 \vspace{-0.4em}
 \begin{equation}
 H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \min_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
 \end{equation}
-\MCnote{mention without obstacles?}
+
 In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority vehicle $\veh_i$ is as follows:
 \vspace{-0.4em}
 \begin{equation}
@@ -37,4 +37,4 @@ In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority
 \end{aligned}
 \end{equation}
 
-Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles.
+Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes and for example use the optimal control some percentage of the time, or use the optimal control unless some condition is met.
