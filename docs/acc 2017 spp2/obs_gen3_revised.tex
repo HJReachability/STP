@@ -45,7 +45,7 @@ u &\in \cset, u_r\in\cset^p, d \in \dset, \quad t \in [0, T],
 
 Given $\errorbound$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound \subset \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\{x: \errorbound(x) \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^p$, that contains the initial state of the vehicle. The overall control policy to reach the destination is given by \ref{eq:robust_tracking_law}.
 
-Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_{r,i})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_{r,i})$ and $\errorbound(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds \footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$}. Thus,
+Finally, since each vehicle $\veh_i$ can only be guaranteed to stay within $\errorbound(x_{r,i})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound(x_{r,i})$ and $\errorbound(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum of the error bounds\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$}. Thus,
 \vspace{-0.3em}
 \begin{equation}
 \ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \},
