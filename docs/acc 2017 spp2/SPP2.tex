@@ -57,7 +57,6 @@
 
 \title{\LARGE \bf
 Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturbances and Imperfect Information}
-
 \author{Somil Bansal*, Mo Chen*, Jaime F. Fisac, and Claire J. Tomlin
 \thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen and J. F. Fisac have received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
 \thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{somil, mochen72, jfisac, tomlin\}@eecs.berkeley.edu}
@@ -70,7 +69,7 @@ Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturb
 
 %%%
 \begin{abstract}
-Multi-UAV systems are safety-critical, and guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems of no more than two vehicles because of the exponentially-scaling computation complexity. By assigning vehicle priorities, the sequential path planning (SPP) method allows multi-vehicle path planning to be done with a computation complexity that scales linearly with the number of vehicles. Previously the SPP method assumed no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods for accounting for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has advantages and disadvantages with different assumptions about information sharing. We demonstrate our proposed methods in simulations.
+\MCnote{take out ``under presence'' in title?}Multi-UAV systems are safety-critical, and guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems of no more than two vehicles because of the exponentially-scaling computation complexity. By assigning vehicle priorities, the sequential path planning (SPP) method allows multi-vehicle path planning to be done with a computation complexity that scales linearly with the number of vehicles. Previously the SPP method assumed no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods for accounting for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has advantages and disadvantages with different assumptions about information sharing. We demonstrate our proposed methods in simulations.
 \end{abstract}
 
  \vspace{-0.5em} 
