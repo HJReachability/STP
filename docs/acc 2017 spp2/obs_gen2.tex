@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \subsection{Method 2: Least Restrictive Control \label{sec:lrc}}
-Here, we again begin with the highest vehicle $\veh_1$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher priority vehicles, weaker assumptions must be made by the lower priority vehicles to ensure collision avoidance. One reasonable assumption that a lower priority vehicle can make is that all higher priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+Here, we again begin with the highest vehicle $\veh_1$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 \vspace{-0.4em}
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
@@ -11,8 +11,9 @@ u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctr
 
 Such a controller allows each higher priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j(t)$, in which case the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target on time. This assumption is the weakest assumption that could be made by lower priority vehicles given that the higher priority vehicles will get to their targets on time.
 
-Suppose a lower priority vehicle $\veh_i$ assumes that higher priority vehicles $\veh_j, j < i$ use the least restrictive control strategy \eqref{eq:lrctrl}. From the perspective of the lower priority vehicle $\veh_i$, a higher priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $x_j(\ldt)$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by $\veh_j$ is the intersection of a FRS from the initial state $x_j(\edt)$ and the BRS defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\brs_j(t) \cap \frs_j(t)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined in \eqref{eq:FRS2}.
+Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles $\veh_j, j < i$ use the least restrictive control strategy in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $x_j(\ldt) = x_{j0}$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of a FRS from the initial state $x_j(\ldt)=x_{j0}$ and the BRS defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\brs_j(t) \cap \frs_j(t)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined in \eqref{eq:FRS2}.
 \vspace{-0.4em}
+\MCnote{overloaded notation for FRS}
 \begin{equation}
 \label{eq:FRS2}
 \begin{aligned}
@@ -26,7 +27,7 @@ This FRS can be computed by solving \eqref{eq:FRS_HJIVI} with
 \begin{equation}
 H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \min_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
 \end{equation}
-
+\MCnote{mention without obstacles?}
 In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority vehicle $\veh_i$ is as follows:
 \vspace{-0.4em}
 \begin{equation}
@@ -36,4 +37,4 @@ In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority
 \end{aligned}
 \end{equation}
 
-Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller to get to the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles.
+Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles.
