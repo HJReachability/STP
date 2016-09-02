@@ -5,7 +5,7 @@ This section provides a brief summary of \cite{Chen15}, in which the SPP scheme 
 \begin{equation}
 \label{eq:dyn_no_dstb}
 \begin{aligned}
-\dot{x}_i &= f_i(t, x_i, u_i), \quad t \in [\edt_i, \sta_i] \\
+\dot{x}_i &= f_i(t, x_i, u_i), \quad t \le \sta_i \\
 u_i &\in \cset_i, \quad i = 1,\ldots, N
 \end{aligned}
 \end{equation}
@@ -38,7 +38,7 @@ To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the followin
 \begin{aligned}
 \max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
 &l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
-&\quad t\in[\edt,\sta]\\
+&\quad t\le\sta\\
 &V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}\\ 
 \end{aligned}
 \end{equation}

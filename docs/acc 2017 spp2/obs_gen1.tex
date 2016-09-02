@@ -31,7 +31,7 @@ The highest-priority vehicle $\veh_1$ first plans its path by computing the BRS 
 \end{aligned}
 \end{equation}
 
-Since we have assumed no static obstacles exist, we have that for $\veh_1, \obsset_1(s)=\emptyset ~ \forall s \in [\edt_i, \sta_i]$, and thus the above BRS is well-defined. This BRS can be computed by solving the HJ VI \eqref{eq:HJIVI} with the following Hamiltonian:
+Since we have assumed no static obstacles exist, we have that for $\veh_1, \obsset_1(s)=\emptyset ~ \forall s \le \sta_i$, and thus the above BRS is well-defined. This BRS can be computed by solving the HJ VI \eqref{eq:HJIVI} with the following Hamiltonian:
 \vspace{-0.3em}
 \begin{equation}
 H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} \max_{d_i \in \dset} p \cdot f_i(t, x_i, u_i, d_i)
@@ -44,7 +44,7 @@ H_i\left(t, x_i, p\right) = \min_{u_i \in \cset} \max_{d_i \in \dset} p \cdot f_
 u_i^*(t,x_i) =  \arg \min_{u_i \in \cset} \max_{d_i \in \dset} p \cdot f_i(t, x_i, u_i, d_i)
 \end{equation}
 
-The latest departure time $\ldt_i$ is then given by $\arg \inf_t x_i(\edt) \in \brs_i(t)$.
+The latest departure time $\ldt_i$ is then given by $\arg \inf_t x_{i0} \in \brs_i(t)$.
 
 If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $u^*_i(t, x_i)$ can be enforced. In this case, the dynamics of each vehicle becomes 
 \vspace{-0.3em}
@@ -64,7 +64,7 @@ From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority veh
 \label{eq:FRS1}
 \begin{aligned}
 &\frs_j(t) = \{y \in \R^{n_j}: \exists d_j(\cdot) \in \dfset_j, \\
-&x_j(\cdot) \text{ satisfies \eqref{eq:dyn_cc} with } x_j(\ldt) = x_{j0}, x_j(t) = y\}
+&x_j(\cdot) \text{ satisfies \eqref{eq:dyn_cc}}, x_j(\ldt) = x_{j0}, x_j(t) = y\}
 \end{aligned}
 \end{equation}
 
