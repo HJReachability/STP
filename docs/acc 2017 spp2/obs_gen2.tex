@@ -1,11 +1,11 @@
 % !TEX root = SPP2.tex
 \subsection{Method 2: Least Restrictive Control \label{sec:lrc}}
-Here, we again begin with the highest vehicle $\veh_1$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+Here, we again begin with the highest priority vehicle $\veh_1$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 \vspace{-0.4em}
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
 u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctrl_i}\} \text{ if } x_j(t)\in \partial \brs_j(t), \\
-\cset_i  \text{ otherwise}
+\cset_j  \text{ otherwise}
 \end{cases}
 \end{equation}
 
@@ -37,4 +37,4 @@ In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority
 \end{aligned}
 \end{equation}
 
-Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes and for example use the optimal control some percentage of the time, or use the optimal control unless some condition is met.
+Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes and for example use a control within some percentage of the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the allowed control authority.

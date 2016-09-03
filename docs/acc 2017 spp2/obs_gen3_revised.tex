@@ -63,7 +63,7 @@ Letting the time horizon tend to infinity, we obtain the infinite-horizon contro
 
 Given $\errorbound_j$, we can guarantee that $\veh_j$ will reach its target $\targetset_j$ if $\errorbound_j \subset \targetset_j$; thus, in the path planning phase, we modify $\targetset_j$ to be $\{x_j: \errorbound_j(x_j) \subseteq \targetset_j\}$, and compute a BRS, with the control authority $\cset^p_j$, that contains the initial state of the vehicle. From the resulting nominal trajectory $x_{r,j}(\cdot)$, the overall control policy to reach the destination can be then obtained using \eqref{eq:robust_tracking_law}.
 
-Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\errorbound_j(x_{r,j})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i(x_{r,i})$ and $\errorbound_j(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$} of the error bounds. Thus,
+Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\errorbound_j(x_{r,j})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i(x_{r,i})$ and $\errorbound_j(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 \vspace{-0.3em}
 \begin{equation}
 \begin{aligned}
@@ -71,7 +71,6 @@ Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\err
 \pfrs_j(t) &= \{p: \exists \npos_j, (p, \npos_j) \in \errorbound(0) + \errorbound(x_{r,j}(t)) \},
 \end{aligned}
 \end{equation}
-\MCnote{only possible if sets are in the same space}
 \noindent where $0$ denotes the origin. 
 
 %\begin{equation}
