@@ -24,3 +24,4 @@ code/SPP_with_intruder/nomTraj_*/
 code/SPP_with_intruder/computeOptTraj_*/
 code/SPP_with_intruder/simulateFull_intruder_method1/
 docs/acc 2017 spp2/SPP2.pdf
+*.bak
