@@ -2,8 +2,8 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-%\documentclass[journal]{IEEEtran}  
-\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
+\documentclass[journal]{IEEEtran}  
+%\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
 
 \IEEEoverridecommandlockouts                              % This command is only
                                                           % needed if you want to
@@ -24,7 +24,7 @@
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
 \usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
 
-\newcommand{\MCnote}{\todo[size=\small,author=MC,color=cyan]}
+\newcommand{\MCnote}{\textcolor{red}}
 
 \newcommand{\R}{\mathbb{R}} % Real number
 \newcommand{\dist}{\text{dist}} % Distance
@@ -103,7 +103,8 @@
 \input{basic_results}
 \input{incomp}
 \input{incomp_results}
-\input{intruder}
+\input{intruder1}
+\input{intruder2}
 \input{intruder_results}
 
 \input{conclusion.tex}

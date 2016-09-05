@@ -14,8 +14,9 @@ In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles
 \begin{equation}
 \label{eq:HJIVI_BRS}
 \begin{aligned}
-\max \{ \min \{D_t \valfunc + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(t, \state) - \valfunc(t, \state) \}, -\obsfunc(t, \state) - \valfunc(t, \state) \}, &\qquad t \in [0, T] \\
-\valfunc(T, \state) = \max\{\fc(T, \state), -\obsfunc(T, \state)\}&
+\max \Big\{ \min \{&D_t \valfunc + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(t, \state) - \valfunc(t, \state) \}, \\
+&-\obsfunc(t, \state) - \valfunc(t, \state) \Big\}, \qquad t \in [0, T] \\
+&\valfunc(T, \state) = \max\{\fc(T, \state), -\obsfunc(T, \state)\}
 \end{aligned}
 \end{equation}
 
@@ -24,8 +25,9 @@ In a similar fashion, the FRS is computed by solving the following \textit{initi
 \begin{equation}
 \label{eq:HJIVI_FRS}
 \begin{aligned}
-\max \{ \min \{D_t \valfuncfwd + \ham(t, \state, \nabla \valfuncfwd(t, \state)), \ic(t, \state) - \valfuncfwd(t, \state) \}, -\obsfunc(t, \state) - \valfuncfwd(t, \state) \}, &\qquad t \in [0, T] \\
-\valfuncfwd(0, \state) = \max\{\fc(0, \state), -\obsfunc(0, \state)\}&
+\max \Big\{ \min \{&D_t \valfuncfwd + \ham(t, \state, \nabla \valfuncfwd(t, \state)), \ic(t, \state) - \valfuncfwd(t, \state) \}, \\
+&-\obsfunc(t, \state) - \valfuncfwd(t, \state) \Big\}, \qquad t \in [0, T] \\
+&\valfuncfwd(0, \state) = \max\{\fc(0, \state), -\obsfunc(0, \state)\}
 \end{aligned}
 \end{equation}
 
@@ -48,7 +50,7 @@ In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function \MCnote{This
 \end{aligned}
 \end{equation}
 
-The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the system dynamics, and the role of control and disturbance. As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset(t)$ while the disturbance aims to keep the system away from the target, then \MCnote{Should probably write down cost function to be clear}
+The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the system dynamics, and the role of control and disturbance. As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset(t)$ while the disturbance aims to keep the system away from the target, then \textcolor{red}{Should probably write down cost function to be clear}
 
 \begin{equation}
 \label{eq:ham_ex}
@@ -77,4 +79,4 @@ In anticipation of the many different reachable sets that will be computed, we w
 \end{aligned}
 \end{equation}
 
-\MCnote{Only keep time and/or state arguments when notation gets too heavy; use subscripts to specify the different sets instead.}
+\textcolor{red}{Only keep time and/or state arguments when notation gets too heavy; use subscripts to specify the different sets instead.}

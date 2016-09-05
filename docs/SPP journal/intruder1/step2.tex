@@ -1,5 +1,5 @@
 % !TEX root = ../SPP_journal.tex
-\subsection{Step 2: Augmented Obstacle Computation \label{sec:intruder_aocomp}}
+\subsubsection{Step 2: Augmented Obstacle Computation \label{sec:intruder_aocomp}}
 The goal of this section is to compute a region around the obstacles $\obsset_i(\cdot)$ such that for all disturbances, $\veh{i}$ can avoid colliding with any obstacle for $\iat$ seconds if $\veh{i}$ starts outside this region. The utility of computing such a region will become clearer in Step 3. 
 
 We let $\tilde\obsset_i(t)$ denote the region, which can be thought of as a set of augmented obstacles. To ensure that a vehicle does not hit the obstacle $\obsset_i(t_1 + t')$ at time $t = t_1 + t'$ starting at $t = t_1$, even when it applies any control for the next $t'$ seconds, it suffices to avoid the $t'$-horizon BRS of $\obsset_i(t_1 + t')$. This argument applies for all obstacles to appear in the next $\iat$ seconds to ensure safety under any controller and disturbance for the next $\iat$ seconds. Mathematically,
