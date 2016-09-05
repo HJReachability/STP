@@ -13,6 +13,23 @@ Consider $\N$ vehicles which participate in the SPP process and denote these veh
 
 \noindent where $\state_i \in \R^{n_i}$ represents the state of vehicle $\veh{i}$, $\ctrl_i \in \cset_i$ the control of $\veh{i}$, and $\dstb_i \in \dset_i$ the disturbance experienced by $\veh{i}$. For convenience, we partition the state $\state_i$ into the position component $\pos_i \in \R^{n_\pos}$ and the non-position component $\npos_i \in \R^{n_i - n_\pos}$: $\state_i = (\pos_i, \npos_i)$.
 
+We assume that the flow field $\fdyn_i: \R^{n_i}\times\cset\times\dset \rightarrow \R^{n_i}$ is uniformly continuous, bounded, and Lipschitz continuous in $\state$ for fixed $\ctrl$ and $\dstb$. With this assumption, given $\ctrl(\cdot) \in \cfset$, there exists a unique trajectory solving \eqref{eq:dyn} \cite{}. We will denote trajectories of \eqref{eq:dyn} starting from state $\state^0_i$ at time $t_0$ under control $\ctrl_i(\cdot)$ and disturbance $\dstb_i(\cdot)$ as $\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot))$. Trajectories satisfy an initial condition and the differential equation \eqref{eq:dyn} almost everywhere:
+\begin{equation}
+\begin{aligned}
+\frac{d}{dt}\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot)) &= \fdyn(\state^0_i, \ctrl_i, \dstb_i) \\
+\traj_i(t_0; \state^0_i, t_0, \ctrl_i(\cdot)) &= \state^0_i
+\end{aligned}
+\end{equation}
+
+We assume that the control functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ are drawn from the set of measurable functions\footnote{
+A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.} For convenience, we will use the sets $\cfset_i, \dfset_i$ to respectively denote the set of functions from which the control and disturbance functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ can be drawn. In addition, we assume that the disturbances $\dstb_i(\cdot)$ are drawn from $\Gamma$, the set of non-anticipative strategies \cite{Mitchell05}, defined as follows:
+\begin{equation}
+\begin{aligned}
+& \Gamma := \{\mathcal{N}: \cfset_i \rightarrow \dfset_i:  \ctrl_i(r) = \hat{\ctrl}_i(r) \text{ a. e. } r\in[t,s] \\
+& \Rightarrow \mathcal{N}[\ctrl_i](\ctrl) = \mathcal{N}[\hat{\ctrl}_i](r) \text{ a. e. } r\in[t,s]\}
+\end{aligned}
+\end{equation}
+
 Each vehicle $\veh{i}$ has initial state $\state^0_i$, and departs after $\edt_i$, its earliest departure time. $\veh{i}$ aims to reach its target $\targetset_i$ by some scheduled time of arrival $\sta_i$. The target in general represents some set of desirable states, for example the destination of $\veh{i}$. For most of the paper we will make the assumption that $\edt_i$ is early enough for $\veh{i}$ to feasibly get to $\targetset_i$ on time; this can be done by letting $\edt_i \rightarrow -\infty$. The assumption on $\edt_i$ is merely for convenience: in situations where $\edt_i$ is $-\infty$, we may find that it is infeasible for $\veh{i}$ to get to $\targetset_i$ at or before $\sta_i$. Whenever unsure, we may first determine a feasible $\sta_i$ as described in Section \ref{} \textcolor{red}{(replaning section)}. 
 
 On its way to $\targetset_i$, $\veh{i}$ must avoid a set of static obstacles $\sosetp \subset \R^{n_\pos}$. The interpretation of $\sosetp$ could be a tall building, a region around an airport, or any set of positions that are forbidden for each SPP vehicle. In terms of the state space $\state_i = (\pos_i, \npos_i)$ of vehicle $\veh{i}$, the forbidden set induced by the static obstacles $\sosetp$ is given by

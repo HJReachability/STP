@@ -1,8 +1,8 @@
 % !TEX root = SPP_journal.tex
 \section{The Basic SPP Algorithm\label{sec:basic}}
-\subsection{SPP Without Disturbances and With Perfect Information}
-In this section, we introduce the basic SPP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle has the exact position of higher-priority vehicles. Although in practice, such assumptions do not hold, the basic SPP algorithm can serve as a useful approximation in certain situations. In addition, the description of the basic SPP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of SPP. 
+In this section, we introduce the basic SPP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle has the exact position of higher-priority vehicles. Although in practice, such assumptions do not hold, the basic SPP algorithm can serve as a useful approximation in certain situations. In addition, the description of the basic SPP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of SPP. We also show simulation results for the basic SPP algorithm.
 
+\subsection{SPP Without Disturbances and With Perfect Information}
 Recall that the SPP vehicles $\veh{i}, i=1,\ldots,N$, are each assigned a strict priority, with $\veh{j}$ having a higher priority than $\veh{i}$ if $j<i$. In the absence of disturbances, we can write the dynamics the SPP vehicles as
 
 \begin{equation}

@@ -19,7 +19,19 @@ Notation:
 \end{itemize}
 
 \subsection{Centralized Controller} \label{sec:incomp_optctrl}
-Under the presence of disturbance, two modifications to Algorithm \ref{alg:basic} must be made: First, given the total obstacle set $\obsset_i(t)$, each vehicle $\veh{i}$ ensure that it gets to the target set $\targetset_i$ on time without entering any danger zones $\dz_{ij}$, despite the worst-case disturbance $\dstb_i(\cdot)$. Fortunately, disturbances can be easily accounted for by using \eqref{eq:HJIVI_BRS} to compute the BRS $\brs_i(t; \targetset_i, \obsset_i(\cdot), \ham_{\text{cc}})$, where the Hamiltonian is given by
+Under the presence of disturbance, two modifications to Algorithm \ref{alg:basic} must be made: First, given the total obstacle set $\obsset_i(t)$, each vehicle $\veh{i}$ ensure that it gets to the target set $\targetset_i$ on time without entering any danger zones $\dz_{ij}$, despite the worst-case disturbance $\dstb_i(\cdot)$. Fortunately, disturbances can be easily accounted for by using \eqref{eq:HJIVI_BRS} to compute the BRS 
+
+\begin{equation}
+\label{eq:BRS_cc}
+\begin{aligned}
+\brs_i(t) = \{x_i: &\exists u_i(\cdot) \in \cfset_i, \forall d_i(\cdot) \in \dfset_i, x_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \\
+&\forall s \in [t, \sta_i], x_i(s) \notin \obsset_i(s), \\
+&\exists s \in [t, \sta_i], x_i(s) \in \targetset_i\}
+\end{aligned}
+\end{equation}
+
+
+$\brs_i(t; \targetset_i, \obsset_i(\cdot), \ham_{\text{cc}})$, where the Hamiltonian is given by
 
 \begin{equation}
 \ham_i\left(\state_i, p\right) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} p \cdot \fdyn_i(\state_i, \ctrl_i, \dstb_i)
