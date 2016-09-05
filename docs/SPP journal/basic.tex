@@ -1,7 +1,7 @@
 % !TEX root = SPP_journal.tex
 \section{The Basic SPP Algorithm\label{sec:basic}}
 \subsection{SPP Without Disturbances and With Perfect Information}
-\textcolor{red}{Algorithm is a lot clearer than writing. Change writing to match algorithm}In this section, we introduce the basic SPP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle has the exact position of higher-priority vehicles. Although in practice, such assumptions do not hold, the basic SPP algorithm can serve as a useful approximation in certain situations. In addition, the description of the basic SPP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of SPP. 
+In this section, we introduce the basic SPP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle has the exact position of higher-priority vehicles. Although in practice, such assumptions do not hold, the basic SPP algorithm can serve as a useful approximation in certain situations. In addition, the description of the basic SPP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of SPP. 
 
 Recall that the SPP vehicles $\veh{i}, i=1,\ldots,N$, are each assigned a strict priority, with $\veh{j}$ having a higher priority than $\veh{i}$ if $j<i$. In the absence of disturbances, we can write the dynamics the SPP vehicles as
 
@@ -46,7 +46,7 @@ In summary, the basic SPP algorithm is given as follows:
 \textbf{Basic SPP algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:basic_dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
 \begin{enumerate}
 \item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS $\brs(t, \targetset_i, \obsset_i(t), \basicham)$ with the HJ VI given in  \eqref{eq:HJIVI_BRS}.
+\item Compute the BRS $\brs_i(t, \targetset_i, \obsset_i(t), \basicham)$ with the HJ VI given in  \eqref{eq:HJIVI_BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
 \item Determine the trajectory $\state_i(\cdot)$ using the initial condition $\state_i^0$ and vehicle dynamics \eqref{eq:basic_dyn}, with the optimal control  $\ctrl_i^*(\cdot, \targetset_i, \obsset_i(t), \basicham)$ is given by \eqref{eq:opt_ctrl}.
 \item Given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset}.
 \end{enumerate}

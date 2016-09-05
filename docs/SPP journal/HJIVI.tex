@@ -14,7 +14,7 @@ In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles
 \begin{equation}
 \label{eq:HJIVI_BRS}
 \begin{aligned}
-\max \Big\{ \min \{&D_t \valfunc + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(\state) - \valfunc(t, \state) \}, \\
+\max \Big\{ \min \{&D_t \valfunc + \ham(\state, \nabla \valfunc(t, \state)), \fc(\state) - \valfunc(t, \state) \}, \\
 &-\obsfunc(t, \state) - \valfunc(t, \state) \Big\}, \qquad t \in [0, T] \\
 &\valfunc(T, \state) = \max\{\fc(\state), -\obsfunc(T, \state)\}
 \end{aligned}
@@ -25,7 +25,7 @@ In a similar fashion, the FRS is computed by solving the following \textit{initi
 \begin{equation}
 \label{eq:HJIVI_FRS}
 \begin{aligned}
-\max \Big\{ \min \{&D_t \valfuncfwd + \ham(t, \state, \nabla \valfuncfwd(t, \state)), \ic(\state) - \valfuncfwd(t, \state) \}, \\
+\max \Big\{ \min \{&D_t \valfuncfwd + \ham(\state, \nabla \valfuncfwd(t, \state)), \ic(\state) - \valfuncfwd(t, \state) \}, \\
 &-\obsfunc(t, \state) - \valfuncfwd(t, \state) \Big\}, \qquad t \in [0, T] \\
 &\valfuncfwd(0, \state) = \max\{\fc(\state), -\obsfunc(0, \state)\}
 \end{aligned}
@@ -41,7 +41,7 @@ In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)
 \end{aligned}
 \end{equation}
 
-Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$.
+Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$. In addition, sometimes the minimization with the term $\ic(\state) - \valfuncfwd$ is not needed. In this case, we will write the FRS with an underline: $\underline \frs(t)$.
 
 \MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
 
@@ -57,7 +57,7 @@ The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the sys
 \begin{equation}
 \label{eq:ham_ex}
 \begin{aligned}
-\ham(t, \state, \nabla \valfunc(t,\state)) = \min_\ctrl \max_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)
+\ham(\state, \nabla \valfunc(t,\state)) = \min_\ctrl \max_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)
 \end{aligned}
 \end{equation}
 
@@ -66,8 +66,8 @@ In addition, given the Hamiltonian \eqref{eq:ham_ex}, the optimal control and di
 \begin{equation}
 \label{eq:opt_ctrl_dstb_ex}
 \begin{aligned}
-\ctrl^*(t) &= \arg \max \min_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)\\
-\dstb^*(t) &= \arg \min \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl^*(t), \dstb)
+\ctrl^*(t) &= \arg \max \min_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl, \dstb)\\
+\dstb^*(t) &= \arg \min \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl^*(t), \dstb)
 \end{aligned}
 \end{equation}
 
