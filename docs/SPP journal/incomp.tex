@@ -1,14 +1,16 @@
 % !TEX root = SPP_journal.tex
 \section{SPP Under Disturbances and Incomplete information \label{sec:incomp}}
-In this section, we investigate SPP under the presence of disturbances and incomplete information. With disturbances, our joint system dynamics become in the form of \eqref{eq:dyn}, and the controls $\ctrl_i$ of the vehicles $\veh{i}$ must drive the state $\state_i$ into the target $\targetset_i$ while keeping all vehicles away from each other's danger zones despite the worst case disturbance.
+In this section, we investigate SPP under the presence of disturbances and incomplete information about higher-priority vehicles' control policies. In the presence of disturbances, our joint system dynamics become in the form of \eqref{eq:dyn}, and the controls $\ctrl_i$ of the vehicles $\veh{i}$ must drive the state $\state_i$ into the target $\targetset_i$ while keeping all vehicles away from each other's danger zones despite the worst case disturbance.
 
-In a practical setting, incomplete information may arise due to a few reasons. For example, the presence of disturbances implies that exact trajectories $\state_i(\cdot)$ cannot be completely known \textit{a priori}, since disturbances will affect the evolution of the system trajectory at run time\MCnote{``at run time'' may not be appropriate here}. From the perspect of each vehicle $\veh{i}$, the effect of disturbances must be taken into account both in the dynamics the vehicle itself, and in the dynamics of other vehicles.
+In a practical setting, incomplete information may arise due to a few reasons. For example, the presence of disturbances implies that exact trajectories $\state_i(\cdot)$ cannot be completely known \textit{a priori}, since unknown disturbances will affect the evolution of the system trajectory. From the perspect of each vehicle $\veh{i}$, the effect of disturbances must be taken into account both in the dynamics the vehicle itself, and in the dynamics of other vehicles.
 
 Even ignoring disturbances, each vehicle $\veh{i}$ may not have information about the control strategy of the other vehicles $\veh{j}, j\neq i$. For example, there may be many different control strategies for each vehicle to reach its target on time, and different vehicles may be using different control strategies. In this situation, lower-priority vehicles may need to plan their paths while avoiding danger zones of higher-priority vehicles without knowing what control strategies higher-priority vehicles may be using. Furthermore, each vehicle may even change control strategies on the fly.
 
-We explore three different situations in which incomplete information may arise. In Section \ref{sec:incomp_optctrl}, we consider the situation in which all vehicles utilizes an optimal controller at all times. Next, in Section \ref{sec:incomp_LRctrl}, we assume that each vehicle only has information about the target sets of other vehicles, and no information about other vehicles' control strategies. Lastly, in Section \ref{sec:incomp_robust}, we consider the situation in which each vehicle divides its control input authority into a part that drives the vehicle towards the target, and a part that rejects disturbances.
+We explore three different situations in which incomplete information may arise. In Section \ref{sec:incomp_optctrl}, we consider the situation in which all vehicles utilize a particular control strategy such as the optimal controller at all times. Such a scenario may occur if there is a centralized controller such as an air traffic controller controlling the vehicles. Next, in Section \ref{sec:incomp_LRctrl}, we assume that each vehicle only has information about the target sets and arrival times of other vehicles, and no information about other vehicles' control strategies. When the control policy is unknown, this is the weakest assumption that can be made by lower-priority vehicles, assuming that higher-priority vehicles get to their targets on time. Lastly, in Section \ref{sec:incomp_robust}, we consider the situation in which each vehicle divides its control input authority into a part that drives the vehicle towards the target, and a part that rejects disturbances. By reserving part of the control for disturbance rejection, the vehicles may declare nominal trajectories that can be robustly tracked.
 
-In all three cases, each vehicle $\veh{i}$ induces a moving obstacle $\ioset_k^i(t)$ for the lower priority vehicles $\veh{k}, k>i$, just like in the basic SPP algorithm described in Section \ref{sec:basic}. However, unlike in the basic SPP algorithm, computation of $\ioset_k^i(t)$ is no longer trival as in \eqref{eq:ioset}. We now describe how to compute $\ioset_k^i(t)$ in the three cases, which in turn will lead to different total obstacles $\obsset_i(t)$ that will be used to solve the HJ VI \eqref{eq:HJIVI_BRS}.
+To take into account disturbances and imperfect information, it turns out that we may still use Algorithm \ref{alg:basic}. In all three cases, each vehicle $\veh{i}$ induces a moving obstacle $\ioset_k^i(t)$ for the lower priority vehicles $\veh{k}, k>i$, just like in Algorithm \ref{alg:basic}. However, unlike in the basic SPP algorithm, computation of $\ioset_k^i(t)$ is no longer trival as in \eqref{eq:ioset}. We now describe how to compute $\ioset_k^i(t)$ in the three cases, which in turn will lead to different total obstacles $\obsset_i(t)$ that will be used to solve the HJ VI \eqref{eq:HJIVI_BRS}.
+
+In general, the three methods can be used in combination in a single path planning problem, with each vehicle independently having different control policies. Lower-priority vehicles would then plan their paths while taking into account the control policy of each higher-priority vehicle. For clarity, however, we will present each method as if all vehicles are using the same method of path planning.
 
 Notation:
 \begin{itemize}
@@ -16,6 +18,163 @@ Notation:
 \item Base Obstacles $\boset_i^j(t)$
 \end{itemize}
 
-\subsection{Optimal Controller} \label{sec:incomp_optctrl}
+\subsection{Centralized Controller} \label{sec:incomp_optctrl}
+The highest-priority vehicle $\veh{1}$ first plans its path by computing the BRS (with $i=1$)
+\vspace{-0.3em}
+\begin{equation}
+\label{eq:BRS}
+\begin{aligned}
+\brs_i(t) = \{x_i: &\exists u_i(\cdot) \in \cfset_i, \forall d_i(\cdot) \in \dfset_i, x_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \\
+&\forall s \in [t, \sta_i], x_i(s) \notin \obsset_i(s), \\
+&\exists s \in [t, \sta_i], x_i(s) \in \targetset_i\}
+\end{aligned}
+\end{equation}
+
+Since we have assumed no static obstacles exist, we have that for $\veh{1}, \obsset_1(s)=\emptyset ~ \forall s \le \sta_i$, and thus the above BRS is well-defined. This BRS can be computed by solving the HJ VI \eqref{eq:HJIVI} with the following Hamiltonian:
+\vspace{-0.3em}
+\begin{equation}
+H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f_i(t, x_i, u_i, d_i)
+\end{equation}
+
+\noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i, \obsset_i(t), \brs_i(t)$, respectively. From the BRS, we can obtain the optimal control
+\vspace{-0.3em}
+\begin{equation}
+\label{eq:opt_ctrl_i}
+u_i^*(t,x_i) =  \arg \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f_i(t, x_i, u_i, d_i)
+\end{equation}
+
+The latest departure time $\ldt_i$ is then given by $\arg \inf_t x_{i0} \in \brs_i(t)$.
+
+If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $u^*_i(t, x_i)$ can be enforced. In this case, the dynamics of each vehicle becomes 
+\vspace{-0.3em}
+\begin{equation}
+\label{eq:dyn_cc}
+\begin{aligned}
+\dot x_i &= f^*_i (t, x_i, d_i) = f_i(t, x_i, u^*_i(t,x_i), d_i) \\
+d_i &\in \dset_i, \quad i = 1,\ldots, N, \quad t \in [\ldt_i, \sta_i]
+\end{aligned}
+\end{equation}
+
+\noindent where $u_i$ no longer appears explicitly in the dynamics.
+
+From the perspective of a lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\rc$ of $\veh{j}$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh{j}$ starting from $x_j(\ldt) = x_{j0}$. The FRS $\frs_j(t)$ is defined as follows:
+\vspace{-0.3em}
+\begin{equation}
+\label{eq:FRS1}
+\begin{aligned}
+&\frs_j(t) = \{y \in \R^{n_j}: \exists d_j(\cdot) \in \dfset_j, \\
+&x_j(\cdot) \text{ satisfies \eqref{eq:dyn_cc}}, x_j(\ldt) = x_{j0}, x_j(t) = y\}
+\end{aligned}
+\end{equation}
+
+Conveniently, the FRS can be computed using the following HJ VI:
+
+\begin{equation}
+\label{eq:FRS_HJIVI}
+\begin{aligned}
+&D_t W_j(t, x_j) + H_j\left(t, x_j, D_{x_j} W_j\right) = 0, t \in [\ldt_j, \sta_j]\\
+&W_j(\ldt_j, x_j) = \bar l_j(x_j) \\
+\end{aligned}
+\end{equation}
+
+\noindent with the following Hamiltonian
+\begin{equation}
+H_j\left(t, x_j, p\right) = \min_{d_j \in \dset_j} p \cdot f^*_j(t, x_j, d_j)
+\end{equation}
+\noindent where $\bar l$ is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} such that $\bar l (y) = 0 \Leftrightarrow y = x_j(\ldt)$.
+
+The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh{j}$ given the worst case disturbance $d_j(\cdot)$ and given that $\veh{j}$ uses the feedback controller $u_j^*(t, x_j)$. In order for a lower-priority vehicle $\veh{i}$ to guarantee that it does not go within a distance of $\rc$ to $\veh{j}$, $\veh{i}$ must stay a distance of at least $\rc$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher priority vehicle $\veh{j}$ for a lower priority vehicle $\veh{i}$ as follows:
+\vspace{-0.4em}
+\begin{equation}
+\ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \}
+\end{equation}
+
+\noindent where the $\dist(\cdot, \cdot)$ function represents the minimum distance from a point to a set, and the set $\pfrs_j(t)$ is the set of states in the FRS $\frs_j(t)$ projected onto the states representing position $\pos_j$, and disregarding the non-position dimensions $\npos_j$:
+
+\begin{equation}
+\pfrs_j(t) = \{p: \exists \npos_j, (p, \npos_j) \in \frs_j(t)\}.
+\end{equation}
+
+Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:ioset} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i(t)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
+
 \subsection{Least Restrictive Controller}  \label{sec:incomp_LRctrl}
+Here, we again begin with the highest priority vehicle $\veh{1}$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+\vspace{-0.4em}
+\begin{equation}
+\label{eq:lrctrl} % least restrictive control
+u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctrl_i}\} \text{ if } x_j(t)\in \partial \brs_j(t), \\
+\cset_j  \text{ otherwise}
+\end{cases}
+\end{equation}
+
+Such a controller allows each higher priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j(t)$, in which case the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower priority vehicles given that the higher priority vehicles will get to their targets on time.
+
+Suppose a lower-priority vehicle $\veh{i}$ assumes that higher-priority vehicles $\veh{j}, j < i$ use the least restrictive control strategy in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}$ could be in any state that is reachable from $\veh{j}$'s initial state $x_j(\ldt) = x_{j0}$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of a FRS from the initial state $x_j(\ldt)=x_{j0}$ and the BRS defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\brs_j(t) \cap \frs_j(t)$. In this situation, since $\veh{j}$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined in \eqref{eq:FRS2}.
+\vspace{-0.4em}
+
+\begin{equation}
+\label{eq:FRS2}
+\begin{aligned}
+&\frs_j(t) = \{y \in \R^{n_j}: \exists u_j(\cdot)\in\cfset_j, \exists d_j(\cdot) \in \dfset_j, \\
+&x_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, x_j(\ldt) = x_{j0}, x_j(t) = y\}
+\end{aligned}
+\end{equation}
+
+This FRS can be computed by solving \eqref{eq:FRS_HJIVI} without obstacles, and with
+\vspace{-0.4em}
+\begin{equation}
+H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \min_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
+\end{equation}
+
+In turn, the obstacle induced by a higher priority $\veh{j}$ for a lower priority vehicle $\veh{i}$ is as follows:
+
+\begin{equation}
+\begin{aligned}
+\ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \}, \text{ with} \\
+\pfrs_j(t) &= \{p: \exists \npos_j, (p, \npos_j) \in \brs_j(t) \cap \frs_j(t)\}
+\end{aligned}
+\end{equation}
+
+Note that the centralized controller method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes and for example use a control within some percentage of the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the allowed control authority.
+
 \subsection{Robust Tracking} \label{sec:incomp_robust}
+Even though it is not possible to commit and track an exact trajectory in presence of disturbances unlike in \cite{Chen15}, it might still be possible to instead \textit{robustly} track a feasible nominal trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the planning phase and the disturbance rejection phase. In the planning phase, we compute a nominal trajectory $x_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we then compute a bound on the tracking error.
+
+It is important to note that the planning phase does not make full use of the vehicle's control authority, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
+
+In the disturbance rejection phase, we determine the error bound independently of the nominal trajectory. To compute this error bound, we wish to find a robust controlled-invariant set in the joint state space of the vehicle and a tracking reference that may ``maneuver" arbitrarily in the presence of an unknown bounded disturbance. Taking a worst-case approach, the tracking reference can be viewed as a virtual evader vehicle that is optimally avoiding the actual vehicle to enlarge the tracking error. We therefore can model trajectory tracking as a pursuit-evasion game in which the actual vehicle is playing against the coordinated worst-case action of the virtual vehicle and the disturbance. 
+
+Let $x_j$ and $x_r$ represent the state of the actual vehicle $\veh{j}$ and the virtual evader, respectively, and define the tracking error $e_j=x_j-x_r$. In cases where the error dynamics are independent of the absolute state as in \eqref{eq:edyn} (and also (7) in \cite{Mitchell05}), we can obtain error dynamics of the form
+\begin{equation}
+\label{eq:edyn} % Error dynamics
+\begin{aligned}
+\dot{e_j} &= f_{e_j}(t, e_j, u_j, u_r,d_j), \\
+u_j &\in \cset_j, u_r\in\cset^p_j, d_j \in \dset_j, \quad t \in [0, T],
+\end{aligned}
+\end{equation}
+
+To obtain bounds on the tracking error, we first conservative estimate the error bound around any reference state $x_{r,j}$, denoted $\errorbound_j(x_{r,j})$, and solve a reachability problem with its complement, $\errorbound_j^c$ as the target in the space of the error dynamics; $\errorbound_j^c$ is the set of tracking errors violating the error bound. From $\errorbound_j^c$, we compute the backward reachable set using \eqref{eq:HJIVI} without obstacles, and with the Hamiltonian
+\vspace{-0.5em}
+\begin{equation}
+\label{eq:HJIVI_track}
+H_j\left(t, e_j, p\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} p \cdot f_{e_j}(t, e_j, u_j, u_r,d_j)
+\end{equation}
+
+Letting the time horizon tend to infinity, we obtain the infinite-horizon controlled-invariant set, which we denote by $\disckernel_j$. If this set is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
+
+\begin{equation}
+\label{eq:robust_tracking_law}
+\tracklaw_j(e_j) = \arg\max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} p \cdot f_{e_j}(t,e_j,u_j,u_r,d_j).
+\end{equation}
+
+Given $\errorbound_j$, we can guarantee that $\veh{j}$ will reach its target $\targetset_j$ if $\errorbound_j \subset \targetset_j$; thus, in the path planning phase, we modify $\targetset_j$ to be $\{x_j: \errorbound_j(x_j) \subseteq \targetset_j\}$, and compute a BRS, with the control authority $\cset^p_j$, that contains the initial state of the vehicle. From the resulting nominal trajectory $x_{r,j}(\cdot)$, the overall control policy to reach the destination can be then obtained using \eqref{eq:robust_tracking_law}.
+
+Finally, since each vehicle $\veh{j}$ can only be guaranteed to stay within $\errorbound_j(x_{r,j})$, we must make sure at any given time, the error bounds of $\veh{i}$ and $\veh{j}$, $\errorbound_i(x_{r,i})$ and $\errorbound_j(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
+\vspace{-0.3em}
+\begin{equation}
+\begin{aligned}
+\ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \} \\
+\pfrs_j(t) &= \{p: \exists \npos_j, (p, \npos_j) \in \errorbound(0) + \errorbound(x_{r,j}(t)) \},
+\end{aligned}
+\end{equation}
+\noindent where $0$ denotes the origin. 

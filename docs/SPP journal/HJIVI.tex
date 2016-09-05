@@ -1,22 +1,22 @@
 % !TEX root = SPP_journal.tex
 \section{Double-Obstacle Hamilton-Jacobi Variational Inequality \label{sec:HJIVI}}
-The goal of reachability analysis is to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some time-varying target set $\targetset(t)$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ or FRS $\frs$ with given parameters $\targetset(\cdot), \obsset(\cdot), \ham$ will be denoted by
+We will be using reachability analysis to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ or FRS $\frs$ with given parameters $\targetset, \obsset(\cdot), \ham$ will be denoted by
 
 \begin{equation}
 \begin{aligned}
-\brs(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{ (backward reachable set)}\\
-\frs(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{ (forward reachable set)}
+\brs(t; \targetset, \obsset(\cdot), \ham) &\quad \text{ (backward reachable set)}\\
+\frs(t; \targetset, \obsset(\cdot), \ham) &\quad \text{ (forward reachable set)}
 \end{aligned}
 \end{equation}
 
-In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles on its way to the target. Reachability theory is a powerful tool for performing optimal path planning with hard guarantees on safety and performance under disturbances. For our application in SPP, we utilize the time-varying formulation in \cite{}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
+In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal path planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{}. For our application in SPP, we utilize the time-varying formulation in \cite{}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
 
 \begin{equation}
 \label{eq:HJIVI_BRS}
 \begin{aligned}
-\max \Big\{ \min \{&D_t \valfunc + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(t, \state) - \valfunc(t, \state) \}, \\
+\max \Big\{ \min \{&D_t \valfunc + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(\state) - \valfunc(t, \state) \}, \\
 &-\obsfunc(t, \state) - \valfunc(t, \state) \Big\}, \qquad t \in [0, T] \\
-&\valfunc(T, \state) = \max\{\fc(T, \state), -\obsfunc(T, \state)\}
+&\valfunc(T, \state) = \max\{\fc(\state), -\obsfunc(T, \state)\}
 \end{aligned}
 \end{equation}
 
@@ -25,13 +25,13 @@ In a similar fashion, the FRS is computed by solving the following \textit{initi
 \begin{equation}
 \label{eq:HJIVI_FRS}
 \begin{aligned}
-\max \Big\{ \min \{&D_t \valfuncfwd + \ham(t, \state, \nabla \valfuncfwd(t, \state)), \ic(t, \state) - \valfuncfwd(t, \state) \}, \\
+\max \Big\{ \min \{&D_t \valfuncfwd + \ham(t, \state, \nabla \valfuncfwd(t, \state)), \ic(\state) - \valfuncfwd(t, \state) \}, \\
 &-\obsfunc(t, \state) - \valfuncfwd(t, \state) \Big\}, \qquad t \in [0, T] \\
-&\valfuncfwd(0, \state) = \max\{\fc(0, \state), -\obsfunc(0, \state)\}
+&\valfuncfwd(0, \state) = \max\{\fc(\state), -\obsfunc(0, \state)\}
 \end{aligned}
 \end{equation}
 
-In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function \MCnote{This sentence is only correct if the notations for initial and final conditions are the same} $\ic(t, \state)$ is the implicit surface function representing the target set $\targetset(t) = \{\state \mid \ic(t, \state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state \mid \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t)$ and FRS $\frs(t)$ are given by
+In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)$ is the implicit surface function representing the target set $\targetset(t) = \{\state \mid \ic(\state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state \mid \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t)$ and FRS $\frs(t)$ are given by
 
 \begin{equation}
 \label{eq:implicitValfuncs}
@@ -41,16 +41,18 @@ In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function \MCnote{This
 \end{aligned}
 \end{equation}
 
-\MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset(t)$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
+Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$.
+
+\MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
 
 \begin{equation}
 \begin{aligned}
-\valfunc(t, \state; \targetset, \obsset, \ham) &\quad \text{(Value function representing BRS)} \\
-\valfuncfwd(t, \state; \targetset, \obsset, \ham) &\quad \text{(Value function representing FRS)}
+\valfunc(t, \state; \targetset, \obsset(\cdot), \ham) &\quad \text{(Value function representing BRS)} \\
+\valfuncfwd(t, \state; \targetset, \obsset(\cdot), \ham) &\quad \text{(Value function representing FRS)}
 \end{aligned}
 \end{equation}
 
-The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the system dynamics, and the role of control and disturbance. As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset(t)$ while the disturbance aims to keep the system away from the target, then \textcolor{red}{Should probably write down cost function to be clear}
+The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the system dynamics, and the role of control and disturbance. As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset$ while the disturbance aims to keep the system away from the target, then
 
 \begin{equation}
 \label{eq:ham_ex}
@@ -69,13 +71,13 @@ In addition, given the Hamiltonian \eqref{eq:ham_ex}, the optimal control and di
 \end{aligned}
 \end{equation}
 
-In anticipation of the many different reachable sets that will be computed, we will in general denote the optimal control and disturbance derived from a BRS $\brs(t; \targetset(\cdot), \obsset(\cdot), \ham)$ given the target set $\targetset(t)$, obstacles $\obsset(t)$, and Hamiltonian $\ham$ as 
+In anticipation of the many different reachable sets that will be computed, we will in general denote the optimal control and disturbance derived from a BRS $\brs(t; \targetset, \obsset(\cdot), \ham)$ given the target set $\targetset(t)$, obstacles $\obsset(t)$, and Hamiltonian $\ham$ as 
 
 \begin{equation}
 \label{eq:opt_ctrl}
 \begin{aligned}
-\ctrl^*(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{(optimal control)} \\
-\dstb^*(t; \targetset(\cdot), \obsset(\cdot), \ham) &\quad \text{(optimal disturbance)}
+\ctrl^*(t; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal control)} \\
+\dstb^*(t; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal disturbance)}
 \end{aligned}
 \end{equation}
 
