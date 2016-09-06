@@ -20,13 +20,12 @@ In the SPP scheme, a lower priority vehicle must avoid a set of moving obstacles
 \end{aligned}
 \end{equation}
 
-In a similar fashion, the FRS is computed by solving the following \textit{initial value} double-obstacle HJ VI:
+In a similar fashion, the FRS is computed by solving the following \textit{initial value} double-obstacle HJ PDE:
 
 \begin{equation}
 \label{eq:HJIVI_FRS}
 \begin{aligned}
-\max \Big\{ \min \{&D_t \valfuncfwd + \ham(\state, \nabla \valfuncfwd(t, \state)), \ic(\state) - \valfuncfwd(t, \state) \}, \\
-&-\obsfunc(t, \state) - \valfuncfwd(t, \state) \Big\}, \qquad t \in [0, T] \\
+D_t \valfuncfwd + &\ham(\state, \nabla \valfuncfwd(t, \state)), -\obsfunc(t, \state) - \valfuncfwd(t, \state), t \in [0, T]  \\
 &\valfuncfwd(0, \state) = \max\{\fc(\state), -\obsfunc(0, \state)\}
 \end{aligned}
 \end{equation}
@@ -41,7 +40,7 @@ In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)
 \end{aligned}
 \end{equation}
 
-Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$. In addition, sometimes the minimization with the term $\ic(\state) - \valfuncfwd$ is not needed. In this case, we will write the FRS with an underline: $\underline \frs(t)$.
+Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$ which effectively means that the outside maximum is ignored. Also, note that unlike in \eqref{eq:HJIVI_BRS}, there is no inner minimization in \eqref{eq:HJIVI_FRS}. As we will see later, we will be using the BRS to determine all states that can reach some target set \textit{within the time horizon} $[0,T]$, whereas we will be using the FRS to determine where a vehicle could be \textit{at some particular time} $t\in[0,T]$. In addition, \eqref{eq:HJIVI_FRS} has no outer maximum, since the FRSs that we will compute will not involve any obstacles.
 
 \MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
 
@@ -52,33 +51,35 @@ Some of the reachability computations will not involve an obstacle set $\obsset(
 \end{aligned}
 \end{equation}
 
-The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$ depends on the system dynamics, and the role of control and disturbance. As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset$ while the disturbance aims to keep the system away from the target, then
+The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$, depends on the system dynamics, and the role of control and disturbance. In addition, the Hamiltonian is an optimization that produces the optimal control $\ctrl^*(t, \state)$ and optimal disturbance $\dstb^*(t, \state)$. 
 
-\begin{equation}
-\label{eq:ham_ex}
-\begin{aligned}
-\ham(\state, \nabla \valfunc(t,\state)) = \min_\ctrl \max_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)
-\end{aligned}
-\end{equation}
-
-In addition, given the Hamiltonian \eqref{eq:ham_ex}, the optimal control and disturbance can be obtained as the optimum of the optimization:
-
-\begin{equation}
-\label{eq:opt_ctrl_dstb_ex}
-\begin{aligned}
-\ctrl^*(t) &= \arg \max \min_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl, \dstb)\\
-\dstb^*(t) &= \arg \min \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl^*(t), \dstb)
-\end{aligned}
-\end{equation}
-
-In anticipation of the many different reachable sets that will be computed, we will in general denote the optimal control and disturbance derived from a BRS $\brs(t; \targetset, \obsset(\cdot), \ham)$ given the target set $\targetset(t)$, obstacles $\obsset(t)$, and Hamiltonian $\ham$ as 
-
-\begin{equation}
-\label{eq:opt_ctrl}
-\begin{aligned}
-\ctrl^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal control)} \\
-\dstb^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal disturbance)}
-\end{aligned}
-\end{equation}
-
-\textcolor{red}{Only keep time and/or state arguments when notation gets too heavy; use subscripts to specify the different sets instead.}
+We will introduce precise definitions of reachable sets, expressions for the Hamiltonian, expressions for the optimal controls as needed for the many different reachability calculations we will present. %As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset$ while the disturbance aims to keep the system away from the target, then
+%
+%\begin{equation}
+%\label{eq:ham_ex}
+%\begin{aligned}
+%\ham(\state, \nabla \valfunc(t,\state)) = \min_\ctrl \max_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)
+%\end{aligned}
+%\end{equation}
+%
+%In addition, given the Hamiltonian \eqref{eq:ham_ex}, the optimal control and disturbance can be obtained as the optimum of the optimization:
+%
+%\begin{equation}
+%\label{eq:opt_ctrl_dstb_ex}
+%\begin{aligned}
+%\ctrl^*(t) &= \arg \max \min_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl, \dstb)\\
+%\dstb^*(t) &= \arg \min \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl^*(t), \dstb)
+%\end{aligned}
+%\end{equation}
+%
+%In anticipation of the many different reachable sets that will be computed, we will in general denote the optimal control and disturbance derived from a BRS $\brs(t; \targetset, \obsset(\cdot), \ham)$ given the target set $\targetset(t)$, obstacles $\obsset(t)$, and Hamiltonian $\ham$ as 
+%
+%\begin{equation}
+%\label{eq:opt_ctrl}
+%\begin{aligned}
+%\ctrl^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal control)} \\
+%\dstb^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal disturbance)}
+%\end{aligned}
+%\end{equation}
+%
+%\textcolor{red}{Only keep time and/or state arguments when notation gets too heavy; use subscripts to specify the different sets instead.}
