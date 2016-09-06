@@ -155,8 +155,8 @@ Finally, since each vehicle $\veh{j}$ can only be guaranteed to stay within $\er
 \vspace{-0.3em}
 \begin{equation}
 \begin{aligned}
-\ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \} \\
-\pfrs_j(t) &= \{p: \exists \npos_j, (p, \npos_j) \in \errorbound(0) + \errorbound(x_{r,j}(t)) \},
+\ioset_i^j(t) &= \{\state_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \} \\
+\pfrs_j(t) &= \{\pos_j: \exists \npos_j, \state_j = (\pos_j, \npos_j) \in \errorbound(0) + \errorbound(x_{r,j}(t)) \},
 \end{aligned}
 \end{equation}
 \noindent where $0$ denotes the origin. 
