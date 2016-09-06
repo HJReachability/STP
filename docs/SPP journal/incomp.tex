@@ -172,7 +172,7 @@ Letting the time horizon tend to infinity, we obtain the infinite-horizon contro
 
 \begin{equation}
 \label{eq:robust_tracking_law}
-\tracklaw_j(\errstate_j) = \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in\cset^P_j, \dstb_j \in \dset_j} \costate \cdot \fdyn^\errstate_j(\errstate_j, \ctrl_j, \ctrl_j^P, \dstb_j)
+\tracklaw_j(\errstate_j) = \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_j^P \in\cset^P_j, \dstb_j \in \dset_j} \costate \cdot \fdyn^\errstate_j(\errstate_j, \ctrl_j, \ctrl_j^P, \dstb_j)
 \end{equation}
 
 Given $\errorbound_i$, we can guarantee that $\veh{i}$ will reach its target $\targetset_i$ if the state of a nominal trajectory is such that $\errorbound_i(\state_j^P) \subset \targetset_i$; thus, in the path planning phase, we define $\targetset_i^P = \{\state_i: \errorbound_i(\state_i) \subseteq \targetset_i\}$, and compute the following BRS: 
