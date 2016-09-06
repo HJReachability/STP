@@ -9,10 +9,11 @@ Recall that the SPP vehicles $\veh{i}, i=1,\ldots,N$, are each assigned a strict
 \label{eq:basic_dyn}
 \begin{aligned}
 \dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \in [\edt, \sta] \\
-\state_i(\edt) &= \state^0_i \\
 \ctrl_i &\in \cset_i, \qquad i = 1 \ldots, \N
 \end{aligned}
 \end{equation}
+
+\noindent with trajectories denoted by $\traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot))$.
 
 In SPP, each vehicle $\veh{i}$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset$ and the obstacles $\ioset_i^j(t)$ induced by higher priority vehicles $\veh{j}, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh{1}, \veh{2}, \ldots, \veh{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. In its path planning process, $\veh{i}$ ignores the presence of the lower priority vehicles $\veh{k}, k>i$, and induces the obstacles $\ioset_k^i(t), k>i$.
 
@@ -30,14 +31,25 @@ With full position information of higher priority vehicles, the obstacle induced
 \ioset_i^j(t) = \{\state_i: (\state_i, \state_j(t)) \in \dz_{ij}\}
 \end{equation}
 
-Each higher priority vehicle $\veh{j}$ plans its path while ignoring $\veh{i}$. Since path planning is done sequentially in descending order or priority, the vehicles $\veh{j}, j<i$ would have planned their paths before $\veh{i}$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the path planning problem for $\veh{i}$ can be solved by first computing the BRS $\brs(t, \targetset_i, \obsset_i(t), \basicham)$. Since the control $\ctrl_i$ aims to reach $\targetset_i$, the Hamiltonian is given by
+Each higher priority vehicle $\veh{j}$ plans its path while ignoring $\veh{i}$. Since path planning is done sequentially in descending order or priority, the vehicles $\veh{j}, j<i$ would have planned their paths before $\veh{i}$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the path planning problem for $\veh{i}$ can be solved by first computing the BRS $\brs_i(t, \targetset_i, \obsset_i(t), \basicham)$, given by
+
+\begin{equation}
+\label{eq:BRS_basic}
+\begin{aligned}
+&\brs_i(t, \targetset_i, \obsset_i(t), \basicham) = \{\state_i: \exists \ctrl_i(\cdot) \in \cfset_i, \\
+&\quad\forall s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot)) \notin \obsset_i(s), \\
+&\quad\exists s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot)) \in \targetset_i\}
+\end{aligned}
+\end{equation}
+
+Since the control $\ctrl_i$ aims to reach $\targetset_i$, the Hamiltonian is given by
 
 \begin{equation}
 \label{eq:basicham}
 \basicham(t, \state_i, p) = \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
-$\brs(t, \targetset_i, \obsset_i(t), \basicham)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targetset = \targetset_i$, $\obsset = \obsset_i$, and $\ham=\basicham$. The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by $\ctrl_i^*(\cdot, \targetset_i, \obsset_i(t), \basicham)$, defined in \eqref{eq:opt_ctrl}.
+$\brs(t, \targetset_i, \obsset_i(t), \basicham)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targetset = \targetset_i$, $\obsset = \obsset_i$, and $\ham=\basicham$. The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by $\ctrl_i^*(t, \targetset_i, \obsset_i(t), \basicham)$, defined in \eqref{eq:opt_ctrl}.
 
 In summary, the basic SPP algorithm is given as follows:
 

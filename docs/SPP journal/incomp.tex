@@ -24,45 +24,52 @@ Under the presence of disturbance, two modifications to Algorithm \ref{alg:basic
 \begin{equation}
 \label{eq:BRS_cc}
 \begin{aligned}
-\brs_i(t) = \{x_i: &\exists u_i(\cdot) \in \cfset_i, \forall d_i(\cdot) \in \dfset_i, x_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \\
-&\forall s \in [t, \sta_i], x_i(s) \notin \obsset_i(s), \\
-&\exists s \in [t, \sta_i], x_i(s) \in \targetset_i\}
+&\brs_i(t; \targetset_i, \obsset_i(\cdot), \ccham_i) = \{\state_i: \exists \ctrl_i(\cdot) \in \cfset_i, \forall \dstb_i(\cdot) \in \dfset_i, \\
+&\quad\forall s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot), \dstb(\cdot)) \notin \obsset_i(s), \\
+&\quad\exists s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot), \dstb(\cdot)) \in \targetset_i\}
 \end{aligned}
 \end{equation}
 
-
-$\brs_i(t; \targetset_i, \obsset_i(\cdot), \ham_{\text{cc}})$, where the Hamiltonian is given by
+The Hamiltonian is given by
 
 \begin{equation}
-\ham_i\left(\state_i, p\right) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} p \cdot \fdyn_i(\state_i, \ctrl_i, \dstb_i)
+\ccham_i\left(\state_i, p\right) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} p \cdot \fdyn_i(\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
 \noindent from which we can obtain the optimal control $\ctrl_i^*(t, \state_i)$ can be obtained:
 
 \begin{equation}
 \label{eq:opt_ctrl_i}
-\ctrl_i^*(t, \state_i) =  \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} p \cdot \fdyn_i(\state_i, \ctrl_i, \dstb_i)
+\ctrl_i^*(t, \state_i; \targetset_i, \obsset_i(\cdot), \ccham_i) =  \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} p \cdot \fdyn_i(\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
 If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $u^*_i(t, x_i)$ can be enforced. In this case, the dynamics of each vehicle becomes 
-\vspace{-0.3em}
+
 \begin{equation}
 \label{eq:dyn_cc}
 \begin{aligned}
-\dot \state_i &= \fdyn^\dstb*_i (\state_i, \dstb_i) = \fdyn_i(\state_i, \ctrl^*_i(t, \state_i), \dstb_i) \\
+\dot \state_i &= \fdyn^*_i (\state_i, \dstb_i) = \fdyn_i(\state_i, \ctrl^*_i(t, \state_i), \dstb_i) \\
 \dstb_i &\in \dset_i, \quad i = 1,\ldots, N, \quad t \in [\ldt_i, \sta_i]
 \end{aligned}
 \end{equation}
 
 \noindent where $u_i$ no longer appears explicitly in the dynamics.
 
-From the perspective of a lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\rc$ of $\veh{j}$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh{j}$ starting from $x_j(\ldt) = x_{j0}$. The FRS is denoted $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ham_{cc*,j})$, and can be computed by solving \eqref{eq:HJIVI_FRS} without the inner minimization, and with the following Hamiltonian
+From the perspective of a lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\rc$ of $\veh{j}$ under the dynamics $\fdyn^*_j(\state_j, \dstb_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh{j}$ starting from $x_j(\ldt) = x_j^0$. The FRS is denoted $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ocham_j)$, and is defined as 
 
 \begin{equation}
-\ham_{cc*,j}\left(\state_j, p\right) = \min_{\dstb_j \in \dset_j} p \cdot \fdyn^*_j(\state_j, \dstb_j)
+\label{eq:FRS2_cc}
+\begin{aligned}
+&\underline\frs_j(t; \underline\targetset_j, \emptyset, \ocham_j) = \{y \in \R^{n_j}: \exists d_j(\cdot) \in \dfset_j, \\
+&\traj_j(t; \state^0_j, \ldt, \ctrl^*_i(\cdot), \dstb_i(\cdot) )= y\}
+\end{aligned}
 \end{equation}
 
-The target set for the FRS computation is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\underline \targetset = \{\state_j(\ldt)\}$.
+\noindent where the target set for the FRS computation is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\underline \targetset = \{\state_j(\ldt)\}$. $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ocham_j)$ can be computed by solving \eqref{eq:HJIVI_FRS} without the inner minimization, and with the following Hamiltonian
+
+\begin{equation}
+\ocham_j\left(\state_j, p\right) = \min_{\dstb_j \in \dset_j} p \cdot \fdyn^*_j(\state_j, \dstb_j)
+\end{equation}
 
 The FRS $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ham_{cc*,j})$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh{j}$ given the worst case disturbance $\dstb_j(\cdot)$ and given that $\veh{j}$ uses the feedback controller $\ctrl_j^*(t, \state_j)$. In order for a lower-priority vehicle $\veh{i}$ to guarantee that it does not go within a distance of $\rc$ to $\veh{j}$, $\veh{i}$ must stay a distance of at least $\rc$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher priority vehicle $\veh{j}$ for a lower priority vehicle $\veh{i}$ as follows:
 
@@ -76,33 +83,35 @@ The FRS $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ham_{cc*,j})$ r
 \pfrs_j(t) = \{p: \exists \npos_j, (p, \npos_j) \in \underline\frs_j(t; \underline\targetset_j, \emptyset, \ham_{cc*,j})\}.
 \end{equation}
 
-Finally, the total time-varying obstacles $\obsset_i(t)$ for the next vehicle $\veh{i}$ can be determined using \eqref{eq:obsseti}. Afterwards, the BRS $\brs_i(t; \targetset_i, \obsset_i(\cdot), \ham_{\text{cc}})$. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
+Finally, the total time-varying obstacles $\obsset_i(t)$ for the next vehicle $\veh{i}$ can be determined using \eqref{eq:obsseti}. Afterwards, the BRS $\brs_i(t; \targetset_i, \obsset_i(\cdot), \ccham_i)$. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
 
-\subsection{Least Restrictive Controller}  \label{sec:incomp_LRctrl}
-Here, we again begin with the highest priority vehicle $\veh{1}$ planning its path by computing the BRS $\brs_i(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
-\vspace{-0.4em}
+\subsection{Least Restrictive Controller}
+\label{sec:incomp_LRctrl}
+Here, for each vehicle we again compute the BRS in \eqref{eq:BRS_cc}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
-u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctrl_i}\} \text{ if } x_j(t)\in \partial \brs_j(t), \\
+\ctrl_j(t, \state_j)\in \begin{cases} \{\ctrl_j^*(t, \state_j; \targetset_j, \obsset_j(\cdot), \ccham_j) \} \\ \qquad \text{ if } \state_j(t)\in \partial \brs_j(t; \targetset_j, \obsset_j(\cdot), \ccham_j), \\
 \cset_j  \text{ otherwise}
 \end{cases}
 \end{equation}
 
-Such a controller allows each higher priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j(t)$, in which case the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower priority vehicles given that the higher priority vehicles will get to their targets on time.
+Such a controller allows each higher priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j(t; \targetset_j, \obsset_j(\cdot), \ccham_j)$, in which case the optimal control $\ctrl_j^*(t, \state_j; \targetset_j, \obsset_j(\cdot), \ccham_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower priority vehicles given that the higher priority vehicles will get to their targets on time.
 
-Suppose a lower-priority vehicle $\veh{i}$ assumes that higher-priority vehicles $\veh{j}, j < i$ use the least restrictive control strategy in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}$ could be in any state that is reachable from $\veh{j}$'s initial state $x_j(\ldt) = x_{j0}$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of a FRS from the initial state $x_j(\ldt)=x_{j0}$ and the BRS defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\brs_j(t) \cap \frs_j(t)$. In this situation, since $\veh{j}$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined in \eqref{eq:FRS2}.
+Suppose a lower-priority vehicle $\veh{i}$ assumes that higher-priority vehicles $\veh{j}, j < i$ use the least restrictive control strategy in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh{i}$, a higher-priority vehicle $\veh{j}$ could be in any state that is reachable from $\veh{j}$'s initial state $\state_j(\ldt) =\state_j^0$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by $\brs_j(t; \targetset_j, \obsset_j(\cdot), \ccham_j) \cap \underline\frs_j(t; \underline\targetset_j, \emptyset, \ccham_j)$. In this situation, since $\veh{j}$ cannot be assumed to be using any particular feedback control, $\underline\frs_j(t; \underline\targetset_j, \emptyset, \ccham_j)$ is given by
 \vspace{-0.4em}
 
 \begin{equation}
-\label{eq:FRS2}
+\label{eq:FRS2_lrc}
 \begin{aligned}
-&\frs_j(t) = \{y \in \R^{n_j}: \exists u_j(\cdot)\in\cfset_j, \exists d_j(\cdot) \in \dfset_j, \\
-&x_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, x_j(\ldt) = x_{j0}, x_j(t) = y\}
+&\underline\frs_j(t; \underline\targetset_j, \emptyset, \ccham_j) = \{y \in \R^{n_j}:\exists \ctrl_j(\cdot) \in \cfset_j \exists \dstb_j(\cdot) \in \dfset_j, \\
+&\traj_j(t; \state^0_j, \ldt, \ctrl_j(\cdot), \dstb_j(\cdot) )= y\}
 \end{aligned}
 \end{equation}
 
-This FRS can be computed by solving \eqref{eq:FRS_HJIVI} without obstacles, and with
-\vspace{-0.4em}
+\MCnote{Change the Hamiltonian name!}
+This FRS can be computed by solving \eqref{eq:HJIVI_FRS} without obstacles, and with
+
 \begin{equation}
 H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \min_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
 \end{equation}
