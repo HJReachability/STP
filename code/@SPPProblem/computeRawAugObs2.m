@@ -4,7 +4,7 @@ function computeRawAugObs(obj)
 
 if exist(obj.rawAugObs_filename, 'file')
   fprintf(['The rawObs file %s already exists. Skipping rawObs ' ...
-  'computation.\n'], obj.rawAugObs_filename)
+    'computation.\n'], obj.rawAugObs_filename)
   return
 end
 
@@ -23,19 +23,25 @@ load(obj.CARS_filename)
 schemeData.dynSys = Plane([0; 0; 0], ...
   RTTRS.dynSys.wMaxA, RTTRS.dynSys.vRangeA, RTTRS.dynSys.dMaxA);
 
-% Compute the sets
+%% Compute FRS
 fprintf('Computing FRS of raw obstacle...\n')
 schemeData.grid = g;
 rawObsFRS = computeRawObs_FRS(RTTRSdata, schemeData, CARS.tau);
 
-fprintf('Computing cylObs3D of raw obstacle FRS...\n')
+fprintf('Computing flat obstacle of raw obstacle FRS...\n')
 tR = RTTRS.trackingRadius;
-[obs3D, g2D, obs2D] = computeObs3D(rawObsFRS, g, obj.Rc, tR);
+[FRS3D, g2D, FRS2D] = computeObs3D(rawObsFRS, g, obj.Rc, tR);
 rawAugObs.g2D = g2D;
-rawAugObs.data2D = obs2D;
+rawAugObs.FRS2D = FRS2D;
 
-fprintf('Computing BRS of obs3D...\n')
-rawAugObs.datas = computeObs3D_BRS(obs3D, schemeData, CARS.tau);
+%% Compute FRS
+fprintf('Computing flat raw obstacles\n')
+tR = RTTRS.trackingRadius;
+[obs3D, ~, obs2D] = computeObs3D(RTTRSdata, g, obj.Rc, tR);
+rawAugObs.rawObs2D = obs2D;
+
+fprintf('Computing BRS of raw obstacle...\n')
+rawAugObs.datas = computeRawObs_BRS(obs3D, schemeData, CARS.tau);
 rawAugObs.g = g;
 
 obj.rawAugObs_filename = sprintf('%s_%f.mat', mfilename, now);
@@ -70,7 +76,7 @@ for i = 1:size(augObsFRS,4)
 end
 end
 
-function rawAugObs_datas = computeObs3D_BRS(obs3D, schemeData, tauIAT)
+function rawObsBRS = computeRawObs_BRS(RTTRSdata, schemeData, tauIAT)
 % Computes BRS or cylindrical obstacles
 schemeData.uMode = 'min';
 schemeData.dMode = 'min';
@@ -79,12 +85,7 @@ schemeData.tMode = 'backward';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
-rawAugObs_datas = cell(length(tauIAT), 1);
-
-for i = 1:length(tauIAT)
-  rawAugObs_datas{i} = HJIPDE_solve(obs3D(:,:,:,i), tauIAT, schemeData, ...
-    'zero', extraArgs);
-end
+rawObsBRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData,  'zero', extraArgs);
 
 end
 
