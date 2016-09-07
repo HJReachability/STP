@@ -15,7 +15,7 @@ for i = 1:length(obj.nomTraj_tau)
   % Rotate and shift the robust trajectory tracking reachable set to the vehicle
   % state
   
-  % For the last tauIAT time steps, use the i-step BRS
+  %% For the last tauIAT time steps, use the i-step BRS
   if obj.nomTraj_tau(i) + max(CARS.tau) > max(obj.nomTraj_tau)
     obsInd = find(CARS.tau > max(obj.nomTraj_tau)-obj.nomTraj_tau(i)-small & ...
       CARS.tau < max(obj.nomTraj_tau)-obj.nomTraj_tau(i)+small);
@@ -31,17 +31,7 @@ for i = 1:length(obj.nomTraj_tau)
   
   obj.obsForIntr(:,:,:,i) = rawObsDatai;
   
-  % Dealing with periodicity
-  if t >= 0
-    rawObsDatai = rotateData(g, rawAugObs3D(:,:,:,obsInd), t-2*pi, [1 2], 3);
-  else
-    rawObsDatai = rotateData(g, rawAugObs3D(:,:,:,obsInd), t+2*pi, [1 2], 3);
-  end
-  rawObsDatai = shiftData(g, rawObsDatai, p, [1 2]);
-  
-  obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), rawObsDatai);
-  
-  % Exclude target set
+  %% Exclude target set
   obj.obsForIntr(:,:,:,i) = max(obj.obsForIntr(:,:,:,i), -obj.target);
 end
 end
