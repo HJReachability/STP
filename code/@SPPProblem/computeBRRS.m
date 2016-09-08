@@ -43,7 +43,7 @@ if restart || ~exist(obj.BR_RS_filename, 'file')
   Q = initRTT(obj, RTTRS);
   
   % File name to save RS data
-  obj.BR_RS_filename = sprintf('%s_RS_%f.mat', mfilename, now);  
+  obj.BR_RS_filename = sprintf('%s_%f.mat', mfilename, now);  
 else
   fprintf('Loading BR RS checkpoint...\n')
   load(obj.BR_RS_filename)
