@@ -12,7 +12,7 @@ end
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
-g = createGrid([-0.6; -0.6; -3*pi/2], [0.7; 0.6; pi/2], [35; 35; 35], 3);
+g = createGrid([-0.6; -0.6; -3*pi/2], [0.7; 0.6; pi/2], [71; 71; 71], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
