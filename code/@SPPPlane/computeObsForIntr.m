@@ -10,12 +10,11 @@ for i = 1:length(CARS.tau)
 end
 
 obj.obsForIntr_tau = obj.nomTraj_tau;
-obj.obsForIntr = zeros([g.N' length(obj.nomTraj_tau)]);
+obj.obsForIntr = inf([g.N' length(obj.nomTraj_tau)]);
 
 for i = 1:length(obj.nomTraj_tau)
   fprintf('  Augmenting obstacle %d of %d\n', i, length(obj.nomTraj_tau))
   
-  obj.obsForIntr(:,:,:,i) = inf(g.N');
   for j = 1:length(CARS.tau)
     trajInd = i-j+1;
     obsFRSInd = length(CARS.tau);

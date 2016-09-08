@@ -108,5 +108,5 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
 IESet = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
-
+IESet = IESet(:,:,:,end);
 end
