@@ -1,4 +1,4 @@
-function computeRawAugObs(obj)
+function computeRawAugObs2(obj)
 % computeRawAugObs(obj)
 %     Augments the raw obstacles (for translation on nominal trajectory)
 
@@ -12,7 +12,7 @@ end
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
-g = createGrid([-0.5; -0.6; -3*pi/2], [0.7; 0.6; pi/2], [65; 65; 65], 3);
+g = createGrid([-0.6; -0.6; -3*pi/2], [0.7; 0.6; pi/2], [35; 35; 35], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
@@ -22,6 +22,10 @@ load(obj.CARS_filename)
 % Initialize dynamical system based on RTTRS parameters
 schemeData.dynSys = Plane([0; 0; 0], ...
   RTTRS.dynSys.wMaxA, RTTRS.dynSys.vRangeA, RTTRS.dynSys.dMaxA);
+
+%% Compute intruder exclusive set
+fprintf('Computing intruder exclusive set\n')
+rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj.dt, g);
 
 %% Compute FRS
 fprintf('Computing FRS of raw obstacle...\n')
@@ -33,15 +37,17 @@ tR = RTTRS.trackingRadius;
 [FRS3D, g2D, FRS2D] = computeObs3D(rawObsFRS, g, obj.Rc, tR);
 rawAugObs.g2D = g2D;
 rawAugObs.FRS2D = FRS2D;
+rawAugObs.FRS3D = FRS3D;
 
-%% Compute FRS
+%% Compute BRS
 fprintf('Computing flat raw obstacles\n')
 tR = RTTRS.trackingRadius;
 [obs3D, ~, obs2D] = computeObs3D(RTTRSdata, g, obj.Rc, tR);
 rawAugObs.rawObs2D = obs2D;
 
-fprintf('Computing BRS of raw obstacle...\n')
-rawAugObs.datas = computeRawObs_BRS(obs3D, schemeData, CARS.tau);
+fprintf('Computing BRS of flat raw obstacle...\n')
+rawAugObs.BRS3D = computeRawObs_BRS(obs3D, schemeData, CARS.tau);
+
 rawAugObs.g = g;
 
 obj.rawAugObs_filename = sprintf('%s_%f.mat', mfilename, now);
@@ -89,3 +95,18 @@ rawObsBRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData,  'zero', extraArgs);
 
 end
 
+function IESet = computeRawObs_IES(RTTRSdata, CARS, dt, g)
+
+schemeData.dynSys = CARS.dynSys;
+schemeData.grid = g;
+schemeData.uMode = 'min';
+schemeData.dMode = 'min';
+tau = 0:dt:2*max(CARS.tau);
+data0 = RTTRSdata;
+
+extraArgs.visualize = true;
+extraArgs.deleteLastPlot = true;
+
+IESet = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
+
+end
