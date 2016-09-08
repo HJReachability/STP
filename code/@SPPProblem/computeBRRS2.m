@@ -76,7 +76,7 @@ for veh=1:length(Q)
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
   if isempty(Q{veh}.obsForIntr)
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForIntr2(obj.g, CARS, rawAugObs);
+    Q{veh}.computeObsForIntr2(obj.g, rawAugObs);
   end
 end
 
