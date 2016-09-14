@@ -7,7 +7,7 @@ Disturbances and incomplete information significantly complicate the SPP scheme.
 \item \textbf{Robust trajectory tracking}: A vehicle declares a nominal trajectory which can be robustly tracked under disturbances.
 \end{itemize}
 
-In general, the above methods can be used in combination in a single path planning problem, with each vehicle independently having different control policies. Lower-priority vehicles would then plan their paths while taking into account the control policy of each higher-priority vehicle. For clarity, however, we will present each method as if all vehicles are using the same method of path planning.
+In general, the above methods can be used in combination in a single path planning problem, with each vehicle independently having different control policies. Lower-priority vehicles would then plan their paths while taking into account the control policy information known for each higher-priority vehicle. For clarity, however, we will present each method as if all vehicles are using the same method of path planning.
 
 In addition, for simplicity of explanation, we will assume that no static obstacles exist. In the situations where static obstacles do exist, the time-varying obstacles $\obsset_i(t)$ simply becomes the union of the induced obstacles $\ioset_i^j(t)$ in \eqref{eq:ioset} and the static obstacles.
 
@@ -50,7 +50,7 @@ d_i &\in \dset_i, \quad i = 1,\ldots, N, \quad t \in [\ldt_i, \sta_i]
 
 \noindent where $u_i$ no longer appears explicitly in the dynamics.
 
-From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces an time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from $x_j(\ldt) = x_{j0}$. The FRS $\frs_j(t)$ is defined as follows:
+From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from $x_j(\ldt) = x_{j0}$. The FRS $\frs_j(t)$ is defined as follows:
 \vspace{-0.3em}
 \begin{equation}
 \label{eq:FRS1}
