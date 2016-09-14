@@ -1,0 +1,125 @@
+% !TEX root = SPP_journal.tex
+\section{Response to Intruders \label{sec:intruder1}}
+Notation:
+\begin{itemize}
+\item Augmented obstacles $\tilde\obsset(t)$
+\item Base Obstacles $\boset_i^j(t)$
+\end{itemize}
+
+In Section \ref{}, we made the basic SPP algorithm more robust by taking into account disturbances and considering situations in which vehicles may not have complete information about the control strategy of the other vehicles. 
+
+If a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the old plan can lead to a collision. If vehicles do not plan with additional safety margin that takes intruders into account, a vehicle trying to avoid the intruder may cause an unexpected conflict with another SPP vehicle, and effectively becoming an intruder itself. This may lead to a domino effect, causing multiple conflicts. In this section, we propose a method to allow vehicles to avoid an intruder while maintaining the SPP structure.
+
+In general, the effect of intruders on the vehicles in structured flight can be entirely unpredictable, since the intruders in principle could be adversarial in nature, and the number of intruders could be arbitrary. Therefore, for our analysis to produce reasonable results, some assumptions about the intruders must be made.
+
+\begin{assumption}
+\label{as:avoidOnce}
+At most one intruder affects the SPP vehicles. The intruder exits the altitude level affecting the SPP vehicles after a duration of $\iat$.
+\end{assumption}
+
+Assumption \ref{as:avoidOnce} implies that any vehicle $\veh{i}$ would need to avoid the intruder $\veh{\intr}$ for a maximum duration of $\iat$. This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the altitude level affecting the SPP vehicles. Note that we do not make any assumptions about $\tsa$; however, we assume that once it appears, it stays for a maximum duration of $\iat$.
+%in addition, after avoiding the intruder, Qi can safely assume that it would not need to avoid another intruder
+
+\begin{assumption}
+\label{as:dynKnown}
+Dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\state_\intr, \ctrl_\intr, \dstb_\intr)$
+\end{assumption}
+
+Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead.
+
+<<<<<<< HEAD:docs/SPP journal/intruder.tex
+%Suppose some vehicle $\veh{i}$ starts avoiding the intruder $\veh{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh{i}$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh{i}$. Since $\veh{i}$ may spend a duration of up to $\tsa$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
+%
+%We must also ensure that while avoiding the intruder, $\veh{i}$ does not collide with the total obstacle set $\obsset_i(t)$. This requires augmenting the total obstacle set to produce the augmented total obstacle $\tilde\obsset_i(t)$; the computation of $\tilde\obsset_i(t)$ and the controller that guarantees the avoidance of the augmented obstacles are discussed in Section \ref{sec:intruder_aocomp}.
+=======
+\subsection{Method 1 (Efficient Planning?)}
+Suppose some vehicle $\veh{i}$ starts avoiding the intruder $\veh{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh{i}$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh{i}$. Since $\veh{i}$ may spend a duration of up to $\tsa$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
+
+We must also ensure that while avoiding the intruder, $\veh{i}$ does not collide with the total obstacle set $\obsset_i(t)$. This requires augmenting the total obstacle set to produce the augmented total obstacle $\tilde\obsset_i(t)$; the computation of $\tilde\obsset_i(t)$ and the controller that guarantees the avoidance of the augmented obstacles are discussed in Section \ref{sec:intruder_aocomp}.
+
+When $t > \tea$, $\veh{i}$ no longer needs to take into account the possibility of any other intruders, and can simply avoid the unaugmented obstacles $\obsset_i(t)$ while getting to the target. The associated controller and the time-to-reach upper bound after intruder avoidance are discussed in Section \ref{sec:intruder_after}.
+
+Finally, Section \ref{sec:intruder_avoid} describes how $\veh{i}$ can guarantee collision avoidance with the intruder.
+
+\MCnote{I wonder if the material below is needed}
+\begin{itemize}
+\item \textbf{Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)}.
+\end{itemize}
+
+We are now ready to develop a general theory that takes intruders into account. Our approach to a robust path planning can be summarized in the following steps:
+\begin{itemize}
+\item \textit{Step-1}: First, we compute the set of obstacles induced by the higher priority vehicles for the lower priority vehicles.  
+\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
+\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+\item \textit{Step-4}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. If a vehicle sense an intruder while it is still outside this region, the above algorithm will ensure safety at all times.  
+\end{itemize}
+
+%\subsection{Obstacle Augmentation}
+%\begin{itemize}
+%\item For path planning
+%\item For lower priority vehicles
+%\end{itemize}
+>>>>>>> mo-writing:docs/SPP journal/intruder1.tex
+%
+%When $t > \tea$, $\veh{i}$ no longer needs to take into account the possibility of any other intruders, and can simply avoid the unaugmented obstacles $\obsset_i(t)$ while getting to the target. The associated controller and the time-to-reach upper bound after intruder avoidance are discussed in Section \ref{sec:intruder_after}.
+%
+%Finally, Section \ref{sec:intruder_avoid} describes how $\veh{i}$ can guarantee collision avoidance with the intruder.
+%
+%\MCnote{I wonder if the material below is needed}
+%\begin{itemize}
+%\item \textbf{Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)}.
+%\end{itemize}
+%
+%We are now ready to develop a general theory that takes intruders into account. Our approach to a robust path planning can be summarized in the following steps:
+%\begin{itemize}
+%\item \textit{Step-1}: First, we compute the set of obstacles induced by the higher priority vehicles for the lower priority vehicles.  
+%\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
+%\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+%\item \textit{Step-4}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. If a vehicle sense an intruder while it is still outside this region, the above algorithm will ensure safety at all times.  
+%\end{itemize}
+
+<<<<<<< HEAD:docs/SPP journal/intruder.tex
+\input{./intruder/method1}
+
+%The overall control policy for avoiding intruder and reaching target is thus given by:
+%\begin{equation*}
+%u^* = 
+%\left \{ 
+%\begin{array}{ll}
+%\ctrl^*_\text{AO}(t, \state_i; \targetset_i, \tilde\obsset_i, \ham_\text{AO}) & t \leq \underbar{t}\\
+%\ctrl^*_\text{CA}(t, \state_r; \targetset_\text{CA}, \obsset_\text{CA}, \ham_\text{CA}) & \underbar{t} \leq t \leq \bar{t} \\
+%\ctrl^*(t, \state_i; \targetset_i, \obsset_i, \ham_\text{L}) & t \geq \bar{t}
+%\end{array}
+%\right.
+%\end{equation*}
+
+\textbf{To-Dos:}
+\begin{itemize}
+\item Write something about the essence of the two methods of avoiding intruders, why we need to re-plan at all and number of re-plannings involved in each of them.\\
+\item Something about the overall methodology of each method (in respective sections) before going into the technical details.\\ 
+\item We don't have to re-plan for all vehicles in Method-1. We can in theory find out the vehicles that are impacted by intruders (using a reachability calculation) and just re-plan for them.\\
+\item A remark about the single vehicle replanning property of Method-2. \\
+\item Once the replanning is complete, another intruder can appear in the system. So strictly speaking we ar emaking assumption that atmost one intruder is in the system \textit{at any given time} as opposed to throughout the trajectory. \\
+\end{itemize}
+=======
+\input{./intruder1/step1}
+\input{./intruder1/step2}
+\input{./intruder1/step3}
+\input{./intruder1/step4}
+
+The overall control policy for avoiding intruder and reaching target is thus given by:
+\begin{equation*}
+u^* = 
+\left \{ 
+\begin{array}{ll}
+\ctrl^*_\text{AO}(t, \state_i; \targetset_i, \tilde\obsset_i, \ham_\text{AO}) & t \leq \underbar{t}\\
+\ctrl^*_\text{CA}(t, \state_r; \targetset_\text{CA}, \obsset_\text{CA}, \ham_\text{CA}) & \underbar{t} \leq t \leq \bar{t} \\
+\ctrl^*(t, \state_i; \targetset_i, \obsset_i, \ham_\text{L}) & t \geq \bar{t}
+\end{array}
+\right.
+\end{equation*}
+
+\begin{itemize}
+\item \textbf{Explain computation of the base obstacles}
+\end{itemize}
+>>>>>>> mo-writing:docs/SPP journal/intruder1.tex
