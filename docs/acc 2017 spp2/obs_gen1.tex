@@ -36,7 +36,7 @@ H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdo
 u_i^*(t,x_i) =  \arg \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} p \cdot f_i(t, x_i, u_i, d_i)
 \end{equation}
 
-The latest departure time $\ldt_i$ is then given by $\arg \inf_t x_{i0} \in \brs_i(t)$.
+Here, as well as in the other two methods, the latest departure time $\ldt_i$ is then given by $\arg \sup_t x_{i0} \in \brs_i(t)$.
 
 If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower priority vehicles can safely assume that higher priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $u^*_i(t, x_i)$ can be enforced. In this case, the dynamics of each vehicle becomes 
 \vspace{-0.3em}
@@ -72,7 +72,7 @@ Conveniently, the FRS can be computed using the following HJ VI:
 
 \noindent with the following Hamiltonian
 \begin{equation}
-H_j\left(t, x_j, p\right) = \min_{d_j \in \dset_j} p \cdot f^*_j(t, x_j, d_j)
+H_j\left(t, x_j, p\right) = \max_{d_j \in \dset_j} p \cdot f^*_j(t, x_j, d_j)
 \end{equation}
 \noindent where $\bar l$ is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} such that $\bar l (y) = 0 \Leftrightarrow y = x_j(\ldt)$.
 
