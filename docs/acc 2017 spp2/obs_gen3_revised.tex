@@ -29,7 +29,7 @@ To obtain bounds on the tracking error, we first conservatively estimate the err
 \vspace{-0.5em}
 \begin{equation}
 \label{eq:HJIVI_track}
-H_j\left(t, e_j, p\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} p \cdot f_{e_j}(t, e_j, u_j, u_r,d_j)
+H_j\left(t, e_j, p\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} \lambda \cdot f_{e_j}(t, e_j, u_j, u_r,d_j)
 \end{equation}
 
 Letting the time horizon tend to infinity, we obtain the infinite-horizon controlled-invariant set, which we denote by $\disckernel_j$. If this set is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:
@@ -37,7 +37,7 @@ Letting the time horizon tend to infinity, we obtain the infinite-horizon contro
 \vspace{-1.5em}
 \begin{equation}
 \label{eq:robust_tracking_law}
-\tracklaw_j(e_j) = \arg\max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} p \cdot f_{e_j}(t,e_j,u_j,u_r,d_j).
+\tracklaw_j(e_j) = \arg\max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} \lambda \cdot f_{e_j}(t,e_j,u_j,u_r,d_j).
 \end{equation}
 
 %$\disckernel_j$ can be computed in the state space of the tracking error $e_j$ to significantly reduce the problem dimensionality and to produce a feedback control law that also only depends on $e_j$ 
@@ -68,7 +68,7 @@ Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\err
 \begin{equation}
 \begin{aligned}
 \ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \} \\
-\pfrs_j(t) &= \{p: \exists \npos_j, (p, \npos_j) \in \errorbound(0) + \errorbound(x_{r,j}(t)) \},
+\pfrs_j(t) &= \{p_j: \exists \npos_j, (p_j, \npos_j) \in \errorbound_i(0) + \errorbound_j(x_{r,j}(t)) \},
 \end{aligned}
 \end{equation}
 \noindent where $0$ denotes the origin. 
