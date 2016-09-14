@@ -1,0 +1,27 @@
+% !TEX root = ../SPP_journal.tex
+\subsubsection{Step 4: Optimal Avoidance Controller \label{sec:intruder_avoid}}
+First, we define relative coordinates of the intruder $\veh{\intr}$ with state $\state_\intr$ with respect to $\veh{i}$ with state $\state_i$.
+
+\begin{equation}
+\label{eq:reldyn}
+\begin{aligned}
+\state_r &= \state_\intr - \state_i \\
+\dot \state_r &= f_r(\state_r, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
+\end{aligned}
+\end{equation}
+
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+
+\begin{equation}
+\begin{aligned}
+\targetset_\text{CA} &= \{\state_r: \|\pos_r\|_2 \le \rc\} \\
+\obsset_\text{CA} &= \emptyset \\
+H_\text{CA}(\state_r, p) &= \max_{\ctrl_i} \min_{\ctrl_\intr} p \cdot f_r(\state_r, \ctrl_i, \ctrl_\intr)
+\end{aligned}
+\end{equation}
+
+Once the value function $\valfunc_\text{CA}(t, \state_r)$ representing $\brs_\text{CA}(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$ is computed, the optimal avoidance control $\ctrl^*_\text{CA}$ can be derived from \eqref{eq:opt_ctrl}.
+
+Under normal circumstances when the intruder $\veh{\intr}$ is far away, we have $\valfunc_\text{CA}(\iat, \state_r) > 0$; as the $\veh{\intr}$ gets closer to $\veh{i}$, $\valfunc_\text{CA}(\iat, \state_r)$ decreases. If $\veh{i}$ applies the control $\ctrl^*_\text{CA}$ when $\valfunc_\text{CA}(\iat, \state_r) = 0$, then collision avoidance between $\veh{i}$ and $\veh{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+
+In addition, under Assumption \ref{as:avoidOnce}, we have $\state_i \in \brs(\bar t, \targetset_i, \tilde\obsset(t))$. Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.

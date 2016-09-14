@@ -25,7 +25,7 @@ Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles 
 This FRS can be computed by solving \eqref{eq:FRS_HJIVI} without obstacles, and with
 \vspace{-0.4em}
 \begin{equation}
-H_j\left(t, x_j, p\right) = \min_{u_j \in \cset_j} \min_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
+H_j\left(t, x_j, p\right) = \max_{u_j \in \cset_j} \max_{d_j \in \dset_j} p \cdot f_j(t, x_j, u_j, d_j)
 \end{equation}
 
 In turn, the obstacle induced by a higher priority $\veh_j$ for a lower priority vehicle $\veh_i$ is as follows:

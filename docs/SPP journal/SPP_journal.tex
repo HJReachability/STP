@@ -2,8 +2,8 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-%\documentclass[journal]{IEEEtran}  
-\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
+\documentclass[journal]{IEEEtran}  
+%\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
 
 \IEEEoverridecommandlockouts                              % This command is only
                                                           % needed if you want to
@@ -12,7 +12,7 @@
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
 
-\usepackage{amsmath}    % need for sub equations
+\usepackage{mathtools}    % need for sub equations
 \usepackage{amsfonts}
 \usepackage{graphicx}   % need for figures
 \usepackage{subcaption}
@@ -24,7 +24,7 @@
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
 \usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
 
-\newcommand{\MCnote}{\todo[size=\small,author=MC,color=cyan]}
+\newcommand{\MCnote}{\textcolor{red}}
 
 \newcommand{\R}{\mathbb{R}} % Real number
 \newcommand{\dist}{\text{dist}} % Distance
@@ -38,6 +38,9 @@
 \newcommand{\dstb}{d} % disturbance
 \newcommand{\pos}{p} % position
 \newcommand{\npos}{h} % non-position states
+
+\newcommand{\traj}{\zeta}
+\newcommand{\errstate}{e}
 
 \newcommand{\fdyn}{f} % full dynamics
 \newcommand{\cset}{\mathcal{U}} % Control set
@@ -57,6 +60,9 @@
 \newcommand{\fc}{l} % Final condition
 \newcommand{\ic}{l} % Initial condition
 \newcommand{\obsfunc}{g} % Obstacle function
+\newcommand{\costate}{p}
+
+\newcommand{\disckernel}{\Omega} % Discriminating kernel
 
 \newcommand{\edt}{t^\text{EDT}} % earliest departure time
 \newcommand{\ldt}{t^\text{LDT}} % latest departure time
@@ -68,7 +74,9 @@
 \newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
 \newcommand{\wcttr}{t^\text{WC}} % worst case TTR
 
-\newcommand{\basicham}{\ham_\text{basic}}
+\newcommand{\basicham}{\ham^\text{basic}}
+\newcommand{\ccham}{\ham^\text{cc}} % centralized controller Hamiltonian
+\newcommand{\ocham}{\ham^\text{oc}} % optimal controller Hamiltonian
 
 \newcommand{\tsa}{\underline{t}} % time of start of avoidance
 \newcommand{\tea}{\bar{t}} % time of end of avoidance
@@ -93,6 +101,7 @@
 
 %%%
 \begin{abstract}
+\MCnote{This paper must be at most 16 pages for IEEE TCST!}
 \end{abstract}
 
 \input{introduction}
@@ -103,7 +112,8 @@
 \input{basic_results}
 \input{incomp}
 \input{incomp_results}
-\input{intruder}
+\input{intruder1}
+\input{intruder2}
 \input{intruder_results}
 
 \input{conclusion.tex}

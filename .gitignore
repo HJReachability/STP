@@ -25,3 +25,7 @@ code/SPP_with_intruder/computeOptTraj_*/
 code/SPP_with_intruder/simulateFull_intruder_method1/
 docs/acc 2017 spp2/SPP2.pdf
 *.bak
+code/computeBRS1_*/
+code/computeOptTraj_*/
+code/simulateBR_*/
+code/simulateFull_*/
