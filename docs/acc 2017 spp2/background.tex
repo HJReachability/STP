@@ -44,7 +44,7 @@ To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the followin
 \end{equation}
 
 \begin{equation}
-H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \lambda \cdot f_i(t, x_i, u_i)
+H_i\left(t, x_i, \lambda\right) = \min_{u_i \in \cset_i} \lambda \cdot f_i(t, x_i, u_i)
 \end{equation}
 
 \noindent where $\lambda$ is the gradient of the value function, $D_{x_i} V_i$, and $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i(t)$, and the backward reachable set $\brs_i(t)$, respectively: 

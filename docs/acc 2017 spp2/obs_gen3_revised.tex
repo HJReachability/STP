@@ -29,7 +29,7 @@ To obtain bounds on the tracking error, we first conservatively estimate the err
 \vspace{-0.5em}
 \begin{equation}
 \label{eq:HJIVI_track}
-H_j\left(t, e_j, p\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} \lambda \cdot f_{e_j}(t, e_j, u_j, u_r,d_j)
+H_j\left(t, e_j, \lambda\right) = \max_{u_j \in \cset_j} \min_{u_r \in\cset^p_j, d_j \in \dset_j} \lambda \cdot f_{e_j}(t, e_j, u_j, u_r,d_j)
 \end{equation}
 
 Letting the time horizon tend to infinity, we obtain the infinite-horizon controlled-invariant set, which we denote by $\disckernel_j$. If this set is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law implicitly defined in \eqref{eq:HJIVI_track}:

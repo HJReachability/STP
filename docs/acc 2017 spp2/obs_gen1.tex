@@ -26,7 +26,7 @@ The highest-priority vehicle $\veh_1$ first plans its path by computing the BRS 
 Since we have assumed no static obstacles exist, we have that for $\veh_1, \obsset_1(s)=\emptyset ~ \forall s \le \sta_i$, and thus the above BRS is well-defined. This BRS can be computed by solving the HJ VI \eqref{eq:HJIVI} with the following Hamiltonian:
 \vspace{-0.3em}
 \begin{equation}
-H_i\left(t, x_i, p\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} \lambda \cdot f_i(t, x_i, u_i, d_i)
+H_i\left(t, x_i, \lambda\right) = \min_{u_i \in \cset_i} \max_{d_i \in \dset_i} \lambda \cdot f_i(t, x_i, u_i, d_i)
 \end{equation}
 
 \noindent where $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i, \obsset_i(t), \brs_i(t)$, respectively. From the BRS, we can obtain the optimal control
@@ -72,7 +72,7 @@ Conveniently, the FRS can be computed using the following HJ VI:
 
 \noindent with the following Hamiltonian
 \begin{equation}
-H_j\left(t, x_j, p\right) = \max_{d_j \in \dset_j} \lambda \cdot f^*_j(t, x_j, d_j)
+H_j\left(t, x_j, \lambda\right) = \max_{d_j \in \dset_j} \lambda \cdot f^*_j(t, x_j, d_j)
 \end{equation}
 \noindent where $\bar l$ is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} such that $\bar l (y) = 0 \Leftrightarrow y = x_j(\ldt)$.
 
