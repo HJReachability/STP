@@ -27,7 +27,7 @@ Let $\pos_i \in \R^\pos$ denote the position of $\veh_i$; note that $\pos_i$ in 
 
 \vspace{-0.5em} 
 \begin{equation}
-\dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \},
+\dz_{ij}(t) = \{x_i \in \R^{n_i}: \|\pos_i - \pos_j(t)\|_2 \le \cradius \}
 \end{equation}
 
 \noindent the interpretation of which is that a vehicle is in another vehicle's danger zone if the two vehicles are within a Euclidean distance of $\cradius$ apart. The joint path planning problem is depicted in Fig. \ref{fig:form}.
@@ -42,10 +42,12 @@ Let $\pos_i \in \R^\pos$ denote the position of $\veh_i$; note that $\pos_i$ in 
  
 The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. However, due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$, with $n_i$ as small as $3$.
 
-In this paper, we assume assigned priorities of the vehicles as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower priority vehicles, but must take full responsibility for avoiding higher priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
+In this paper, we assume that \MCnote{vehicles have assigned priorities} as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower-priority vehicles, but must take full responsibility for avoiding higher-priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
 
 \begin{enumerate}
 \item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite the disturbances it experiences?
 \item How can each vehicle take into account the disturbances that other vehicles experience?
-\item How should each vehicle robustly handle situations with limited information about the state, control policy and intention of other vehicles?
+\item How should each vehicle robustly handle situations with limited information about the state, control policy, and intention of other vehicles?
 \end{enumerate}
+
+\MCnote{Throughout the paper, we will assume that the priority ordering is given, and derive safe optimal trajectories based on the given priority ordering. The way to assign priorities is not the focus of this paper, but this important problem will be considered as part of future work.}
