@@ -1,6 +1,6 @@
 % !TEX root = SPP2.tex
 \section{Background \label{sec:background}}
-This section provides a brief summary of \cite{Chen15}, in which the SPP scheme is proposed under perfect information and absence of disturbance. Here, the dynamics of $\veh_i$ becomes
+This section provides a brief summary of \cite{Chen15}, in which the SPP scheme is proposed under perfect information and absence of disturbances. Here, the dynamics of $\veh_i$ becomes
 
 \begin{equation}
 \label{eq:dyn_no_dstb}
@@ -10,7 +10,7 @@ u_i &\in \cset_i, \quad i = 1,\ldots, N
 \end{aligned}
 \end{equation}
 
-\noindent where the difference compared to \eqref{eq:dyn} is that the disturbance $d_i$ is no longer part of the dynamics.
+\noindent where the difference compared to \eqref{eq:dyn} is that the disturbance $d_i$ is no longer a part of the dynamics.
 
 In order to make the $N$-vehicle path planning problem safe and tractable, a reasonable structure is imposed to the problem: the vehicles are assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower-priority vehicle. In contrast, a lower-priority vehicle must take into account the presence of all higher-priority vehicles, and plan its trajectory in a way that avoids the higher-priority vehicles' danger zones. For convenience and without lost of generality, let $\veh_i$ be the vehicle with the $i$th highest priority. 
 
@@ -29,7 +29,7 @@ Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_
 \ioset_i^j(t) = \{x_i: \|p_i - p_j(t)\|\le\cradius\}
 \end{equation}
 
-Given $\ioset_i^j(t), j<i$, and continuing with $i = 2$, the optimal safe trajectories for each vehicle $\veh_i$ can be computed. All of the trajectories are optimal in the sense that given the requirement that $\veh_i$ must arrive at $\targetset_i$ at time $\sta_i$, the latest departure time $\ldt_i$ and the optimal control $u^*_i(\cdot)$ that guarantees arrival at $\sta_i$ can be obtained.
+Given $\ioset_i^j(t), j<i$, and continuing with $i = 2$, the optimal safe trajectories for each vehicle $\veh_i$ can be computed. All of the trajectories are optimal in the sense that given the requirement that $\veh_i$ must arrive at $\targetset_i$ by time $\sta_i$, the latest departure time $\ldt_i$ and the optimal control $u^*_i(\cdot)$ that guarantees arrival by $\sta_i$ can be obtained.
 
 To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the following HJ VI:
 \vspace{-0.5em} 
@@ -38,8 +38,8 @@ To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the followin
 \begin{aligned}
 \max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
 &l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
-&\quad t\le\sta\\
-&V_i(\sta, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}\\ 
+&\quad t\le\sta_i\\
+&V_i(\sta_i, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}\\ 
 \end{aligned}
 \end{equation}
 

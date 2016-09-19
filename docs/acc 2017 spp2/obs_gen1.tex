@@ -50,13 +50,13 @@ d_i &\in \dset_i, \quad i = 1,\ldots, N, \quad t \in [\ldt_i, \sta_i]
 
 \noindent where $u_i$ no longer appears explicitly in the dynamics.
 
-From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from $x_j(\ldt) = x_{j0}$. The FRS $\frs_j(t)$ is defined as follows:
+From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the capture radius $\cradius$ of $\veh_j$ under the dynamics $f^*_j(t, x_j, d_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from $x_j(\ldt_j) = x_{j0}$. The FRS $\frs_j(t)$ is defined as follows:
 \vspace{-0.3em}
 \begin{equation}
 \label{eq:FRS1}
 \begin{aligned}
 &\frs_j(t) = \{y \in \R^{n_j}: \exists d_j(\cdot) \in \dfset_j, \\
-&x_j(\cdot) \text{ satisfies \eqref{eq:dyn_cc}}, x_j(\ldt) = x_{j0}, x_j(t) = y\}
+&x_j(\cdot) \text{ satisfies \eqref{eq:dyn_cc}}, x_j(\ldt_j) = x_{j0}, x_j(t) = y\}
 \end{aligned}
 \end{equation}
 
@@ -74,9 +74,9 @@ Conveniently, the FRS can be computed using the following HJ VI:
 \begin{equation}
 H_j\left(t, x_j, \lambda\right) = \max_{d_j \in \dset_j} \lambda \cdot f^*_j(t, x_j, d_j)
 \end{equation}
-\noindent where $\bar l$ is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} such that $\bar l (y) = 0 \Leftrightarrow y = x_j(\ldt)$.
+\noindent where $\bar l$ is chosen to be\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} such that $\bar l (y) = 0 \Leftrightarrow y = x_j(\ldt_j)$.
 
-The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given the worst case disturbance $d_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $u_j^*(t, x_j)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\cradius$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\cradius$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher-priority vehicle $\veh_j$ for a lower-priority vehicle $\veh_i$ as follows:
+The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given all possible disturbances $d_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $u_j^*(t, x_j)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\cradius$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\cradius$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher-priority vehicle $\veh_j$ for a lower-priority vehicle $\veh_i$ as follows:
 \vspace{-0.4em}
 \begin{equation}
 \ioset_i^j(t) = \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \}

@@ -4,9 +4,7 @@ In the planning phase, we reduced the maximum turn rate of the vehicles from $1$
 
 Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where each vehicle robustly tracks a pre-specified trajectory and is guaranteed to stay inside a ``bubble" around the trajectory. Fig. \ref{fig:rtt_rs3} shows the evolution of BRS and induced obstacles for vehicle $\veh_3$. The obstacles induced by other vehicles inhibit the evolution of the BRS, carving out thin “channels,” which can be seen at $t = -2.59$, that separate the BRS into different “islands”. %One can see how these channels and islands form by examining the time evolution of the BRS set.
 
-In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57$ and $-2.47$ respectively. In this method, vehicles use reduced control authority for path planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have lower $\ldt$ compared to the other two methods, as evident from $\ldt_1$. Because of this ``sacrifice" made by the higher-priority vehicles during the path planning phase, the $\ldt$'s of lower-priority vehicles may increase compared to those in the other methods, as evident from $\ldt_4$. Overall, it is unclear how $\ldt_i$ will change for a vehicle compared to the other methods, as the conservative path planning increases $\ldt_i$ for higher-priority vehicles and decreases $\ldt_i$ for lower-priority vehicles.
-
-\begin{figure}
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.40\textwidth]{"fig/rtt_traj"}
   \caption{Simulated trajectories for the robust trajectory tracking method.}
@@ -14,7 +12,7 @@ In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57
   \vspace{-1em}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.40\textwidth]{"fig/rtt_rs3"}
   \caption{Evolution of the BRS for $\veh_3$ in the robust trajectory tracking method. As the BRS grows in time, the induced obstacles carve out a channel. Note that a smaller target set is used to compute the BRS to ensure that the vehicle reaches the target set by $t=0$ for any allowed tracking error.}
@@ -22,3 +20,5 @@ In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57
   \vspace{-1em}
 \end{figure}
 \vspace{-0.2em}
+
+In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57$ and $-2.47$ respectively. In this method, vehicles use reduced control authority for path planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have lower $\ldt$ compared to the other two methods, as evident from $\ldt_1$. Because of this ``sacrifice" made by the higher-priority vehicles during the path planning phase, the $\ldt$'s of lower-priority vehicles may increase compared to those in the other methods, as evident from $\ldt_4$. Overall, it is unclear how $\ldt_i$ will change for a vehicle compared to the other methods, as the conservative path planning increases $\ldt_i$ for higher-priority vehicles and decreases $\ldt_i$ for lower-priority vehicles.
