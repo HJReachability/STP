@@ -10,6 +10,9 @@ classdef SPPPlane < Plane
     
     nomTraj
     nomTraj_tau
+
+    nomTraj_AR % Nominal trajectory after replanning
+    nomTraj_AR_tau
     
     obsForRTT
     obsForRTT_tau

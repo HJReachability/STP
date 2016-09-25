@@ -49,11 +49,22 @@ fprintf('Computing gradients...\n')
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
-% Determine end time of simulation
+%% Determine end time of simulation and copy nominal trajectories
 Q = {Q1;Q2;Q3;Q4};
 tEnd = -inf;
+nomTrajs = cell(length(Q),1);
+nomTraj_taus = cell(length(Q),1);
 for veh = 1:length(Q)
-  tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
+  % Use after-replanning nominal trajectory if replanning was done
+  if isempty(Q{veh}.nomTraj_AR)
+    nomTrajs{veh} = Q{veh}.nomTraj;
+    nomTraj_taus{veh} = Q{veh}.nomTraj_tau;
+  else
+    nomTrajs{veh} = Q{veh}.nomTraj_AR;
+    nomTraj_taus{veh} = Q{veh}.nomTraj_AR_tau;    
+  end
+  
+  tEnd = max(tEnd, max(nomTraj_taus{veh}));
 end
 tauAR = obj.tReplan:obj.dt:tEnd;
 
@@ -91,13 +102,13 @@ for i = 2:length(tauAR)
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.nomTraj_tau > tauAR(i) - small & ...
-      Q{veh}.nomTraj_tau < tauAR(i) + small, 1);
+    tInds{veh} = find(nomTraj_taus{veh} > tauAR(i) - small & ...
+      nomTraj_taus{veh} < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
       tauARmin(veh) = min(tauARmin(veh), tauAR(i));
       tauARmax(veh) = max(tauARmax(veh), tauAR(i));
-      liveness_rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
+      liveness_rel_x = nomTrajs{veh}(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
       
