@@ -1,4 +1,4 @@
-function SPPwIntruderRTT(SPPP)
+function SPPwIntruderRTT2(SPPP)
 % SPPwDisturbanceRTT()
 %     Solves the entire SPP with disturbances problem using the RTT method
 
@@ -34,8 +34,8 @@ trackingRadius = 0.075;
 
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
-SPPP.computeRawAugObs;
-SPPP.computeBRRS;
+SPPP.computeRawAugObs2;
+SPPP.computeBRRS2;
 SPPP.simulateBR;
 SPPP.computeARRS;
 SPPP.simulateAR;

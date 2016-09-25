@@ -29,3 +29,4 @@ code/computeBRS1_*/
 code/computeOptTraj_*/
 code/simulateBR_*/
 code/simulateFull_*/
+*.png

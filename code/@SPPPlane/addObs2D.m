@@ -11,7 +11,7 @@ g2D = SPPP.g2D;
 replan = false;
 if ~isempty(SPPP.tReplan) && nargin > 3
   replan = true;
-  rawAugObs2D = migrateGrid(rawAugObs.g2D, rawAugObs.data2D, g2D);
+  rawAugObs2D = migrateGrid(rawAugObs.g2D, rawAugObs.FRS2D, g2D);
 end
 
 % Migrate and add capture radius to RTTRS
