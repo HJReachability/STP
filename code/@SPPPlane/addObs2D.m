@@ -9,7 +9,7 @@ nomTraj = obj.nomTraj;
 nomTraj_tau = obj.nomTraj_tau;
 
 % Use newer nominal trajectory if there's replanning
-if isempty(obj.nomTraj_AR)
+if ~isempty(obj.nomTraj_AR)
   % Determine the time steps at which there is new nominal trajectory
   ARinds = nomTraj_tau >= min(obj.nomTraj_AR_tau) - small;
   
