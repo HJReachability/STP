@@ -28,7 +28,7 @@ if nargin < 1
 end
 
 % RTT parameters
-vReserved = [0.7 -0.2];
+vReserved = [0.3 -0.3];
 wReserved = -0.4;
 trackingRadius = 0.075;
 
