@@ -7,6 +7,12 @@ if nargin < 2
   restart = false;
 end
 
+if ~restart && exist(obj.AR_RS_filename_small, 'file')
+  fprintf('The AR RS file %s already exists. Skipping AR RS computation.\n', ...
+    obj.AR_RS_filename_small)
+  return
+end
+
 if restart || ~exist(obj.AR_RS_filename, 'file')
   fprintf('Loading BR sim file and restarting AR RS computation...\n')
   load(obj.BR_sim_filename)

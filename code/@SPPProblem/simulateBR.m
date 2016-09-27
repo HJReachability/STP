@@ -1,7 +1,7 @@
 function simulateBR(obj, intrIS, intrCtrl, tIntr, save_png, save_fig)
 %% Default inputs
 if nargin < 2
-  intrIS = [-0.75; 0.1; 0*pi/180];
+  intrIS = [0; 0.4; -pi/2];
 end
 
 if nargin < 3
@@ -9,7 +9,7 @@ if nargin < 3
 end
 
 if nargin < 4
-  tIntr = -2.5;
+  tIntr = -2.64;
 end
 
 if nargin < 5
