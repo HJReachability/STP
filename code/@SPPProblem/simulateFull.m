@@ -46,6 +46,25 @@ Q = {Q1;Q2;Q3;Q4;Qintr};
 colors = {'b', 'r', [0 0.5 0], 'm', 'k'};
 small = 1e-4;
 
+nomTrajs = cell(length(Q)-1,1);
+nomTraj_taus = cell(length(Q)-1,1);
+for veh = 1:length(Q)-1
+  % Use after-replanning nominal trajectory if replanning was done
+  nomTrajs{veh} = Q{veh}.nomTraj;
+  nomTraj_taus{veh} = Q{veh}.nomTraj_tau;
+  
+  if ~isempty(Q{veh}.nomTraj_AR)
+    % Determine the time steps at which there is new nominal trajectory
+    ARinds = nomTraj_tau{veh} >= min(Q{veh}.nomTraj_AR_tau) - small;
+    
+    % Replace nominal trajectory
+    nomTraj{veh}(:,ARinds) = [];
+    nomTraj_tau{veh}(ARinds) = [];
+    nomTraj{veh} = [nomTraj{veh} Q{veh}.nomTraj_AR];
+    nomTraj_tau{veh} = [nomTraj_tau{veh} Q{veh}.nomTraj_AR_tau];
+  end
+end
+
 firstPlot = true(length(Q), 1);
 hPosition = cell(length(Q), 1);
 hHeading = cell(length(Q), 1);
@@ -99,8 +118,8 @@ for i = 1:length(obj.tau)
           hObstacles{veh}.LineStyle = ':';
           hObstacles{veh}.LineWidth = 2;
           
-          xNomTraj = Q{veh}.nomTraj(1,ti);
-          yNomTraj = Q{veh}.nomTraj(2,ti);
+          xNomTraj = nomTraj{veh}(1,ti);
+          yNomTraj = nomTraj{veh}(2,ti);
           hNomTraj{veh} = plot(xNomTraj, yNomTraj, 'o', 'color', colors{veh});
         else
           % Intruder extra plots
@@ -126,8 +145,8 @@ for i = 1:length(obj.tau)
           obs2D = Q{veh}.obs2D(:,:,ti);
           hObstacles{veh}.ZData = obs2D;
           
-          xNomTraj = Q{veh}.nomTraj(1,ti);
-          yNomTraj = Q{veh}.nomTraj(2,ti);          
+          xNomTraj = nomTraj{veh}(1,ti);
+          yNomTraj = nomTraj{veh}(2,ti);          
           hNomTraj{veh}.XData = xNomTraj;
           hNomTraj{veh}.YData = yNomTraj;
         else
