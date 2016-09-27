@@ -105,9 +105,7 @@ for i = 2:length(tauAR)
       nomTraj_taus{veh} < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
-      if isinf(tauARmax(veh))
-        tauARmax(veh) = tauAR(i);
-      end
+      tauARmax(veh) = max(tauARmax(veh), tauAR(i));
       
       liveness_rel_x = nomTrajs{veh}(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));

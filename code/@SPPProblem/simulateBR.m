@@ -160,7 +160,7 @@ for i = 1:length(tauBR)
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     if ~isempty(tInds{veh})
-      if isinf(tauBRmin)
+      if isinf(tauBRmin(veh))
         tauBRmin(veh) = tauBR(i);
       end
 
