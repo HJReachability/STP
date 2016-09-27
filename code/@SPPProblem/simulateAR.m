@@ -66,7 +66,7 @@ for veh = 1:length(Q)
   
   tEnd = max(tEnd, max(nomTraj_taus{veh}));
 end
-tauAR = obj.tReplan:obj.dt:tEnd;
+tauAR = obj.tReplan+obj.dt:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
@@ -93,7 +93,6 @@ end
 
 %% Simulate
 tInds = cell(length(Q),1);
-tauARmin = inf(length(Q), 1);
 tauARmax = -inf(length(Q), 1);
 
 for i = 2:length(tauAR)
@@ -106,8 +105,10 @@ for i = 2:length(tauAR)
       nomTraj_taus{veh} < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
-      tauARmin(veh) = min(tauARmin(veh), tauAR(i));
-      tauARmax(veh) = max(tauARmax(veh), tauAR(i));
+      if isinf(tauARmax(veh))
+        tauARmax(veh) = tauAR(i);
+      end
+      
       liveness_rel_x = nomTrajs{veh}(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
@@ -141,13 +142,13 @@ for i = 2:length(tauAR)
 end
 
 for veh = 1:length(Q)
-  Q{veh}.tauAR = tauARmin(veh):obj.dt:tauARmax(veh);
+  Q{veh}.tauAR = obj.tReplan+obj.dt:obj.dt:tauARmax(veh);
   Q{veh}.tau = [Q{veh}.tauBR Q{veh}.tauAR];
 end
 [Q1, Q2, Q3, Q4] = Q{:};
 
 obj.tauAR = tauAR;
-obj.tau = [obj.tauBR obj.tauAR(2:end)];
+obj.tau = [obj.tauBR obj.tauAR];
 obj.full_sim_filename = sprintf('resim_%f.mat', now);
 save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
 

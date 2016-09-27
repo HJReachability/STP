@@ -110,7 +110,6 @@ intruder_arrived = false;
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
 tauBRmin = inf(length(Q)+1, 1);
-tauBRmax = -inf(length(Q)+1, 1);
 
 %% Simulate
 tInds = cell(length(Q),1);
@@ -132,8 +131,10 @@ for i = 1:length(tauBR)
   
   %% Intruder
   if tauBR(i) >= tIntr
-    tauBRmin(end) = min(tauBRmin(end), tauBR(i));
-    tauBRmax(end) = max(tauBRmax(end), tauBR(i));    
+    if isinf(tauBRmin(end))
+      tauBRmin(end) = tauBR(i);
+    end
+    
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
     Qintr.plotPosition(intruder_color);
@@ -159,8 +160,10 @@ for i = 1:length(tauBR)
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     if ~isempty(tInds{veh})
-      tauBRmin(veh) = min(tauBRmin(veh), tauBR(i));
-      tauBRmax(veh) = max(tauBRmax(veh), tauBR(i));
+      if isinf(tauBRmin)
+        tauBRmin(veh) = tauBR(i);
+      end
+
       if safety_vals(veh, i) < safety_threshold
         fprintf('Vehicle %d is performing avoidance.\n', veh)
         
@@ -209,7 +212,7 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.tauBR = tauBRmin(end):obj.dt:tauBRmax(end);
+Qintr.tauBR = tauBRmin(end):obj.tReplan;
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
@@ -238,7 +241,7 @@ for veh = 1:length(Q)
   Qnew{veh}.vReserved = Q{veh}.vReserved;
   Qnew{veh}.wReserved = Q{veh}.wReserved;
   
-  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:tauBRmax(veh);
+  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:obj.tReplan;
   Qnew{veh}.replan = Q{veh}.replan;
   
   Qnew{veh}.nomTraj = Q{veh}.nomTraj;
