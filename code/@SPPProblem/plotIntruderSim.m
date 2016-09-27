@@ -1,8 +1,8 @@
-function plotIntruderSim(obj, tPlot)
+function plotIntruderSim(obj, vehs, tPlot)
 % plotIntruderSim(obj, tPlot)
 %     Plots an intruder simulation
 
-if nargin < 2
+if nargin < 3
   tPlot = obj.tReplan;
 end
 
@@ -71,7 +71,6 @@ savefig(f, sprintf('%s_overview.fig', mfilename))
 f = figure;
 f.Color = 'white';
 f.Position = [100 100 800 360];
-vehs = [2 3];
 
 hNTx = cell(length(Q),1); % Nominal trajectory x vs. t
 hNTy = cell(length(Q),1); % Nominal trajectory y vs. t
