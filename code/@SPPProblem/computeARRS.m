@@ -72,14 +72,23 @@ for veh = 1:length(Q)
     % Continued from before replanning!
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
     Q{veh}.computeNomTraj(obj.g);
+    
+    %% Compute induced obstacles
+    if isempty(Q{veh}.obsForRTT)
+      fprintf('Computing induced obstacles for vehicle %d\n', veh)
+      Q{veh}.computeObsForRTT(obj, RTTRS, Q{veh}.nomTraj_AR, ...
+        Q{veh}.nomTraj_AR_tau);
+    end
+  else
+    %% Compute induced obstacles for vehicles that do not replan
+    if isempty(Q{veh}.obsForRTT)
+      fprintf('Computing induced obstacles for vehicle %d\n', veh)
+      Q{veh}.computeObsForRTT(obj, RTTRS, Q{veh}.nomTraj, Q{veh}.nomTraj_tau);
+    end          
   end
   
-  %% Compute induced obstacles
-  if isempty(Q{veh}.obsForRTT)
-    fprintf('Computing induced obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForRTT(obj, RTTRS, Q{veh}.nomTraj_AR, ...
-      Q{veh}.nomTraj_AR_tau);
-  end
+
+
 end
 
 %% Trim vehicles for a smaller file
