@@ -86,9 +86,6 @@ for veh = 1:length(Q)
       Q{veh}.computeObsForRTT(obj, RTTRS, Q{veh}.nomTraj, Q{veh}.nomTraj_tau);
     end          
   end
-  
-
-
 end
 
 %% Trim vehicles for a smaller file
