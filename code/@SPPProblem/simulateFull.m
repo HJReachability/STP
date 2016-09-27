@@ -55,13 +55,13 @@ for veh = 1:length(Q)-1
   
   if ~isempty(Q{veh}.nomTraj_AR)
     % Determine the time steps at which there is new nominal trajectory
-    ARinds = nomTraj_tau{veh} >= min(Q{veh}.nomTraj_AR_tau) - small;
+    ARinds = nomTraj_taus{veh} >= min(Q{veh}.nomTraj_AR_tau) - small;
     
     % Replace nominal trajectory
-    nomTraj{veh}(:,ARinds) = [];
-    nomTraj_tau{veh}(ARinds) = [];
-    nomTraj{veh} = [nomTraj{veh} Q{veh}.nomTraj_AR];
-    nomTraj_tau{veh} = [nomTraj_tau{veh} Q{veh}.nomTraj_AR_tau];
+    nomTrajs{veh}(:,ARinds) = [];
+    nomTraj_taus{veh}(ARinds) = [];
+    nomTrajs{veh} = [nomTrajs{veh} Q{veh}.nomTraj_AR];
+    nomTraj_taus{veh} = [nomTraj_taus{veh} Q{veh}.nomTraj_AR_tau];
   end
 end
 
@@ -118,8 +118,8 @@ for i = 1:length(obj.tau)
           hObstacles{veh}.LineStyle = ':';
           hObstacles{veh}.LineWidth = 2;
           
-          xNomTraj = nomTraj{veh}(1,ti);
-          yNomTraj = nomTraj{veh}(2,ti);
+          xNomTraj = nomTrajs{veh}(1,ti);
+          yNomTraj = nomTrajs{veh}(2,ti);
           hNomTraj{veh} = plot(xNomTraj, yNomTraj, 'o', 'color', colors{veh});
         else
           % Intruder extra plots
@@ -145,8 +145,8 @@ for i = 1:length(obj.tau)
           obs2D = Q{veh}.obs2D(:,:,ti);
           hObstacles{veh}.ZData = obs2D;
           
-          xNomTraj = nomTraj{veh}(1,ti);
-          yNomTraj = nomTraj{veh}(2,ti);          
+          xNomTraj = nomTrajs{veh}(1,ti);
+          yNomTraj = nomTrajs{veh}(2,ti);          
           hNomTraj{veh}.XData = xNomTraj;
           hNomTraj{veh}.YData = yNomTraj;
         else
