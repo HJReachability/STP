@@ -20,7 +20,7 @@ Dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\sta
 Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead.
 
 Based on the above two assumptions, we present two different algorithms to successfully avoid intruders for a duration of $\iat$. In both methods, our aim is to design a control policy that avoids a collision with the intruder as well as with other SPP vehicles, and ensure a transit to the destination. However, depending on the initial state of the intruder, its control policy, and the disturbances in the dynamics of a vehicle and the intruder, a vehicle might end-up at different states after avoiding the intruder. Therefore, a control policy that ensures a successful transit to the destination needs to account for all such possible states, which is a path planning problem with multiple (infinite, to be precise) initial states and a single destination, and is hard to solve in general. In this work, we divide the intruder avoidance problem into two sub-problems: (i) we first design a control policy that will ensure a successful transit to the destination if intruder does not appear and will successfully avoid the intruder, if it does. (ii) after the intruder disappears, we re-solve a SPP problem (that is, we ``re-plan"), where the initial states of the vehicles are given by the states that they end-up in after avoiding the intruder. 
-Two proposed methods mainly differ in the number of vehicles involved in the re-planning. 
+The proposed methods mainly differ in the number of vehicles involved in the re-planning. 
 
 %Suppose some vehicle $\veh{i}$ starts avoiding the intruder $\veh{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh{i}$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh{i}$. Since $\veh{i}$ may spend a duration of up to $\tsa$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
 %
@@ -57,9 +57,9 @@ Two proposed methods mainly differ in the number of vehicles involved in the re-
 
 \textbf{To-Dos:}
 \begin{itemize}
-\item Write something about the essence of the two methods of avoiding intruders, why we need to re-plan at all and number of re-plannings involved in each of them.\\
 \item Something about the overall methodology of each method (in respective sections) before going into the technical details.\\ 
 \item We don't have to re-plan for all vehicles in Method-1. We can in theory find out the vehicles that are impacted by intruders (using a reachability calculation) and just re-plan for them.\\
 \item A remark about the single vehicle replanning property of Method-2. Moreover, Method-2 can, in theory, handle multiple intruders as long as they are affecting different vehicles. Though, we have to replan for several vehicles in that case.  \\
 \item Once the replanning is complete, another intruder can appear in the system. So strictly speaking we are making an assumption that atmost one intruder is in the system \textit{at any given time} as opposed to throughout the trajectory. \\
+\item Make sure the notation in this sesction is consistent with the rest of the paper.\\
 \end{itemize}

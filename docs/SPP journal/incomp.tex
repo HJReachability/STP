@@ -67,7 +67,7 @@ From the perspective of a lower-priority vehicle $\veh{i}$, a higher-priority ve
 
 The FRS $\frs_j(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh{j}$ given all possible disturbances $\dstb_j(\cdot)$ and given that $\veh{j}$ uses the feedback controller $\ctrl_j^*(t, \state_j)$. In order for a lower-priority vehicle $\veh{i}$ to guarantee that it does not go within a distance of $\rc$ to $\veh{j}$, $\veh{i}$ must stay a distance of at least $\rc$ away from the set $\frs_j(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher priority vehicle $\veh{j}$ for a lower priority vehicle $\veh{i}$ as follows:
 
-\begin{equation}
+\begin{equation} \label{eq:CCObs}
 \ioset_i^j(t) = \{\state_i: \dist(\pos_i, \pfrs_j(t)) \le \rc \}
 \end{equation}
 
