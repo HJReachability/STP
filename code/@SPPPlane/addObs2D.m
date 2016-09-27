@@ -14,7 +14,7 @@ if ~isempty(obj.nomTraj_AR)
   ARinds = nomTraj_tau >= min(obj.nomTraj_AR_tau) - small;
   
   % Replace nominal trajectory
-  nomTraj(ARinds) = [];
+  nomTraj(:,ARinds) = [];
   nomTraj_tau(ARinds) = [];
   nomTraj = [nomTraj obj.nomTraj_AR];
   nomTraj_tau = [nomTraj_tau obj.nomTraj_AR_tau];

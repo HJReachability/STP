@@ -68,20 +68,6 @@ for veh = 1:length(Q)
 end
 tauAR = obj.tReplan:obj.dt:tEnd;
 
-% Error using horzcat
-% Dimensions of matrices being concatenated are not consistent.
-% 
-% Error in SPPPlane/addObs2D (line 19)
-%   nomTraj = [nomTraj obj.nomTraj_AR];
-% 
-% Error in SPPProblem/simulateAR (line 75)
-%     Q{veh}.addObs2D(obj, RTTRS);
-% 
-% Error in SPPwIntruderRTT (line 41)
-% SPPP.simulateAR;
-% 
-% 19    nomTraj = [nomTraj obj.nomTraj_AR];
-
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
   for veh = 1:length(Q)
