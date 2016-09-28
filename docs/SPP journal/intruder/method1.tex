@@ -1,3 +1,4 @@
+% !TEX root = SPP_journal.tex
 \subsection{Method 1: Full re-planning \label{sec:intruder_method1}}
 Intuitively, the number of vehicles that are affected by an intruder depends on how close the vehicles are to each other. For example, if the vehicles are in a dense configuration, then multiple vehicles might get affected by the intruder simultaneously and hence re-planning is required at a larger scale. In this section, we propose a method that guarnatee intruder avoidance while allowing vehicles to be in a dense configuration, but may require a full re-planning of the system after the intruder disappears.     
 
@@ -7,7 +8,7 @@ We must also ensure that while avoiding the intruder, $\veh{i}$ does not collide
 
 In Section \ref{sec:intruder_avoid}, we describes how $\veh{i}$ can guarantee collision avoidance with the intruder.
 
-Finally, when $t > \tea$, $\veh{i}$ has already successfuly avoided the intruder, but depending on the state it ends up in while avoiding the intruder, it might need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:intruder_after}.
+Finally, when $t > \tea$, $\veh{i}$ has already successfuly avoided the intruder, but depending on the state it ends up in while avoiding the intruder, it might need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:replan_method1}.
 
 %\begin{itemize}
 %\item \textbf{Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)}.
@@ -96,7 +97,7 @@ The overall control policy for avoiding intruder and collision with other vehicl
 \right.
 \end{equation*}
 
-\subsubsection{Re-planning after intruder avoidance}
+\subsubsection{Re-planning after intruder avoidance} \label{sec:replan_method1}
 After the intruder disappears, a liveness controller to ensure that the vehicles reach their destinations can be obtained by solving a SPP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in after avoiding the intruder.  
 Let the optimal control policy corresponding to this liveness controller is given by $\ctrl^*_\text{L}(t)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles and successful transition to the destination is given by:
 

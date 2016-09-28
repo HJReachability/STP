@@ -1,0 +1,25 @@
+% !TEX root = SPP_journal.tex
+\subsection{Method 2: Single vehicle re-planning \label{sec:intruder_method2}}
+As an alternative to Method 1, one can think about dividing the flight space of vehicles such that at any given time, any two vehicles are far enough from each other such that an intruder can only affect one vehicle in a duration of $\iat$ despite its best efforts. The advantage of this approach is that after the intruder disappears, we only have to re-plan the trajectory of a single vehicle regardless of the number of total vehicles in the system, which makes this approach particularly suitable for practical systems, as the re-planning needs to be done in real time.
+
+In this method, we build upon this intuition and show that such a division of space is indeed possible. In Section \ref{sec:spaceDiv}, we show that regardless of the initial position of the intruder, atmost one vehicle needs to apply the avoidance maneuver under this space division. However, we still need to ensure that a vehicle do not collide with another vehicle while avoiding the intruder. The induces obstacles that reflect this possibility are computed in Section \ref{sec:intruder_iocomp_met2}. Intruder avoidance control and re-planning are discussed in Section \ref{sec:replan_method2}.
+
+\subsubsection{Space division \label{sec:spaceDiv}}
+Let $\state_r$ denotes the relative co-ordinates of $\veh{\intr}$ with respect to $\veh{j}$ as in \eqref{eq:reldyn}. Given the relative dynamics, we compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{j}$ can enter danger zone $\dz_{j\intr}$ when both $\veh{j}$ and $\veh{\intr}$ are taking \textit{best actions to collide} with each other. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs_{\text{C},j}(\iat, \targetset_\text{C}, \emptyset, H_\text{C})$, with
+
+\begin{equation}
+\begin{aligned}
+\targetset_{\text{C},j} &= \{\state_r: \|\pos_r\|_2 \le \rc\} \\
+H_\text{C}(\state_r, p) &= \min_{\ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr} p \cdot f_r(\state_r, \ctrl_j, \ctrl_\intr)
+\end{aligned}
+\end{equation}
+
+The interpretation of set $\brs_{\text{C},j}$ is that if the $\veh{\intr}$ starts outside this set (in relative co-ordinates), then no matter what control $\veh{\intr}$ and $\veh{j}$ apply for the next $\iat$ seconds, they can't collide with each other. Thus, $\veh{j}$ need not avoid such an intruder and can apply any desired control. In other words, $\veh{j}$ should avoid the intruder if intruder starts inside $\brs_{\text{C},j}$, otherwise should not. We can similarly compute $\brs_{\text{C},i}$, which denotes the region around $\veh{i}$, where it needs to avoid the intruder. 
+
+We now go back to the absolute coordinates and explain how we can achieve the desired space division. We first compute the base obstacles $\boset^j(t)$ induced by $\veh{j}$ as disucssed in Section \ref{sec:intruder_iocomp}. Once the base obstacles are computed, we augment every base obstacle with $\brs_{\text{C},j}$. This can be achieved by taking Minkowski sum of $\boset^j(t)$ and $\brs_{\text{C},j}$:
+\begin{equation}
+^1\intobs^j(t) = \boset^j(t) + \brs_{\text{C},j}.
+\end{equation}
+
+
+However, to ensure that atmost one vehicle needs to apply the avoidance maneuver, we need to make sure that no other vehicle $\veh{i}, i \neq j$, needs to avoid the intruder if intruder starts inside $\brs_\text{C}$. This can  be achieved by ensuring that $\brs_{\text{C},i}$ and $\brs_{\text{C},j}$ do not intersect.
