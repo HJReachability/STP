@@ -81,15 +81,14 @@ hRT = cell(length(Q),1); % Replan time
 % Plot original and planned trajectories
 for i = 1:length(vehs)
   veh = vehs(i);
-  Q{veh}.tau = Q{veh}.tau(1):obj.dt:Q{veh}.tau(end);
   subplot(2, 1, i)
   hNTx{veh} = plot(Q{veh}.nomTraj_tau, Q{veh}.nomTraj(1,:), 'k--');
   hold on
   hNTy{veh} = plot(Q{veh}.nomTraj_tau, Q{veh}.nomTraj(2,:), 'k-');
   
-  hATx{veh} = plot(Q{veh}.tau, Q{veh}.xhist(1,:), '--', 'color', ...
+  hATx{veh} = plot(Q{veh}.tau(2:end), Q{veh}.xhist(1,:), '--', 'color', ...
     colors{veh});
-  hATy{veh} = plot(Q{veh}.tau, Q{veh}.xhist(2,:), '-', 'color', ...
+  hATy{veh} = plot(Q{veh}.tau(2:end), Q{veh}.xhist(2,:), '-', 'color', ...
     colors{veh});  
   
   % Plot replan time

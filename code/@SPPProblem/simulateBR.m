@@ -212,7 +212,7 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.tauBR = tauBRmin(end):obj.tReplan;
+Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan;
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
