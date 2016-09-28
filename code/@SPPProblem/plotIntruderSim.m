@@ -58,12 +58,13 @@ for veh = 1:length(Q)
   end
 end
 
+axis equal
 title(sprintf('t = %.2f', tPlot))
 leg_handles = [hTar{2} hAP{2} hAP{3} hAP{4} hAP{5} hCR{2} hAT{2} hNP{2}];
 leg_labels = {'Target', 'Vehicle 2', 'Vehicle 3', 'Vehicle 4', 'Intruder', ...
   'Danger zone', 'Trajectory', 'Nominal Position'};
 legend(leg_handles, leg_labels, 'FontSize', 12, 'Location', 'eastoutside')
-axis square
+
 
 savefig(f, sprintf('%s_overview.fig', mfilename))
 
@@ -86,9 +87,9 @@ for i = 1:length(vehs)
   hold on
   hNTy{veh} = plot(Q{veh}.nomTraj_tau, Q{veh}.nomTraj(2,:), 'k-');
   
-  hATx{veh} = plot(Q{veh}.tau, Q{veh}.xhist(1,:), '--', 'color', ...
+  hATx{veh} = plot(Q{veh}.tau, Q{veh}.xhist(1,2:end), '--', 'color', ...
     colors{veh});
-  hATy{veh} = plot(Q{veh}.tau, Q{veh}.xhist(2,:), '-', 'color', ...
+  hATy{veh} = plot(Q{veh}.tau, Q{veh}.xhist(2,2:end), '-', 'color', ...
     colors{veh});  
   
   % Plot replan time
