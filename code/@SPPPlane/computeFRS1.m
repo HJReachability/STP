@@ -32,15 +32,15 @@ extraArgs.obstacles = migrateGrid(old_g, obstacles, new_g);
 extraArgs.stopSetIntersect = ...
   shapeCylinder(new_g, 3, obj.targetCenter, obj.targetRsmall);
 
-% Compute the FRS
-extraArgs.visualize = true;
-extraArgs.plotData.plotDims = [1, 1, 0];
-extraArgs.plotData.projpt = obj.x(3);
-
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
-
-extraArgs.fig_filename = sprintf('%s/', folder);
+% % Compute the FRS
+% extraArgs.visualize = true;
+% extraArgs.plotData.plotDims = [1, 1, 0];
+% extraArgs.plotData.projpt = obj.x(3);
+% 
+% folder = sprintf('%s_%f', mfilename, now);
+% system(sprintf('mkdir %s', folder));
+% 
+% extraArgs.fig_filename = sprintf('%s/', folder);
 [obj.FRS1, obj.FRS1_tau] = ...
   HJIPDE_solve(extraArgs.targets, tauFRS, schemeData, 'none', extraArgs);
 

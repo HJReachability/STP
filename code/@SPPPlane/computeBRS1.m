@@ -31,16 +31,16 @@ nom_vrange = obj.vrange + obj.vReserved;
 nom_wMax = obj.wMax + obj.wReserved;
 schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 
-% Set extraArgs
-extraArgs.visualize = true;
-extraArgs.deleteLastPlot = true;
-extraArgs.plotData.plotDims = [1, 1, 0];
-extraArgs.plotData.projpt = obj.x(3);
-
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
-
-extraArgs.fig_filename = sprintf('%s/', folder);
+% % Set extraArgs
+% extraArgs.visualize = true;
+% extraArgs.deleteLastPlot = true;
+% extraArgs.plotData.plotDims = [1, 1, 0];
+% extraArgs.plotData.projpt = obj.x(3);
+% 
+% folder = sprintf('%s_%f', mfilename, now);
+% system(sprintf('mkdir %s', folder));
+% 
+% extraArgs.fig_filename = sprintf('%s/', folder);
 
 % Set obstacles
 extraArgs.obstacles = obstacles;

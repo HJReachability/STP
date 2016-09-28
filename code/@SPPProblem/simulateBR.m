@@ -13,7 +13,7 @@ if nargin < 4
 end
 
 if nargin < 5
-  save_png = true;
+  save_png = false;
 end
 
 if nargin < 6
@@ -137,8 +137,7 @@ for i = 1:length(tauBR)
     
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
-    Qintr.plotPosition(intruder_color);
-    
+        
     % Check safety
     for veh = 1:length(Q)
       % Compute safety value
@@ -187,6 +186,7 @@ for i = 1:length(tauBR)
   
   %% Visualize
   if save_png || save_fig
+    Qintr.plotPosition(intruder_color);
     [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
@@ -216,7 +216,6 @@ Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan+small;
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
-obj.tReplan = tauBR(i);
 obj.tauBR = tStart:obj.dt:obj.tReplan+small;
 
 obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);

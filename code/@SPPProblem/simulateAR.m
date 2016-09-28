@@ -1,7 +1,7 @@
 function simulateAR(obj, save_png, save_fig)
 %% Default inputs
 if nargin < 2
-  save_png = true;
+  save_png = false;
 end
 
 if nargin < 3
