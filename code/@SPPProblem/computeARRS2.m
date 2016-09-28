@@ -23,7 +23,7 @@ else
   fprintf('Loading AR RS checkpoint...\n')
   load(obj.AR_RS_filename)
 end
-Q = {Q1; Q2; Q3; Q4};
+Qold = {Q1; Q2; Q3; Q4};
 
 %% Load files
 if exist(obj.RTTRS_filename, 'file')
@@ -45,14 +45,17 @@ tFRS_max = 2;
 tauFRS = obj.tReplan:obj.dt:tFRS_max;
 
 %% Determine which vehicle needs replanning, and reorder vehicles
-for veh = 1:length(Q)
-  if Q{veh}.replan
-    Qtemp = Q{veh};
-    Q{veh} = Q{end};
-    Q{end} = Qtemp;
-    break;
+Q = cell(length(Qold), 1);
+i = 0;
+for veh = 1:length(Qold)
+  if Qold{veh}.replan
+    Qtemp = Qold{veh};
+  else
+    i = i + 1;
+    Q{i} = Qold{veh};
   end
 end
+Q{end} = Qtemp;
 
 %% Start the computation of reachable sets
 for veh = 1:length(Q)
