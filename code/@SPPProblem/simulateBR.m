@@ -212,12 +212,12 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan;
+Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan+small;
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
 obj.tReplan = tauBR(i);
-obj.tauBR = tStart:obj.dt:obj.tReplan;
+obj.tauBR = tStart:obj.dt:obj.tReplan+small;
 
 obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 
@@ -241,7 +241,7 @@ for veh = 1:length(Q)
   Qnew{veh}.vReserved = Q{veh}.vReserved;
   Qnew{veh}.wReserved = Q{veh}.wReserved;
   
-  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:obj.tReplan;
+  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:obj.tReplan+small;
   Qnew{veh}.replan = Q{veh}.replan;
   
   Qnew{veh}.nomTraj = Q{veh}.nomTraj;

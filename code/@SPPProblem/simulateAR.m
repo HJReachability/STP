@@ -140,7 +140,7 @@ for i = 1:length(tauAR)
 end
 
 for veh = 1:length(Q)
-  Q{veh}.tauAR = obj.tReplan+obj.dt:obj.dt:tauARmax(veh);
+  Q{veh}.tauAR = obj.tReplan+obj.dt:obj.dt:tauARmax(veh)+small;
   Q{veh}.tau = [Q{veh}.tauBR Q{veh}.tauAR];
 end
 [Q1, Q2, Q3, Q4] = Q{:};
