@@ -90,7 +90,7 @@ if save_png || save_fig
   % Initialize figure
   f = figure;
   colors = lines(length(Q));
-  plotTargetSets(Q, colors)
+  plotTargetSets(Q, colors);
   
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
