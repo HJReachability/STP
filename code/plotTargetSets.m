@@ -1,4 +1,4 @@
-function plotTargetSets(Q, colors)
+function h = plotTargetSets(Q, colors)
 % plotTargetSets(Q, colors)
 %   Plots the target sets of the vehicles in Q
 
@@ -9,8 +9,11 @@ if ~iscell(colors)
     colors{i} = temp(i,:);
   end
 end
+
+h = cell(length(Q), 1);
+
 for veh = 1:length(Q)
-  plotDisk(Q{veh}.targetCenter, Q{veh}.targetR, ...
+  h{veh} = plotDisk(Q{veh}.targetCenter, Q{veh}.targetR, ...
     'linewidth', 3, 'color', colors{veh});
   hold on
 end

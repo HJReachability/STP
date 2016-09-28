@@ -4,6 +4,22 @@ function addObs2D(obj, SPPP, RTTRS, CARS, rawAugObs)
 %     appropriately augmented obstacles are added for the times before
 %     replanning
 
+small = 1e-3;
+nomTraj = obj.nomTraj;
+nomTraj_tau = obj.nomTraj_tau;
+
+% Use newer nominal trajectory if there's replanning
+if ~isempty(obj.nomTraj_AR)
+  % Determine the time steps at which there is new nominal trajectory
+  ARinds = nomTraj_tau >= min(obj.nomTraj_AR_tau) - small;
+  
+  % Replace nominal trajectory
+  nomTraj(:,ARinds) = [];
+  nomTraj_tau(ARinds) = [];
+  nomTraj = [nomTraj obj.nomTraj_AR];
+  nomTraj_tau = [nomTraj_tau obj.nomTraj_AR_tau];
+end
+
 g = SPPP.g;
 g2D = SPPP.g2D;
 
@@ -20,20 +36,20 @@ rawObs = migrateGrid(RTTRS.g, RTTRS.data, g);
 rawObs2D = addCRadius(g2D, rawObs2D, SPPP.Rc);
 
 % Initialize 2D obstacles
-obj.obs2D_tau = obj.nomTraj_tau;
-obj.obs2D = zeros([g2D.N' length(obj.nomTraj_tau)]);
+obj.obs2D_tau = nomTraj_tau;
+obj.obs2D = zeros([g2D.N' length(nomTraj_tau)]);
 
 small = 1e-4;
 
-for i = 1:length(obj.nomTraj_tau)
+for i = 1:length(nomTraj_tau)
   % Shift and rotation amounts
-  p = obj.nomTraj(1:2, i);
-  t = obj.nomTraj(3, i);
+  p = nomTraj(1:2, i);
+  t = nomTraj(3, i);
   
-  if replan && obj.nomTraj_tau(i) < SPPP.tReplan
+  if replan && nomTraj_tau(i) < SPPP.tReplan
     % Before replanning:
     %     for the first tauIAT time steps, use the i-step FRS projection
-    tauElapsed = obj.nomTraj_tau(i) - min(obj.nomTraj_tau);
+    tauElapsed = nomTraj_tau(i) - min(nomTraj_tau);
     if tauElapsed < max(CARS.tau)
       obsInd = find(CARS.tau > tauElapsed-small & CARS.tau < tauElapsed+small);
     else

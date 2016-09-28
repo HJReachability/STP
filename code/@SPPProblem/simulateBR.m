@@ -1,7 +1,7 @@
 function simulateBR(obj, intrIS, intrCtrl, tIntr, save_png, save_fig)
 %% Default inputs
 if nargin < 2
-  intrIS = [-0.75; 0.1; 0*pi/180];
+  intrIS = [0; 0.4; -pi/2];
 end
 
 if nargin < 3
@@ -9,11 +9,11 @@ if nargin < 3
 end
 
 if nargin < 4
-  tIntr = -2.5;
+  tIntr = -2.64;
 end
 
 if nargin < 5
-  save_png = true;
+  save_png = false;
 end
 
 if nargin < 6
@@ -90,7 +90,7 @@ if save_png || save_fig
   % Initialize figure
   f = figure;
   colors = lines(length(Q));
-  plotTargetSets(Q, colors)
+  plotTargetSets(Q, colors);
   
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
@@ -110,7 +110,6 @@ intruder_arrived = false;
 % Keep track of which vehicles need to replan
 last_replan_veh = length(Q)+1;
 tauBRmin = inf(length(Q)+1, 1);
-tauBRmax = -inf(length(Q)+1, 1);
 
 %% Simulate
 tInds = cell(length(Q),1);
@@ -132,12 +131,13 @@ for i = 1:length(tauBR)
   
   %% Intruder
   if tauBR(i) >= tIntr
-    tauBRmin(end) = min(tauBRmin(end), tauBR(i));
-    tauBRmax(end) = max(tauBRmax(end), tauBR(i));    
+    if isinf(tauBRmin(end))
+      tauBRmin(end) = tauBR(i);
+    end
+    
     intrDstb = Qintr.uniformDstb();
     Qintr.updateState(intrCtrl, obj.dt, Qintr.x, intrDstb);
-    Qintr.plotPosition(intruder_color);
-    
+        
     % Check safety
     for veh = 1:length(Q)
       % Compute safety value
@@ -159,8 +159,10 @@ for i = 1:length(tauBR)
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     if ~isempty(tInds{veh})
-      tauBRmin(veh) = min(tauBRmin(veh), tauBR(i));
-      tauBRmax(veh) = max(tauBRmax(veh), tauBR(i));
+      if isinf(tauBRmin(veh))
+        tauBRmin(veh) = tauBR(i);
+      end
+
       if safety_vals(veh, i) < safety_threshold
         fprintf('Vehicle %d is performing avoidance.\n', veh)
         
@@ -184,6 +186,7 @@ for i = 1:length(tauBR)
   
   %% Visualize
   if save_png || save_fig
+    Qintr.plotPosition(intruder_color);
     [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
     xlim([-1.2 1.2])
@@ -209,12 +212,11 @@ for veh = last_replan_veh:length(Q)
   Q{veh}.replan = true;
 end
 
-Qintr.tauBR = tauBRmin(end):obj.dt:tauBRmax(end);
+Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan+small;
 Qintr.tau = Qintr.tauBR;
 
 obj.tIntr = tIntr;
-obj.tReplan = tauBR(i);
-obj.tauBR = tStart:obj.dt:obj.tReplan;
+obj.tauBR = tStart:obj.dt:obj.tReplan+small;
 
 obj.BR_sim_filename = sprintf('%s_%f.mat', mfilename, now);
 
@@ -238,7 +240,7 @@ for veh = 1:length(Q)
   Qnew{veh}.vReserved = Q{veh}.vReserved;
   Qnew{veh}.wReserved = Q{veh}.wReserved;
   
-  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:tauBRmax(veh);
+  Qnew{veh}.tauBR = tauBRmin(veh):obj.dt:obj.tReplan+small;
   Qnew{veh}.replan = Q{veh}.replan;
   
   Qnew{veh}.nomTraj = Q{veh}.nomTraj;
