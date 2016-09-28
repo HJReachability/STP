@@ -46,7 +46,7 @@ tauFRS = obj.tReplan:obj.dt:tFRS_max;
 
 %% Determine which vehicle needs replanning, and reorder vehicles
 found_replan_vehicle = false;
-for veh = 1:length(Qtemp)
+for veh = 1:length(Q)
   if Q{veh}.replan
     if found_replan_vehicle
       error('There should only be one vehicle that needs to replan!')
