@@ -13,7 +13,7 @@ if nargin < 4
 end
 
 if nargin < 5
-  save_png = false;
+  save_png = true;
 end
 
 if nargin < 6
