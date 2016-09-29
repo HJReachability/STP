@@ -36,7 +36,7 @@ SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
 SPPP.computeRawAugObs2;
 SPPP.computeBRRS2;
-SPPP.simulateBR;
+SPPP.simulateBR2;
 SPPP.computeARRS2;
 SPPP.simulateAR;
 SPPP.simulateFull;

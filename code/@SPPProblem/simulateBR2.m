@@ -1,4 +1,4 @@
-function simulateBR(obj, intrIS, intrCtrl, tIntr, save_png, save_fig)
+function simulateBR2(obj, intrIS, intrCtrl, tIntr, save_png, save_fig)
 %% Default inputs
 if nargin < 2
   intrIS = [0; 0.4; -pi/2];
@@ -107,8 +107,9 @@ safety_vals = 1e3*ones(length(Q), length(tauBR));
 safety_threshold = 0.5;
 intruder_arrived = false;
 
-% Keep track of which vehicles need to replan
-last_replan_veh = length(Q)+1;
+% Keep track of which vehicles needs to avoid
+veh_avoid = nan;
+
 tauBRmin = inf(length(Q)+1, 1);
 
 %% Simulate
@@ -141,11 +142,13 @@ for i = 1:length(tauBR)
     % Check safety
     for veh = 1:length(Q)
       % Compute safety value
-      if ~isempty(tInds{veh})
+      if ~isempty(tInds{veh}) && (isnan(veh_avoid) || veh_avoid == veh)
         safety_rel_x{veh} = Qintr.x - Q{veh}.x;
         safety_rel_x{veh}(1:2) = rotate2D(safety_rel_x{veh}(1:2), -Q{veh}.x(3));
         safety_rel_x{veh}(3) = wrapTo2Pi(safety_rel_x{veh}(3));
         safety_vals(veh, i) = eval_u(CARS.g, CARS.data, safety_rel_x{veh});
+        veh_avoid = veh;
+        Q{veh}.replan = true;
       end
     end
     
@@ -169,8 +172,7 @@ for i = 1:length(tauBR)
         % Safety controller
         deriv = eval_u(CARS.g, CARS.Deriv, safety_rel_x{veh});
         u = CARS.dynSys.optCtrl([], safety_rel_x{veh}, deriv, 'max');
-        
-        last_replan_veh = min(last_replan_veh, veh);
+
       else
         liveness_rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
         liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
@@ -208,9 +210,6 @@ end
 
 %% Save data
 fprintf('Saving data for replanning.\n')
-for veh = last_replan_veh:length(Q)
-  Q{veh}.replan = true;
-end
 
 Qintr.tauBR = tauBRmin(end):obj.dt:obj.tReplan+small;
 Qintr.tau = Qintr.tauBR;
