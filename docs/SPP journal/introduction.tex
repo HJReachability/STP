@@ -16,5 +16,8 @@ On a high level, the SPP method assigns a strict priority ordering to the vehicl
 
 We will present the SPP method as follows:
 \begin{itemize}
-\item 
+\item In Sections \ref{sec:formulation} and \ref{sec:HJIVI}, we formally present the path planning problem and definitions specific to the SPP method. In addition, we provide a brief overview of a time-varying formulation of reachability that we use in the SPP method.
+\item In Section \ref{sec:basic}, we present the basic SPP method while assuming that each vehicle has perfect information about other vehicles' control strategies, and that no disturbances are present. We illustrate the basic SPP method in a simulation.
+\item In Section \ref{sec:obs_gen}, we make the basic SPP method robust to the presence of disturbances and incomplete information about other vehicles' control strategies. Here, we propose three different methods to provide this robustness. The three methods differ in their assumptions on the information available to each vehicle. In addition, we also provide simulation results.
+\item Finally, in Section \ref{sec:intruder}, we show how the SPP method can be made robust against an intruder on top of disturbances. We prove that assuming the intruder may only be present for a maximum duration, all vehicles can still safely reach their targets on time. We provide a simulation results validating our theory.
 \end{itemize}
