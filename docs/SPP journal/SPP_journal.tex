@@ -23,15 +23,17 @@
 \usepackage{bm}
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
 \usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
+\usepackage{float}
 
 \newcommand{\MCnote}{\textcolor{red}}
 
 \newcommand{\R}{\mathbb{R}} % Real number
 \newcommand{\dist}{\text{dist}} % Distance
 \newcommand{\rc}{R_c} % Capture radius
+\newcommand{\cradius}{\rc}
 \newcommand{\N}{N} % number of agents
 
-\newcommand{\veh}[1]{Q_{#1}} % vehicle
+\newcommand{\veh}{Q} % vehicle
 \newcommand{\intr}{I} % Intruder index
 \newcommand{\state}{z} % state
 \newcommand{\ctrl}{u} % control
@@ -111,8 +113,18 @@
 \input{HJIVI}
 \input{basic}
 \input{basic_results}
-\input{incomp}
-\input{incomp_results}
+
+% Disturbance files
+\input{disturbance/obs_gen1}
+\input{disturbance/obs_gen2}
+\input{disturbance/obs_gen3_revised}
+\input{disturbance/results1}
+\input{disturbance/results2}
+\input{disturbance/results3}
+
+%\input{incomp}
+%\input{incomp_results}
+
 % Intruder files
 \input{./intruder/intruder}
 \input{./intruder/method1}
