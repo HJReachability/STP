@@ -5,7 +5,7 @@ function IntruderRTT_large_test(SPPP)
 if nargin < 1
   theta = 5*pi/4;
   ringRadius = 4.5;
-  initStates = {[ringRadius*cos(theta); ringRadius*sin(theta); theta + pi] };
+  initStates = {[ringRadius*cos(theta); ringRadius*sin(theta); theta - pi] };
   
   targetCenters = {[ringRadius*cos(theta+pi); ringRadius*sin(theta+pi); 0]};
   
