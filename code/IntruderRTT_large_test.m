@@ -4,9 +4,10 @@ function IntruderRTT_large_test(SPPP)
 
 if nargin < 1
   theta = 5*pi/4;
-  initStates = {[cos(theta); sin(theta); theta + pi] };
+  ringRadius = 4.5;
+  initStates = {[ringRadius*cos(theta); ringRadius*sin(theta); theta + pi] };
   
-  targetCenters = {[cos(theta+pi); sin(theta+pi); 0]};
+  targetCenters = {[ringRadius*cos(theta+pi); ringRadius*sin(theta+pi); 0]};
   
   targetR = 0.15;
   
@@ -34,8 +35,6 @@ SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
 SPPP.computeRawAugObs;
 SPPP.computeBRRS;
-SPPP.simulateBR;
-SPPP.computeARRS;
-SPPP.simulateAR;
-SPPP.simulateFull;
+SPPP.simulateBR([4.5; -4.5; 0], [0; 0]);
+
 end
