@@ -104,7 +104,7 @@
 
 %%%
 \begin{abstract}
-\MCnote{This paper must be at most 16 pages for IEEE TCST!}
+Provably safe and scalable multi-vehicle path planning is an important problem that needs to be urgently solved, due to the ever increasing pervasiveness of automation in civilian space. However, this problem is inherently challenging due to not only the complex interactions that exist between the vehicles under consideration, but also the presence of disturbances and potentially malicious intruders. While multi-vehicle path planning has been studied in the past, there has not been a method that simultaneously guarantees safety and liveness for vehicles with general non-linear dynamics while taking into account disturbances and potential intruders, to the best of our knowledge. Hamilton-Jacobi (HJ) reachability is the ideal tool for guaranteeing safety and liveness of general non-linear systems under disturbances and malicious agents, and has been successfully applied to many small-scale problems such as pairwise collision avoidance and two-player differential games. However, a direct application of HJ reachability is not scalable to scenarios involving more than two agents. In this paper, we take advantage of the guarantees HJ reachability provides, and eliminates the computation burden by assigning a strict priority ordering to the vehicles under consideration. Our proposed sequential path planning (SPP) method guarantees collision avoidance and optimality of the paths given this priority ordering. With a computation complexity that scales only quadratically in the presence of intruders, and linearly otherwise, SPP has the potential to perform multi-vehicle path planning for vehicles with non-linear dynamics in a practical setting with disturbances and intruders. \MCnote{Need to fix horrible abstract and intro}
 \end{abstract}
 
 \input{introduction}
@@ -140,6 +140,6 @@
                                   % so it should come on the page before the last. Make
                                   % sure that you do not shorten the textheight too much.
 
-%\bibliographystyle{IEEEtran}
-%\bibliography{references}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 \end{document}
