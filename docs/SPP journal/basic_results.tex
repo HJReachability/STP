@@ -1,6 +1,6 @@
 % !TEX root = SPP_journal.tex
 \subsection{Numerical Results \label{sec:basic_results}}
-We now illustrate the basic SPP algorithm using a four-vehicle example. In this example and the examples in the later sections, we will use the following dynamics for each vehicle:
+We now illustrate the basic SPP algorithm using a four-vehicle example. In this example, we will use the following dynamics for each vehicle:
 
 \begin{equation}
 \begin{aligned}
@@ -16,13 +16,14 @@ i &= 1, \ldots, \N
 
 In this particular example, we assume that the vehicles have constant speed $v_i = 1 ~ \forall i$, and that the control of each vehicle $\veh{i}$ is given by $\ctrl_i = \omega_i$ with $|\omega_i| \le \bar\omega = 1 ~ \forall i$. 
 
-For this example, the target sets $\targetset_i$ of the vehicles are circles of radius $0.1$ in the position space; each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target set is defined as
+For this example, the target sets $\targetset_i$ of the vehicles are circles of radius $r$ in the position space; each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target set is defined as
 
 \begin{equation}
-\targetset_i = \{z_i \mid \dist(p_i, c_i) \le 0.1\}
+\label{eq:target_sim}
+\targetset_i = \{z_i: \dist(p_i, c_i) \le r\}
 \end{equation}
 
-\noindent where $c_i$ are centers of the target circles.
+\noindent where $c_i$ are centers of the target circles. For the simulation of the basic SPP algorithm, we used r = 0.1.
 
 The vehicles have target centers $c_i$, initial conditions $\state_i^0$, and scheduled times of arrivals $\sta_i$ as follows:
 
@@ -35,7 +36,7 @@ c_4 = (-0.7, -0.7), \quad & \state_4^0 = \left(0.6, 0.6, 5\pi/4\right), \quad & 
 \end{aligned}
 \end{equation}
 
-The setup for this example is shown in Fig. \ref{fig:dubins_ic}. 
+The setup for this example is shown in Fig. \ref{fig:dubins_ic}, which also shows the static obstacles as the black rectangles around the center of the domain.
 
 The joint state space of this four-vehicle system is twelve-dimensional (12D), making the joint path planning and collision avoidance problem intractable for direct analysis. Therefore, we apply the SPP algorithm described in Algorithm \ref{alg:basic} and repeatedly solve the double-obstacle HJ VI in \eqref{eq:HJIVI_BRS} to obtain the optimal control for each vehicle to reach its target while avoiding higher-priority vehicles. In addition, due to the flexibility of the HJ VI with respect to time-varying systems, the different scheduled times of arrival $\sta_i$ can be trivially incorporated. 
 
