@@ -2,13 +2,13 @@
 \subsection{Method 1: Full re-planning \label{sec:intruder_method1}}
 Intuitively, the number of vehicles that are affected by an intruder depends on how close the vehicles are to each other. For example, if the vehicles are in a dense configuration, then multiple vehicles might get affected by the intruder simultaneously and hence re-planning is required at a larger scale. In this section, we propose a method that guarnatee intruder avoidance while allowing vehicles to be in a dense configuration, but may require a full re-planning of the system after the intruder disappears.     
 
-Suppose some vehicle $\veh{i}$ starts avoiding the intruder $\veh{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh{i}$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh{i}$. Since $\veh{i}$ may spend a duration of up to $\iat$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
+Suppose some vehicle $\veh_i$ starts avoiding the intruder $\veh_{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh_i$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh_i$. Since $\veh_i$ may spend a duration of up to $\iat$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
 
-We must also ensure that while avoiding the intruder, $\veh{i}$ does not collide with the total obstacle set $\obsset_i(t)$. This requires augmenting the total obstacle set to produce the augmented total obstacle $\tilde\obsset_i(t)$; the computation of $\tilde\obsset_i(t)$ and the controller that guarantees the avoidance of the augmented obstacles are discussed in Section \ref{sec:intruder_aocomp}.
+We must also ensure that while avoiding the intruder, $\veh_i$ does not collide with the total obstacle set $\obsset_i(t)$. This requires augmenting the total obstacle set to produce the augmented total obstacle $\tilde\obsset_i(t)$; the computation of $\tilde\obsset_i(t)$ and the controller that guarantees the avoidance of the augmented obstacles are discussed in Section \ref{sec:intruder_aocomp}.
 
-In Section \ref{sec:intruder_avoid}, we describes how $\veh{i}$ can guarantee collision avoidance with the intruder.
+In Section \ref{sec:intruder_avoid}, we describes how $\veh_i$ can guarantee collision avoidance with the intruder.
 
-Finally, when $t > \tea$, $\veh{i}$ has already successfuly avoided the intruder, but depending on the state it ends up in while avoiding the intruder, it might need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:replan_method1}.
+Finally, when $t > \tea$, $\veh_i$ has already successfuly avoided the intruder, but depending on the state it ends up in while avoiding the intruder, it might need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:replan_method1}.
 
 %\begin{itemize}
 %\item \textbf{Definitions of 3 different reachable sets (2 additional reachable sets $\frs(\iat, \brs(\ldt, \targetset))$, $\brs(\bar t, \targetset)$ where $\bar t$ is the time vehicle stops avoiding intruder)}.
@@ -23,9 +23,9 @@ Finally, when $t > \tea$, $\veh{i}$ has already successfuly avoided the intruder
 %\end{itemize}
 
 \subsubsection{Induced Obstacle Computation \label{sec:intruder_iocomp}}
-The goal of this section is to compute, for each lower priority vehicle $\veh{i}$, the time-varying obstacle induced by each higher priority vehicle $\veh{j}, j < i$, denoted by $\ioset_i^j(t)$. As before, the total obstacle set $\obsset_i(t)$ can then be obtained using \eqref{eq:obsseti}. 
+The goal of this section is to compute, for each lower priority vehicle $\veh_i$, the time-varying obstacle induced by each higher priority vehicle $\veh_j, j < i$, denoted by $\ioset_i^j(t)$. As before, the total obstacle set $\obsset_i(t)$ can then be obtained using \eqref{eq:obsseti}. 
 
-Depending on the information known to a lower priority vehicle about $\veh{j}$'s control strategy, we can use one of the three methods described in Section \ref{sec:incomp} to compute the ``base" obstacles $\boset^j(t)$ , the obstacles that would have been induced by $\veh{j}$ in the absence of an intruder. The induced obstacles, $\ioset_i^j(t)$, are then given by the states a vehicle can reach while avoiding the intruder, on top of the base obstacles. Since a vehicle avoids the intruder for a maximum of $\iat$, these states can be given by the $\iat$-horizon FRS of the base obstacles. Regardless of what control is used by $\veh{j}$ for avoidance, it still remains within the FRS $\ioset_i^j(t) := \frs_{\mathcal{O}}(\iat, \boset^j(t-\iat), \emptyset, \ham_{\mathcal{O}})$, which is the set of all possible states that $\veh{j}$ can reach after a duration of $\iat$ starting from inside $\boset^j(t-\iat)$. Here, the Hamiltonian is given by
+Depending on the information known to a lower priority vehicle about $\veh_j$'s control strategy, we can use one of the three methods described in Section \ref{sec:incomp} to compute the ``base" obstacles $\boset^j(t)$ , the obstacles that would have been induced by $\veh_j$ in the absence of an intruder. The induced obstacles, $\ioset_i^j(t)$, are then given by the states a vehicle can reach while avoiding the intruder, on top of the base obstacles. Since a vehicle avoids the intruder for a maximum of $\iat$, these states can be given by the $\iat$-horizon FRS of the base obstacles. Regardless of what control is used by $\veh_j$ for avoidance, it still remains within the FRS $\ioset_i^j(t) := \frs_{\mathcal{O}}(\iat, \boset^j(t-\iat), \emptyset, \ham_{\mathcal{O}})$, which is the set of all possible states that $\veh_j$ can reach after a duration of $\iat$ starting from inside $\boset^j(t-\iat)$. Here, the Hamiltonian is given by
 
 \begin{equation}
 \ham_{\mathcal{O}}(\state_j, p) = \max_{\ctrl_j} \max_{\dstb_j} p \cdot f_j (\state_j, \ctrl_j, \dstb_j)
@@ -33,11 +33,11 @@ Depending on the information known to a lower priority vehicle about $\veh{j}$'s
 %
 %Since there are no moving vehicle obstacles for the highest priority vehicle, $\obsset_1(t) = \soset$. 
 %
-%Computation of these base obstacles would requires information of a corresponding ``base" BRS of $\veh{j}$; the process for computing this set is outlined in Step 2. In this section, we assume that the sequence of base obstacles, $\boset_i^j(t)$, is known. Given $\boset_i^j(t)$, we now show how to compute the obstacle set $\obsset_i(t)$. The induced obstacles are given by the states a vehicle can reach while avoiding the intruder, on top of the base obstacles. 
+%Computation of these base obstacles would requires information of a corresponding ``base" BRS of $\veh_j$; the process for computing this set is outlined in Step 2. In this section, we assume that the sequence of base obstacles, $\boset_i^j(t)$, is known. Given $\boset_i^j(t)$, we now show how to compute the obstacle set $\obsset_i(t)$. The induced obstacles are given by the states a vehicle can reach while avoiding the intruder, on top of the base obstacles. 
 
 % !TEX root = ../SPP_journal.tex
 \subsubsection{Augmented Obstacle Computation \label{sec:intruder_aocomp}}
-We next need to ensure that $\veh{i}$ doesn't collide with the obstacle set $\obsset_i(t)$ computed in Section \ref{sec:intruder_iocomp} even when it is avoiding the intruder. This can be achieved by ensuring that $\veh{i}$ is sufficently far from $\obsset_i(t)$ such that regardless of the used avoidnace control, it cannot collide with $\obsset_i(t)$. In particular, we can compute a region around the obstacles $\obsset_i(\cdot)$ such that for all disturbances, $\veh{i}$ can avoid colliding with any obstacle for $\iat$ seconds, if $\veh{i}$ starts outside this region. Augmenting this region to $\obsset_i(\cdot)$ will give us augmented obstacles, $\tilde\obsset_i(t)$, that can then be used during the path planning of $\veh{i}$ to ensure collision avoidance with $\obsset_i(t)$.  
+We next need to ensure that $\veh_i$ doesn't collide with the obstacle set $\obsset_i(t)$ computed in Section \ref{sec:intruder_iocomp} even when it is avoiding the intruder. This can be achieved by ensuring that $\veh_i$ is sufficently far from $\obsset_i(t)$ such that regardless of the used avoidnace control, it cannot collide with $\obsset_i(t)$. In particular, we can compute a region around the obstacles $\obsset_i(\cdot)$ such that for all disturbances, $\veh_i$ can avoid colliding with any obstacle for $\iat$ seconds, if $\veh_i$ starts outside this region. Augmenting this region to $\obsset_i(\cdot)$ will give us augmented obstacles, $\tilde\obsset_i(t)$, that can then be used during the path planning of $\veh_i$ to ensure collision avoidance with $\obsset_i(t)$.  
 
 To ensure that a vehicle does not hit the obstacle $\obsset_i(t_1 + t')$ at time $t = t_1 + t'$ starting at $t = t_1$, even when it applies any control for the next $t'$ seconds, it suffices to avoid the $t'$-horizon BRS of $\obsset_i(t_1 + t')$. This argument applies for all obstacles to appear in the next $\iat$ seconds to ensure safety under any controller and disturbance for the next $\iat$ seconds. Mathematically,
 
@@ -51,15 +51,15 @@ $\ham_{\mathcal{G}}$ is given by:
 \ham_{\mathcal{G}}(\state_i, p) = \min_{\ctrl_i} \min_{\dstb_i} p \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Finally, we compute a BRS that contains the initial state of $\veh{i}$ while avoiding these augmented obstacles, $\brs_\text{AO}(t, \targetset_i, \bar\obsset_i, \ham_\text{AO})$, where $\ham_\text{AO}$ is given by:
+Finally, we compute a BRS that contains the initial state of $\veh_i$ while avoiding these augmented obstacles, $\brs_\text{AO}(t, \targetset_i, \bar\obsset_i, \ham_\text{AO})$, where $\ham_\text{AO}$ is given by:
 \begin{equation} \label{eqn:BRSham}
 \ham_\text{AO}(\state_i, p) = \min_{\ctrl_i} \max_{\dstb_i} p \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Note that $\brs_\text{AO}$ ensures liveness for $\veh{i}$ in the absence of intruder. Moroever, if we start within $\brs_\text{AO}$, we are guaranteed to avoid collision for $\iat$ seconds, irrespective of the control and disturbance applied. 
+Note that $\brs_\text{AO}$ ensures liveness for $\veh_i$ in the absence of intruder. Moroever, if we start within $\brs_\text{AO}$, we are guaranteed to avoid collision for $\iat$ seconds, irrespective of the control and disturbance applied. 
 
 \subsubsection{Optimal Avoidance Controller \label{sec:intruder_avoid}}
-First, we define relative coordinates of the intruder $\veh{\intr}$ with state $\state_\intr$ with respect to $\veh{i}$ with state $\state_i$.
+First, we define relative coordinates of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$.
 
 \begin{equation}
 \label{eq:reldyn}
@@ -69,7 +69,7 @@ First, we define relative coordinates of the intruder $\veh{\intr}$ with state $
 \end{aligned}
 \end{equation}
 
-Given the relative dynamics, we compute the set of states from which the joint states of $\veh{\intr}$ and $\veh{i}$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh{i}$ to avoid $\veh{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs_\text{CA}(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs_\text{CA}(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
 
 \begin{equation}
 \begin{aligned}
@@ -83,9 +83,9 @@ Once the value function $\valfunc_\text{CA}(t, \state_r)$ representing $\brs_\te
 \ctrl^*_\text{CA} = \arg \max_{\ctrl_i} \min_{\ctrl_\intr, \dstb_i, \dstb_\intr} p \cdot f_r(\state_r, \ctrl_i, \ctrl_\intr)
 \end{equation}
 
-Under normal circumstances when the intruder $\veh{\intr}$ is far away, we have $\valfunc_\text{CA}(\iat, \state_r) > 0$; as the $\veh{\intr}$ gets closer to $\veh{i}$, $\valfunc_\text{CA}(\iat, \state_r)$ decreases. If $\veh{i}$ applies the control $\ctrl^*_\text{CA}$ when $\valfunc_\text{CA}(\iat, \state_r) = 0$, then collision avoidance between $\veh{i}$ and $\veh{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc_\text{CA}(\iat, \state_r) > 0$; as the $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc_\text{CA}(\iat, \state_r)$ decreases. If $\veh_i$ applies the control $\ctrl^*_\text{CA}$ when $\valfunc_\text{CA}(\iat, \state_r) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
 
-In addition, obstacle augmentation ensures that during the avoidance maneuver $\veh{i}$ will not collide with $\obsset_i(\cdot)$. %Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh{i}$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh{j}, j \neq i$.
+In addition, obstacle augmentation ensures that during the avoidance maneuver $\veh_i$ will not collide with $\obsset_i(\cdot)$. %Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh_i$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh_j, j \neq i$.
 The overall control policy for avoiding intruder and collision with other vehicles is thus given by:
 \begin{equation*}
 \ctrl^*_\text{A}(t) = 
