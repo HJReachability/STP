@@ -28,7 +28,7 @@ if nargin < 1
 end
 
 % RTT parameters
-vReserved = [0.3 -0.3];
+vReserved = [0.4 -0.2];
 wReserved = -0.4;
 trackingRadius = 0.075;
 
@@ -36,8 +36,8 @@ SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
 SPPP.computeRawAugObs2;
 SPPP.computeBRRS2;
-SPPP.simulateBR;
-SPPP.computeARRS;
+SPPP.simulateBR2;
+SPPP.computeARRS2;
 SPPP.simulateAR;
 SPPP.simulateFull;
 end

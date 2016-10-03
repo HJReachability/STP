@@ -1,7 +1,7 @@
 function simulateAR(obj, save_png, save_fig)
 %% Default inputs
 if nargin < 2
-  save_png = true;
+  save_png = false;
 end
 
 if nargin < 3
@@ -49,13 +49,24 @@ fprintf('Computing gradients...\n')
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 CARS.Deriv = computeGradients(CARS.g, CARS.data);
 
-% Determine end time of simulation
+%% Determine end time of simulation and copy nominal trajectories
 Q = {Q1;Q2;Q3;Q4};
 tEnd = -inf;
+nomTrajs = cell(length(Q),1);
+nomTraj_taus = cell(length(Q),1);
 for veh = 1:length(Q)
-  tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
+  % Use after-replanning nominal trajectory if replanning was done
+  if isempty(Q{veh}.nomTraj_AR)
+    nomTrajs{veh} = Q{veh}.nomTraj;
+    nomTraj_taus{veh} = Q{veh}.nomTraj_tau;
+  else
+    nomTrajs{veh} = Q{veh}.nomTraj_AR;
+    nomTraj_taus{veh} = Q{veh}.nomTraj_AR_tau;    
+  end
+  
+  tEnd = max(tEnd, max(nomTraj_taus{veh}));
 end
-tauAR = obj.tReplan:obj.dt:tEnd;
+tauAR = obj.tReplan+obj.dt:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
@@ -82,22 +93,21 @@ end
 
 %% Simulate
 tInds = cell(length(Q),1);
-tauARmin = inf(length(Q), 1);
 tauARmax = -inf(length(Q), 1);
 
-for i = 2:length(tauAR)
+for i = 1:length(tauAR)
   fprintf('t = %f\n', tauAR(i))
   
   %% Control and disturbance for SPP Vehicles
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.nomTraj_tau > tauAR(i) - small & ...
-      Q{veh}.nomTraj_tau < tauAR(i) + small, 1);
+    tInds{veh} = find(nomTraj_taus{veh} > tauAR(i) - small & ...
+      nomTraj_taus{veh} < tauAR(i) + small, 1);
     
     if ~isempty(tInds{veh})
-      tauARmin(veh) = min(tauARmin(veh), tauAR(i));
       tauARmax(veh) = max(tauARmax(veh), tauAR(i));
-      liveness_rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
+      
+      liveness_rel_x = nomTrajs{veh}(:,tInds{veh}) - Q{veh}.x;
       liveness_rel_x(1:2) = rotate2D(liveness_rel_x(1:2), -Q{veh}.x(3));
       deriv = eval_u(RTTRS.g, RTTRS.Deriv, liveness_rel_x);
       
@@ -130,13 +140,13 @@ for i = 2:length(tauAR)
 end
 
 for veh = 1:length(Q)
-  Q{veh}.tauAR = tauARmin(veh):obj.dt:tauARmax(veh);
+  Q{veh}.tauAR = obj.tReplan+obj.dt:obj.dt:tauARmax(veh)+small;
   Q{veh}.tau = [Q{veh}.tauBR Q{veh}.tauAR];
 end
 [Q1, Q2, Q3, Q4] = Q{:};
 
 obj.tauAR = tauAR;
-obj.tau = [obj.tauBR obj.tauAR(2:end)];
+obj.tau = [obj.tauBR obj.tauAR];
 obj.full_sim_filename = sprintf('resim_%f.mat', now);
 save(obj.full_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', 'Qintr');
 

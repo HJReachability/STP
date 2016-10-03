@@ -1,6 +1,6 @@
-function computeARRS(obj, restart)
-% SPPwIntruder_replan_RS(restart, chkpt_filename)
-%     Computes BRSs for replanning after an intruder has passed
+function computeARRS2(obj, restart)
+% computeARRS2(restart, chkpt_filename)
+%     Replanning after an intruder has passed; intruder method 2
 %     CAUTION: This function assumes that the RTT method is used!
 
 if nargin < 2
@@ -23,7 +23,7 @@ else
   fprintf('Loading AR RS checkpoint...\n')
   load(obj.AR_RS_filename)
 end
-Q = {Q1; Q2; Q3; Q4};
+Qold = {Q1; Q2; Q3; Q4};
 
 %% Load files
 if exist(obj.RTTRS_filename, 'file')
@@ -43,6 +43,19 @@ end
 %% Time
 tFRS_max = 2;
 tauFRS = obj.tReplan:obj.dt:tFRS_max;
+
+%% Determine which vehicle needs replanning, and reorder vehicles
+Q = cell(length(Qold), 1);
+i = 0;
+for veh = 1:length(Qold)
+  if Qold{veh}.replan
+    Qtemp = Qold{veh};
+  else
+    i = i + 1;
+    Q{i} = Qold{veh};
+  end
+end
+Q{end} = Qtemp;
 
 %% Start the computation of reachable sets
 for veh = 1:length(Q)

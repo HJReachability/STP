@@ -26,9 +26,9 @@ classdef SPPProblem < handle
     tReplan      % time at which replanning is done (intruder disappearance)
     
     % Space
-    gMin = [-1; -1; -3*pi/2]
-    gMax = [1; 1; pi/2]
-    gN = [95; 95; 95]
+    gMin
+    gMax
+    gN
     g
     g2D
     
@@ -59,7 +59,8 @@ classdef SPPProblem < handle
   
   methods
     %% Contructor
-    function obj = SPPProblem(initStates, targetCenters, targetR, vehParams)
+    function obj = SPPProblem(initStates, targetCenters, targetR, vehParams, ...
+        grid_params)
       if nargin < 1
         initStates = { ...
           [-0.6; 0.2;  0]; ...
@@ -87,6 +88,12 @@ classdef SPPProblem < handle
         vehParams.dMaxA = [0.1 0.2];        
       end
       
+      if nargin < 5
+        grid_params.min = [-1; -1; -3*pi/2];
+        grid_params.max = [1; 1; pi/2];
+        grid_params.N = [95; 95; 95];
+      end
+      
       obj.initStates = initStates;
       obj.targetCenters = targetCenters;
       obj.targetR = targetR;
@@ -94,6 +101,10 @@ classdef SPPProblem < handle
       obj.vRangeA = vehParams.vRangeA;
       obj.wMaxA = vehParams.wMaxA;
       obj.dMaxA = vehParams.dMaxA;
+      
+      obj.gMin = grid_params.min;
+      obj.gMax = grid_params.max;
+      obj.gN = grid_params.N;
       
       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));

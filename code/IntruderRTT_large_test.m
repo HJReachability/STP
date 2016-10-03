@@ -1,19 +1,13 @@
-function SPPwIntruderRTT(SPPP)
+function IntruderRTT_large_test(SPPP)
 % SPPwDisturbanceRTT()
 %     Solves the entire SPP with disturbances problem using the RTT method
 
 if nargin < 1
-  initStates = { ...
-    [-0.5; 0;  0]; ...
-    [ 0.5; 0; -pi]; ...
-    [-0.6; 0.6; -pi/4]; ...
-    [ 0.6; 0.6; -3*pi/4]};
+  theta = 5*pi/4;
+  ringRadius = 4.5;
+  initStates = {[ringRadius*cos(theta); ringRadius*sin(theta); theta - pi] };
   
-  targetCenters = { ...
-    [ 0.7;  0.2; 0]; ...
-    [-0.7;  0.2; 0]; ...
-    [ 0.7; -0.7; 0]; ...
-    [-0.7; -0.7; 0]};
+  targetCenters = {[ringRadius*cos(theta+pi); ringRadius*sin(theta+pi); 0]};
   
   targetR = 0.15;
   
@@ -22,7 +16,12 @@ if nargin < 1
   vehParams.wMaxA = 1;
   vehParams.dMaxA = [0.1 0.2];
   
-  SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams);
+  % Grid parameters
+  grid_params.min = [-5; -5; 0];
+  grid_params.max = [5; 5; 2*pi];
+  grid_params.N = [301; 301; 95];
+  
+  SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, grid_params);
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
 end
@@ -36,8 +35,6 @@ SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeCARS;
 SPPP.computeRawAugObs;
 SPPP.computeBRRS;
-SPPP.simulateBR;
-SPPP.computeARRS;
-SPPP.simulateAR;
-SPPP.simulateFull;
+SPPP.simulateBR([4.5; -4.5; 0], [0; 0]);
+
 end
