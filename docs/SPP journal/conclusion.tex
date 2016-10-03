@@ -1,3 +1,7 @@
 % !TEX root = SPP_journal.tex
 \section{Conclusions and Future Work}
-\MCnote{Need conclusion. Mention large-scale simulation?}
+Multi-vehicle path planning is a challenging problem, and previous analysis often either require strong assumptions on the motion of the moving vehicles or result in a large degree of conservatism. Optimal control and differential game techniques such as Hamilton-Jacobi (HJ) reachability are ideally suited for guaranteeing liveness and safety under disturbances, but become intractable for even a small number of vehicles.
+
+Our proposed robust sequential path planning (SPP) method assigns a strict priority ordering to vehicles under consideration to offer a tractable and practical approach to the multi-vehicle path planning problem. Under the proposed method, ``space-time'' is reserved for vehicles in the airspace in descending priority order to allow for dense vehicle configurations. SPP reduces the scaling of HJ reachability's computation complexity from exponential to linear while maintaining hard guarantees on liveness and safety under disturbances. In the presence of a single intruder vehicle, SPP still guarantees liveness and safety with a quadratically scaling computation complexity.
+
+\MCnote{Future work?}
