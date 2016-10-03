@@ -40,7 +40,7 @@ The setup for this example is shown in Fig. \ref{fig:dubins_ic}, which also show
 
 The joint state space of this four-vehicle system is twelve-dimensional (12D), making the joint path planning and collision avoidance problem intractable for direct analysis. Therefore, we apply the SPP algorithm described in Algorithm \ref{alg:basic} and repeatedly solve the double-obstacle HJ VI in \eqref{eq:HJIVI_BRS} to obtain the optimal control for each vehicle to reach its target while avoiding higher-priority vehicles. In addition, due to the flexibility of the HJ VI with respect to time-varying systems, the different scheduled times of arrival $\sta_i$ can be trivially incorporated. 
 
-Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs(t, \targetset_i, \obsset_i(t), \basicham)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\sosetp$ and the obstacles induced by other vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these channels and islands form by examining the time evolution of the BRS, shown in Figure \ref{fig:dubins_reach_3} for vehicle $\veh{3}$. 
+Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs(t, \targetset_i, \obsset_i(t), \basicham)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\sosetp$ and the obstacles induced by other vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these channels and islands form by examining the time evolution of the BRS, shown in Figure \ref{fig:dubins_reach_3} for vehicle $\veh_3$. 
 
 Finally, Fig. \ref{fig:dubins_result} shows the resulting trajectories of the four vehicles. Most interestingly, the subplot labeled $t=-0.55$ shows all four vehicles in close proximity without collision: each vehicle is outside of the danger zone of all other vehicles (although the danger zones may overlap). This close proximity is an indication of the optimality of the basic SPP algorithm given the assigned priority ordering. Since no disturbances are present, getting as close to other vehicles' danger zones as possible without entering the danger zones intuitively results in short transit times.
 
@@ -56,14 +56,14 @@ The actual arrival times of vehicles $i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, resp
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{"fig/dubins_reach_all"}
-	\caption{Reach-avoid sets at $t=\ldt_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\sosetp$ and time-varying obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ carves ``channels" in the reach-avoid set, dividing it up into multiple ``islands".}
+	\caption{Reach-avoid sets at $t=\ldt_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\sosetp$ and time-varying obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ carves ``channels" in the reach-avoid set, dividing it up into multiple ``islands". \MCnote{Figure title notation}}
 	\label{fig:dubins_reach_all}
 \end{figure}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\textwidth]{"fig/dubins_reach_3"}
-	\caption{Time evolution of the reach-avoid set for vehicle $\veh{3}$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Initially, the reach-avoid set grows unobstructed by obstacles, as shown in the top subplots. Then, in the bottom subplots, the static obstacles $\sosetp$ and the induced obstacles $\ioset_3^1,\ioset_3^2$, carve out ``channels" in the reach-avoid set.}
+	\caption{Time evolution of the reach-avoid set for vehicle $\veh_3$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Initially, the reach-avoid set grows unobstructed by obstacles, as shown in the top subplots. Then, in the bottom subplots, the static obstacles $\sosetp$ and the induced obstacles $\ioset_3^1,\ioset_3^2$, carve out ``channels" in the reach-avoid set.}
 	\label{fig:dubins_reach_3}
 \end{figure}
 

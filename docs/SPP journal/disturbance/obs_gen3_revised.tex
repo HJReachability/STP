@@ -1,4 +1,4 @@
-% !TEX root = SPP2.tex
+% !TEX root = ../SPP_journal.tex
 \subsection{Method 3: Robust Trajectory Tracking \label{sec:rtt}}
 Even though it is impossible to commit to and track an exact trajectory in presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the planning phase and the disturbance rejection phase. In the planning phase, we compute a nominal trajectory $x_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
@@ -73,7 +73,7 @@ Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\err
 \pfrs_j(t) &= \{p_j: \exists \npos_j, (p_j, \npos_j) \in \errorbound_i(0) + \errorbound_j(x_{r,j}(t)) \}
 \end{aligned}
 \end{equation}
-\noindent where $0$ denotes the origin. 
+\noindent where $0$ denotes the origin. \MCnote{Is there a better way to write this?}
 
 %\begin{equation}
 %\ioset_i^j(t) = \errorbound(0) + \errorbound(x_{r,j}(t))

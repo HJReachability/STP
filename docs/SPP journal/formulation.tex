@@ -1,5 +1,7 @@
 % !TEX root = SPP_journal.tex
 \section{Problem Formulation \label{sec:formulation}}
+\MCnote{Make sure notation/naming is consistent throughout the paper}
+
 Consider $\N$ vehicles which participate in the SPP process and denote these vehicles as \textit{SPP vehicles} $\veh_i, i = 1, \ldots, \N$. We assume their dynamics are given by
 
 \begin{equation}
@@ -29,7 +31,7 @@ A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigm
 \end{aligned}
 \end{equation}
 
-Each vehicle $\veh_i$ has initial state $\state^0_i$, and departs after $\edt_i$, its earliest departure time. $\veh_i$ aims to reach its target $\targetset_i$ by some scheduled time of arrival $\sta_i$. The target in general represents some set of desirable states, for example the destination of $\veh_i$. For most of the paper we will make the assumption that $\edt_i$ is early enough for $\veh_i$ to feasibly get to $\targetset_i$ on time; this can be done by letting $\edt_i \rightarrow -\infty$. The assumption on $\edt_i$ is merely for convenience: in situations where $\edt_i$ is $-\infty$, we may find that it is infeasible for $\veh_i$ to get to $\targetset_i$ at or before $\sta_i$. Whenever unsure, we may first determine a feasible $\sta_i$ as described in Section \ref{} \textcolor{red}{(replaning section)}. 
+Each vehicle $\veh_i$ has initial state $\state^0_i$, and departs after $\edt_i$, its earliest departure time. $\veh_i$ aims to reach its target $\targetset_i$ by some scheduled time of arrival $\sta_i$. The target in general represents some set of desirable states, for example the destination of $\veh_i$. For most of the paper we will make the assumption that $\edt_i$ is early enough for $\veh_i$ to feasibly get to $\targetset_i$ on time; this can be done by letting $\edt_i \rightarrow -\infty$. The assumption on $\edt_i$ is merely for convenience: in situations where $\edt_i$ is $-\infty$, we may find that it is infeasible for $\veh_i$ to get to $\targetset_i$ at or before $\sta_i$. Whenever unsure, we may first determine a feasible $\sta_i$ as described in Section \ref{} \textcolor{red}{(replanning section)}. 
 
 On its way to $\targetset_i$, $\veh_i$ must avoid a set of static obstacles $\sosetp \subset \R^{n_\pos}$. The interpretation of $\sosetp$ could be a tall building, a region around an airport, or any set of positions that are forbidden for each SPP vehicle. In terms of the state space $\state_i = (\pos_i, \npos_i)$ of vehicle $\veh_i$, the forbidden set induced by the static obstacles $\sosetp$ is given by
 

@@ -1,4 +1,4 @@
-% !TEX root = SPP_journal.tex
+% !TEX root = ../SPP_journal.tex
 %Intuitively, the number of vehicles that are affected by an intruder depends on how close the vehicles are to each other. For example, if the vehicles are in a dense configuration, then multiple vehicles might get affected by the intruder simultaneously and hence re-planning is required at a larger scale. In this section, we propose a method that guarnatee intruder avoidance while allowing vehicles to be in a dense configuration, but may require a full re-planning of the system after the intruder disappears.     
 Suppose some vehicle $\veh_i$ starts avoiding the intruder $\veh_{\intr}$ at some time $t = \tsa$, and stops avoiding at $t = \tea$. When $t < \tsa$, $\veh_i$ must plan its path taking into account the possibility that it may need to avoid an intruder $\veh_i$. Since $\veh_i$ may spend a duration of up to $\iat$ performing avoidance, its induced obstacles $\ioset_k^i(t), k>i$ need to be computed in a way that reflects this possibility. The induced obstacles computation is discussed in Section \ref{sec:intruder_iocomp}.
 
@@ -116,3 +116,5 @@ Note that we only need to re-plan the trajectories of the vehicles that are affe
 \begin{remark}
 Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}. 
 \end{remark}
+
+\MCnote{Summary algorithms with reference to basic SPP algorithm}
