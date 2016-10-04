@@ -187,15 +187,21 @@ year = {1990}
 }
 
 @article{Mitchell05,
-author = {Mitchell, Ian M and Bayen, Alexandre M and Tomlin, Claire J},
+abstract = {We describe and implement an algorithm for com- puting the set of reachable states of a continuous dynamic game. The algorithm is based on a proof that the reachable set is the zero sublevel set of the viscosity solution of a particular time-dependent Hamilton–Jacobi–Isaacs partial differential equation. While al- ternative techniques for computing the reachable set have been proposed, the differential game formulation allows treatment of nonlinear systems with inputs and uncertain parameters. Because the time-dependent equation's solution is continuous and defined throughout the state space, methods from the level set literature can be used to generate more accurate approximations than are possible for formulations with potentially discontinuous solutions. A numerical implementation of our formulation is described and has been released on the web. Its correctness is verified through a two vehicle, three dimensional collision avoidance example for which an analytic solution is available.},
+author = {Mitchell, Ian M. and Bayen, Alexandre M. and Tomlin, Claire J.},
 doi = {10.1109/TAC.2005.851439},
-file = {:C$\backslash$:/Users/Mo/Documents/Mendeley Desktop/Mitchell, Bayen, Tomlin/Mitchell, Bayen, Tomlin - Unknown - A time-dependent {\{}Hamilton-Jacobi{\}} formulation of reachable sets for continuous dynamic games.pdf:pdf},
+file = {:C$\backslash$:/Users/Mo/Documents/references/IEEE Transactions on Automatic Control/Mitchell, Bayen, Tomlin{\_}Unknown{\_}A time-dependent {\{}Hamilton-Jacobi{\}} formulation of reachable sets for continuous dynamic games.pdf:pdf},
+isbn = {0018-9286},
+issn = {00189286},
 journal = {IEEE Transactions on Automatic Control},
+keywords = {Differential games,Hamilton-Jacobi equations,Reachability,Verification},
 number = {7},
 pages = {947--957},
-title = {{A time-dependent {\{}Hamilton-Jacobi{\}} formulation of reachable sets for continuous dynamic games}},
-volume = {50}
+title = {{A time-dependent Hamilton-Jacobi formulation of reachable sets for continuous dynamic games}},
+volume = {50},
+year = {2005}
 }
+
 
 @article{Bokanowski10,
 abstract = {We consider a target problem for a nonlinear system under state constraints. We give a new continuous level-set approach for characterizing the optimal times and the backward-reachability sets. This approach leads to a characterization via a Hamilton–Jacobi equation, without assuming any controllability assumption. We also treat the case of time-dependent state constraints, as well as a target problem for a two-player game with state constraints. Our method gives a good framework for numerical approximations, and some numerical illustrations are included in the paper., We consider a target problem for a nonlinear system under state constraints. We give a new continuous level-set approach for characterizing the optimal times and the backward-reachability sets. This approach leads to a characterization via a Hamilton–Jacobi equation, without assuming any controllability assumption. We also treat the case of time-dependent state constraints, as well as a target problem for a two-player game with state constraints. Our method gives a good framework for numerical approximations, and some numerical illustrations are included in the paper.},
@@ -333,4 +339,98 @@ pages = {3304--3309},
 publisher = {IEEE},
 title = {{Safe sequential path planning of multi-vehicle systems via double-obstacle Hamilton-Jacobi-Isaacs variational inequality}},
 year = {2015}
+}
+
+@techreport{Mitchell07,
+abstract = {This document describes Version 1.1 of the Toolbox of Level Set Methods, a software package for solving time-dependent Hamilton-Jacobi partial diferential equations (PDEs) in the Matlab programming environment. Level set methods are often used for simulation of dynamic implicit surfaces in graphics, uid and combustion simulation, image processing, and computer vision. Hamilton-Jacobi and related PDEs arise in felds such as control, robotics, diferential games, dy- namic programming, mesh generation, stochastic diferential equations, financial mathematics, and verification. The algorithms in the toolbox can be used in any number of dimensions, although computational cost and visualization dificulty make dimensions four and higher a challenge. All source code for the toolbox is provided as plain text in the Matlab m-file programming language. The toolbox is designed to allow quick and easy experimentation with level set methods, al- though it is not by itself a level set tutorial and so should be used in combination with the existing literature. This document supercedes the documentation for Version 1.0 of the Toolbox (UBC TR-2004-09).},
+author = {Mitchell, Ian},
+booktitle = {Department of Computer Science, University of British Columbia, Vancouver, BC, Canada, Tech. Rep. TR-2004-09, July},
+file = {:C$\backslash$:/Users/Mo/Documents/references/Department of Computer Science, University of British Columbia, Vancouver, BC, Canada, Tech. Rep. TR-2004-09, July/Mitchell{\_}2007{\_}A toolbox of level set methods.pdf:pdf},
+issn = {0962-9343},
+pages = {177--247},
+title = {{A toolbox of level set methods}},
+year = {2007}
+}
+
+@book{Osher02,
+author = {Osher, S and Fedkiw, R},
+isbn = {9780387227467},
+publisher = {Springer-Verlag},
+title = {{Level Set Methods and Dynamic Implicit Surfaces}},
+year = {2006}
+}
+
+@article{Sethian96,
+abstract = {A fast marching level set method is presented for monotonically advancing fronts, which leads to an extremely fast scheme for solving the Eikonal equation. Level set methods are numerical techniques for computing the position of propagating fronts. They rely on an initial value partial differential equation for a propagating level set function and use techniques borrowed from hyperbolic conservation laws. Topological changes, corner and cusp development, and accurate determination of geometric properties such as curvature and normal direction are naturally obtained in this setting. This paper describes a particular case of such methods for interfaces whose speed depends only on local position. The technique works by coupling work on entropy conditions for interface motion, the theory of viscosity solutions for Hamilton-Jacobi equations, and fast adaptive narrow band level set methods. The technique is applicable to a variety of problems, including shape-from-shading problems, lithographic development calculations in microchip manufacturing, and arrival time problems in control theory.},
+author = {Sethian, J A},
+doi = {10.1073/pnas.93.4.1591},
+isbn = {0027-8424},
+issn = {00278424},
+journal = {Pnas},
+number = {4},
+pages = {1591--1595},
+pmid = {11607632},
+title = {{A fast marching level set method for monotonically advancing fronts}},
+volume = {93},
+year = {1996}
+}
+
+@phdthesis{Mitchell02,
+author = {Mitchell, Ian M.},
+file = {:C$\backslash$:/Users/Mo/Documents/references/Unknown/Mitchell{\_}2002{\_}Application of Level Set Methods to Control and Reachability Problems in Continuous and Hybrid Systems.pdf:pdf},
+school = {Stanford University},
+title = {{Application of Level Set Methods to Control and Reachability Problems in Continuous and Hybrid Systems}},
+year = {2002}
+}
+
+@inproceedings{Hoffmann2008,
+abstract = {Safety must be ensured in the deployment of multi-agent vehicle systems. This paper presents decentralized collision avoidance algorithms for systems with second order dynamics and acceleration constraints, using a switching control law. The technique augments existing multi-agent control laws with the capability to switch to provably safe collision avoidance maneuvers when required. Two algorithms with low computational cost are presented, one for two vehicles and one for more vehicles. In both methods, each vehicle computes avoid sets with respect to every other vehicle. When one or more vehicles are on the boundary of their avoid sets, collision avoidance action is taken. These algorithms are applied in simulation scenarios for which existing techniques either fail or are computationally expensive, and used for information theoretic control of a mobile sensor network to reduce the computational complexity. Finally, they are demonstrated in quadrotor helicopter flight experiments.},
+author = {Hoffmann, Gabriel M. and Tomlin, Claire J.},
+booktitle = {Proceedings of the IEEE Conference on Decision and Control},
+doi = {10.1109/CDC.2008.4739434},
+isbn = {9781424431243},
+issn = {01912216},
+pages = {4357--4363},
+publisher = {IEEE},
+title = {{Decentralized cooperative collision avoidance for acceleration constrained vehicles}},
+year = {2008}
+}
+
+@inproceedings{Bansal2017,
+abstract = {Recently, there has been an immense surge of interest in using unmanned aerial vehicles (UAVs) for civil purposes. Multi-UAV systems are safety-critical, and safety guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems of no more than two vehicles because of the exponential-scaling computation complexity. By assigning vehicle priorities, the sequential path planning (SPP) method allows multi-vehicle path planning to be done with a computation complexity that scales linearly with the number of vehicles. Previously the SPP method assumed no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods for accounting for disturbances in dynamics and imperfect knowledge of higher-priority vehicles. Each method has advantages and disadvantages with different assumptions about information sharing. We demonstrate our proposed methods in simulations.},
+archivePrefix = {arXiv},
+arxivId = {1603.05208},
+author = {Bansal, Somil and Chen, Mo and Fisac, Jaime F. and Tomlin, Claire J.},
+booktitle = {American Control Conference 2017 (Submitted)},
+eprint = {1603.05208},
+file = {:C$\backslash$:/Users/Mo/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Bansal et al. - 2016 - Safe Sequential Path Planning of Multi-Vehicle Systems Under Disturbances and Imperfect Information.pdf:pdf},
+title = {{Safe Sequential Path Planning of Multi-Vehicle Systems Under Presence of Disturbances and Imperfect Information}},
+url = {http://arxiv.org/abs/1603.05208},
+year = {2017}
+}
+
+@inproceedings{Lalish2008,
+abstract = {This paper addresses a novel approach to the n-vehicle collision avoidance problem. The vehicle model used is a planar constant-speed unicycle, chosen for its wide applicability to ground, sea, and air vehicles. An algorithm is developed which guarantees all vehicles remain free of collisions while attempting to attain their trajectory goals (given certain restrictions on their initial conditions). This controller is reactive and decentralized, making it well suited for real time applications, and explicitly accounts for actuation limits. Results are demonstrated in simulation.},
+author = {Lalish, Emmett and Morgansen, Kristi A. and Tsukamaki, Takashi},
+booktitle = {Proceedings of the American Control Conference},
+doi = {10.1109/ACC.2008.4587295},
+isbn = {9781424420797},
+issn = {07431619},
+month = {jun},
+pages = {5055--5061},
+publisher = {IEEE},
+title = {{Decentralized reactive collision avoidance for multiple unicycle-type vehicles}},
+year = {2008}
+}
+
+@inproceedings{Chen2016,
+abstract = {Multi-agent differential games are important and useful tools for analyzing many practical problems, such as air traffic management and multi-vehicle collision avoidance. With the recent surge of interest in using UAVs for civil purposes, the importance and urgency of developing tractable multi-agent analysis techniques that provide safety and performance guarantees is at an all-time high. Hamilton-Jacobi (HJ) reachability has successfully provided safety guarantees to small-scale systems and is flexible in terms of system dynamics. However, the exponential complexity scaling of HJ reachability prevents its direct application to large scale problems when the number of vehicles is greater than two. In this paper, we overcome the scalability limitations of HJ reachability by using a mixed integer program that exploits the properties of HJ solutions to provide higher-level control logic. Our proposed method provides safety guarantee for three-vehicle systems -- a previously intractable task for HJ reachability -- without incurring significant additional computation cost. Furthermore, our method is scalable beyond three vehicles and performs significantly better by several metrics than an extension of pairwise collision avoidance to multi-vehicle collision avoidance. We demonstrate our proposed method in simulations.},
+archivePrefix = {arXiv},
+arxivId = {1603.05200},
+author = {Chen, Mo and Shih, Chia-Yin and Tomlin, Claire J.},
+booktitle = {IEEE Conference on Decision and Control},
+eprint = {1603.05200},
+title = {{Multi-Vehicle Collision Avoidance via Hamilton-Jacobi Reachability and Mixed Integer Programming}},
+url = {http://arxiv.org/abs/1603.05200},
+year = {2016}
 }
