@@ -30,11 +30,23 @@ H_j\left(t, x_j, \lambda\right) = \max_{u_j \in \cset_j} \max_{d_j \in \dset_j} 
 
 In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority vehicle $\veh_i$ is as follows:
 \vspace{-0.4em}
-\begin{equation}
-\begin{aligned}
-\ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \}, \text{ with} \\
-\pfrs_j(t) &= \{p_j: \exists \npos_j, (p_j, \npos_j) \in \brs_j(t) \cap \frs_j(t)\}
-\end{aligned}
-\end{equation}
+\begin{eqnarray}
+\ioset_i^j(t) &=& \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \}, \text{ with} \label{eqn:lrcObs1}\\
+\pfrs_j(t) &=& \{p_j: \exists \npos_j, (p_j, \npos_j) \in \brs_j(t) \cap \frs_j(t)\} \label{eqn:lrcObs2}
+\end{eqnarray}
 
-Note that the centralized control method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes, and for example use a control within some range around the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the corresponding control strategy.
+Least restrictive control method can be summarized as follows:
+\begin{alg}
+\label{alg:lrc}
+\textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\begin{enumerate}
+\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
+\item Compute the BRS $\brs_i(t)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
+\item Compute the FRS $\frs_j(t)$ in \eqref{eq:FRS2}. Given $\brs_i(t)$ and $\frs_j(t)$, compute the positions that the $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2}.
+\item Compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
+\end{enumerate}
+\end{alg}
+
+\begin{remark}
+The centralized control method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes, and for example use a control within some range around the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the corresponding control strategy.
+\end{remark}

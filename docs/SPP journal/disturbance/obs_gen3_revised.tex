@@ -1,5 +1,6 @@
 % !TEX root = ../SPP_journal.tex
 \subsection{Method 3: Robust Trajectory Tracking \label{sec:rtt}}
+\SBnote{For RTT method, we never explained where the induced obstacles will be used! In general, we need to clearl;y explain the BRS that we are computing for computing the error bound and nominal trajectory using equations. Especially for the nominal trajectory part, we should explain that we are using dynamics without discturbance, target set is reduced, obstacles are induced obstacles and control authority is reduced.} 
 Even though it is impossible to commit to and track an exact trajectory in presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the planning phase and the disturbance rejection phase. In the planning phase, we compute a nominal trajectory $x_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
 It is important to note that the planning phase does not make full use of a vehicle's control authority, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
@@ -67,13 +68,27 @@ Given $\errorbound_j$, we can guarantee that $\veh_j$ will reach its target $\ta
 
 Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\errorbound_j(x_{r,j})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i(x_{r,i})$ and $\errorbound_j(x_{r,j})$, do not intersect. This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 \vspace{-0.3em}
-\begin{equation}
+\begin{equation} \label{eqn:rttObs}
 \begin{aligned}
 \ioset_i^j(t) &= \{x_i: \dist(\pos_i, \pfrs_j(t)) \le \cradius \} \\
 \pfrs_j(t) &= \{p_j: \exists \npos_j, (p_j, \npos_j) \in \errorbound_i(0) + \errorbound_j(x_{r,j}(t)) \}
 \end{aligned}
 \end{equation}
 \noindent where $0$ denotes the origin. \MCnote{Is there a better way to write this?}
+
+Robust trajectory tracking method can be summarized as follows:
+\SBnote{Need to fix this algorithm once we fix the other issues in this method.}
+\begin{alg}
+\label{alg:rtt}
+\textbf{Robust trajectory tracking algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\begin{enumerate}
+\item Decide on a reduced control authority $\cset^p$ for the planning phase. 
+\item Given $\cset^p$, compute a bound on the tracking error $\errorbound_i(0)$ using the relative dynamics in \eqref{eq:edyn}. The bound is given by the BRS in \eqref{eqn}.
+\item Using $\errorbound_i(0)$, determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. Induced obstacles by each higher priority vehicle $\veh_j$ are given by \eqref{eqn:rttObs}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
+\item Compute a nominal trajectory. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
+\item Compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
+\end{enumerate}
+\end{alg}
 
 %\begin{equation}
 %\ioset_i^j(t) = \errorbound(0) + \errorbound(x_{r,j}(t))
