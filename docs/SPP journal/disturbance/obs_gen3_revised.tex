@@ -85,8 +85,9 @@ Robust trajectory tracking method can be summarized as follows:
 \item Decide on a reduced control authority $\cset^p$ for the planning phase. 
 \item Given $\cset^p$, compute a bound on the tracking error $\errorbound_i(0)$ using the relative dynamics in \eqref{eq:edyn}. The bound is given by the BRS in \eqref{eqn}.
 \item Using $\errorbound_i(0)$, determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. Induced obstacles by each higher priority vehicle $\veh_j$ are given by \eqref{eqn:rttObs}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute a nominal trajectory. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
-\item Compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
+\item Compute the BRS as described in \eqref{eqn} using the reduced target in \eqref{eqn}, $\obsset_i(t)$ as obstacles, and the control authority given by $\cset^p$. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
+\item Compute the nominal trajectory $x_{r,i}(t)$ for the vehicle in absence of disturbances, which can be obtained using the vehicle dynamics in \eqref{eqn} and the optimal control given in \eqref{eqn}.
+\item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ is given by $\errorbound_i(x_{r,i}(t))$
 \end{enumerate}
 \end{alg}
 
