@@ -434,3 +434,108 @@ title = {{Multi-Vehicle Collision Avoidance via Hamilton-Jacobi Reachability and
 url = {http://arxiv.org/abs/1603.05200},
 year = {2016}
 }
+
+@article{Wu2012,
+abstract = {This paper presents a new approach to guaranteeing collision avoidance with respect to moving obstacles that have constrained dynamics but move unpredictably. Velocity Obstacles have been used previously to plan trajectories that avoid collisions with obstacles under the assumption that the trajectories of the objects are either known or can be accurately predicted ahead of time. However, for real systems this predicted trajectory will typically only be accurate over short time-horizons. To achieve safety over longer time periods, this paper instead considers the set of all reachable points by an obstacle assuming that the dynamics fit the unicycle model, which has known constant forward speed and a maximum turn rate (sometimes called the Dubins car model). This paper extends the Velocity Obstacle formulation by using reachability sets in place of a single ” known” trajectory to find matching constraints in velocity space, called Velocity Obstacle Sets. The Velocity Obstacle Set for each obstacle is equivalent to the union of all velocity obstacles corresponding to any dynamically feasible future trajectory, given the obstacle's current state. This region remains bounded as the time horizon is increased to infinity, and by choosing control inputs that lie outside of these Velocity Obstacle Sets, it is guaranteed that the host agent can always actively avoid collisions with the obstacles, even without knowing their exact future trajectories. Furthermore it is proven that, subject to certain initial conditions, an iterative planner under these constraints guarantees safety for all time. Such an iterative planner is implemented and demonstrated in simulation.},
+author = {Wu, Albert and How, Jonathan P.},
+doi = {10.1007/s10514-011-9266-8},
+file = {:C$\backslash$:/Users/Mo/Documents/Mendeley Desktop/Wu, How/Wu, How - 2012 - Guaranteed infinite horizon avoidance of unpredictable, dynamically constrained obstacles.pdf:pdf},
+isbn = {0929-5593$\backslash$r1573-7527},
+issn = {09295593},
+journal = {Autonomous Robots},
+keywords = {Dubins cars,Guaranteed safety,Iterative motion planning,Mobile obstacle avoidance,Mobile robot,Moving obstacles,Partial motion planning,Unicycle dynamics,Unpredictable obstacles,Velocity-obstacle},
+month = {apr},
+number = {3},
+pages = {227--242},
+title = {{Guaranteed infinite horizon avoidance of unpredictable, dynamically constrained obstacles}},
+volume = {32},
+year = {2012}
+}
+
+@inproceedings{Lin2015,
+abstract = {This paper presents a real-time path planning algorithm for UAVs to avoid collision with other aircraft. Reachable sets are used to represent the collection of possible trajectories of obstacle aircraft. It is used in collision prediction for UAVs in path planning. Once a collision is detected, a sampling-based method is used to generate a collision avoidance path. A second collision check is performed on the generated path with the updated UAV and aircraft' states. The path is re-planned if it leads to another collision. The algorithm is validated in Software-In-the-Loop simulation. ADS-B (Automatic Dependent Surveillance - Broadcast) data logged from commercial aircraft are used as the obstacle aircraft. The experiments show that reachable set improves the success rate for collision avoidance compared to the linear motion assumption for the obstacle aircraft.},
+annote = {3D spatial reachable set decomposed into 2D + 1D},
+author = {Lin, Yucong and Saripalli, Srikanth},
+booktitle = {2015 International Conference on Unmanned Aircraft Systems, ICUAS 2015},
+doi = {10.1109/ICUAS.2015.7152295},
+isbn = {9781479960101},
+month = {jun},
+pages = {226--235},
+publisher = {IEEE},
+title = {{Collision avoidance for UAVs using reachable sets}},
+year = {2015}
+}
+
+@inproceedings{Althoff2011,
+abstract = {We compute the set of all possible behaviors of an autonomous vehicle using reachability analysis. A reachable set is the set of states a system can reach for a given set of initial states, disturbances, and sensor noise values. We consider autonomous vehicles which plan trajectories for a certain look-ahead horizon which are followed using feedback control. While a perfectly followed trajectory might not violate specified safety properties (e.g. lane departures or vehicle collisions), a violating deviation from the planned trajectory might exist. Given the mathematical model of the controlled vehicle and bounds on uncertainty, our approach detects any possible violation. In addition, the approach provides results faster than the time required to finish the planned maneuvers of the autonomous vehicle.},
+annote = {Approximates reachable set using conservative linearization},
+author = {Althoff, Matthias and Dolan, John M.},
+booktitle = {IEEE Conference on Intelligent Transportation Systems, Proceedings, ITSC},
+doi = {10.1109/ITSC.2011.6083052},
+isbn = {9781457721984},
+issn = {2153-0009},
+month = {oct},
+pages = {1162--1167},
+publisher = {IEEE},
+title = {{Set-based computation of vehicle behaviors for the online verification of autonomous vehicles}},
+year = {2011}
+}
+
+@inproceedings{Massink2001,
+annote = {Uses linear approximation of Dubins model},
+author = {Massink, M and Francesco, N De},
+booktitle = {Proceedings of the Seventh International Conference on Engineering of Complex Computer Systems},
+doi = {10.1109/ICECCS.2001.930186},
+isbn = {0-7695-1159-7},
+pages = {270--279},
+publisher = {IEEE Comput. Soc},
+title = {{Modelling Free Flight with Collision Avoidance}},
+year = {2001}
+}
+
+@article{Stipanovic2007,
+abstract = {The objective of this paper is to present a methodology for designing cooperative control laws for individual agents that guarantee collision avoidance in multiagent systems. The proposed avoidance control laws are easy to design and implement, and may be directly appended to the optimal control laws of the individual agents within the cooperation framework. The avoidance control laws are computed using value functions that resemble the behavior of barrier functions in the static optimization theory. The most attractive feature of the proposed optimization scheme is the fact that the avoidance laws are active only in the bounded sensing regions of each individual agent, and they do not interfere with the agents' individual optimal control laws outside of these regions},
+annote = {Linear system},
+author = {Stipanović, Dušan M. and Hokayem, Peter F. and Spong, Mark W. and Šiljak, Dragoslav D.},
+doi = {10.1115/1.2764510},
+isbn = {0022-0434},
+issn = {00220434},
+journal = {Journal of Dynamic Systems, Measurement, and Control},
+number = {5},
+pages = {699},
+title = {{Cooperative Avoidance Control for Multiagent Systems}},
+volume = {129},
+year = {2007}
+}
+
+@inproceedings{Beard2003,
+abstract = {This paper uses a team of unmanned air vehicles (UAVs) to cooperatively search, an area of interest that contains regions of opportunity and regions of potential hazard. The objective of the UAV team is to visit as many opportunities as possible, while avoiding as many hazards as possible. To enable cooperation, the UAVs are constrained to stay within communication range of one another. Collision avoidance is also required. Algorithms for team-optimal and individually-optima/team-suboptimal solutions are developed and their computational complexity compared. Simulation results demonstrating the feasibility of the cooperative search algorithms are presented.},
+annote = {DP formulation, discrete time, looks like linear system},
+author = {Beard, Randal W. and McLain, TW},
+booktitle = {42nd IEEE International Conference on Decision and Control},
+doi = {10.1109/CDC.2003.1272530},
+isbn = {0-7803-7924-1},
+issn = {0191-2216},
+pages = {25--30},
+publisher = {IEEE},
+title = {{Multiple UAV cooperative search under collision avoidance and limited range communication constraints}},
+url = {http://ieeexplore.ieee.org/xpls/abs{\_}all.jsp?arnumber=1272530},
+volume = {1},
+year = {2003}
+}
+
+@inproceedings{Schouwenaars2004,
+abstract = {This paper presents a framework for provably safe decentralized trajectory planning of multiple (autonomous) aircraft. Each aircraft plans its trajectory individually using a receding horizon strategy based on mixed integer linear programming (MILP). A con- strained, inertial, first-order linear model is used to capture the dynamics and kinematics of the vehicle. Safety is guaranteed by maintaining, at each time step, a dynamically feasible trajectory for each aircraft that terminates in a loiter pattern. Conflicts between multiple aircraft are resolved in a sequential, decentralized fashion, in which each aircraft takes into account the latest trajectory and loiter pattern of the other aircraft. Besides maintaining feasibility, if the problem is too complex to be solved within the time constraints of a real- time system, this approach also provides an a priori safe rescue solution consisting of the previous trajectories and individual loiter patterns. Several examples of conflict situations resolved by the proposed method are presented.},
+address = {Reston, Virigina},
+annote = {4D linear system},
+author = {Schouwenaars, Tom and Feron, Eric},
+booktitle = {Control},
+doi = {doi:10.2514/6.2004-5141},
+isbn = {1563476703},
+month = {aug},
+number = {August},
+pages = {AIAA 2004--5141},
+publisher = {American Institute of Aeronautics and Astronautics},
+title = {{Decentralized Cooperative Trajectory Planning of Multiple Aircraft with Hard Safety Guarantees}},
+year = {2004}
+}
