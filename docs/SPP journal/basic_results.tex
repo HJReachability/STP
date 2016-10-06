@@ -1,5 +1,13 @@
 % !TEX root = SPP_journal.tex
 \subsection{Basic SPP Numerical Results \label{sec:basic_results}}
+\SBnote{There are a few things that we need to work on to make things consistent across the paper:
+\begin{itemize}
+\item Make sure the obstacle sets are defined in the similar fashion everywhere (currently it is different across the basic SPP method and SPP with disturbance method.)
+\item Let's use $\lambda$ for co-state everywhere. Also, let's explain what $\lambda$ is the very first time we introduce this notation.
+\item Let's use $x$ for state everywhere in the paper.
+\item Do we really need $t_i^{EDT}$ in this paper. We are not using it anywhere. We can just use the notation that we used in the SPP paper.
+\end{itemize}}
+
 We now illustrate the basic SPP algorithm using a four-vehicle example. In this example, we will use the following dynamics for each vehicle:
 
 \begin{equation}

@@ -114,7 +114,25 @@ Note that we only need to re-plan the trajectories of the vehicles that are affe
 \end{remark}
 
 \begin{remark}
+In general, an intruder can be present in the system for much longer than $\iat$, as long as it is not affecting the SPP vehicles. $\underbar{t}$ thus really corresponds to the time an intruder starts affecting a SPP vehicle.
+\end{remark}
+
+\begin{remark}
 Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}. 
 \end{remark}
 
-\SBnote{Summary algorithms with reference to basic SPP algorithm}
+We conclude this section with the overall algorithm to successfully avoid an intruder for a duration of $\iat$: 
+\SBnote{Need to fix this algorithm once we fix the other issues in this method.}
+\begin{alg}
+\label{alg:intruder}
+\textbf{Intruder Avoidance algorithm (offline-planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics \eqref{eq:eqn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\begin{enumerate}
+\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
+\item Compute the augmented obstacle set $\tilde\obsset_i(t)$ given by \eqref{eqn:inducedobs}.
+\item Given $\tilde\obsset_i(t)$, compute the BRS $\brs_{\text{AO}}(t)$ defined in \eqref{eqn}. Starting within $\brs_{\text{AO}}(t)$ enusres collision avoidnace with any other SPP vehicle for a duration of $\iat$, irrespective of the used avoidance control. 
+\item The optimal avoidance control can be obtained by computing $\brs_{\text{CA}}(\iat)$ and using \eqref{eqn}. 
+\item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ is given by the FRS $\frs_{\mathcal{O}}(\iat)$ and can be computed using the Hamiltonian in \eqref{eqn}.
+\end{enumerate}
+
+\textbf{Intruder Avoidance algorithm (online-planning)}: Once the intruder disappears, let the states of the vehicles be $\tilde{\state}_i^0$. Given $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority), use any of the three SPP methods discussed in Section \ref{sec:incomp} for re-planning. 
+\end{alg}
