@@ -8,12 +8,12 @@ Recall that the SPP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict 
 \begin{equation}
 \label{eq:dyn_no_dstb}
 \begin{aligned}
-\dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \in [\edt, \sta] \\
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \le \sta \\
 \ctrl_i &\in \cset_i, \qquad i = 1 \ldots, \N
 \end{aligned}
 \end{equation}
 
-\noindent with trajectories denoted by $\traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot))$.
+%\noindent with trajectories denoted by $\traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot))$.
 
 In SPP, each vehicle $\veh_i$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset$ and the obstacles $\ioset_i^j(t)$ induced by higher priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh{1}, \veh{2}, \ldots, \veh{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. In its path planning process, $\veh_i$ ignores the presence of the lower priority vehicles $\veh{k}, k>i$, and induces the obstacles $\ioset_k^i(t), k>i$.
 
@@ -36,9 +36,8 @@ Each higher priority vehicle $\veh_j$ plans its path while ignoring $\veh_i$. Si
 \begin{equation}
 \label{eq:BRS_basic}
 \begin{aligned}
-&\brs_i(t) = \{\state_i: \exists \ctrl_i(\cdot) \in \cfset_i, \\
-&\quad\forall s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot)) \notin \obsset_i(s), \\
-&\quad\exists s \in [t, \sta_i], \traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot)) \in \targetset_i\}
+&\brs_i^\text{basic}(t, \sta_i) = \{\state_i: \exists \ctrl_i(\cdot) \in \cfset_i, \state_i(\cdot) \text{ satisfies \eqref{eq:dyn_no_dstb}}, \\
+&\quad\forall s \in [t, \sta_i],\state_i(s) \notin \obsset_i(s), \quad\exists s \in [t, \sta_i], \state_i(s) \in \targetset_i\}
 \end{aligned}
 \end{equation}
 
@@ -46,14 +45,14 @@ The BRS $\brs(t)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targets
 
 \begin{equation}
 \label{eq:basicham}
-\ham_i(t, \state_i, p) = \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
+\ham_i^\text{basic}(t, \state_i, p) = \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
 The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by
 
 \begin{equation}
 \label{eq:basicOptCtrl}
-\ctrl_i^*(t) = \arg \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
+\ctrl_i^\text{basic}(t) = \arg \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
 In summary, the basic SPP algorithm is given as follows:
@@ -63,8 +62,8 @@ In summary, the basic SPP algorithm is given as follows:
 \textbf{Basic SPP algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
 \begin{enumerate}
 \item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS $\brs_i(t)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
-\item Determine the trajectory $\traj_i(\cdot; \state_i^0, \ldt, \ctrl^*(\cdot))$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^*(\cdot)$ given by \eqref{eq:basicOptCtrl}.
-\item Given $\traj_i(\dot; \state_i^0, \ldt, \ctrl^*(\cdot))$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset} with $\state_i(t) = \traj_i(t; \state_i^0, \ldt, \ctrl^*(\cdot))$.
+\item Compute the BRS $\brs_i(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t, \sta_i)$.
+\item Determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl}.
+\item Given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset}.
 \end{enumerate}
 \end{alg}

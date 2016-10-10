@@ -7,27 +7,28 @@ Consider $\N$ vehicles which participate in the SPP process and denote these veh
 \begin{equation}
 \label{eq:dyn}
 \begin{aligned}
-\dot\state_i &= \fdyn_i(\state_i, \ctrl_i, \dstb_i), t \in [\edt, \sta] \\
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i, \dstb_i), t \le \sta \\
 \ctrl_i &\in \cset_i, \dstb_i \in \dset_i, i = 1 \ldots, \N
 \end{aligned}
 \end{equation}
 
 \noindent where $\state_i \in \R^{n_i}$ represents the state of vehicle $\veh_i$, $\ctrl_i \in \cset_i$ the control of $\veh_i$, and $\dstb_i \in \dset_i$ the disturbance experienced by $\veh_i$. For convenience, we partition the state $\state_i$ into the position component $\pos_i \in \R^{n_\pos}$ and the non-position component $\npos_i \in \R^{n_i - n_\pos}$: $\state_i = (\pos_i, \npos_i)$.
 
-We assume that the flow field $\fdyn_i: \R^{n_i}\times\cset_i\times\dset_i \rightarrow \R^{n_i}$ is uniformly continuous, bounded, and Lipschitz continuous in $\state_i$ for fixed $\ctrl_i$ and $\dstb_i$. With this assumption, given $\ctrl_i(\cdot) \in \cfset_i$, there exists a unique trajectory solving \eqref{eq:dyn} \cite{EarlA.Coddington1955}. We will denote trajectories of \eqref{eq:dyn} starting from state $\state^0_i$ at time $t_0$ under control $\ctrl_i(\cdot)$ and disturbance $\dstb_i(\cdot)$ as $\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot))$. Trajectories satisfy an initial condition and the differential equation \eqref{eq:dyn} almost everywhere:
-\begin{equation}
-\begin{aligned}
-\frac{d}{dt}\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot)) &= \fdyn(\state^0_i, \ctrl_i, \dstb_i) \\
-\traj_i(t_0; \state^0_i, t_0, \ctrl_i(\cdot)) &= \state^0_i
-\end{aligned}
-\end{equation}
+We assume that the flow field $\fdyn_i: \R^{n_i}\times\cset_i\times\dset_i \rightarrow \R^{n_i}$ is uniformly continuous, bounded, and Lipschitz continuous in $\state_i$ for fixed $\ctrl_i$ and $\dstb_i$. With this assumption, given $\ctrl_i(\cdot) \in \cfset_i$, there exists a unique trajectory solving \eqref{eq:dyn} \cite{EarlA.Coddington1955}. %We will denote trajectories of \eqref{eq:dyn} starting from state $\state^0_i$ at time $t_0$ under control $\ctrl_i(\cdot)$ and disturbance $\dstb_i(\cdot)$ as $\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot))$. Trajectories satisfy an initial condition and the differential equation \eqref{eq:dyn} almost everywhere:
+
+%\begin{equation}
+%\begin{aligned}
+%\frac{d}{dt}\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot)) &= \fdyn(\state^0_i, \ctrl_i, \dstb_i) \\
+%\traj_i(t_0; \state^0_i, t_0, \ctrl_i(\cdot)) &= \state^0_i
+%\end{aligned}
+%\end{equation}
 
 We assume that the control functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ are drawn from the set of measurable functions\footnote{
 A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.} For convenience, we will use the sets $\cfset_i, \dfset_i$ to respectively denote the set of functions from which the control and disturbance functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ can be drawn. In addition, we assume that the disturbances $\dstb_i(\cdot)$ are drawn from $\Gamma$, the set of non-anticipative strategies \cite{Mitchell05}, defined as follows:
 \begin{equation}
 \begin{aligned}
 & \Gamma := \{\mathcal{N}: \cfset_i \rightarrow \dfset_i:  \ctrl_i(r) = \hat{\ctrl}_i(r) \text{ a. e. } r\in[t,s] \\
-& \Rightarrow \mathcal{N}[\ctrl_i](\ctrl) = \mathcal{N}[\hat{\ctrl}_i](r) \text{ a. e. } r\in[t,s]\}
+& \Rightarrow \mathcal{N}[\ctrl_i](r) = \mathcal{N}[\hat{\ctrl}_i](r) \text{ a. e. } r\in[t,s]\}
 \end{aligned}
 \end{equation}
 
@@ -46,10 +47,10 @@ For convenience, we will sometimes refer to $\soset_i$ as the set of static obst
 In addition to the static obstacles, each vehicle $\veh_i$ must also avoid the danger zones with respect to each of the other vehicle $\veh_j, j\neq i$. The danger zones in general can represent any joint configuration between $\veh_i$ and $\veh_j$ that is considered to be unsafe. In this paper, we define the danger zone of $\veh_i$ with respect to $\veh_j$ to be
 
 \begin{equation}
-\dz_{ij} = \{(\state_i, \state_j): \dist(\pos_i, \pos_j) \le \rc\}
+\dz_{ij} = \{(\state_i, \state_j): \|\pos_i - \pos_j\|_2 \le \rc\}
 \end{equation}
 
-\noindent whose interpretation is that $\veh_i$ and $\veh_j$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other. Here, we take the Euclidean 2-norm as the distance function $\dist(\cdot, \cdot)$.
+\noindent whose interpretation is that $\veh_i$ and $\veh_j$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other.
 
 Given the set of SPP vehicles, their targets $\targetset_i$, the static obstacles $\sosetp$, and the vehicles' danger zones with respect to each other $\dz_{ij}$, we would like to for each vehicle $\veh_i$ synthesize a controller that guarantees $\veh_i$ reaches its target $\targetset_i$ at or before the scheduled time of arrival $\sta$, while avoiding the static obstacles $\sosetp$ as well as the danger zones with respect to all other vehicles $\dz_{ij}, j\neq i$. In addition, we would like to obtain the latest departure time $\ldt$ such that $\veh_i$ can still arrive at $\targetset_i$ on time.
 
