@@ -134,7 +134,6 @@ The overall control policy for avoiding intruder and collision with other vehicl
 \end{equation*}
 
 \subsubsection{Re-planning after intruder avoidance\label{sec:replan_method1}} 
-\SBnote{Need to mention FRS for determining $\sta_i$ when replanning?}
 After the intruder disappears, a liveness controller to ensure that the vehicles reach their destinations can be obtained by solving a SPP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in after avoiding the intruder.  
 Let the optimal control policy corresponding to this liveness controller is given by $\ctrl^*_{\text{L}, i}(t)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles and successful transition to the destination is given by:
 
@@ -147,6 +146,20 @@ Let the optimal control policy corresponding to this liveness controller is give
 \end{array}
 \right.
 \end{equation*}
+
+Note that in order to re-plan using a SPP method, we need to know $\sta$ for all vehicles and can be obtained by computing a FRS:
+\begin{equation} \label{eq:replanFRS}
+\begin{aligned} 
+\frs_j^{\text{RP}}(t) = & \{y \in \R^{n_j}: \exists \ctrl_j(\cdot) \in \cset_j, \forall \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(0) = \tilde{\state}_j^0, \\
+& \state_j(t) = y\},
+\end{aligned}
+\end{equation}
+where $\tilde{\state}_j^0$ represents the state of $\veh_j$ once the intruder disappears. The FRS in \eqref{eq:replanFRS} can be obtained by solving the HJVI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+\begin{equation}
+\ham_j^{\text{RP}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \min_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j). 
+\end{equation} 
+The new $\sta$ of $\veh_j$ is now given by the time at which $\frs_j^{\text{RP}}(t)$ has a non-empty intersection with the target set $\targetset_j$ for the first time. Intuitively, this means that there exists a control policy which will steer the vehicle to its destination by that time, despite the worst case disturbance it might experience. Therefore, $\sta_j$ for the re-planning SPP problem is given by $\arg \inf_t \tilde{\state}_j^0 \in \frs_j^{\text{RP}}(t)$.
 
 \begin{remark}
 Note that we only need to re-plan the trajectories of the vehicles that are affected by the intruder. In particular, if $\valfunc_\text{CA}(\iat, \state_r) > 0$ during the entire duration of $\iat$ for a vehicle, then the vehicle need not apply any avoidance control, and hence a re-planning is not required for this vehicle. 

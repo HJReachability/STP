@@ -25,18 +25,31 @@ Let $\state_j$ and $x_r$ denote the state of the actual vehicle $\veh_j$ and the
 \label{eq:edyn} % Error dynamics
 \begin{aligned}
 \dot{e_j} &= \fdyn_{e_j}(t, e_j, \ctrl_j, \ctrl_r,\dstb_j), \\
-\ctrl_j &\in \cset_j, \ctrl_r\in\cset^\pos_j, \dstb_j \in \dset_j, \quad t \in [0, T]
+\ctrl_j &\in \cfset_j, \ctrl_r \in \cfset^\pos_j, \dstb_j \in \dfset_j, \quad t \in [0, T]
 \end{aligned}
 \end{equation}
 
-To obtain bounds on the tracking error, we first conservatively estimate the error bound around any reference state $\state_{r,j}$, denoted $\errorbound_j(\state_{r,j})$, and solve a reachability problem with its complement $\errorbound_j^c$ as the target in the space of the error dynamics; $\errorbound_j^c$ is the set of tracking errors violating the error bound. From $\errorbound_j^c$, we compute the BRS using \eqref{eq:HJIVI_BRS} without obstacles, and with the Hamiltonian
-
+To obtain bounds on the tracking error, we first conservatively estimate the error bound around any reference state $\state_{r,j}$, denoted $\errorbound_j$:
 \begin{equation}
-\label{eq:HJIVI_track}
-\ham_j\left(t, e_j, \costate\right) = \max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in\cset^\pos_j, \dstb_j \in \dset_j} \costate \cdot \fdyn_{e_j}(t, e_j, \ctrl_j, \ctrl_r,\dstb_j)
+\errorbound_j = \{e_j: \|\pos_{e_j}\|_2 \le R_{\text{EB}} \}, 
+\end{equation}
+where $\pos_{e_j}$ denotes the position co-ordinates of $e_j$ and $R_{\text{EB}}$ is a design parameter. We next solve a reachability problem with its complement $\errorbound_j^c$ as the target in the space of the error dynamics; $\errorbound_j^c$ is the set of tracking errors violating the error bound. From $\errorbound_j^c$, we compute the following BRS:
+
+\begin{equation} \label{eqn:errBound}
+\begin{aligned}
+\brs^{\text{EB}}_{j}(t) = & \{y: \forall \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_r(\cdot) \in \cfset^\pos_j, \exists \dstb_j(\cdot) \in \dfset_i, \\
+& e_j(\cdot) \text{ satisfies \eqref{eq:edyn}}, e_j(t) = y, \\
+& \exists s \in [t, 0], e_j(s) \in \errorbound_j^c\}, t \leq 0, 
+\end{aligned}
+\end{equation}
+where the Hamiltonian to compute the BRS is given by:
+\begin{equation}
+\begin{aligned}
+H^{\text{EB}}_{j}(t, e_j, \costate) &= \max_{\ctrl_j \in \cfset_j} \min_{\ctrl_r \in \cfset^\pos_j, \dstb_j \in \dfset_j} \costate \cdot \fdyn_{e_j}(t, e_j, \ctrl_j, \ctrl_r, \dstb_j).
+\end{aligned}
 \end{equation}
 
-Letting the time horizon tend to infinity, we obtain the infinite-horizon controlled-invariant set, denoted by $\disckernel_j$. If $\disckernel_j$ is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law
+Letting the time horizon tend to infinity, we obtain the infinite-horizon controlled-invariant set $\disckernel_j := \lim_{t \to \infty} \left( \brs^{\text{EB}}_{j}(t) \right)^c$. If $\disckernel_j$ is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law
 
 \begin{equation}
 \label{eq:robust_tracking_law}
@@ -64,21 +77,47 @@ Letting the time horizon tend to infinity, we obtain the infinite-horizon contro
 %\tracklaw_j(\state_j,x_r) \in \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in\cset^\pos_j, \dstb_j \in \dset_j} p \cdot \fdyn_{z_j}(t,z_j,\ctrl_j,\ctrl_r,\dstb_j).
 %\end{equation}
 
-Given $\errorbound_j$, we can guarantee that $\veh_j$ will reach its target $\targetset_j$ if $\errorbound_j \subseteq \targetset_j$; thus, in the path planning phase, we modify $\targetset_j$ to be $\{\state_j: \errorbound_j(\state_j) \subseteq \targetset_j\}$, and compute a BRS, with the control authority $\cset^\pos_j$, that contains the initial state of the vehicle. From the resulting nominal trajectory $\state_{r,j}(\cdot)$, the overall control policy to reach $\targetset_j$ can be obtained via \eqref{eq:robust_tracking_law}.
-
-Finally, since each vehicle $\veh_j$ can only be guaranteed to stay within $\errorbound_j(\state_{r,j})$, we must make sure at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i(\state_{r,i})$ and $\errorbound_j(\state_{r,j})$, do not intersect. %This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
-
-\MCnote{This is the correct set; I believe what was written before was actually incorrect... because we need to first augment with $\rc$, and then augment error bound, and not the other way around}
-
+The induced obstacles by each higher priority vehicle $\veh_j$ can thus be obtained by: 
 \begin{equation} 
 \label{eqn:rttObs}
 \begin{aligned}
-\ioset_i^j(t) &= \{\state_i: \exists y \in \errorbound_i(y), y \in S_i^j(t)\} \\
-S_i^j(t) &= \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \} \\
-\pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \errorbound_j(\state_{r,j}(t)) \}
+\ioset_i^j(t) &=  \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \} \\
+\pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \errorbound_j + \state_{r,j}(t) \},
 \end{aligned}
 \end{equation}
-\noindent where $0$ denotes the origin. \MCnote{Is there a better way to write this?}
+where $+$ in \eqref{eqn:rttObs} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Intuitively, if $\veh_j$ is tracking $\state_{r,j}(\cdot)$, then it will remain within the errorbound $\errorbound_j$ around $\state_{r,j}(\cdot)$. This is precisely what set $\pfrs_j(t)$ captures. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}. 
+
+Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\errorbound_j$, we must make sure during the path planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\errorbound_i$ and $\errorbound_j$, do not intersect. This can be done by augmenting the total obstacle set by $\errorbound_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
+
+\begin{equation} 
+\label{eqn:rttAugObs}
+\tilde{\obsset}_i(t) = \{\obsset_i(t) + \errorbound_i\}.
+\end{equation}
+
+Finally, given $\errorbound_i$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\errorbound_i \subseteq \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\tilde{\targetset}_i := \{\state_j: \errorbound_j(\state_j) \subseteq \targetset_j\}$, and compute a BRS, with the control authority $\cset^\pos_j$, that contains the initial state of the vehicle. Mathematically,
+
+\begin{equation}
+\label{eq:rttBRS}
+\begin{aligned}
+\brs_i^\text{rtt}(t) = & \{y: \exists \ctrl_i(\cdot) \in \cset^\pos_i, \state_i(\cdot) \text{ satisfies \eqref{eq:dyn_no_dstb}},\\
+&\forall s \in [t, \sta_i], \state_i(s) \notin \tilde{\obsset}_i(t), \\
+& \exists s \in [t, \sta_i], \state_i(s) \in \tilde{\targetset}_i, \state_i(t) = y\}
+\end{aligned}
+\end{equation}
+
+The BRS $\brs_i^\text{rtt}(t)$ can be obtained by solving \eqref{eq:HJIVI_BRS} using the Hamiltonian: 
+\begin{equation}
+\label{eq:RTTham}
+\ham_i^\text{rtt}(t, \state_i, \costate) = \min_{\ctrl_i \in \cset^\pos_i } \costate \cdot \fdyn_i(\state_i, \ctrl_i)
+\end{equation}
+
+The corresponding optimal control for reaching $\tilde{\targetset}_i$ is given by:
+\begin{equation}
+\label{eq:RTTOptCtrl}
+\ctrl_i^\text{rtt}(t) = \arg \min_{\ctrl_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i).
+\end{equation}
+
+The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_j$ can be obtained via \eqref{eq:robust_tracking_law}.
 
 Robust trajectory tracking method can be summarized as follows:
 \SBnote{Need to fix this algorithm once we fix the other issues in this method.}

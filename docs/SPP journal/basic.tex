@@ -45,14 +45,14 @@ The BRS $\brs(t)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targets
 
 \begin{equation}
 \label{eq:basicham}
-\ham_i^\text{basic}(t, \state_i, p) = \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
+\ham_i^\text{basic}(t, \state_i, \costate) = \min_{\ctrl_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
 The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by
 
 \begin{equation}
 \label{eq:basicOptCtrl}
-\ctrl_i^\text{basic}(t) = \arg \min_{\ctrl_i} p \cdot \fdyn_i(\state_i, \ctrl_i)
+\ctrl_i^\text{basic}(t) = \arg \min_{\ctrl_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
 In summary, the basic SPP algorithm is given as follows:
