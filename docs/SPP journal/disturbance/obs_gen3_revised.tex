@@ -1,9 +1,5 @@
 % !TEX root = ../SPP_journal.tex
 \subsection{Method 3: Robust Trajectory Tracking \label{sec:rtt}}
-\SBnote{For RTT method, we never explained where the induced obstacles will be used! In general, we need to clearl;y explain the BRS that we are computing for computing the error bound and nominal trajectory using equations. Especially for the nominal trajectory part, we should explain that we are using dynamics without disturbance, target set is reduced, obstacles are induced obstacles and control authority is reduced.} 
-
-\MCnote{Remember to actually formally define $\errorbound$}
-
 Even though it is impossible to commit to and track an exact trajectory in presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the planning phase and the disturbance rejection phase. In the planning phase, we compute a nominal trajectory $\state_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
 It is important to note that the planning phase does not make full use of a vehicle's control authority, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full maneuverability; replicating the nominal control is therefore always possible, with additional maneuverability available at execution time to counteract external disturbances.
@@ -30,7 +26,7 @@ Let $\state_j$ and $x_r$ denote the state of the actual vehicle $\veh_j$ and the
 \end{equation}
 
 To obtain bounds on the tracking error, we first conservatively estimate the error bound around any reference state $\state_{r,j}$, denoted $\errorbound_j$:
-\begin{equation}
+\begin{equation} \label{eqn:err}
 \errorbound_j = \{e_j: \|\pos_{e_j}\|_2 \le R_{\text{EB}} \}, 
 \end{equation}
 where $\pos_{e_j}$ denotes the position co-ordinates of $e_j$ and $R_{\text{EB}}$ is a design parameter. We next solve a reachability problem with its complement $\errorbound_j^c$ as the target in the space of the error dynamics; $\errorbound_j^c$ is the set of tracking errors violating the error bound. From $\errorbound_j^c$, we compute the following BRS:
@@ -120,17 +116,18 @@ The corresponding optimal control for reaching $\tilde{\targetset}_i$ is given b
 The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_j$ can be obtained via \eqref{eq:robust_tracking_law}.
 
 Robust trajectory tracking method can be summarized as follows:
-\SBnote{Need to fix this algorithm once we fix the other issues in this method.}
 \begin{alg}
 \label{alg:rtt}
 \textbf{Robust trajectory tracking algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
 \begin{enumerate}
-\item Decide on a reduced control authority $\cset^p$ for the planning phase. 
-\item Given $\cset^p$, compute a bound on the tracking error $\errorbound_i(0)$ using the relative dynamics in \eqref{eq:edyn}. The bound is given by the BRS in \eqref{eqn}.
-\item Using $\errorbound_i(0)$, determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. Induced obstacles by each higher priority vehicle $\veh_j$ are given by \eqref{eqn:rttObs}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS as described in \eqref{eqn} using the reduced target in \eqref{eqn}, $\obsset_i(t)$ as obstacles, and the control authority given by $\cset^p$. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i(t)$.
-\item Compute the nominal trajectory $\state_{r,i}(t)$ for the vehicle in absence of disturbances, which can be obtained using the vehicle dynamics in \eqref{eqn} and the optimal control given in \eqref{eqn}.
-\item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ is given by $\errorbound_i(\state_{r,i}(t))$
+\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
+\item Decide on a reduced control authority $\cset^\pos_i$ for the planning phase, and choose a parameter $R_{\text{EB}}$ to conservatively bound the tracking error. 
+\item Compute the BRS $\brs^{\text{EB}}_{j}(t)$ using \eqref{eqn:errBound} and make sure that $\disckernel_j \neq \emptyset$. 
+\item Given $R_{\text{EB}}$, the error bound on the tracking error $\errorbound_i$ is given by \eqref{eqn:err}. 
+\item Using $\errorbound_i$, determine the augmented obstacle set $\tilde{\obsset}_i(t)$, given in \eqref{eqn:rttAugObs}. 
+\item Compute the BRS $\brs_i^\text{rtt}(t)$ as described in \eqref{eq:rttBRS} using the reduced target set $\tilde{\targetset}_i$, $\tilde{\obsset}_i(t)$ as obstacles, and the control authority $\cset^\pos_i$. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{rtt}(t)$.
+\item Compute the nominal trajectory $\state_{r,i}(\cdot)$ for $\veh_i$ in absence of disturbances, which can be obtained using the vehicle dynamics in \eqref{eq:dyn_no_dstb} and the optimal control given in \eqref{eq:RTTOptCtrl}.
+\item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using $\errorbound_i$ and $\state_{r,i}(\cdot)$ via \eqref{eqn:rttObs}. 
 \end{enumerate}
 \end{alg}
 

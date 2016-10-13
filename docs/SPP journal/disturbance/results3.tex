@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_Journal.tex
 \subsection{Robust Trajectory Tracking}
-In the planning phase, we reduced the maximum turn rate of the vehicles from $1$ to $0.6$, and the speed range from $[0.5, 1]$ to exactly $0.75$ (constant speed). With these reduced control authorities, we determined from the disturbance rejection phase that a nominal trajectory from the planning phase can be robustly tracked within a distance of $0.075$.
+In the planning phase, we reduced the maximum turn rate of the vehicles from $1$ to $0.6$, and the speed range from $[0.5, 1]$ to exactly $0.75$ (constant speed). With these reduced control authorities, we determined from the disturbance rejection phase that a nominal trajectory from the planning phase can be robustly tracked within a distance of $R_{\text{EB}} = 0.075$.
 
 Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where each vehicle robustly tracks a pre-specified trajectory and is guaranteed to stay inside a ``bubble" around the trajectory. Fig. \ref{fig:rtt_rs3} shows the evolution of BRS and induced obstacles for vehicle $\veh_3$. The obstacles induced by other vehicles inhibit the evolution of the BRS, carving out thin “channels,” which can be seen at $t = -2.59$, that separate the BRS into different “islands”. %One can see how these channels and islands form by examining the time evolution of the BRS set.
 

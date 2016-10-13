@@ -1,36 +1,24 @@
 % !TEX root = SPP_journal.tex
 \subsection{Basic SPP Numerical Results \label{sec:basic_results}}
-\SBnote{There are a few things that we need to work on to make things consistent across the paper:
-\begin{itemize}
-\item Make sure the obstacle sets are defined in the similar fashion everywhere (currently it is different across the basic SPP method and SPP with disturbance method.)
-\item Let's use $\lambda$ for co-state everywhere. Also, let's explain what $\lambda$ is the very first time we introduce this notation.
-\item Let's use $x$ for state everywhere in the paper.
-\item Do we really need $t_i^{EDT}$ in this paper. We are not using it anywhere. We can just use the notation that we used in the SPP paper.
-\item FRS and BRS definitions may still not be correct. We should use $y$ as the set variable instead of state. Otherwise, there will be a confusion between state and trajectory. 
-\item Make sure that we are following a consistent superscript and subscript structure to denotes our BRSs and FRSs.
-\item Make sure that we define $\sta_i$ in Basic SPP section before presenting the algorithm. 
-\item Check all the algorithms after everything else is done.
-\end{itemize}}
-
 We now illustrate the basic SPP algorithm using a four-vehicle example. In this example, we will use the following dynamics for each vehicle:
 
 \begin{equation}
 \begin{aligned}
-\dot x_i &= v_i \cos\theta_i \\
-\dot y_i &= v_i \sin\theta_i \\
+\dot{\pos}_{x,i} &= v_i \cos\theta_i \\
+\dot{\pos}_{y,i} &= v_i \sin\theta_i \\
 \dot \theta_i &= \omega_i \qquad \qquad i = 1, \ldots, \N
 \end{aligned}
 \end{equation}
 
-\noindent where $\state_i = (x_i, y_i, \theta_i)$ is the state of vehicle $\veh{i}$, $\pos_i = (x_i, y_i)$ is the position of vehicle $\veh{i}$, $\theta_i$ is the heading of vehicle $\veh{i}$, $v_i$ is the speed of vehicle $\veh{i}$, and $\omega_i$ is the turn rate of vehicle $\veh{i}$. We have chosen these dynamics for clarity of illustration; in general, the SPP algorithm can handle more general systems of the form in which the vehicles have different control bounds and dynamics. 
+\noindent where $\state_i = (\pos_{x,i}, \pos_{y,i}, \theta_i)$ is the state of vehicle $\veh_i$, $\pos_i = (\pos_{x,i}, \pos_{y,i})$ is the position of vehicle $\veh_i$, $\theta_i$ is the heading of vehicle $\veh_i$, $v_i$ is the speed of vehicle $\veh_i$, and $\omega_i$ is the turn rate of vehicle $\veh_i$. We have chosen these dynamics for clarity of illustration; in general, the SPP algorithm can handle more general systems of the form in which the vehicles have different control bounds and dynamics. 
 
-In this particular example, we assume that the vehicles have constant speed $v_i = 1 ~ \forall i$, and that the control of each vehicle $\veh{i}$ is given by $\ctrl_i = \omega_i$ with $|\omega_i| \le \bar\omega = 1 ~ \forall i$. 
+In this particular example, we assume that the vehicles have constant speed $v_i = 1 ~ \forall i$, and that the control of each vehicle $\veh_i$ is given by $\ctrl_i = \omega_i$ with $|\omega_i| \le \bar\omega = 1 ~ \forall i$. 
 
 For this example, the target sets $\targetset_i$ of the vehicles are circles of radius $r$ in the position space; each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target set is defined as
 
 \begin{equation}
 \label{eq:target_sim}
-\targetset_i = \{\state_i: \|p_i - c_i\|_2 \le r\}
+\targetset_i = \{\state_i: \|\pos_i - c_i\|_2 \le r\}
 \end{equation}
 
 \noindent where $c_i$ are centers of the target circles. For the simulation of the basic SPP algorithm, we used $r = 0.1$.
@@ -50,7 +38,7 @@ The setup for this example is shown in Fig. \ref{fig:dubins_ic}, which also show
 
 The joint state space of this four-vehicle system is twelve-dimensional (12D), making the joint path planning and collision avoidance problem intractable for direct analysis. Therefore, we apply the SPP algorithm described in Algorithm \ref{alg:basic} and repeatedly solve the double-obstacle HJ VI in \eqref{eq:HJIVI_BRS} to obtain the optimal control for each vehicle to reach its target while avoiding higher-priority vehicles. In addition, due to the flexibility of the HJ VI with respect to time-varying systems, the different scheduled times of arrival $\sta_i$ can be trivially incorporated. 
 
-Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs_i^\text{basic}(t, \sta_i)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\sosetp$ and the obstacles induced by other vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these channels and islands form by examining the time evolution of the BRS, shown in Figure \ref{fig:dubins_reach_3} for vehicle $\veh_3$. 
+Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs_i^\text{basic}(t)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\soset$ and the obstacles induced by other vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these channels and islands form by examining the time evolution of the BRS, shown in Figure \ref{fig:dubins_reach_3} for vehicle $\veh_3$. 
 
 Finally, Fig. \ref{fig:dubins_result} shows the resulting trajectories of the four vehicles. Most interestingly, the subplot labeled $t=-0.55$ shows all four vehicles in close proximity without collision: each vehicle is outside of the danger zone of all other vehicles (although the danger zones may overlap). This close proximity is an indication of the optimality of the basic SPP algorithm given the assigned priority ordering. Since no disturbances are present, getting as close to other vehicles' danger zones as possible without entering the danger zones intuitively results in short transit times.
 
@@ -66,14 +54,14 @@ The actual arrival times of vehicles $i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, resp
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{"fig/dubins_reach_all"}
-	\caption{BRSs at $t=\ldt_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\sosetp$ and time-varying obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ carve ``channels" in the BRS, dividing it up into multiple ``islands".}
+	\caption{BRSs at $t=\ldt_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\soset$ and time-varying obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ carve ``channels" in the BRS, dividing it up into multiple ``islands".}
 	\label{fig:dubins_reach_all}
 \end{figure}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{"fig/dubins_reach_3"}
-	\caption{Time evolution of the BRS for vehicle $\veh_3$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Top row: the BRS grows unobstructed by obstacles. Bottom row: the static obstacles $\sosetp$ and the induced obstacles $\ioset_3^1,\ioset_3^2$, carve out ``channels" in the BRS.}
+	\caption{Time evolution of the BRS for vehicle $\veh_3$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Top row: the BRS grows unobstructed by obstacles. Bottom row: the static obstacles $\soset$ and the induced obstacles $\ioset_3^1,\ioset_3^2$, carve out ``channels" in the BRS.}
 	\label{fig:dubins_reach_3}
 \end{figure}
 
