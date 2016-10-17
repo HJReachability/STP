@@ -51,7 +51,7 @@ If there is a central agent directly controlling each of the $N$ vehicles, then 
 
 \noindent where $\ctrl_i$ no longer appears explicitly in the dynamics.
 
-From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the collision radius $\rc$ of $\veh_j$ under the dynamics $\fdyn^\text{cc}_j(\state_j, \dstb_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\state_j(\ldt_j) = \state_{j}^0$. The FRS $\frs_j^\text{cc}(t)$ is defined as follows:
+From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the collision radius $\rc$ of $\veh_j$ under the dynamics $\fdyn^\text{cc}_j(\state_j, \dstb_j)$. Determining this obstacle involves computing an RS of $\veh_j$ starting from\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\state_j(\ldt_j) = \state_{j}^0$. The FRS $\frs_j^\text{cc}(t)$ is defined as follows:
 
 \begin{equation}
 \label{eq:FRS1}

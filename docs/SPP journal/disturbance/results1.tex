@@ -50,23 +50,23 @@ These parameters are the same as the example in Section \ref{sec:basic_results},
 
 With the above parameters, we obtain $\ldt_i, i=1,2,3,4$. Note that even though $\sta_i$ is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which $\sta_i$ is different for each vehicle as we have already shown in Section \ref{sec:basic_results}.
 
-For each proposed method of computing induced obstacles, we show the vehicles' entire trajectories (colored dotted lines), and overlay their positions (colored asterisks) and headings (arrows) at a point in time in which they are in relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time. In addition, we show the evolution of the BRS over time for $\veh_3$ (green boundaries) as well as the obstacles induced by the higher-priority vehicles (black boundaries).
+For each proposed method of computing induced obstacles, we show the vehicles' entire trajectories (colored dotted lines), and overlay their positions (colored asterisks) and headings (arrows) at a point in time in which they are in a relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time. In addition, we show the evolution of the BRS over time for $\veh_3$ (green boundaries) as well as the obstacles induced by the higher-priority vehicles (black boundaries).
 
 \subsection{Centralized Control}
-\begin{figure}[H]
+\begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{"fig/cc_traj"}
-  \caption{Simulated trajectories in the centralized control method. Since the higher priority vehicles induce relatively small obstacles in this case, vehicles do not deviate much from a straight line trajectory towards their respective targets.}
+  \caption{Simulated trajectories in the centralized control method. Since the higher priority vehicles induce relatively small obstacles in this case, vehicles do not deviate much from a straight line trajectory towards their respective targets, and arrive at a dense configuration similar to that in Fig. \ref{fig:dubins_result}}
   \label{fig:cc_traj}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{"fig/cc_rs3"}
-  \caption{Evolution of the BRS and the obstacles induced by $\veh_1$ and $\veh_2$ for $\veh_3$ in the centralized control method. Since every vehicle is applying the optimal control at all times, the obstacle sizes are relatively small.}
+  \caption{Evolution of the BRS and the obstacles induced by $\veh_1$ and $\veh_2$ for $\veh_3$ in the centralized control method. Since every vehicle is applying the optimal control at all times, the obstacle sizes are only slightly bigger than those in Fig. \ref{fig:dubins_reach_all} and \ref{fig:dubins_reach_3}}.
   \label{fig:cc_rs3}
 \end{figure}
 
-Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $u^*_i(t, x_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}. In this case, vehicles appear to deviate slightly from a straight line trajectory towards their respective targets, just enough to avoid higher-priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
+Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $\ctrl^\text{dstb}_i(t, \state_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}. In this case, vehicles appear to deviate slightly from a straight line trajectory towards their respective targets, just enough to avoid higher-priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
 
-Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher-priority vehicles $\veh_1$ (red) and $\veh_2$ (blue). The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. $\ldt_i$ numbers for the four vehicles (in order) in this case are $-1.35, -1.37, -1.94$ and $-2.04$. Numbers are relatively close for vehicles $\veh_1$, $\veh_2$ and $\veh_3$, $\veh_4$, because the obstacles generated by higher-priority vehicles are small and hence do not affect $\ldt$ of the lower-priority vehicles significantly.
+Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher-priority vehicles $\veh_1$ (red) and $\veh_2$ (blue). The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. The $\ldt_i$ values for the four vehicles (in order) in this case are $-1.35, -1.37, -1.94$ and $-2.04$, relatively close for vehicles pairs $(\veh_1, \veh_2)$ and $(\veh_3, \veh_4)$, because the obstacles generated by higher-priority vehicles are small and hence do not affect the $\ldt_i$ of lower-priority vehicles significantly.
