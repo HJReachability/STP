@@ -11,7 +11,7 @@ In general, the above methods can be used in combination in a single path planni
 
 In addition, for simplicity of explanation, we will assume that no static obstacles exist. In the situations where static obstacles do exist, the time-varying obstacles $\obsset_i(t)$ simply become the union of the induced obstacles $\ioset_i^j(t)$ in \eqref{eq:ioset} and the static obstacles.
 
-The material in this Section is taken partially from \cite{Bansal2017}.
+The material in this section is taken partially from \cite{Bansal2017}.
 
 \subsection{Method 1: Centralized Control \label{sec:cc}}
 The highest-priority vehicle $\veh_1$ first plans its path by computing the BRS (with $i=1$)
@@ -39,8 +39,8 @@ From the BRS, we can obtain the optimal control
 
 Here, as well as in the other two methods, the latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t)$.
 
-If there is a centralized controller directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower-priority vehicles can safely assume that higher-priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $u^*_i(t, \state_i)$ can be enforced. In this case, the dynamics of each vehicle becomes 
-\vspace{-0.3em}
+If there is a central agent directly controlling each of the $N$ vehicles, then the control law of each vehicle can be enforced. In this case, lower-priority vehicles can safely assume that higher-priority vehicles are applying the enforced control law. In particular, the optimal controller for getting to the target, $\ctrl^\text{dstb}_i(t, \state_i)$, can be enforced. In this case, the dynamics of each vehicle becomes 
+
 \begin{equation}
 \label{eq:dyn_cc}
 \begin{aligned}
@@ -51,7 +51,7 @@ If there is a centralized controller directly controlling each of the $N$ vehicl
 
 \noindent where $\ctrl_i$ no longer appears explicitly in the dynamics.
 
-From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the capture radius $\rc$ of $\veh_j$ under the dynamics $\fdyn^\text{cc}_j(\state_j, \dstb_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\state_j(\ldt_j) = \state_{j}^0$. The FRS $\frs_j^\text{cc}(t)$ is defined as follows:
+From the perspective of a lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j, j < i$ induces a time-varying obstacle that represents the positions that could possibly be within the collision radius $\rc$ of $\veh_j$ under the dynamics $\fdyn^\text{cc}_j(\state_j, \dstb_j)$. Determining this obstacle involves computing a forward reachable set (FRS) of $\veh_j$ starting from\footnote{In practice, we define the target set to be a small region around the vehicle's initial state for computational reasons.} $\state_j(\ldt_j) = \state_{j}^0$. The FRS $\frs_j^\text{cc}(t)$ is defined as follows:
 
 \begin{equation}
 \label{eq:FRS1}
@@ -67,7 +67,7 @@ This FRS can be computed using \eqref{eq:HJIVI_FRS} with the Hamiltonian
 \ham_j^\text{cc}\left(\state_j, \costate\right) = \max_{\dstb_j \in \dset_j} \costate \cdot f^\text{cc}_j(\state_j, \dstb_j)
 \end{equation}
 
-The FRS $\frs_j^\text{cc}(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given all possible disturbances $\dstb_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $\ctrl_j^\text{dstb}(t, \state_j)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\rc$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\rc$ away from the set $\frs_j^\text{cc}(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher-priority vehicle $\veh_j$ for a lower-priority vehicle $\veh_i$ as follows:
+The FRS $\frs_j^\text{cc}(t)$ represents the set of possible states at time $t$ of a higher-priority vehicle $\veh_j$ given all possible disturbances $\dstb_j(\cdot)$ and given that $\veh_j$ uses the feedback controller $\ctrl_j^\text{dstb}(t, \state_j)$. In order for a lower-priority vehicle $\veh_i$ to guarantee that it does not go within a distance of $\rc$ to $\veh_j$, $\veh_i$ must stay a distance of at least $\rc$ away from the FRS $\frs_j^\text{cc}(t)$ for all possible values of the non-position states $\npos_j$. This gives the obstacle induced by a higher-priority vehicle $\veh_j$ for a lower-priority vehicle $\veh_i$ as follows:
 
 \begin{equation} \label{eqn:ccObs}
 \ioset_i^j(t) = \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \}
@@ -79,7 +79,7 @@ The FRS $\frs_j^\text{cc}(t)$ represents the set of possible states at time $t$ 
 \pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_j^\text{cc}(t)\}.
 \end{equation}
 
-Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:ioset} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
+Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:obsseti} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
 
 The centralized control algorithm can be summarized as follows:
 \begin{alg}

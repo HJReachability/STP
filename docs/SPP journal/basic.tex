@@ -21,14 +21,13 @@ From the perspective of $\veh_i$, each of the higher priority vehicles $\veh_j, 
 
 \begin{equation}
 \label{eq:obsseti}
-\obsset_i(t)  = \soset \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
+\obsset_i(t)  = \soset_i \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
 \end{equation}
 
 With full position information of higher priority vehicles, the obstacle induced for $\veh_i$ by $\veh_j$ is simply
 
 \begin{equation}
 \label{eq:ioset}
-%\ioset_i^j(t) = \{\state_i: (\state_i, \state_j(t)) \in \dz_{ij}\}
 \ioset_i^j(t) = \{\state_i: \|\pos_i - \pos_j(t)\|_2 \le \rc \}
 \end{equation}
 
@@ -63,7 +62,7 @@ In summary, the basic SPP algorithm is given as follows:
 
 \begin{alg}
 \label{alg:basic}
-\textbf{Basic SPP algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\textbf{Basic SPP algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
 \begin{enumerate}
 \item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
 \item Compute the BRS $\brs_i^\text{basic}(t)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{basic}(t)$.

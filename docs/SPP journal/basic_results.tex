@@ -21,9 +21,7 @@ For this example, the target sets $\targetset_i$ of the vehicles are circles of 
 \targetset_i = \{\state_i: \|\pos_i - c_i\|_2 \le r\}
 \end{equation}
 
-\noindent where $c_i$ are centers of the target circles. For the simulation of the basic SPP algorithm, we used $r = 0.1$.
-
-The vehicles have target centers $c_i$, initial conditions $\state_i^0$, and scheduled times of arrivals $\sta_i$ as follows:
+\noindent where $c_i$ are centers of the target circles. For the simulation of the basic SPP algorithm, we used $r = 0.1$. The vehicles have target centers $c_i$, initial conditions $\state_i^0$, and scheduled times of arrivals $\sta_i$ as follows:
 
 \begin{equation}
 \begin{aligned}
@@ -36,13 +34,13 @@ c_4 = (-0.7, -0.7), \quad & \state_4^0 = \left(0.6, 0.6, 5\pi/4\right), \quad & 
 
 The setup for this example is shown in Fig. \ref{fig:dubins_ic}, which also shows the static obstacles as the black rectangles around the center of the domain.
 
-The joint state space of this four-vehicle system is twelve-dimensional (12D), making the joint path planning and collision avoidance problem intractable for direct analysis. Therefore, we apply the SPP algorithm described in Algorithm \ref{alg:basic} and repeatedly solve the double-obstacle HJ VI in \eqref{eq:HJIVI_BRS} to obtain the optimal control for each vehicle to reach its target while avoiding higher-priority vehicles. In addition, due to the flexibility of the HJ VI with respect to time-varying systems, the different scheduled times of arrival $\sta_i$ can be trivially incorporated. 
+The joint state space of this four-vehicle system is twelve-dimensional (12D), making the joint path planning and collision avoidance problem intractable for direct analysis using HJ reachability. Therefore, we apply the SPP algorithm described in Algorithm \ref{alg:basic} and repeatedly solve the double-obstacle HJ VI in \eqref{eq:HJIVI_BRS} to obtain the optimal control for each vehicle to reach its target while avoiding higher-priority vehicles. In addition, due to the flexibility of the HJ VI with respect to time-varying systems, the different scheduled times of arrival $\sta_i$ can be trivially incorporated. 
 
-Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs_i^\text{basic}(t)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\soset$ and the obstacles induced by other vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these channels and islands form by examining the time evolution of the BRS, shown in Figure \ref{fig:dubins_reach_3} for vehicle $\veh_3$. 
+Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_result} show the simulation results. Since the state space of each vehicle is 3D, each of the BRSs $\brs_i^\text{basic}(t)$ is also 3D. To visualize the results, we slice the BRSs at the initial heading angles $\theta_i^0$. Fig. \ref{fig:dubins_reach_all} shows the 2D BRS slices for each vehicle at its latest departure times $\ldt_1=-1.12, \ldt_2=-0.94,\ldt_3=-1.48,\ldt_4=-1.44$ determined from our method. The obstacles in the domain $\soset_i$ and the obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ inhibit the evolution of the BRSs, carving out thin ``channels" that separate the BRSs into different ``islands". One can see how these ``channels'' and ``islands'' form by examining the time evolution of the BRS, shown in Fig. \ref{fig:dubins_reach_3} for vehicle $\veh_3$. 
 
 Finally, Fig. \ref{fig:dubins_result} shows the resulting trajectories of the four vehicles. Most interestingly, the subplot labeled $t=-0.55$ shows all four vehicles in close proximity without collision: each vehicle is outside of the danger zone of all other vehicles (although the danger zones may overlap). This close proximity is an indication of the optimality of the basic SPP algorithm given the assigned priority ordering. Since no disturbances are present, getting as close to other vehicles' danger zones as possible without entering the danger zones intuitively results in short transit times.
 
-The actual arrival times of vehicles $i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, respectively. It is interesting to note that for some vehicles, the actual arrival times are earlier than the scheduled times of arrivals $\sta_i, i=1,2,3,4$. This is because in order to arrive at the target by $\sta_i$, these vehicles must depart early enough to avoid major delays resulting from the induced obstacles of other vehicles; these delays would have lead to a late arrival if vehicle $i$ departed after $\sta_i$.
+The actual arrival times of vehicles $\veh_i,i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, respectively. It is interesting to note that for some vehicles, the actual arrival times are earlier than the scheduled times of arrivals $\sta_i$. This is because in order to arrive at the target by $\sta_i$, these vehicles must depart early enough to avoid major delays resulting from the induced obstacles of other vehicles; these delays would have lead to a late arrival if vehicle $\veh_i$ departed after $\sta_i$.
 
 \begin{figure}
 	\centering
@@ -68,6 +66,6 @@ The actual arrival times of vehicles $i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, resp
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{"fig/dubins_result"}
-	\caption{The planned trajectories of the four vehicles. Top left: only vehicles $\veh_3$ (green) and $\veh_4$ (purple) have started moving, showing $\ldt_i$ is not common across the vehicles. Top right: all vehicles have come within very close proximity, but none is in the danger zone another. Bottom left: vehicle $\veh_1$ (blue) arrives at $\targetset_1$ at $t=0$. Bottom right: all vehicles have reached their destination, some ahead of the STA $\sta_i$.}
+	\caption{The planned trajectories of the four vehicles. Top left: only vehicles $\veh_3$ (green) and $\veh_4$ (purple) have started moving, showing $\ldt_i$ is not common across the vehicles. Top right: all vehicles have come within very close proximity, but none is in the danger zone of another. Bottom left: vehicle $\veh_1$ (blue) arrives at $\targetset_1$ at $t=0$. Bottom right: all vehicles have reached their destination, some ahead of $\sta_i$.}
 	\label{fig:dubins_result}
 \end{figure}
