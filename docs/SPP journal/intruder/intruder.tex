@@ -10,7 +10,7 @@ In general, the effect of an intruder on the vehicles in structured flight can b
 At most one intruder (denoted as $\veh_I$ here on) affects the SPP vehicles at any given time. The intruder exits the altitude level affecting the SPP vehicles after a duration of $\iat$. 
 \end{assumption}
 
-Let the time at which intruder appears in the sytem be $\tsa$ and the time at which it disappears be $\tea$. Assumption \ref{as:avoidOnce} implies that $\tea \leq \tsa + \iat$. Thus, any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$. This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the altitude level affecting the SPP vehicles. Note that we do not make any assumptions about $\tsa$; however, we assume that once it appears, it stays for a maximum duration of $\iat$.
+Let the time at which intruder appears in the system be $\tsa$ and the time at which it disappears be $\tea$. Assumption \ref{as:avoidOnce} implies that $\tea \leq \tsa + \iat$. Thus, any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$. This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the altitude level affecting the SPP vehicles. Note that we do not make any assumptions about $\tsa$; however, we assume that once it appears, it stays for a maximum duration of $\iat$.
 %in addition, after avoiding the intruder, Qi can safely assume that it would not need to avoid another intruder
 
 \begin{assumption}
@@ -39,7 +39,7 @@ Based on the above assumptions, we aim to design a control policy that ensures s
 %\begin{itemize}
 %\item \textit{Step-1}: First, we compute the set of obstacles induced by the higher priority vehicles for the lower priority vehicles.  
 %\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
-%\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+%\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoiding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
 %\item \textit{Step-4}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. If a vehicle sense an intruder while it is still outside this region, the above algorithm will ensure safety at all times.  
 %\end{itemize}
 
