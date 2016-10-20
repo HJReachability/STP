@@ -1,24 +1,24 @@
 % !TEX root = ../SPP_journal.tex
 \subsubsection{Least Restrictive Control \label{sec:lrc}}
-Here, we again begin with the highest-priority vehicle $\veh_1$ planning its path by computing the BRS $\brs_i^\text{dstb}(t)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+Here, we again begin with the highest-priority vehicle $\veh_1$ planning its path by computing the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
-\ctrl_j^\text{lrc}(t, \state_j)\in \begin{cases} \{\ctrl_j^\text{dstb}(t, \state_j) \text{ in } \eqref{eq:opt_ctrl_i}\} \text{ if } \state_j(t)\in \partial \brs_j^\text{dstb}(t), \\
+\ctrl_j^\text{lrc}(t, \state_j)\in \begin{cases} \{\ctrl_j^\text{dstb}(t, \state_j) \text{ in } \eqref{eq:opt_ctrl_i}\} \text{ if } \state_j(t)\in \partial \brs_j^\text{dstb}(t, \sta_j), \\
 \cset_j  \text{ otherwise}
 \end{cases}
 \end{equation}
 
-Such a controller allows each higher-priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j^\text{dstb}(t)$, in which case the optimal control $\ctrl_j^\text{dstb}(t, \state_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower-priority vehicles given that the higher-priority vehicles will get to their targets on time.
+Such a controller allows each higher-priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j^\text{dstb}(t, \sta_j)$, in which case the optimal control $\ctrl_j^\text{dstb}(t, \state_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower-priority vehicles given that the higher-priority vehicles will get to their targets on time.
 
-Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles $\veh_j, j < i$ use the least restrictive control strategy $\ctrl_j^\text{lrc}(t, \state_j)$ in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $\state_j(\ldt_j) = \state_{j}^0$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of an FRS $\frs_j^\text{lrc}(t)$ from the initial state $\state_j(\ldt_j)=\state_{j}^0$ and the BRS $\brs_j^\text{dstb}(t)$ defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\frs_j^\text{lrc}(t) \cap \brs_j^\text{dstb}(t)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j^\text{lrc}(t)$ is defined as
+Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles $\veh_j, j < i$ use the least restrictive control strategy $\ctrl_j^\text{lrc}(t, \state_j)$ in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $\state_j(\ldt_j) = \state_{j}^0$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of an FRS $\frs_j^\text{lrc}(\ldt_j, t)$ from the initial state $\state_j(\ldt_j)=\state_{j}^0$ and the BRS $\brs_j^\text{dstb}(t, \sta_j)$ defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j^\text{lrc}(\ldt_j, t)$ is defined as
 
 \begin{equation}
 \label{eq:FRS2}
 \begin{aligned}
-\frs_j^\text{lrc}(t) = & \{y: \exists \ctrl_j(\cdot)\in\cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+\frs_j^\text{lrc}(\ldt_j, t) = & \{y: \exists \ctrl_j(\cdot)\in\cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
 & \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\ldt_j) = \state_{j}^0,\\
-& \state_j(t) = y\}, t \geq \ldt_j.
+& \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
 
@@ -37,17 +37,17 @@ In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority
 
 \begin{equation}
 \label{eqn:lrcObs2}
-\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_j^\text{lrc}(t) \cap \brs_j^\text{dstb}(t) \} 
+\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j) \} 
 \end{equation}
 
 Least restrictive control method can be summarized as follows:
 \begin{alg}
 \label{alg:lrc}
-\textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$ in ascending order starting from $i=1$ (which corresponds to descending order or priority),
+\textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:
 \begin{enumerate}
 \item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS $\brs_i^\text{dstb}(t)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t)$.
-\item Compute the FRS $\frs_i^\text{lrc}(t)$ in \eqref{eq:FRS2}. Given $\frs_i^\text{lrc}(t)$ and $\brs_i^\text{dstb}(t)$, compute the positions that the $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2}.
+\item Compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t, \sta_i)$.
+\item Compute the FRS $\frs_i^\text{lrc}(t)$ in \eqref{eq:FRS2}. Given $\frs_i^\text{lrc}(\ldt_i, t)$ and $\brs_i^\text{dstb}(t, \sta_i)$, compute the positions that the $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2}.
 \item Compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
 \end{enumerate}
 \end{alg}
