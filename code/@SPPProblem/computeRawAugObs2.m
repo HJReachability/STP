@@ -12,7 +12,7 @@ end
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
-g = createGrid([-0.6; -0.6; -3*pi/2], [0.7; 0.6; pi/2], [71; 71; 71], 3);
+g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
@@ -25,7 +25,7 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 %% Compute intruder exclusive set
 fprintf('Computing intruder exclusive set\n')
-rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj.dt, g);
+rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj, g);
 
 %% Compute FRS
 fprintf('Computing FRS of raw obstacle...\n')
@@ -95,18 +95,26 @@ rawObsBRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData,  'zero', extraArgs);
 
 end
 
-function IESet = computeRawObs_IES(RTTRSdata, CARS, dt, g)
+function IESet = computeRawObs_IES(RTTRSdata, CARS, SPPP, g)
 
 schemeData.dynSys = CARS.dynSys;
 schemeData.grid = g;
 schemeData.uMode = 'min';
 schemeData.dMode = 'min';
-tau = 0:dt:2*max(CARS.tau);
-data0 = RTTRSdata;
+tau = 0:SPPP.dt:max(CARS.tau);
+data0 = shapeCylinder(g, 3, [0;0;0], SPPP.Rc);
 
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
-IESet = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
-IESet = IESet(:,:,:,end);
+minMinBRS = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
+minMinBRS = minMinBRS(:,:,:,end);
+
+pdims = [1 2];
+adim = 3;
+bdry_only = false;
+barA1 = computeDataByUnion(g, minMinBRS, g, RTTRSdata, pdims, adim, bdry_only);
+
+IESet = computeDataByUnion(g, minMinBRS, g, barA1, pdims, adim, bdry_only);
+keyboard
 end
