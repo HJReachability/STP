@@ -37,14 +37,15 @@ if exist(obj.RTTRS_filename, 'file')
 end
 
 % Grid
-grid_min = [-0.1; -0.1; -pi/6]; % Lower corner of computation domain
-grid_max = [0.1; 0.1; pi/6];    % Upper corner of computation domain
-N = [101; 101; 101];         % Number of grid points per dimension
+grid_min = [-1.25*tR; -1.25*tR; -pi/6]; % Lower corner of computation domain
+grid_max = [1.25*tR; 1.25*tR; pi/6];    % Upper corner of computation domain
+N = [41; 41; 41];         % Number of grid points per dimension
 schemeData.grid = createGrid(grid_min, grid_max, N);
 
-% Time
-tMax = 2; % Track trajectory for up to this time
-tau = 0:obj.dt:tMax;
+% Track trajectory for up to this time
+tMax = max(obj.gMax(1:2) - obj.gMin(1:2)) / max(obj.vRangeA); 
+dt = 0.1;
+tau = 0:dt:tMax;
 
 % Virtual vehicle to be tracked
 vRangeB = obj.vRangeA + vR;
@@ -61,6 +62,7 @@ schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
+extraArgs.stopConverge = true;
 
 if save_png
   folder = sprintf('%s_%f', mfilename, now);
