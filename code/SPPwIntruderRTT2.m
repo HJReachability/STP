@@ -30,6 +30,11 @@ if nargin < 1
   gridParams.N = [95; 95; 95];
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
+  
+  SPPP.tMin = -100;
+  SPPP.dt = 1;
+  SPPP.Rc = 1;
+  
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
 end
@@ -37,11 +42,17 @@ end
 % RTT parameters
 vReserved = [1.5 -0.5];
 wReserved = -0.8;
-trackingRadius = 1;
+trackingRadius = 0.25;
 
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
-SPPP.computeCARS;
+
+Qintr = Plane([0; 0; 0], vehParams.wMaxA, vehParams.vRangeA, vehParams.dMaxA);
+tIAT = 10;
+SPPP.computeCARS(Qintr, tIAT);
+
 SPPP.computeRawAugObs2;
+keyboard
+
 SPPP.computeBRRS2;
 SPPP.simulateBR2;
 SPPP.computeARRS2;

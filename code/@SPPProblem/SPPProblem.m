@@ -13,10 +13,9 @@ classdef SPPProblem < handle
     Rc = 0.1 % collision radius
     
     % SPP vehicle parameters
-    vRangeA = [0.1 1];
-%     vRangeA = [0.5 1];
-    wMaxA = 1;
-    dMaxA = [0.1 0.2];
+    vRangeA;
+    wMaxA;
+    dMaxA;
     
     % Time
     tMin = -5    % Minimum time for the entire problem

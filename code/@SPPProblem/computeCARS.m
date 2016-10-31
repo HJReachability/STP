@@ -37,9 +37,15 @@ schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 
 %% Grid and target set
-grid_min = [-0.3; -0.4; 0]; % Lower corner of computation domain
-grid_max = [0.5; 0.4; 2*pi];    % Upper corner of computation domain
-N = [101; 101; 101];         % Number of grid points per dimension
+% % for SPPwIntruderRTT method 1
+% grid_min = [-3*obj.Rc; -4*obj.Rc; 0];
+% grid_max = [5*obj.Rc; 4*obj.Rc; 2*pi];
+% N = [101; 101; 101]; 
+
+% for SPPwIntruderRTT method 2
+grid_min = [-12*obj.Rc; -13*obj.Rc; 0];
+grid_max = [15*obj.Rc; 13*obj.Rc; 2*pi];
+N = [41; 41; 41]; 
 pdDims = 3;               % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
 

@@ -12,7 +12,11 @@ end
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
 
-g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
+% % For SPPwIntruderRTT method 1
+% g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
+
+% For SPPwIntruderRTT method 1
+g = createGrid([-10; -10; 0], [12; 10; 2*pi], [41; 41; 41], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS

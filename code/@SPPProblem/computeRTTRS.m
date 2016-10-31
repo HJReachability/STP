@@ -39,11 +39,14 @@ end
 % Grid
 grid_min = [-1.25*tR; -1.25*tR; -pi/6]; % Lower corner of computation domain
 grid_max = [1.25*tR; 1.25*tR; pi/6];    % Upper corner of computation domain
-N = [41; 41; 41];         % Number of grid points per dimension
+% Number of grid points per dimension
+% N = [101; 101; 101]; % for SPPwIntruderRTT method 1
+N = [51; 51; 51]; % for SPPwIntruderRTT method 2
 schemeData.grid = createGrid(grid_min, grid_max, N);
 
 % Track trajectory for up to this time
-tMax = max(obj.gMax(1:2) - obj.gMin(1:2)) / max(obj.vRangeA); 
+% tMax = 2; % for SPPwIntruderRTT method 1
+tMax = 10; % for SPPwIntruderRTT method 2
 dt = 0.1;
 tau = 0:dt:tMax;
 
