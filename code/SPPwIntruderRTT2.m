@@ -34,7 +34,7 @@ if nargin < 1
   SPPP.tMin = -100;
   SPPP.dt = 1;
   SPPP.Rc = 1;
-  SPPP.staticObs = inf([g.N' length(SPPP.tMin:SPPP.dt:0)]);
+  SPPP.staticObs = inf([SPPP.g.N' length(SPPP.tMin:SPPP.dt:0)]);
   
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
