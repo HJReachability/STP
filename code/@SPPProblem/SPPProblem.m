@@ -12,6 +12,8 @@ classdef SPPProblem < handle
     
     Rc = 0.1 % collision radius
     
+    staticObs; % static obstacles
+    
     % SPP vehicle parameters
     vRangeA;
     wMaxA;
@@ -107,6 +109,8 @@ classdef SPPProblem < handle
       
       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+      
+      obj.staticObs = inf(obj.gN');
       
       obj.this_filename = sprintf('%s_%f.mat', mfilename, now);
     end

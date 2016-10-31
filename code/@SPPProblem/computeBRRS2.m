@@ -55,11 +55,18 @@ BRS1_tau = obj.tMin:obj.dt:obj.tTarget;
 
 %% Start the computation of reachable sets
 for veh=1:length(Q)
+  %% Update obstacle
+  fprintf('Updating obstacles for vehicle %d...\n', veh)
+  if veh == 1
+    obstacles = obj.staticObs;
+  else
+    obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr);
+    Q{veh-1}.trimData({'BRS1', 'obsForIntr'});
+  end
+  
+  
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if isempty(Q{veh}.BRS1)
-    fprintf('Gathering obstacles for vehicle %d...\n', veh)
-    obstacles = gatherObstacles(Q(1:veh-1), obj.g, BRS1_tau, 'obsForIntr');
-    
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh}.computeBRS1(BRS1_tau, obj.g, obstacles);
     

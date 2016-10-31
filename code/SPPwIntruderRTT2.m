@@ -34,6 +34,7 @@ if nargin < 1
   SPPP.tMin = -100;
   SPPP.dt = 1;
   SPPP.Rc = 1;
+  SPPP.staticObs = inf([g.N' length(SPPP.tMin:SPPP.dt:0)]);
   
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
@@ -42,7 +43,7 @@ end
 % RTT parameters
 vReserved = [1.5 -0.5];
 wReserved = -0.8;
-trackingRadius = 0.5;
+trackingRadius = 0.4;
 
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 
