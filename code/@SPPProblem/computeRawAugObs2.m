@@ -20,7 +20,7 @@ load(obj.RTTRS_filename)
 % g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
 
 % For SPPwIntruderRTT method 2
-g = createGrid([-50; -50; 0], [55; 50; 2*pi], [51; 51; 51], 3);
+g = createGrid([-100; -100; 0], [100; 100; 2*pi], [81; 81; 81], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
@@ -132,5 +132,15 @@ bdry_only = false;
 barA1 = computeDataByUnion(g, minMinBRS, g, RTTRSdata, pdims, adim, bdry_only);
 
 IESet = computeDataByUnion(g, minMinBRS, g, barA1, pdims, adim, bdry_only);
-keyboard
+
+if save_png
+  figure
+  visSetIm(g, barA1, 'b')
+  export_fig(sprintf('%s/barA1', '-png'))
+  
+  figure
+  visSetIm(g, IESet, [0 0.75 0])
+  export_fig(sprintf('%s/IESet', '-png'))  
+end
+
 end
