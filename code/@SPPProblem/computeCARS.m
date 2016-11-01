@@ -68,7 +68,7 @@ data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
 CARS.dynSys = schemeData.dynSys;
 CARS.g = schemeData.grid;
-CARS.data = data(:,:,:,end);
+CARS.data = data;
 CARS.tau = tau;
 
 % Update SPPP and save

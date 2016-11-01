@@ -1,4 +1,4 @@
-function computeRawAugObs2(obj)
+function computeRawAugObs2(obj, save_png)
 % computeRawAugObs(obj)
 %     Augments the raw obstacles (for translation on nominal trajectory)
 
@@ -8,6 +8,10 @@ if exist(obj.rawAugObs_filename, 'file')
   return
 end
 
+if nargin < 2
+  save_png = true;
+end
+
 %% Load and migrate RTTRS
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
@@ -15,8 +19,8 @@ load(obj.RTTRS_filename)
 % % For SPPwIntruderRTT method 1
 % g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
 
-% For SPPwIntruderRTT method 1
-g = createGrid([-10; -10; 0], [12; 10; 2*pi], [41; 41; 41], 3);
+% For SPPwIntruderRTT method 2
+g = createGrid([-25; -25; 0], [35; 25; 2*pi], [51; 51; 51], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 %% Load CARS
@@ -29,7 +33,7 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 %% Compute intruder exclusive set
 fprintf('Computing intruder exclusive set\n')
-rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj, g);
+rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj, g, save_png);
 
 %% Compute FRS
 fprintf('Computing FRS of raw obstacle...\n')
@@ -99,7 +103,15 @@ rawObsBRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData,  'zero', extraArgs);
 
 end
 
-function IESet = computeRawObs_IES(RTTRSdata, CARS, SPPP, g)
+function IESet = computeRawObs_IES(RTTRSdata, CARS, SPPP, g, save_png)
+
+if save_png
+  s = dbstack;
+  fn_name = s.name;
+  folder = sprintf('%s_%f', fn_name, now);
+  system(sprintf('mkdir %s', folder));
+  extraArgs.fig_filename = sprintf('%s/', folder);
+end
 
 schemeData.dynSys = CARS.dynSys;
 schemeData.grid = g;
