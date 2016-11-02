@@ -136,11 +136,11 @@ IESet = computeDataByUnion(g, minMinBRS, g, barA1, pdims, adim, bdry_only);
 if save_png
   figure
   visSetIm(g, barA1, 'b')
-  export_fig(sprintf('%s/barA1', '-png'))
+  export_fig(sprintf('%s/barA1', folder), '-png')
   
   figure
   visSetIm(g, IESet, [0 0.75 0])
-  export_fig(sprintf('%s/IESet', '-png'))  
+  export_fig(sprintf('%s/IESet', folder), '-png')
 end
 
 end
