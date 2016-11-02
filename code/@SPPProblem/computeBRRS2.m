@@ -62,6 +62,7 @@ for veh=1:length(Q)
   else
     obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr);
     Q{veh-1}.trimData({'BRS1', 'obsForIntr'});
+    save(obj.BR_RS_filename);
   end
   
   
@@ -70,20 +71,24 @@ for veh=1:length(Q)
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh}.computeBRS1(BRS1_tau, obj.g, obstacles);
     
-    [Q1, Q2, Q3, Q4] = Q{:};
-    save(obj.BR_RS_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+    Q = Q{veh};
+    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
   end
   
   %% Compute the nominal trajectories based on BRS1
   if isempty(Q{veh}.nomTraj)
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
     Q{veh}.computeNomTraj(obj.g);
+    Q = Q{veh};
+    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
   if isempty(Q{veh}.obsForIntr)
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
     Q{veh}.computeObsForIntr2(obj.g, rawAugObs);
+    Q = Q{veh};
+    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
   end
 end
 
