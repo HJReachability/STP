@@ -47,13 +47,12 @@ end
 % 
 % SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 
-Qintr = Plane([0; 0; 0], vehParams.wMaxA, vehParams.vRangeA, vehParams.dMaxA);
+Qintr = Plane([0; 0; 0], SPPP.wMaxA, SPPP.vRangeA, SPPP.dMaxA);
 tIAT = 10;
 SPPP.computeCARS(Qintr, tIAT);
 keyboard
 
 SPPP.computeRawAugObs2;
-keyboard
 
 SPPP.computeBRRS2;
 SPPP.simulateBR2;

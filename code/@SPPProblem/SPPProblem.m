@@ -35,7 +35,8 @@ classdef SPPProblem < handle
     
     tauBR        % Time vector before replanning
     tauAR        % Time vector after replanning
-    tau          % Time vector for entire simulation
+    tauSim       % Time vector for entire simulation
+    tau          % Global time (absolute time vector)
     
     % File to store this SPPProblem instance
     this_filename
@@ -110,6 +111,7 @@ classdef SPPProblem < handle
       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
       
+      obj.tau = obj.tMin:obj.dt:obj.tTarget;
       obj.staticObs = inf(obj.gN');
       
       obj.this_filename = sprintf('%s_%f.mat', mfilename, now);
