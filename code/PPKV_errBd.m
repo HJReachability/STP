@@ -20,12 +20,12 @@ schemeData.dynSys = PPKV;
 
 %% Compute reachable set
 % Grid
-grid_min = [-1.25*tR; -1.25*tR; -pi/4]; % Lower corner of computation domain
-grid_max = [1.25*tR; 1.25*tR; pi/4];    % Upper corner of computation domain
+grid_min = [-1.25*tR; -1.25*tR; -pi]; % Lower corner of computation domain
+grid_max = [1.25*tR; 1.25*tR; pi];    % Upper corner of computation domain
 % Number of grid points per dimension
 % N = [101; 101; 101]; % for SPPwIntruderRTT method 1
-N = [51; 51; 51]; % for SPPwIntruderRTT method 2
-schemeData.grid = createGrid(grid_min, grid_max, N);
+N = [71; 71; 95]; % for SPPwIntruderRTT method 2
+schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 
 % Track trajectory for up to this time
 % tMax = 2; % for SPPwIntruderRTT method 1
