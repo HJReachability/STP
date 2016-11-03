@@ -39,7 +39,7 @@ schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
-extraArgs.stopConverge = true;
+extraArgs.stopInit = [0;0;0];
 
 if save_png
   folder = sprintf('%s_%f', mfilename, now);
