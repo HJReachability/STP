@@ -1,6 +1,6 @@
-function PPKV_errBd(save_png)
+function PPKV_errBd(tR, save_png)
 
-if nargin < 1
+if nargin < 2
   save_png = true;
 end
 
@@ -17,8 +17,6 @@ vMax = 2;
 PPKV = PlanePursue2DKV([0;0;0], wMaxA, vRangeA, dMaxA, vMax);
 schemeData.dynSys = PPKV;
 
-% Tracking radius
-tR = 5;
 
 %% Compute reachable set
 % Grid
