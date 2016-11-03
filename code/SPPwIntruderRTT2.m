@@ -22,7 +22,7 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.25 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.2*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = 0.1*[max(vehParams.vRangeA) vehParams.wMaxA];
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
@@ -40,16 +40,17 @@ if nargin < 1
   keyboard
 end
 
-% RTT parameters
-vReserved = [1.5 -0.5];
-wReserved = -0.8;
-trackingRadius = 0.4;
-
-SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
+% % RTT parameters
+% vReserved = [1.5 -0.5];
+% wReserved = -0.8;
+% trackingRadius = 0.4;
+% 
+% SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 
 Qintr = Plane([0; 0; 0], vehParams.wMaxA, vehParams.vRangeA, vehParams.dMaxA);
 tIAT = 10;
 SPPP.computeCARS(Qintr, tIAT);
+keyboard
 
 SPPP.computeRawAugObs2;
 keyboard
