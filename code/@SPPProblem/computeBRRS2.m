@@ -62,7 +62,7 @@ for veh=1:length(Q)
   else
     obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr);
     Q{veh-1}.trimData({'BRS1', 'obsForIntr'});
-    save(obj.BR_RS_filename);
+    save(obj.BR_RS_filename, 'Q', '-v7.3');
   end
   
   

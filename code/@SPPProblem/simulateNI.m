@@ -20,9 +20,9 @@ else
 end
 
 % Load path planning reachable set
-if exist(obj.NI_RS_filename_small, 'file')
+if exist(obj.NI_RS_filename, 'file')
   fprintf('Loading RS data...\n')
-  load(obj.NI_RS_filename_small)
+  load(obj.NI_RS_filename)
 else
   error('RS file not found!')
 end
