@@ -30,7 +30,7 @@ schemeData.grid = g;
 
 % Track trajectory for up to this time
 % tMax = 2; % for SPPwIntruderRTT method 1
-tMax = 10; % for SPPwIntruderRTT method 2
+tMax = 100; % for SPPwIntruderRTT method 2
 dt = 0.1;
 tau = 0:dt:tMax;
 
