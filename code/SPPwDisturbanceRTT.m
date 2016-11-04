@@ -46,7 +46,7 @@ if nargin < 1
   % Grid parameters
   gridParams.min = [0; 0; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [41; 41; 95];  
+  gridParams.N = [41; 41; 41];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   

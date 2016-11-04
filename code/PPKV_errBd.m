@@ -11,7 +11,7 @@ wMaxA = 2;
 dMaxA = 0.2*[max(vRangeA) wMaxA];
 
 % Kinematic vehicle parameters
-vMax = 2;
+vMax = 1.5;
 
 % Pursuit evasion game
 PPKV = PlanePursue2DKV([0;0;0], wMaxA, vRangeA, dMaxA, vMax);
