@@ -17,8 +17,8 @@ R_augment = SPPP.Rc + RTTRS.trackingRadius; % Amount to augment RTTRS by
 % Create slightly bigger grid to augment the RTTRS
 small_g2D_min = RTTRS_g2D.min - R_augment;
 small_g2D_max = RTTRS_g2D.max + R_augment;
-small_g2D_N = (small_g2D_max - small_g2D_min) ./ ...
-  (RTTRS_g2D.max - RTTRS_g2D.min) .* RTTRS_g2D.N;
+small_g2D_N = ceil((small_g2D_max - small_g2D_min) ./ ...
+  (RTTRS_g2D.max - RTTRS_g2D.min) .* RTTRS_g2D.N);
 small_g2D = createGrid(small_g2D_min, small_g2D_max, small_g2D_N);
 
 % Migrate RTTRS set
