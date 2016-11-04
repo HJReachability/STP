@@ -50,7 +50,7 @@ if nargin < 1
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
-  SPPP.tMin = -100;
+  SPPP.tMin = -300;
   SPPP.dt = 1;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
