@@ -43,7 +43,7 @@ for veh = 1:length(Q)
   if veh == 1
     obstacles = obj.staticObs;
   else
-    obstacles = updateObstacles(obstacles, Q{veh-1}.obsForRTT);
+    obstacles = updateObstacles(obj.tau, obstacles, Q{veh-1}.obsForRTT);
     Q{veh-1}.trimData({'obsForRTT'});
     save(obj.NI_RS_filename, 'Q', '-v7.3');
   end
