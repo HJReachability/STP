@@ -33,7 +33,6 @@ fprintf('Computing gradients...\n')
 RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 
 % Determine time of simulation
-Q = {Q1;Q2;Q3;Q4};
 tStart = inf;
 tEnd = -inf;
 for veh = 1:length(Q)
