@@ -67,12 +67,14 @@ end
 % wReserved = -0.4;
 % trackingRadius = 0.075;
 
-% RTT parameters
-vReserved = [1.5 -0.5];
-wReserved = -0.8;
-trackingRadius = 0.4;
+% % RTT parameters
+% vReserved = [1.5 -0.5];
+% wReserved = -0.8;
+% trackingRadius = 0.4;
 
-SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
+trackingRadius = 4;
+v = 1.25;
+SPPP.computeRTTRS2D(v, trackingRadius);
 SPPP.computeNIRS;
 SPPP.simulateNI;
 end

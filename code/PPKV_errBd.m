@@ -51,5 +51,5 @@ end
 % Compute
 data = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
 
-save(sprintf('%s/data.mat', folder), 'g', 'data')
+save(sprintf('%s/data.mat', folder), 'g', 'data', '-v7.3')
 end
