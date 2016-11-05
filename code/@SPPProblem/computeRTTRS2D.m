@@ -36,7 +36,7 @@ grid_min = [-1.25*tR; -1.25*tR; -pi]; % Lower corner of computation domain
 grid_max = [1.25*tR; 1.25*tR; pi];    % Upper corner of computation domain
 
 % Number of grid points per dimension
-N = [51; 51; 75];
+N = [101; 101; 101];
 schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 
 % Track trajectory for up to this time
