@@ -39,7 +39,7 @@ if nargin < 1
   targetR = 20;
   
   % Vehicle parameters
-  vehParams.vRangeA = [0.25 2.5];
+  vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
   vehParams.dMaxA = 0.2*[max(vehParams.vRangeA) vehParams.wMaxA];
   

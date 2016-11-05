@@ -20,8 +20,8 @@ for i = 1:numVeh
   Q{i}.targetR = SPPP.targetR;
   Q{i}.targetRsmall = targetRsmall;
   
-  % Reserved control authorities
-  Q{i}.vReserved = RTTRS.dynSys.vRangeB - vrange;
-  Q{i}.wReserved = RTTRS.dynSys.wMaxB - wMax;
+%   % Reserved control authorities
+%   Q{i}.vReserved = RTTRS.dynSys.vRangeB - vrange;
+%   Q{i}.wReserved = RTTRS.dynSys.wMaxB - wMax;
 end
 end
