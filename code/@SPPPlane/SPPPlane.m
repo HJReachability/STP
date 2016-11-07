@@ -2,8 +2,11 @@ classdef SPPPlane < Plane
   % Specialized Plane class with SPP-related properties for the SPP project 
   
   properties
+    % If tracking 3D trajectory
     vReserved
     wReserved
+    
+    v % If tracking 2D trajectory
     
     BRS1
     BRS1_tau
