@@ -41,12 +41,12 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.4*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = 0.3*[max(vehParams.vRangeA) vehParams.wMaxA];
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [41; 41; 41];  
+  gridParams.N = [501; 501; 101];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
