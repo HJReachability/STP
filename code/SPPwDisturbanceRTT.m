@@ -41,7 +41,7 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.2*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = 0.5*[max(vehParams.vRangeA) vehParams.wMaxA];
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
@@ -67,14 +67,12 @@ end
 % wReserved = -0.4;
 % trackingRadius = 0.075;
 
-% % RTT parameters
-% vReserved = [1.5 -0.5];
-% wReserved = -0.8;
-% trackingRadius = 0.4;
+% RTT parameters
+vReserved = [1.5 -0.5];
+wReserved = -0.8;
+trackingRadius = 1;
 
-trackingRadius = 4;
-v = 1.25;
-SPPP.computeRTTRS2D(v, trackingRadius);
+SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeNIRS;
 SPPP.simulateNI;
 end
