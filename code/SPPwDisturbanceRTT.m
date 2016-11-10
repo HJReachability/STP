@@ -70,7 +70,7 @@ end
 % RTT parameters
 vReserved = [1.5 -0.5];
 wReserved = -0.8;
-trackingRadius = 1;
+trackingRadius = 2;
 
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeNIRS;
