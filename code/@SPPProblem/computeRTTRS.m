@@ -37,8 +37,8 @@ if exist(obj.RTTRS_filename, 'file')
 end
 
 % Grid
-grid_min = [-1.25*tR; -1.25*tR; -pi/3]; % Lower corner of computation domain
-grid_max = [1.25*tR; 1.25*tR; pi/3];    % Upper corner of computation domain
+grid_min = [-1.25*tR; -1.25*tR; -pi/2]; % Lower corner of computation domain
+grid_max = [1.25*tR; 1.25*tR; pi/2];    % Upper corner of computation domain
 % Number of grid points per dimension
 % N = [101; 101; 101]; % for SPPwIntruderRTT method 1
 N = [75; 75; 75]; % for SPPwIntruderRTT method 2

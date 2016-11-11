@@ -41,7 +41,7 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.25*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = 0.4*[max(vehParams.vRangeA) vehParams.wMaxA];
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
@@ -58,6 +58,11 @@ if nargin < 1
     [350; 350; inf]);
   SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
   
+  % RTT parameters
+  vReserved = [1.5 -0.5];
+  wReserved = -0.8;
+  trackingRadius = 10;
+
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
 end
@@ -66,11 +71,6 @@ end
 % vReserved = [0.25 -0.25];
 % wReserved = -0.4;
 % trackingRadius = 0.075;
-
-% RTT parameters
-vReserved = [1.5 -0.5];
-wReserved = -0.8;
-trackingRadius = 4;
 
 SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeNIRS;
