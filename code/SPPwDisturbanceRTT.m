@@ -41,7 +41,7 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = [0.8 0]; % 15 m/s wind is "high wind"
+  vehParams.dMaxA = [1.1 0]; % 15 m/s wind is "high wind"
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
@@ -59,7 +59,7 @@ if nargin < 1
   SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
   
   % RTT parameters
-  vReserved = [1 -1];
+  vReserved = [1 -1.2];
   wReserved = -0.8;
   trackingRadius = 10;
 
