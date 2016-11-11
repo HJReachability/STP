@@ -41,17 +41,17 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.4*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = [0.8 0]; % 15 m/s wind is "high wind"
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [251; 251; 101];  
+  gridParams.N = [101; 101; 101];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
   SPPP.tMin = -300;
-  SPPP.dt = 1;
+  SPPP.dt = 2;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
   staticObs = shapeRectangleByCorners(SPPP.g, [300; 300; -inf], ...
@@ -59,7 +59,7 @@ if nargin < 1
   SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
   
   % RTT parameters
-  vReserved = [1.5 -0.5];
+  vReserved = [1 -1];
   wReserved = -0.8;
   trackingRadius = 10;
 

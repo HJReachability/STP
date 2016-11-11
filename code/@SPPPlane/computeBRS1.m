@@ -1,4 +1,4 @@
-function computeBRS1(obj, BRS1_tau, g, obstacles)
+function computeBRS1(obj, BRS1_tau, g, obstacles, SPPP_folder)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
 %     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
@@ -37,8 +37,13 @@ extraArgs.deleteLastPlot = true;
 extraArgs.plotData.plotDims = [1, 1, 0];
 extraArgs.plotData.projpt = obj.x(3);
 
-folder = sprintf('%s_%f', mfilename, now);
-system(sprintf('mkdir %s', folder));
+if ispc
+  folder = sprintf('%s\\%s', obj.folder, mfilename);
+  system(sprintf('mkdir %s', folder));
+else
+  folder = sprintf('%s/%s', obj.folder, mfilename);
+  system(sprintf('mkdir -p %s', folder));
+end
 
 extraArgs.fig_filename = sprintf('%s/', folder);
 

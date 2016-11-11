@@ -39,7 +39,7 @@ classdef SPPProblem < handle
     tau          % Global time (absolute time vector)
     
     % File to store this SPPProblem instance
-    this_filename
+    folder
     
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
@@ -114,7 +114,7 @@ classdef SPPProblem < handle
       obj.tau = obj.tMin:obj.dt:obj.tTarget;
       obj.staticObs = inf(obj.gN');
       
-      obj.this_filename = sprintf('%s_%f.mat', mfilename, now);
+      obj.folder = sprintf('%s_%f', mfilename, now);
     end
   end
 end
