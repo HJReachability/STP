@@ -52,7 +52,7 @@ for veh = 1:length(Q)
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if isempty(Q{veh}.BRS1)
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4), obj.this_filename);
+    Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4), obj.folder);
     
     Qthis = Q{veh};
     save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')

@@ -14,8 +14,10 @@ for i = 1:numVeh
   Q{i} = SPPPlane(SPPP.initStates{i}, wMax, vrange, dMax);
   
   % Target set (for convenience)
-  Q{i}.target = shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, SPPP.targetR);
-  Q{i}.targetsm = shapeCylinder(SPPP.g, 3, SPPP.targetCenters{i}, targetRsmall);
+  Q{i}.target = shapeCylinder(SPPP.g, 3, [SPPP.targetCenters{i}; 0], ...
+    SPPP.targetR);
+  Q{i}.targetsm = shapeCylinder(SPPP.g, 3, [SPPP.targetCenters{i}; 0], ...
+    targetRsmall);
   Q{i}.targetCenter = SPPP.targetCenters{i};
   Q{i}.targetR = SPPP.targetR;
   Q{i}.targetRsmall = targetRsmall;
