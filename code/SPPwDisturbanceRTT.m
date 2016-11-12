@@ -61,7 +61,7 @@ if nargin < 1
   % RTT parameters
   vReserved = [1 -1.2];
   wReserved = -0.8;
-  trackingRadius = 10;
+  trackingRadius = 3.5;
 
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard

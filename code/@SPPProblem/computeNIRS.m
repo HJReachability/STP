@@ -46,7 +46,7 @@ for veh = 1:length(Q)
     obstacles = updateObstacles(obj.tau, obstacles, Q{veh-1}.obsForRTT_tau, ...
       Q{veh-1}.obsForRTT);
     Q{veh-1}.trimData({'obsForRTT'});
-    save(obj.NI_RS_filename, 'Q', '-v7.3');
+    save(obj.NI_RS_filename, 'Q', 'obstacles', '-v7.3');
   end
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
