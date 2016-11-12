@@ -29,7 +29,7 @@ if restart || ~exist(obj.NI_RS_filename, 'file')
   Q = initRTT(obj, RTTRS);
   
   % File name to save RS data
-  obj.NI_RS_filename = sprintf('%s_%f.mat', mfilename, now);  
+  obj.NI_RS_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
 else
   fprintf('Loading NI RS checkpoint...\n')
   load(obj.NI_RS_filename)
@@ -46,16 +46,16 @@ for veh = 1:length(Q)
     obstacles = updateObstacles(obj.tau, obstacles, Q{veh-1}.obsForRTT_tau, ...
       Q{veh-1}.obsForRTT);
     Q{veh-1}.trimData({'obsForRTT'});
-    save(obj.NI_RS_filename, 'Q', '-v7.3');
+    save(obj.NI_RS_filename, 'Q', 'obstacles', '-v7.3');
   end
   
   %% Compute the BRS (BRS1) of the vehicle with the above obstacles
   if isempty(Q{veh}.BRS1)
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4));
+    Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4), obj.folder, veh);
     
     Qthis = Q{veh};
-    save(sprintf('Plane%d_dstbRTT.mat', veh), 'Qthis', '-v7.3')
+    save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')
   end
   
   %% Compute the nominal trajectories based on BRS1
@@ -64,7 +64,7 @@ for veh = 1:length(Q)
     Q{veh}.computeNomTraj(obj.g);
     
     Qthis = Q{veh};
-    save(sprintf('Plane%d_dstbRTT.mat', veh), 'Qthis', '-v7.3')    
+    save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')
   end
   
   %% Compute t-IAT backward reachable set from flattened 3D obstacle
@@ -73,12 +73,13 @@ for veh = 1:length(Q)
     Q{veh}.computeObsForRTT(obj, RTTRS);
     
     Qthis = Q{veh};
-    save(sprintf('Plane%d_dstbRTT.mat', veh), 'Qthis', '-v7.3')
+    save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')
     Q{veh}.trimData({'BRS1'});
   end
 end
 
 save(obj.NI_RS_filename, 'Q', '-v7.3')
+
 SPPP = obj;
-save(obj.this_filename, 'SPPP', '-v7.3')
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end

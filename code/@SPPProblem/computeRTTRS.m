@@ -4,7 +4,7 @@ function computeRTTRS(obj, vR, wR, tR, save_png)
 %     object with the RTTRS file name
 %
 % Inputs:
-%     SPPP - SPP problem object
+%     obj - SPP problem object
 %     vR - reserved vehicle speed
 %     wR - reserved angular acceleration
 %     tR - tracking radius
@@ -37,16 +37,16 @@ if exist(obj.RTTRS_filename, 'file')
 end
 
 % Grid
-grid_min = [-1.25*tR; -1.25*tR; -pi/4]; % Lower corner of computation domain
-grid_max = [1.25*tR; 1.25*tR; pi/4];    % Upper corner of computation domain
+grid_min = [-1.25*tR; -1.25*tR; -pi]; % Lower corner of computation domain
+grid_max = [1.25*tR; 1.25*tR; pi];    % Upper corner of computation domain
 % Number of grid points per dimension
 % N = [101; 101; 101]; % for SPPwIntruderRTT method 1
-N = [51; 51; 51]; % for SPPwIntruderRTT method 2
-schemeData.grid = createGrid(grid_min, grid_max, N);
+N = [51; 51; 101]; % for SPPwIntruderRTT method 2
+schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 
 % Track trajectory for up to this time
 % tMax = 2; % for SPPwIntruderRTT method 1
-tMax = 10; % for SPPwIntruderRTT method 2
+tMax = 30; % for SPPwIntruderRTT method 2
 dt = 0.1;
 tau = 0:dt:tMax;
 
@@ -65,11 +65,17 @@ schemeData.uMode = 'max';
 schemeData.dMode = 'min';
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
-extraArgs.stopConverge = true;
+extraArgs.stopInit = [0;0;0];
 
 if save_png
-  folder = sprintf('%s_%f', mfilename, now);
-  system(sprintf('mkdir %s', folder));
+  if ispc
+    folder = sprintf('%s\\%s', obj.folder, mfilename);
+    system(sprintf('mkdir %s', folder));
+  else
+    folder = sprintf('%s/%s', obj.folder, mfilename);
+    system(sprintf('mkdir -p %s', folder));
+  end
+  
   extraArgs.fig_filename = sprintf('%s/', folder);
 end
 
@@ -81,9 +87,9 @@ RTTRS.data = data(:,:,:,end);
 RTTRS.dynSys = dynSys;
 
 % Save results
-obj.RTTRS_filename = sprintf('RTTRS_%f.mat', now);
+obj.RTTRS_filename = sprintf('%s/RTTRS.mat', obj.folder);
 save(obj.RTTRS_filename, 'RTTRS', '-v7.3')
 
 SPPP = obj;
-save(obj.this_filename, 'SPPP', '-v7.3')
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end

@@ -30,10 +30,10 @@ if nargin < 1
     };
   
   targetCenters = { ...
-    [100; 100; 0]; ...
-    [300; 100; 0]; ...
-    [100; 100; 0]; ...
-    [100; 300; 0] ...
+    [100; 100]; ...
+    [300; 100]; ...
+    [100; 100]; ...
+    [100; 300] ...
     };
   
   targetR = 20;
@@ -41,23 +41,28 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = 0.2*[max(vehParams.vRangeA) vehParams.wMaxA];
+  vehParams.dMaxA = [1.1 0]; % 11 m/s wind is "high wind" or "strong breeze"
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [41; 41; 41];  
+  gridParams.N = [251; 251; 101];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
   SPPP.tMin = -300;
-  SPPP.dt = 1;
+  SPPP.dt = 2;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
   staticObs = shapeRectangleByCorners(SPPP.g, [300; 300; -inf], ...
     [350; 350; inf]);
   SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
   
+  % RTT parameters
+  vReserved = [1 -1.2];
+  wReserved = -0.8;
+  trackingRadius = 3.5;
+
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
 end
@@ -67,14 +72,7 @@ end
 % wReserved = -0.4;
 % trackingRadius = 0.075;
 
-% % RTT parameters
-% vReserved = [1.5 -0.5];
-% wReserved = -0.8;
-% trackingRadius = 0.4;
-
-trackingRadius = 4;
-v = 1.25;
-SPPP.computeRTTRS2D(v, trackingRadius);
+SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 SPPP.computeNIRS;
 SPPP.simulateNI;
 end
