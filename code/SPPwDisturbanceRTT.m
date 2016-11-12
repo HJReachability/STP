@@ -41,7 +41,7 @@ if nargin < 1
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
   vehParams.wMaxA = 2;
-  vehParams.dMaxA = [1.1 0]; % 15 m/s wind is "high wind"
+  vehParams.dMaxA = [1.1 0]; % 11 m/s wind is "high wind" or "strong breeze"
   
   % Grid parameters
   gridParams.min = [0; 0; 0];
