@@ -12,11 +12,12 @@ classdef SPPProblem < handle
     
     Rc = 0.1 % collision radius
     
+    staticObs; % static obstacles
+    
     % SPP vehicle parameters
-    vRangeA = [0.1 1];
-%     vRangeA = [0.5 1];
-    wMaxA = 1;
-    dMaxA = [0.1 0.2];
+    vRangeA;
+    wMaxA;
+    dMaxA;
     
     % Time
     tMin = -5    % Minimum time for the entire problem
@@ -34,10 +35,11 @@ classdef SPPProblem < handle
     
     tauBR        % Time vector before replanning
     tauAR        % Time vector after replanning
-    tau          % Time vector for entire simulation
+    tauSim       % Time vector for entire simulation
+    tau          % Global time (absolute time vector)
     
     % File to store this SPPProblem instance
-    this_filename
+    folder
     
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
@@ -109,7 +111,10 @@ classdef SPPProblem < handle
       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
       
-      obj.this_filename = sprintf('%s_%f.mat', mfilename, now);
+      obj.tau = obj.tMin:obj.dt:obj.tTarget;
+      obj.staticObs = inf(obj.gN');
+      
+      obj.folder = sprintf('%s_%f', mfilename, now);
     end
   end
 end

@@ -1,4 +1,4 @@
-function computeBRS1(obj, BRS1_tau, g, obstacles, SPPP_folder, veh)
+function computeBRS1_2D(obj, BRS1_tau, g, obstacles)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
 %     BRS1_tau and BRS1 fields. This BRS is used for optimally getting to the
@@ -27,23 +27,14 @@ schemeData.grid = g;
 schemeData.uMode = 'min';
 
 % Modify control bounds
-nom_vrange = obj.vrange + obj.vReserved;
-nom_wMax = obj.wMax + obj.wReserved;
-schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
+schemeData.dynSys = KinVehicleND([0;0], obj.v);
 
 % Set extraArgs
 extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
-extraArgs.plotData.plotDims = [1, 1, 0];
-extraArgs.plotData.projpt = obj.x(3);
 
-if ispc
-  folder = sprintf('%s\\%s_%d', SPPP_folder, mfilename, veh);
-  system(sprintf('mkdir %s', folder));
-else
-  folder = sprintf('%s/%s_%d', SPPP_folder, mfilename, veh);
-  system(sprintf('mkdir -p %s', folder));
-end
+folder = sprintf('%s_%f', mfilename, now);
+system(sprintf('mkdir %s', folder));
 
 extraArgs.fig_filename = sprintf('%s/', folder);
 
@@ -51,12 +42,13 @@ extraArgs.fig_filename = sprintf('%s/', folder);
 extraArgs.obstacles = obstacles;
 
 % Min with target
-extraArgs.targets = obj.targetsm;
+target = shapeSphere(g, obj.targetCenter, obj.targetRsmall);
+extraArgs.targets = target;
 
 % Computation should stop once it contains the initial state
 extraArgs.stopInit = obj.x;
 
-[BRS1, tau] = HJIPDE_solve(obj.targetsm, BRS1_tau, schemeData, 'none', ...
+[BRS1, tau] = HJIPDE_solve(target, BRS1_tau, schemeData, 'none', ...
   extraArgs);
 
 % Reverse the order of time elements

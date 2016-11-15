@@ -1,0 +1,27 @@
+helperOC classes
+  dynSys/@Plane/
+  dynSys/@PlaneCAvoid/
+
+helperOC functions
+  computeGradients.m
+  computeOptTraj.m
+  grid/createGrid.m
+  grid/migrateGrid.m
+  valFuncs/HJIPDE_solve.m
+  valFuncs/proj.m (only 3D to 2D)
+  valFuncs/addCRadius.m
+  valFuncs/rotateData.m
+  valFuncs/shiftData.m
+  valFuncs/eval_u.m
+
+level set toolbox functions
+  shapeRectangleByCorners.m
+  shapeCylinder.m
+  
+
+MATLAB functions
+  repmat
+  flip
+  ode113 (use odeint package for C++)
+  interpn
+  
