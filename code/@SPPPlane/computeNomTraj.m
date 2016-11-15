@@ -13,7 +13,7 @@ dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 extraArgs.uMode = 'min';
 extraArgs.visualize = true;
 extraArgs.projDim = [1 1 0];
-extraArgs.subSamples = 8;
+extraArgs.subSamples = 32;
 
 if ispc
   folder = sprintf('%s\\%s_%d', SPPP_folder, mfilename, veh);
