@@ -1,0 +1,36 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{Buffer Region} \label{sec:buffRegion}
+In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh_j$ avoids the intruder only if $\state_{\intr}(t) \in \sep_j(t)$. But to ensure that atmost $\nva$ vehicles need to replan their trajectories after the intruder disappears, we need to make sure that the intruder can cause atmost $\nva$ vehicles to deviate from their planned trajectories. Equivalently, we want to ensure that atmost $\nva$ vehicles need to avoid the intruder. 
+
+Intuitively, we want to make sure that at any given time the separation regions of any two vehicles are far enough from each other such that it will take at least $\brd := \iat / \nva$ time for the intruder to go from the separation region of one vehicle to that of the other vehicle. This means that there is a ``buffer" time interval of $\brd$ between 
+any $t_1$, $t_2 \in [\tsa, \tea]$ where $\veh_{\intr}$ is in the separation regions of two different vehicles at $t_1$ and $t_2$, e.g. $\state_{\intr}(t_1) \in \sep_j(t)$ and $\state_{\intr}(t_2) \in \sep_i(t)$, $i \neq j$. Thus, in the worst case, the intruder can force atmost $\nva$ vehicles to apply avoidance maneuver in a duration of $\iat$.          
+
+
+\SBnote{start from here}
+
+But to ensure that atmost one vehicle avoids the intruder, we also need to make sure that no other vehicle $\veh_i, i>j$, avoids the intruder if it appears inside $sep_j(\tsa)$. This can be achieved by ensuring that vehicle $\veh_i$ is far enough from $\sep_j(\cdot)$ (that is, there is a ``buffer" region between $\veh_i$ and $\sep_j(\cdot)$), such that intruder appearing inside $sep_j(\cdot)$ cannot enter the danger zone $\dz_{i\intr}$. We denote this buffer region as $\buff^i(t)$, and the separation region augmented with the buffer region as $\tilde{\sep}^j_i(t)$.
+
+$\buff^i(t)$ can be computed using the relative dynamics 
+
+However, to ensure that atmost one vehicle needs to apply the avoidance maneuver, we need to make sure that no other vehicle $\veh{i}, i \neq j$, needs to avoid the intruder if intruder starts inside $\brs_\text{C}$. This can  be achieved by ensuring that $\brs_{\text{C},i}$ and $\brs_{\text{C},j}$ do not intersect.
+
+
+
+
+
+\SBnote{The folliwng need to be moved to the buffer region section}
+when both $\veh_{j}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other for a duration of $\iat$. 
+\begin{equation} \label{eqn:optAvoid}
+\begin{aligned}
+\brs^{\text{S}}_{j}(t, \iat) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \ctrl_\intr(\cdot) \in \cfset_\intr, \dstb_j(\cdot) \in \dfset_j, \\
+& \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
+& \exists s \in [t, \iat], \state_{\intr, j}(s) \in \targetset^{\text{S}}_{j}, \state_{\intr, j}(t) = y\},
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+\begin{aligned}
+\targetset^{\text{S}}_{j} &= \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
+H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \min_{\ctrl_j \in \cset_j, \ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr)
+\end{aligned}
+\end{equation}

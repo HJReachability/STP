@@ -84,6 +84,8 @@
 
 \newcommand{\tsa}{\underline{t}} % time of start of avoidance
 \newcommand{\tea}{\bar{t}} % time of end of avoidance
+\newcommand{\nva}{\bar{k}} % Number of Vehicles to Avoid (NVA)
+\newcommand{\brd}{t^\text{BRD}} % Buffer Region Duration (BRD)
 
 \newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
 \newcommand{\tracklaw}{\kappa} % Robust tracking law
@@ -119,7 +121,12 @@ To be written.
 \input{background}
 
 % Intruder files
-\input{./intruder/intruder}
+\input{./intruder/intro}
+\input{./intruder/sepRegion}
+\input{./intruder/buffRegion}
+%\input{./intruder/obstacles}
+%\input{./intruder/replan}
+\input{./intruder/summary}
 
 % Simulations
 \input{simulations}

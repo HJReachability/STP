@@ -1,0 +1,36 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{Separation Region} \label{sec:sepRegion}
+Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \SBnote{First journal paper should be cited here} to compute the ``base" obstacles $\boset_j(t)$, the obstacles that would have been induced by $\veh_j$ in the absence of an intruder.
+
+Given $\boset_j(t)$, we want to compute the set of all initial states of the intruder for which vehicle $\veh_j$ may have to apply an avoidnace maneuver. We refer to this set as \textit{separation region} here on, and denote it as $\sep_j(t)$. The significance of $\sep_j(t)$ is that as long as the intruder is outside $\sep_j(t)$, that is $\state_{\intr}(t) \in \left(\sep_j(t)\right)^c$, $\veh_j$ can apply any control at time $t$ and still guaranteed to not collide with the intruder. $\sep_j(t)$ can be conveniently computed using the relative dynamics between $\veh_j$ and $\veh_{\intr}$. 
+
+We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$:
+\begin{equation}
+\label{eq:reldyn}
+\begin{aligned}
+\state_{\intr, i} &= \state_\intr - \state_i \\
+\dot \state_{\intr, i} &= f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
+\end{aligned}
+\end{equation}
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{j}$ can enter danger zone $\dz_{j\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_j$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{S}}_j(\tau, \iat)$:
+
+\begin{equation} \label{eqn:optAvoid}
+\begin{aligned}
+\brs^{\text{S}}_{j}(\tau, \iat) = & \{y: \forall \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
+& \exists s \in [\tau, \iat], \state_{\intr, j}(s) \in \targetset^{\text{S}}_{j}, \state_{\intr, j}(\tau) = y\},
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+\begin{aligned}
+\targetset^{\text{S}}_{j} &= \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
+H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \max_{\ctrl_j \in \cset_j} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr) \right)
+\end{aligned}
+\end{equation}
+
+The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that as long as $\veh_{\intr}$ is outside the boundary of this set (in relative coordinates), then $\veh_{\intr}$ and $\veh_{j}$ cannot enter the danger zone $\dz_{j\intr}$, irrespective of control applied by them. We can now transform $\brs^{\text{S}}_{j}(0, \iat)$ to absolute coordinates to obtain sets $\sep_j(\cdot)$ as follows:
+\begin{equation} \label{eqn:sepRegion}
+\sep_j(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \iat),
+\end{equation}
+where the ``$+$'' in \eqref{eqn:sepRegion} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}.
