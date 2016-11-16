@@ -22,19 +22,25 @@ if nargin < 1
 %   vehParams.wMaxA = 1;
 %   vehParams.dMaxA = [0.1 0.2];
 
-  initStates = { ...
-    [400; 400;  5*pi/4]; ...
-    [400; 400;  5*pi/4]; ...
-    [400; 400;  5*pi/4]; ...
-    [400; 400;  5*pi/4] ...
+  numVeh = 20;
+  initStates = cell(numVeh, 1);
+  initState = [475; 200; 220*pi/180];
+  for i = 1:numVeh
+    initStates{i} = initState;
+  end
+  
+  targetCentersSet = { ...
+    [300; 400]; ...
+    [50; 175]; ...
+    [75; 25]; ...
+    [450; 25] ...
     };
   
-  targetCenters = { ...
-    [100; 100]; ...
-    [300; 100]; ...
-    [100; 100]; ...
-    [100; 300] ...
-    };
+  targetCenters = cell(numVeh,1);
+  for i = 1:numVeh
+    target_ind = randi(4);
+    targetCenters{i} = targetCentersSet{target_ind};
+  end
   
   targetR = 20;
   
@@ -46,7 +52,7 @@ if nargin < 1
   % Grid parameters
   gridParams.min = [-50; -50; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [125; 125; 11];  
+  gridParams.N = [125; 125; 15];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
@@ -54,9 +60,31 @@ if nargin < 1
   SPPP.dt = 2;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
-  staticObs = shapeRectangleByCorners(SPPP.g, [300; 300; -inf], ...
-    [350; 350; inf]);
+  
+  % Financial District
+  Obs1 = shapeRectangleByCorners(SPPP.g, [300; 250; -inf], [350; 300; inf]);
+  
+  % Union Square
+  Obs2 = shapeRectangleByCorners(SPPP.g, [-25; -30; -inf], [25; 30; inf]);
+  Obs2 = rotateData(SPPP.g, Obs2, 7.5*pi/180, [1 2], []);
+  Obs2 = shiftData(SPPP.g, Obs2, [325 185], [1 2]);
+  Obs2b = shapeHyperplaneByPoints(SPPP.g, [170 0 0; 400 230 0; 160 0 pi], ...
+    [0 500 0]);
+  Obs2 = shapeDifference(Obs2, Obs2b);
+  
+  % City Hall
+  Obs3 = shapeRectangleByCorners(SPPP.g, [-25; -5; -inf], [25; 5; inf]);
+  Obs3 = rotateData(SPPP.g, Obs3, 7.5*pi/180, [1 2], []);
+  Obs3 = shiftData(SPPP.g, Obs3, [170 65], [1 2]);
+  
+  staticObs = min(Obs1, Obs2);
+  staticObs = min(staticObs, Obs3);
   SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
+  
+  % Plot setup
+  mapFile = 'map_earth.png';
+  [~, obs2D] = proj(SPPP.g, staticObs, [0 0 1]);
+  plotSPPP(mapFile, targetCentersSet, targetR, SPPP.g2D, obs2D, initState);
   
   % RTT parameters
   vReserved = [1 -1.2];
