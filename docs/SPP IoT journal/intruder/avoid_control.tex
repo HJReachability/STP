@@ -1,0 +1,22 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{Optimal Avoidance Controller} \label{sec:intruder_avoid}
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. This set of states is given by the backwards reachable set $\brs^{\text{S}}_{i}(\tau, \iat),~ \tau \in [0, \iat]$, given by \eqref{eqn:sepBRS}.
+
+Once the value function $\valfunc^{\text{S}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{S}}_{i}}$ can be obtained as:
+\begin{equation} \label{eqn:optAvoidCtrl}
+{\ctrl^{\text{S}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
+\end{equation}
+
+Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) > 0$; as $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t))$ decreases. If $\veh_i$ applies the control ${\ctrl^{\text{S}}_{i}}$ when $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+
+In addition, obstacle augmentation \eqref{eqn:inducedobs} ensures that $\veh_i$ does not collide with $\obsset_i(\cdot)$ during the avoidance maneuver. %Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh_i$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh_j, j \neq i$.
+The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
+\begin{equation*}
+{\ctrl^{\text{A}}_{i}}(t) = 
+\left \{ 
+\begin{array}{ll}
+{\ctrl^{\text{AO}}_{i}}(t) & t \leq \tsa\\
+{\ctrl^{\text{S}}_{i}}(t) & \tsa\leq t \leq \tea
+\end{array}
+\right.
+\end{equation*}

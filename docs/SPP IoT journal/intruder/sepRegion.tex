@@ -14,7 +14,7 @@ We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\i
 \end{equation}
 Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{j}$ can enter danger zone $\dz_{j\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_j$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{S}}_j(\tau, \iat)$:
 
-\begin{equation} \label{eqn:optAvoid}
+\begin{equation} \label{eqn:sepBRS}
 \begin{aligned}
 \brs^{\text{S}}_{j}(\tau, \iat) = & \{y: \forall \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
 & \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
@@ -25,7 +25,7 @@ where
 \begin{equation}
 \begin{aligned}
 \targetset^{\text{S}}_{j} &= \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
-H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \max_{\ctrl_j \in \cset_j} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr) \right)
+H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \max_{\ctrl_j \in \cset_j} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_j \in \dset_j, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr) \right)
 \end{aligned}
 \end{equation}
 

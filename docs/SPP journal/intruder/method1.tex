@@ -35,6 +35,8 @@ $\frs_{j}^{\mathcal{O}}(0, t)$ represents the set of all possible states that $\
 \begin{equation}
 \ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j) \label{intobs2}.
 \end{equation} 
+\SBnote{Although the set above is correct, it needs a bit more explanation. See the correspdoning section in the IoT paper and make some edits.}
+
 %
 %Since there are no moving vehicle obstacles for the highest priority vehicle, $\obsset_1(t) = \soset$. 
 %
@@ -159,6 +161,8 @@ where $\tilde{\state}_j^0$ represents the state of $\veh_j$ at $t = \tea$. The F
 \ham_j^{\text{RP}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \min_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j). 
 \end{equation} 
 The new $\sta$ of $\veh_j$ is now given by the earliest time at which $\frs_j^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_j$, $\sta_j := \arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle to its destination by that time, despite the worst case disturbance it might experience.
+
+\SBnote{This does not seem correct. We have to compute STA for each vehicle in the order of priority and take into account the obstacles that they might experience while computing FRS.}
 
 \begin{remark}
 Note that we only need to replan the trajectories of the vehicles that are affected by the intruder. In particular, if $\valfunc^{\text{CA}}(0, \state_{\intr, i}(t)) > 0$ during the entire duration $t \in [\tsa, \tea]$ for a vehicle, then the vehicle would need not to apply any avoidance control, and hence a replanning would not be required for this vehicle. 

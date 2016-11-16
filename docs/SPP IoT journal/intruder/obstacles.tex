@@ -1,86 +1,40 @@
 % !TEX root = ../SPP_IoTjournal.tex
-\section{Response to Intruders \label{sec:intruder}}
+\subsection{Obstacle Computation} \label{sec:intruderObs}
 
-\SBnote{Most of the assumption/notation content in this section will be moved to the problem formulation section.}
-In Section \ref{sec:incomp}, we made the basic SPP algorithm more robust by taking into account disturbances and considering situations in which vehicles may not have complete information about the control strategy of the other vehicles. However, if a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the original plan can lead to vehicles entering into each other's danger zones. If vehicles do not plan with an additional safety margin that takes a potential intruder into account, a vehicle trying to avoid the intruder may effectively become an intruder itself, leading to a domino effect. In this section, we propose a method to allow vehicles to avoid an intruder while maintaining the SPP structure.
+In sections \ref{sec:sepRegion} and \ref{sec:buffRegion}, we computed a separation between any two vehicles, such that itruder can affect atmost $\nva$ vehicles during a duration of $\iat$. However, we need to make sure that while applying avoidance control a vehicle does not enter the danger zone of other vehicle. In this section, we compute the obstacles that reflect this possibility. In particular, we want to find the set of states that a lower priority vehicle $\veh_i$ needs to avoid to avoid entering in the danger zone of a higher priority vehicle $\veh_j$, $j < i$. To find such states, we consider the following five mutually exclusive and exhaustive cases:
+\begin{enumerate}
+\item Intruder does not affect $\veh_j$ or $\veh_i$ during their flight.
+\item Intruder affects $\veh_j$, but not $\veh_i$.
+\item Intruder affects $\veh_i$, but not $\veh_j$.
+\item Intruder first affects $\veh_j$ and then $\veh_i$.
+\item Intruder first affects $\veh_i$ and then $\veh_j$.
+\end{enumerate}
+We will compute the set of states that $\veh_i$ needs to avoid to avoid a collision with $\veh_j$ for each of the five cases. Let $^k\ioset_i^j(\cdot)$ denotes the set of obstacles corresponding to case $k$ above. 
 
-In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. Therefore, for our analysis to produce reasonable results, two assumptions about the intruders must be made.
+\subsubsection{Case1} \label{sec:intruderObs_case1}
+When the intruder does not affect any of the two vehicles, $\veh_i$ simply needs to avoid the set of base obstacles $\boset_j(t)$. Therfore, $^1\ioset_i^j(t) = \boset_j(t)$.
 
-\begin{assumption}
-\label{as:avoidOnce}
-At most one intruder (denoted as $\veh_I$ here on) affects the SPP vehicles at any given time. The intruder exits the altitude level affecting the SPP vehicles after a duration of $\iat$. 
-\end{assumption}
+\subsubsection{Case2} \label{sec:intruderObs_case2}
+To compute the obstacles that $\veh_i$ needs to avoid at time $t$ for the remaining four cases, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence the two vehicles cannot be in conflict at time $t$. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. \SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to menbtion this.}
 
-Let the time at which intruder appears in the system be $\tsa$ and the time at which it disappears be $\tea$. Assumption \ref{as:avoidOnce} implies that $\tea \leq \tsa + \iat$. Thus, any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$. This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the altitude level affecting the SPP vehicles. Note that we do not make any assumptions about $\tsa$; however, we assume that once it appears, it stays for a maximum duration of $\iat$.
-%in addition, after avoiding the intruder, Qi can safely assume that it would not need to avoid another intruder
-
-\begin{assumption}
-\label{as:dynKnown}
-The dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\state_\intr, \ctrl_\intr, \dstb_\intr)$. The initial state of the intruder is given by $\state_{\intr}^0.$
-\end{assumption}
-
-Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead.
-
-Based on the above assumptions, we aim to design a control policy that ensures separation with the intruder and with other SPP vehicles, and ensures a successful transit to the destination. However, depending on the initial state of the intruder, its control policy, and the disturbances in the dynamics of a vehicle and the intruder, a vehicle may arrive at different states after avoiding the intruder. Therefore, a control policy that ensures a successful transit to the destination needs to account for all such possible states, which is a path planning problem with multiple (infinite, to be precise) initial states and a single destination, and is hard to solve in general. Thus, we divide the intruder avoidance problem into two sub-problems: (i) we first design a control policy that ensures a successful transit to the destination if no intruder appears and that successfully avoid the intruder, if it does. (ii) after the intruder disappears at $\tea$, we replan the trajectories of the affected vehicles. 
-
-Since the replanning is done in real-time, it should be fast and scalable with the number of SPP vehicles. Intuitively, one can think about dividing the flight space of vehicles such that at any given time, any two vehicles are far enough from each other so that an intruder can only affect one vehicle in a duration of $\iat$ despite its best efforts. The advantage of this approach is that after the intruder disappears, we only have to replan the trajectory of a single vehicle regardless of the number of total vehicles in the system, which makes this approach particularly suitable for practical systems. In this method, we build upon this intuition and show that such a division of space is indeed possible. Thus the proposed method guarantees that \textit{atmost one} vehicle is affected by the presence of intruder, regardless of the number of SPP vehicles, and hence the replanning can be efficiently done in real-time. 
-
-In Sections \ref{sec:sepRegion} and \ref{sec:buffRegion}, we compute a space division of state-space such that atmost one vehicle needs to apply the avoidance maneuver regardless of the initial state of the intruder. However, we still need to ensure that a vehicle do not collide with another vehicle while avoiding the intruder. The induced obstacles that reflect this possibility are computed in Section \ref{sec:intruderObs}. Intruder avoidance control and re-planning are discussed in Section \ref{sec:replan}.
-
-\subsection{Separation Region} \label{sec:sepRegion}
-Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \SBnote{First journal paper should be cited here} to compute the ``base" obstacles $\boset_j(t)$, the obstacles that would have been induced by $\veh_j$ in the absence of an intruder.
-
-Given $\boset^j(t)$, we want to compute the set of all initial states of the intruder for which vehicle $\veh_j$ may have to apply an avoidnace maneuver. We refer to this set as \textit{separation region} here on, and denote it as $\sep_j(t)$. The significance of $\sep_j(.)$ is that $\veh_j$ can apply any control even in the presence of intruder, if the intruder appears outside $\sep_j(\tsa)$, that is $\state_{\intr}^0 \in \left(\sep_j(\tsa)\right)^c$. $\sep_j(t)$ can be conveniently computed using the relative dynamics between $\veh_j$ and $\veh_{\intr}$. 
-
-We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$:
+The induced obstacles for Case2 at time $t$ are given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles.
+\begin{equation} \label{eq:ObsFRS_case2}
+\begin{aligned}
+\frs_{j}^{\mathcal{O}}(0, \tau) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(0) \in \boset_j(t-\tau), \\
+& \state_j(\tau) = y\}.
+\end{aligned}
+\end{equation}
+$\frs_{j}^{\mathcal{O}}(0, \tau)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset^j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
-\label{eq:reldyn}
-\begin{aligned}
-\state_{\intr, i} &= \state_\intr - \state_i \\
-\dot \state_{\intr, i} &= f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
-\end{aligned}
-\end{equation}
-Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{j}$ can enter danger zone $\dz_{j\intr}$ when both $\veh_{j}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other for a duration of $\iat$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{S}}_j(\iat, \targetset_\text{C}, \emptyset, H_\text{C})$, with
-
-\begin{equation} \label{eqn:optAvoid}
-\begin{aligned}
-\brs^{\text{S}}_{j}(t, \iat) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \ctrl_\intr(\cdot) \in \cfset_\intr, \dstb_j(\cdot) \in \dfset_j, \\
-& \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
-& \exists s \in [t, \iat], \state_{\intr, j}(s) \in \targetset^{\text{S}}_{j}, \state_{\intr, j}(t) = y\},
-\end{aligned}
-\end{equation}
-where 
-\begin{equation}
-\begin{aligned}
-\targetset^{\text{S}}_{j} &= \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
-H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \min_{\ctrl_j \in \cset_j, \ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr)
-\end{aligned}
+\ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j).
+\end{equation} 
+Since $\tau \in [0, \iat]$, the induced obstacles in this case can be obtained as:
+\begin{equation} \label{eq:intruderObs_case2}
+^2\ioset_i^j(t) = \cup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(0, \tau).
 \end{equation}
 
-The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that if the $\veh_{\intr}$ starts outside this set (in relative co-ordinates), then no matter what control $\veh_{\intr}$ and $\veh_{j}$ apply for the next $\iat$ seconds, they cannot enter the danger zone $\dz_{j\intr}$. Thus, $\veh_{j}$ need not avoid the intruder and can apply any desired control. The set $\sep_j(t)$ is thus given by:
-\begin{equation} \label{eqn:sepRegion}
-\sep_j(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \iat),
-\end{equation}
-where the ``$+$'' in \eqref{eqn:sepRegion} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}.
-
-\subsection{Buffer Region} \label{sec:buffRegion}
-In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh_j$ avoids the intruder only if $\state_{\intr}^0 \in sep_j(\tsa)$. But to ensure that atmost one vehicle avoids the intruder, we also need to make sure that no other vehicle $\veh_i, i>j$, avoids the intruder if it appears inside $sep_j(\tsa)$. This can be achieved by ensuring that vehicle $\veh_i$ is far enough from $\sep_j(\cdot)$ (that is, there is a ``buffer" region between $\veh_i$ and $\sep_j(\cdot)$), such that intruder appearing inside $sep_j(\cdot)$ cannot enter the danger zone $\dz_{i\intr}$. We denote this buffer region as $\buff^i(t)$, and the separation region augmented with the buffer region as $\tilde{\sep}^j_i(t)$.
-
-$\buff^i(t)$ can be computed using the relative dynamics 
-
-However, to ensure that atmost one vehicle needs to apply the avoidance maneuver, we need to make sure that no other vehicle $\veh{i}, i \neq j$, needs to avoid the intruder if intruder starts inside $\brs_\text{C}$. This can  be achieved by ensuring that $\brs_{\text{C},i}$ and $\brs_{\text{C},j}$ do not intersect.
+\subsubsection{Case3} \label{sec:intruderObs_case3}
+\SBnote{start from here}
 
 
-
-
-
-
-
-\textbf{To-Dos:}
-\begin{itemize}
-\item A remark about the single vehicle replanning property of Method-2. Moreover, Method-2 can, in theory, handle multiple intruders as long as they are affecting different vehicles. Though, we have to replan for several vehicles in that case. 
-\item Once the replanning is complete, another intruder can appear in the system. So strictly speaking we are making an assumption that atmost one intruder is in the system \textit{at any given time} as opposed to throughout the trajectory.
-\item For method-2 results, it may be helpful to include a figure which is showing the division of space among vehicles at some time (probably right before the intruder enters). 
-\end{itemize}
-
-\subsection{Effective tIAT}
