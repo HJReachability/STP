@@ -53,8 +53,11 @@ if save_png || save_fig
   end
   
   % For saving graphics
-  folder = sprintf('%s_%f', mfilename, now);
-  system(sprintf('mkdir %s', folder));
+  if ispc
+    system(sprintf('mkdir %s\\%s', obj.folder, mfilename));
+  else
+    system(sprintf('mkdir -p %s/%s', obj.folder, mfilename));
+  end  
   
   % Initialize figure
   f = figure;
@@ -71,6 +74,8 @@ tInds = cell(length(Q), 1);
 taumin = inf(length(Q), 1);
 taumax = -inf(length(Q), 1);
 
+subSamples = 32;
+
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
@@ -85,17 +90,22 @@ for i = 1:length(tau)
       %% Get optimal control
       % Our plane is vehicle A, trying to stay out of reachable set, and the
       % reference virtual plane is vehicle B, trying to get into reachable set
-      rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
-      rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
-      
-      deriv = eval_u(RTTRS.g, RTTRS.Deriv, rel_x);
-      u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
-      
-      %% Get disturbance
-      d = Q{veh}.uniformDstb();
-      
-      % Update state
-      Q{veh}.updateState(u, obj.dt, Q{veh}.x, d);
+      for s = 1:subSamples;
+        rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
+        rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
+
+        deriv = eval_u(RTTRS.g, RTTRS.Deriv, rel_x);
+        u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
+
+        %% Get disturbance
+        d = Q{veh}.uniformDstb();
+
+        % Update state
+        Q{veh}.updateState(u, obj.dt/subSamples, Q{veh}.x, d);
+      end
+      % Remove sub-samples
+      Q{veh}.uhist(:, end-subSamples+1:end-1) = [];
+      Q{veh}.xhist(:, end-subSamples+1:end-1) = [];
     end
   end
   
@@ -103,19 +113,19 @@ for i = 1:length(tau)
   if save_png || save_fig
     [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
     
-    xlim([-1.2 1.2])
-    ylim([-1.2 1.2])
+%     xlim([-1.2 1.2])
+%     ylim([-1.2 1.2])
     
-    title(sprintf('t = %f', tau(i)))
+    title(sprintf('t = %.0f', tau(i)))
     drawnow;
   end
   
   if save_png
-    export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
+    export_fig(sprintf('%s/%s/%d', obj.folder, mfilename, i), '-png', '-m2')
   end
   
   if save_fig
-    savefig(f, sprintf('%s/%d', folder, i), 'compact')
+    savefig(f, sprintf('%s/%s/%d', obj.folder, mfilename, i), 'compact')
   end
 end
 

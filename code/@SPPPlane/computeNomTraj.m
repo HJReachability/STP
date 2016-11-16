@@ -1,4 +1,4 @@
-function computeNomTraj(obj, g)
+function computeNomTraj(obj, g, SPPP_folder, veh)
 % SPPPlane.computeNomTraj(g)
 %     Computes nominal trajectory of to be robustly tracked
 
@@ -13,7 +13,17 @@ dynSys = Plane(obj.x, nom_wMax, nom_vrange);
 extraArgs.uMode = 'min';
 extraArgs.visualize = true;
 extraArgs.projDim = [1 1 0];
-extraArgs.save_png = true;
+extraArgs.subSamples = 32;
+
+if ispc
+  folder = sprintf('%s\\%s_%d', SPPP_folder, mfilename, veh);
+  system(sprintf('mkdir %s', folder));
+else
+  folder = sprintf('%s/%s_%d', SPPP_folder, mfilename, veh);
+  system(sprintf('mkdir -p %s', folder));
+end
+
+extraArgs.fig_filename = sprintf('%s/', folder);
 
 % Compute trajectory
 [nomTraj, nomTraj_tau] = ...

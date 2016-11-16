@@ -115,6 +115,10 @@ classdef SPPProblem < handle
       obj.staticObs = inf(obj.gN');
       
       obj.folder = sprintf('%s_%f', mfilename, now);
+      
+      SPPP = obj;
+      system(sprintf('mkdir %s', obj.folder));
+      save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
     end
   end
 end
