@@ -22,7 +22,7 @@ if nargin < 1
 %   vehParams.wMaxA = 1;
 %   vehParams.dMaxA = [0.1 0.2];
 
-  numVeh = 20;
+  numVeh = 50;
   initStates = cell(numVeh, 1);
   initState = [475; 200; 220*pi/180];
   for i = 1:numVeh
@@ -62,35 +62,36 @@ if nargin < 1
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
   
   % Financial District
-  Obs1 = shapeRectangleByCorners(SPPP.g, [300; 250; -inf], [350; 300; inf]);
+  Obs1 = shapeRectangleByCorners(SPPP.g2D, [300; 250], [350; 300]);
   
   % Union Square
-  Obs2 = shapeRectangleByCorners(SPPP.g, [-25; -30; -inf], [25; 30; inf]);
-  Obs2 = rotateData(SPPP.g, Obs2, 7.5*pi/180, [1 2], []);
-  Obs2 = shiftData(SPPP.g, Obs2, [325 185], [1 2]);
-  Obs2b = shapeHyperplaneByPoints(SPPP.g, [170 0 0; 400 230 0; 160 0 pi], ...
-    [0 500 0]);
+  Obs2 = shapeRectangleByCorners(SPPP.g2D, [-25; -30], [25; 30]);
+  Obs2 = rotateData(SPPP.g2D, Obs2, 7.5*pi/180, [1 2], []);
+  Obs2 = shiftData(SPPP.g2D, Obs2, [325 185], [1 2]);
+  Obs2b = shapeHyperplaneByPoints(SPPP.g2D, [170 0; 400 230], ...
+    [0 500]);
   Obs2 = shapeDifference(Obs2, Obs2b);
   
   % City Hall
-  Obs3 = shapeRectangleByCorners(SPPP.g, [-25; -5; -inf], [25; 5; inf]);
-  Obs3 = rotateData(SPPP.g, Obs3, 7.5*pi/180, [1 2], []);
-  Obs3 = shiftData(SPPP.g, Obs3, [170 65], [1 2]);
+  Obs3 = shapeRectangleByCorners(SPPP.g2D, [-25; -5], [25; 5]);
+  Obs3 = rotateData(SPPP.g2D, Obs3, 7.5*pi/180, [1 2], []);
+  Obs3 = shiftData(SPPP.g2D, Obs3, [170 65], [1 2]);
   
   staticObs = min(Obs1, Obs2);
   staticObs = min(staticObs, Obs3);
-  SPPP.staticObs = repmat(staticObs, [1 1 1 length(SPPP.tau)]);
   
   % Plot setup
   mapFile = 'map_earth.png';
-  [~, obs2D] = proj(SPPP.g, staticObs, [0 0 1]);
-  plotSPPP(mapFile, targetCentersSet, targetR, SPPP.g2D, obs2D, initState);
+  plotSPPP(mapFile, targetCentersSet, targetR, SPPP.g2D, staticObs, initState);
   
   % RTT parameters
   vReserved = [1 -1.2];
   wReserved = -0.8;
   trackingRadius = 3.5;
 
+  staticObs = addCRadius(SPPP.g2D, staticObs, trackingRadius);
+  SPPP.staticObs = repmat(staticObs, [1 1 gridParams.N(3) length(SPPP.tau)]);
+  
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard
 end
