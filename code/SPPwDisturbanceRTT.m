@@ -38,11 +38,11 @@ if nargin < 1
   
   targetCenters = cell(numVeh,1);
   for i = 1:numVeh
-    target_ind = randi(4);
+    target_ind = randi(length(targetCentersSet));
     targetCenters{i} = targetCentersSet{target_ind};
   end
   
-  targetR = 20;
+  targetR = 10;
   
   % Vehicle parameters
   vehParams.vRangeA = [0.1 2.5];
@@ -57,7 +57,7 @@ if nargin < 1
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
   SPPP.tMin = -500;
-  SPPP.dt = 2;
+  SPPP.dt = 1;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
   
@@ -77,8 +77,12 @@ if nargin < 1
   Obs3 = rotateData(SPPP.g2D, Obs3, 7.5*pi/180, [1 2], []);
   Obs3 = shiftData(SPPP.g2D, Obs3, [170 65], [1 2]);
   
+  % Boundary
+  Obs4 = -shapeRectangleByCorners(SPPP.g2D, SPPP.g2D.min+1, SPPP.g2D.max-1);
+  
   staticObs = min(Obs1, Obs2);
   staticObs = min(staticObs, Obs3);
+  staticObs = min(staticObs, Obs4);
   
   % Plot setup
   mapFile = 'map_earth.png';
