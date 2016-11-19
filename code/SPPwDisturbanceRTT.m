@@ -57,7 +57,7 @@ if nargin < 1
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
   SPPP.tMin = -500;
-  SPPP.dt = 1;
+  SPPP.dt = 0.5;
   SPPP.Rc = 1;
   SPPP.tau = SPPP.tMin:SPPP.dt:SPPP.tTarget;
   
@@ -83,6 +83,7 @@ if nargin < 1
   staticObs = min(Obs1, Obs2);
   staticObs = min(staticObs, Obs3);
   staticObs = min(staticObs, Obs4);
+  SPPP.staticObs = staticObs;
   
   % Plot setup
   mapFile = 'map_earth.png';
@@ -93,8 +94,9 @@ if nargin < 1
   wReserved = -0.8;
   trackingRadius = 3.5;
 
-  staticObs = addCRadius(SPPP.g2D, staticObs, trackingRadius);
-  SPPP.staticObs = repmat(staticObs, [1 1 gridParams.N(3) length(SPPP.tau)]);
+  augStaticObs = addCRadius(SPPP.g2D, staticObs, trackingRadius);
+  SPPP.augStaticObs = repmat(augStaticObs, ...
+    [1 1 gridParams.N(3) length(SPPP.tau)]);
   
   fprintf('Enter any modifications to the SPPProblem...\n')
   keyboard

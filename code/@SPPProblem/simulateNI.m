@@ -80,9 +80,7 @@ if save_png || save_fig
   plotTargetSets(Q, colors)
   
   % Static obstacles
-  obs2D = min(obj.staticObs, [], 4);
-  obs2D = min(obs2D, [], 3);
-  h = visSetIm(obj.g2D, obs2D, 'k');
+  h = visSetIm(obj.g2D, obj.staticObs, 'k');
   h.LineWidth = 3;
 
   hc = cell(length(Q), 1); % Capture radius

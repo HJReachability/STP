@@ -12,7 +12,8 @@ classdef SPPProblem < handle
     
     Rc = 0.1 % collision radius
     
-    staticObs; % static obstacles
+    staticObs % static obstacles
+    augStaticObs
     
     % SPP vehicle parameters
     vRangeA;
