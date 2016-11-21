@@ -50,9 +50,9 @@ if nargin < 1
   vehParams.dMaxA = [1.1 0]; % 11 m/s wind is "high wind" or "strong breeze"
   
   % Grid parameters
-  gridParams.min = [-50; -50; 0];
+  gridParams.min = [-10; -10; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [125; 125; 15];  
+  gridParams.N = [101; 101; 11];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
