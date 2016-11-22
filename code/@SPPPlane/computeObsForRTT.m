@@ -12,7 +12,7 @@ end
 
 % Project RTTRS into 2D
 [RTTRS_g2D, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);
-R_augment = SPPP.Rc + RTTRS.trackingRadius; % Amount to augment RTTRS by
+R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
 
 % Create slightly bigger grid to augment the RTTRS
 small_g2D_min = RTTRS_g2D.min - R_augment;
