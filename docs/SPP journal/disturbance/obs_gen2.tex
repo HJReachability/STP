@@ -35,10 +35,10 @@ In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority
 \ioset_i^j(t) = \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \}, \text{ where}
 \end{equation}
 
-\begin{equation}
-\label{eqn:lrcObs2}
-\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j) \} 
-\end{equation}
+\begin{align}
+\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \boset_j(t) \}, \label{eqn:lrcObs2}\\
+\boset_j(t) & = \frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j). \label{eqn:lrcObs3}
+\end{align}
 
 Least restrictive control method can be summarized as follows:
 \begin{alg}

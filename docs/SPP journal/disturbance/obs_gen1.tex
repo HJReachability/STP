@@ -78,9 +78,10 @@ The FRS $\frs_j^\text{cc}(\ldt_j, t)$ represents the set of possible states at t
 
 \noindent where the set $\pfrs_j(t)$ is the set of states in the FRS $\frs_j^\text{cc}(\ldt_j, t)$ projected onto the states representing position $\pos_j$, and disregarding the non-position dimensions $\npos_j$:
 
-\begin{equation} \label{eqn:ccObs_help1}
-\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_j^\text{cc}(\ldt_j, t)\}.
-\end{equation}
+\begin{align} 
+\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \boset_j(t) \}, \label{eqn:ccObs_help1}\\
+\boset_j(t) & = \frs_j^\text{cc}(\ldt_j, t). \label{eqn:ccObs_help2}
+\end{align}
 
 Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:obsseti} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
 
