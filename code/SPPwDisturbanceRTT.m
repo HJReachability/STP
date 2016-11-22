@@ -57,9 +57,9 @@ if nargin < 1
   trackingRadius = 0.5;
   
   % Grid parameters
-  gridParams.min = [-10; -10; 0];
+  gridParams.min = [-50; -50; 0];
   gridParams.max = [500; 500; 2*pi];
-  gridParams.N = [101; 101; 11];  
+  gridParams.N = [125; 125; 11];  
   
   SPPP = SPPProblem(initStates, targetCenters, targetR, vehParams, gridParams);
   
