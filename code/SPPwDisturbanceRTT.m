@@ -49,6 +49,12 @@ if nargin < 1
   vehParams.wMaxA = 2;
 %   vehParams.dMaxA = [1.1 0]; % 11 m/s wind is "high wind" or "strong breeze"
   vehParams.dMaxA = [0.6 0]; % 6 m/s wind is "moderate breeze"
+
+  % RTT parameters
+  vReserved = [1 -1.2];
+  wReserved = -0.8;
+%   trackingRadius = 3.5;
+  trackingRadius = 0.5;
   
   % Grid parameters
   gridParams.min = [-10; -10; 0];
@@ -90,11 +96,6 @@ if nargin < 1
   mapFile = 'map_earth.png';
   plotSPPP(mapFile, targetCentersSet, targetR, SPPP.g2D, staticObs, initState);
   
-  % RTT parameters
-  vReserved = [1 -1.2];
-  wReserved = -0.8;
-  trackingRadius = 1.5;
-
   augStaticObs = addCRadius(SPPP.g2D, staticObs, trackingRadius);
   SPPP.augStaticObs = repmat(augStaticObs, ...
     [1 1 gridParams.N(3) length(SPPP.tau)]);
