@@ -25,16 +25,42 @@ The induced obstacles for Case2 at time $t$ are given by the states that $\veh_j
 & \state_j(\tau) = y\}.
 \end{aligned}
 \end{equation}
-$\frs_{j}^{\mathcal{O}}(0, \tau)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset^j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+$\frs_{j}^{\mathcal{O}}(0, \tau)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
 \ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j).
 \end{equation} 
 Since $\tau \in [0, \iat]$, the induced obstacles in this case can be obtained as:
+\begin{equation} \label{eq:intruderObs_case2_inter}
+^2\ioset_i^j(t) = \bigcup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(0, \tau).
+\end{equation}
+
+Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. Thus, \eqref{eq:intruderObs_case2_inter} can be equivalently written as:
 \begin{equation} \label{eq:intruderObs_case2}
-^2\ioset_i^j(t) = \cup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(0, \tau).
+^2\ioset_i^j(t) = \frs_{j}^{\mathcal{O}}(0, \iat).
 \end{equation}
 
 \subsubsection{Case3} \label{sec:intruderObs_case3}
+In this case, we need to ensure that $\veh_i$ doesn't collide with the obstacle set $\boset_j(t)$ even when it is avoiding the intruder. In particular, we can compute a region around the obstacles $\boset_j(\cdot)$ such that for all disturbances, $\veh_i$ can avoid colliding with obstacles for $\iat$ seconds regardless of its avoidance control, if $\veh_i$ starts outside this region. To ensure that a vehicle does not collide with the obstacle $\boset_j(t_1 + t')$ at time $t = t_1 + t'$ starting at $t = t_1$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [t_1, t_1 + t']$, it suffices to avoid the $t'$-horizon BRS of $\boset_i(t_1 + t')$. This argument applies for all $t' \in [0, \iat]$. Mathematically,
+
+\begin{equation} \label{eq:intruderObs_case3}
+^3\ioset_i^j(t) = \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(0, \tau)
+\end{equation}
+where $\brs^{\mathcal{G}}_{i}(0, \tau)$ represents BRS of $\boset_j(t+\tau)$ computed backwards for $\tau$ seconds. Formally, 
+\begin{equation}  \label{eq:ObsBRS_case3}
+\begin{aligned}
+\brs^{\mathcal{G}}_{i}(0, \tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(0) = y, \\
+& \exists s \in [0, \tau], \state_i(s) \in \boset_i(t)\}.
+\end{aligned}
+\end{equation}
+
+The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdot)$ is given by:
+\begin{equation} \label{eqn:BRS_obsham}
+\ham^{\mathcal{G}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\end{equation}
+
+\subsubsection{Case4} \label{sec:intruderObs_case4}
+
 \SBnote{start from here}
 
 
