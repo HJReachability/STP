@@ -1,4 +1,4 @@
-function computeRTTRS(obj, vR, wR, tR, save_png)
+function computeRTTRS(obj, save_png)
 % computeRTTRS(obj, vR, wR, trackingRadius, save_png)
 %     Computes the robust trajectory tracking reachable set and updates the SPPP
 %     object with the RTTRS file name
@@ -13,20 +13,20 @@ function computeRTTRS(obj, vR, wR, tR, save_png)
 % Output:
 %     SPPP - SPP problem object updated with RTTRS file name
 
+% if nargin < 2
+%   vR = [0.3 -0.3];
+% %   vR = [0.25 -0.25];  
+% end
+% 
+% if nargin < 3
+%   wR = -0.4;
+% end
+% 
+% if nargin < 4
+%   tR = 0.075;
+% end
+
 if nargin < 2
-  vR = [0.3 -0.3];
-%   vR = [0.25 -0.25];  
-end
-
-if nargin < 3
-  wR = -0.4;
-end
-
-if nargin < 4
-  tR = 0.075;
-end
-
-if nargin < 5
   save_png = true;
 end
 
@@ -35,6 +35,10 @@ if exist(obj.RTTRS_filename, 'file')
     obj.RTTRS_filename)
   return
 end
+
+vR = obj.vReserved;
+wR = obj.wReserved;
+tR = obj.RTT_tR;
 
 % Grid
 grid_min = [-1.25*tR; -1.25*tR; -pi]; % Lower corner of computation domain

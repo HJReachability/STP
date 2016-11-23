@@ -12,12 +12,20 @@ classdef SPPProblem < handle
     
     Rc = 0.1 % collision radius
     
-    staticObs; % static obstacles
+    % static obstacles
+    mapFile
+    staticObs 
+    augStaticObs
     
     % SPP vehicle parameters
     vRangeA;
     wMaxA;
     dMaxA;
+    
+    % Robust trajectory tracking
+    vReserved
+    wReserved
+    RTT_tR
     
     % Time
     tMin = -5    % Minimum time for the entire problem
@@ -61,64 +69,167 @@ classdef SPPProblem < handle
   
   methods
     %% Contructor
-    function obj = SPPProblem(initStates, targetCenters, targetR, vehParams, ...
-        grid_params)
-      if nargin < 1
-        initStates = { ...
-          [-0.6; 0.2;  0]; ...
-          [ 0.6; 0.2; -pi]; ...
-          [-0.5; 0.9; -pi/4]; ...
-          [ 0.5; 0.9; -3*pi/4]};
-      end
-      
+    function obj = SPPProblem(problem_name, extraArgs)
       if nargin < 2
-        targetCenters = { ...
-          [ 0.7;  0.7; 0]; ...
-          [-0.7;  0.7; 0]; ...
-          [ 0.7; -0.7; 0]; ...
-          [-0.7; -0.7; 0]};
+        extraArgs = [];
       end
       
-      if nargin < 3
-%         targetR = 0.15;
-        targetR = 0.1;
+      switch problem_name
+        case 'SF_dstb_11'
+          %% Vehicle
+          obj.vRangeA = [0.1 2.5];
+          obj.wMaxA = 2;
+          obj.dMaxA = [1.1 0];
+          
+          %% RTT
+          obj.vReserved = [1 -1.2];
+          obj.wReserved = -0.8;
+          obj.RTT_tR = 3.5;
+          
+          %% Grid
+          obj.gMin = [-50 -50 0];
+          obj.gMax = [500 500 2*pi];
+          obj.gN = [111 111 11];
+
+          obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+          obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+
+          %% Time
+          obj.tMin = -500;
+          obj.dt = 0.25;
+          obj.Rc = 1;
+          obj.tau = obj.tMin:obj.dt:obj.tTarget;
+          
+          %% Initial states
+          numVeh = 50;
+          obj.initStates = cell(numVeh, 1);
+          initState = [475; 200; 220*pi/180];
+          for i = 1:numVeh
+            obj.initStates{i} = initState;
+          end
+          
+          %% Initial targets
+          obj.targetR = 10;
+          
+          targetCentersSet = { ...
+            [300; 400]; ...
+            [50; 175]; ...
+            [75; 25]; ...
+            [450; 25] ...
+            };
+          
+          obj.targetCenters = cell(numVeh,1);
+          for i = 1:numVeh
+            target_ind = randi(length(targetCentersSet));
+            obj.targetCenters{i} = targetCentersSet{target_ind};
+          end
+          
+          %% Obstacles
+          % Financial District
+          Obs1 = shapeRectangleByCorners(obj.g2D, [300; 250], [350; 300]);
+          
+          % Union Square
+          Obs2 = shapeRectangleByCorners(obj.g2D, [-25; -30], [25; 30]);
+          Obs2 = rotateData(obj.g2D, Obs2, 7.5*pi/180, [1 2], []);
+          Obs2 = shiftData(obj.g2D, Obs2, [325 185], [1 2]);
+          Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
+            [0 500]);
+          Obs2 = shapeDifference(Obs2, Obs2b);
+          
+          % City Hall
+          Obs3 = shapeRectangleByCorners(obj.g2D, [-25; -5], [25; 5]);
+          Obs3 = rotateData(obj.g2D, Obs3, 7.5*pi/180, [1 2], []);
+          Obs3 = shiftData(obj.g2D, Obs3, [170 65], [1 2]);
+          
+          % Boundary
+          Obs4 = -shapeRectangleByCorners(obj.g2D, obj.g2D.min+5, obj.g2D.max-5);
+          
+          obj.staticObs = min(Obs1, Obs2);
+          obj.staticObs = min(obj.staticObs, Obs3);
+          obj.staticObs = min(obj.staticObs, Obs4);
+          
+          obj.mapFile = 'map_streets.png';
+          
+          augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
+          obj.augStaticObs = repmat(augStaticObs, ...
+            [1 1 obj.gN(3) length(obj.tau)]);
+          
+        case 'SF_dstb_6'
+          params.trackingRadius = 0.5;
+          params.dMaxA = [1.1 0];
+          
+        case 'BA_dstb_11'
+        case 'SF_intr_2'
+        case 'SF_intr_3'
+        case 'TCST_dstb'
+        case 'TCST_intr'
+        otherwise
+          error('Unknown simulation name!')
       end
-     
-      if nargin < 4
-        vehParams.vRangeA = [0.5 1];
-        vehParams.wMaxA = 1;
-        vehParams.dMaxA = [0.1 0.2];        
-      end
       
-      if nargin < 5
-        grid_params.min = [-1; -1; -3*pi/2];
-        grid_params.max = [1; 1; pi/2];
-        grid_params.N = [95; 95; 95];
-      end
-      
-      obj.initStates = initStates;
-      obj.targetCenters = targetCenters;
-      obj.targetR = targetR;
-      
-      obj.vRangeA = vehParams.vRangeA;
-      obj.wMaxA = vehParams.wMaxA;
-      obj.dMaxA = vehParams.dMaxA;
-      
-      obj.gMin = grid_params.min;
-      obj.gMax = grid_params.max;
-      obj.gN = grid_params.N;
-      
-      obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
-      obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
-      
-      obj.tau = obj.tMin:obj.dt:obj.tTarget;
-      obj.staticObs = inf(obj.gN');
+%       if nargin < 1
+%         initStates = { ...
+%           [-0.6; 0.2;  0]; ...
+%           [ 0.6; 0.2; -pi]; ...
+%           [-0.5; 0.9; -pi/4]; ...
+%           [ 0.5; 0.9; -3*pi/4]};
+%       end
+%       
+%       if nargin < 2
+%         targetCenters = { ...
+%           [ 0.7;  0.7; 0]; ...
+%           [-0.7;  0.7; 0]; ...
+%           [ 0.7; -0.7; 0]; ...
+%           [-0.7; -0.7; 0]};
+%       end
+%       
+%       if nargin < 3
+%         %         targetR = 0.15;
+%         targetR = 0.1;
+%       end
+%       
+%       if nargin < 4
+%         vehParams.vRangeA = [0.5 1];
+%         vehParams.wMaxA = 1;
+%         vehParams.dMaxA = [0.1 0.2];
+%       end
+%       
+%       if nargin < 5
+%         grid_params.min = [-1; -1; -3*pi/2];
+%         grid_params.max = [1; 1; pi/2];
+%         grid_params.N = [95; 95; 95];
+%       end
+%       
+%       obj.initStates = initStates;
+%       obj.targetCenters = targetCenters;
+%       obj.targetR = targetR;
+%       
+%       obj.vRangeA = vehParams.vRangeA;
+%       obj.wMaxA = vehParams.wMaxA;
+%       obj.dMaxA = vehParams.dMaxA;
+%       
+%       obj.gMin = grid_params.min;
+%       obj.gMax = grid_params.max;
+%       obj.gN = grid_params.N;
+%       
+%       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+%       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+%       
+%       obj.tau = obj.tMin:obj.dt:obj.tTarget;
+%       obj.staticObs = inf(obj.gN');
       
       obj.folder = sprintf('%s_%f', mfilename, now);
       
       SPPP = obj;
       system(sprintf('mkdir %s', obj.folder));
       save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
+      
+      obj.plotSetup();
+      
+      if isfield(extraArgs, 'RTTRS_filename')
+        load(extraArgs.RTTRS_filename)
+        obj.setRTTRS(RTTRS);
+      end      
     end
   end
 end

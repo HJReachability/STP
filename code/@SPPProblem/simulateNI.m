@@ -61,9 +61,28 @@ if save_png || save_fig
   
   % Initialize figure
   f = figure;
+  
+  % Map
+  I = imread('map_streets.png');
+  I = I(1:800, 701:1500, :);
+  I = flip(I, 1);
+  imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
+
+  axis xy
+  axis on
+  grid on
+  
+  hold on
+
   colors = lines(length(Q));
+  
+  % Targets
   plotTargetSets(Q, colors)
   
+  % Static obstacles
+  h = visSetIm(obj.g2D, obj.staticObs, 'k');
+  h.LineWidth = 3;
+
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
   hn = cell(length(Q), 1); % Nominal trajectory
@@ -135,10 +154,10 @@ for veh = 1:length(Q)
   Q{veh}.tau = taumin(veh):obj.dt:taumax(veh);
 end
 
-obj.NI_sim_filename = sprintf('%s_%f.mat', mfilename, now);
+obj.NI_sim_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
 [Q1, Q2, Q3, Q4] = Q{:};
 save(obj.NI_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
 
 SPPP = obj;
-save(obj.this_filename, 'SPPP', '-v7.3')
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end
