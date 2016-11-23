@@ -148,7 +148,7 @@ classdef SPPProblem < handle
           obj.staticObs = min(obj.staticObs, Obs3);
           obj.staticObs = min(obj.staticObs, Obs4);
           
-          obj.mapFile = 'map_earth.png';
+          obj.mapFile = 'map_streets.png';
           
           augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
           obj.augStaticObs = repmat(augStaticObs, ...
