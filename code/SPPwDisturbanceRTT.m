@@ -3,6 +3,8 @@ function SPPwDisturbanceRTT(SPPP)
 %     Solves the entire SPP with disturbances problem using the RTT method
 
 if nargin < 1
+  extraArgs.RTTRS_filename = 'RTTRS11.mat';
+  SPPP = SPPProblem('SF_dstb_11', extraArgs);
 %   % for ACC and TCST paper
 %   initStates = { ...
 %     [-0.5; 0;  0]; ...
@@ -109,7 +111,7 @@ end
 % wReserved = -0.4;
 % trackingRadius = 0.075;
 
-SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
-SPPP.computeNIRS;
-SPPP.simulateNI;
+SPPP.computeRTTRS();
+SPPP.computeNIRS();
+SPPP.simulateNI();
 end
