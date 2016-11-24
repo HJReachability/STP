@@ -12,11 +12,9 @@ We present three methods to address the above issues. The methods differ in term
 
 In general, the above methods can be used in combination in a single path planning problem, with each vehicle independently having different control policies. Lower-priority vehicles would then plan their paths while taking into account the control policy information known for each higher-priority vehicle. For clarity, we will present each method as if all vehicles are using the same method of path planning.
 
-In addition, for simplicity of explanation, we will assume that no static obstacles exist. In the situations where static obstacles do exist, the time-varying obstacles $\obsset_i(t)$ simply become the union of the induced obstacles $\ioset_i^j(t)$ in \eqref{eq:ioset} and the static obstacles.
+In addition, for simplicity of explanation, we will assume that no static obstacles exist. In the situations where static obstacles do exist, the time-varying obstacles $\obsset_i(t)$ simply become the union of the induced obstacles $\ioset_i^j(t)$ in \eqref{eq:ioset} and the static obstacles. The material in this section is taken partially from \cite{Bansal2017}.
 
-The material in this section is taken partially from \cite{Bansal2017}.
-
-\subsubsection{Centralized Control \label{sec:cc}}
+\subsubsection{Centralized Control\label{sec:cc}}
 The highest-priority vehicle $\veh_1$ first plans its path by computing the BRS (with $i=1$)
 \begin{equation}
 \label{eq:BRS}
@@ -83,9 +81,7 @@ The FRS $\frs_j^\text{cc}(\ldt_j, t)$ represents the set of possible states at t
 \boset_j(t) & = \frs_j^\text{cc}(\ldt_j, t). \label{eqn:ccObs_help2}
 \end{align}
 
-Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:obsseti} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival.
-
-The centralized control algorithm can be summarized as follows:
+Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:obsseti} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival. The centralized control algorithm can be summarized as follows:
 \begin{alg}
 \label{alg:cc}
 \textbf{Centralized control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:

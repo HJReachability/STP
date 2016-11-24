@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_journal.tex
-\subsubsection{Robust Trajectory Tracking \label{sec:rtt}}
-Even though it is impossible to commit to and track an exact trajectory in presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the \textit{planning phase} and the \textit{disturbance rejection phase}. In the planning phase, we compute a nominal trajectory $\state_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
+\subsubsection{Robust Trajectory Tracking\label{sec:rtt}}
+Even though it is impossible to commit to and track an exact trajectory in the presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the \textit{planning phase} and the \textit{disturbance rejection phase}. In the planning phase, we compute a nominal trajectory $\state_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
 It is important to note that the planning phase does not make full use of a vehicle's control authority, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. Therefore, in this method, planning is done for a reduced control set $\cset^p\subset\cset$. The resulting trajectory reference will not utilize the vehicle's full control capability; additional maneuverability is available at execution time to counteract external disturbances.
 
@@ -75,17 +75,17 @@ Letting $t \to -\infty$, we obtain the infinite-horizon control-invariant set $\
 %\tracklaw_j(\state_j,x_r) \in \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in\cset^\pos_j, \dstb_j \in \dset_j} p \cdot \fdyn_{z_j}(t,z_j,\ctrl_j,\ctrl_r,\dstb_j).
 %\end{equation}
 
-The induced obstacles by each higher priority vehicle $\veh_j$ can thus be obtained by: 
+The induced obstacles by each higher-priority vehicle $\veh_j$ can thus be obtained by: 
 \begin{equation} 
 \label{eqn:rttObs}
 \begin{aligned}
 \ioset_i^j(t) &=  \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \} \\
-\pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \boset_j(t)\}
+\pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \boset_j(t)\} \\
 \boset_j(t) &= \disckernel_j  + \state_{r,j}(t),
 \end{aligned}
 \end{equation}
 
-\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) \forall t$. This is precisely what set $\pfrs_j(t)$ captures. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}. 
+\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}. 
 
 Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\disckernel_j$, we must make sure during the path planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\disckernel_i$ and $\disckernel_j$, do not intersect. This can be done by augmenting the total obstacle set by $\disckernel_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 
@@ -117,9 +117,7 @@ The corresponding optimal control for reaching $\tilde{\targetset}_i$ is given b
 \ctrl_i^\text{rtt}(t) = \arg \min_{\ctrl_i \in \cset^\pos_i } \costate \cdot \fdyn_i(\state_i, \ctrl_i).
 \end{equation}
 
-The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}.
-
-The robust trajectory tracking method can be summarized as follows:
+The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}. The robust trajectory tracking method can be summarized as follows:
 
 \begin{alg}
 \label{alg:rtt}
@@ -130,7 +128,7 @@ The robust trajectory tracking method can be summarized as follows:
 \item Compute the BRS $\brs^{\text{EB}}_{i}(t, 0)$ using \eqref{eqn:errBound} and make sure that $\disckernel_i \neq \emptyset$. Given $R_{\text{EB}}$, the error bound on the tracking error is given by $\disckernel_i$. 
 \item Using $\disckernel_i$, determine the augmented obstacle set $\tilde{\obsset}_i(t)$, given in \eqref{eqn:rttAugObs}. 
 \item Compute the BRS $\brs_i^\text{rtt}(t, \sta_i)$ as described in \eqref{eq:rttBRS} using the reduced target set $\tilde{\targetset}_i$, $\tilde{\obsset}_i(t)$ as obstacles, and the control authority $\cset^\pos_i$. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{rtt}(t, \sta_i)$.
-\item Compute the nominal trajectory $\state_{r,i}(\cdot)$ for $\veh_i$ in absence of disturbances, which can be obtained using the vehicle dynamics in \eqref{eq:dyn_no_dstb} and the optimal control given in \eqref{eq:RTTOptCtrl}.
+\item Compute the nominal trajectory $\state_{r,i}(\cdot)$ for $\veh_i$ in the absence of disturbances, which can be obtained using the vehicle dynamics in \eqref{eq:dyn_no_dstb} and the optimal control given in \eqref{eq:RTTOptCtrl}.
 \item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using $\disckernel_i$ and $\state_{r,i}(\cdot)$ via \eqref{eqn:rttObs}. 
 \end{enumerate}
 \end{alg}

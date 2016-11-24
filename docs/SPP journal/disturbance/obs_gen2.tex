@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_journal.tex
 \subsubsection{Least Restrictive Control \label{sec:lrc}}
-Here, we again begin with the highest-priority vehicle $\veh_1$ planning its path by computing the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption that a lower-priority vehicle can make is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
+Here, we again begin with the highest-priority vehicle $\veh_1$ planning its path by computing the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
 
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
@@ -40,7 +40,7 @@ In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority
 \boset_j(t) & = \frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j). \label{eqn:lrcObs3}
 \end{align}
 
-Least restrictive control method can be summarized as follows:
+The least restrictive control method can be summarized as follows:
 \begin{alg}
 \label{alg:lrc}
 \textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:
