@@ -12,7 +12,7 @@ We demonstrate our proposed methods for accounting for disturbances and incomple
 \end{aligned}
 \end{equation}
 
-\noindent where $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represents $\veh_i$'s disturbances in the three states. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we choose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles and cases in which each vehicle has a different dynamic model. The disturbance bounds are chosen as $d_{r} = 0.1, \bar{d_{\theta}} = 0.2$, which correspond to a 10\% uncertainty in the dynamics. %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
+\noindent where $d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ represents $\veh_i$'s disturbances in the three states. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we choose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles. The disturbance bounds are chosen as $d_r = 0.1, \bar{d_{\theta}} = 0.2$, which correspond to a 10\% uncertainty in the dynamics. %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
 
 %\begin{equation}
 %\omega_i(t) = -\bar{\omega}_i \frac{D_{\theta_i}V_i(\bm{x}_i,t)}{\left| D_{\theta_i}V_i(\bm{x}_i,t) \right|},
@@ -31,7 +31,7 @@ We demonstrate our proposed methods for accounting for disturbances and incomple
 \begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{"fig/init_setup"}
-  \caption{Initial configuration of the four-vehicle example.}
+  \caption{Initial configuration of the four-vehicle example in the presence of disturbances.}
   \label{fig:init_setup_dstb}
 \end{figure}
 
@@ -47,17 +47,17 @@ For each proposed method of computing induced obstacles, we show the vehicles' e
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{"fig/cc_traj"}
-  \caption{Simulated trajectories in the centralized control method. Since the higher priority vehicles induce relatively small obstacles in this case, vehicles do not deviate much from a straight line trajectory towards their respective targets, and arrive at a dense configuration similar to that in Fig. \ref{fig:dubins_result}}
+  \caption{Simulated trajectories in the centralized control method. Since the higher priority vehicles induce relatively small obstacles in this case, vehicles do not deviate much from a straight line trajectory towards their respective targets, and arrive at a dense configuration similar to that in Fig. \ref{fig:dubins_result}.}
   \label{fig:cc_traj}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{"fig/cc_rs3"}
-  \caption{Evolution of the BRS and the obstacles induced by $\veh_1$ and $\veh_2$ for $\veh_3$ in the centralized control method. Since every vehicle is applying the optimal control at all times, the obstacle sizes are only slightly bigger than those in Fig. \ref{fig:dubins_reach_all} and \ref{fig:dubins_reach_3}}.
+  \caption{Evolution of the BRS and the obstacles induced by $\veh_1$ and $\veh_2$ for $\veh_3$ in the centralized control method. Since vehicles apply the optimal control at all times, the obstacle sizes are only slightly bigger than those in Fig. \ref{fig:dubins_reach_all} and \ref{fig:dubins_reach_3}.}
   \label{fig:cc_rs3}
 \end{figure}
 
-Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $\ctrl^\text{dstb}_i(t, \state_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}. In this case, vehicles appear to deviate slightly from a straight line trajectory towards their respective targets, just enough to avoid higher-priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
+Fig. \ref{fig:cc_traj} shows the simulated trajectories in the situation where a centralized controller enforces each vehicle to use the optimal controller $\ctrl^\text{dstb}_i(t, \state_i)$ according to \eqref{eq:opt_ctrl_i}, as described in Section \ref{sec:cc}. In this case, vehicles appear to deviate slightly from a straight line trajectory towards their respective targets, just enough to avoid higher-priority vehicles. The deviation is small since the centralized controller is quite restrictive, making the possible positions of higher-priority vehicles cover a small area. In the dense configuration at $t=-1.0$, the vehicles are close to each other but still outside each other's danger zones.
 
-Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher-priority vehicles $\veh_1$ and $\veh_2$. The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the size of the obstacles remains relatively small. The $\ldt_i$ values for the four vehicles (in order) in this case are $-1.35, -1.37, -1.94$ and $-2.04$, relatively close for vehicles pairs $(\veh_1, \veh_2)$ and $(\veh_3, \veh_4)$, because the obstacles generated by higher-priority vehicles are small and hence do not affect the $\ldt_i$ of lower-priority vehicles significantly.
+Fig. \ref{fig:cc_rs3} shows the evolution of the BRS for $\veh_3$ (green boundary), as well as the obstacles (black boundary) induced by the higher-priority vehicles $\veh_1$ and $\veh_2$. The locations of the induced obstacles at different time points include the actual positions of $\veh_1$ and $\veh_2$ at those times, and the sizes of obstacles remain relatively small. The $\ldt_i$ values for the four vehicles (in order) in this case are $-1.35, -1.37, -1.94$ and $-2.04$, relatively close for vehicles pairs $(\veh_1, \veh_2)$ and $(\veh_3, \veh_4)$, because the obstacles generated by higher-priority vehicles are small and hence do not affect the $\ldt_i$ of lower-priority vehicles significantly.
