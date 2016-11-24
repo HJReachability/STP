@@ -96,7 +96,7 @@ classdef SPPProblem < handle
 
           %% Time
           obj.tMin = -500;
-          obj.dt = 0.25;
+          obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:obj.tTarget;
           
