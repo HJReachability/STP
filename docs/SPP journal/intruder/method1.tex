@@ -187,7 +187,7 @@ The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref
 \begin{equation}
 \begin{aligned}
 \max \Big\{&D_t \valfuncfwd^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd^{\text{RP}}(t, \state_i)), \\
-&\qquad - \obsfunc^{\text{RP}}(t, \state_i) - \valfuncfwd^{\text{RP}}(t, \state_i) \Big\}\\
+&\qquad - \obsfunc^{\text{RP}}(t, \state_i) - \valfuncfwd^{\text{RP}}(t, \state_i) \Big\} = 0\\
 &\valfuncfwd^{\text{RP}}(\tsa, \state_i) = \max\{\fc^{\text{RP}}(\state_i), -\obsfunc^{\text{RP}}(\tsa, \state_i)\} \\
 &\ham_i^{\text{RP}}(\state_i, \costate) = \max_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{aligned}

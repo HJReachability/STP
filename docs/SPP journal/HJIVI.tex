@@ -15,7 +15,7 @@ In the SPP scheme, a lower-priority vehicle must avoid a set of moving obstacles
 \label{eq:HJIVI_BRS}
 \begin{aligned}
 \max \Big\{ \min \{&D_t \valfunc(t, \state) + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(\state) - \valfunc(t, \state) \}, \\
-&-\obsfunc(t, \state) - \valfunc(t, \state) \Big\}, \quad t \le t_f \\
+&-\obsfunc(t, \state) - \valfunc(t, \state) \Big\} = 0, \quad t \le t_f \\
 &\valfunc(t_f, \state) = \max\{\fc(\state), -\obsfunc(t_f, \state)\}
 \end{aligned}
 \end{equation}
