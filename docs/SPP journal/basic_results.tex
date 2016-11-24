@@ -1,5 +1,5 @@
 % !TEX root = SPP_journal.tex
-\subsection{Numerical Results \label{sec:basic_results}}
+\subsection{Numerical Simulations \label{sec:basic_results}}
 We now illustrate the basic SPP algorithm using a four-vehicle example. In this example, we will use the following dynamics for each vehicle:
 
 \begin{equation} \label{eqn:NumSimpleDyn}
@@ -39,7 +39,7 @@ Fig. \ref{fig:dubins_reach_all}, \ref{fig:dubins_reach_3}, and \ref{fig:dubins_r
 
 Finally, Fig. \ref{fig:dubins_result} shows the resulting trajectories of the four vehicles. Most interestingly, the subplot labeled $t=-0.55$ shows all four vehicles in close proximity without collision: each vehicle is outside of the danger zone of all other vehicles (although the danger zones may overlap). This close proximity is an indication of the optimality of the basic SPP algorithm given the assigned priority ordering. Since no disturbances are present, getting as close to other vehicles' danger zones as possible without entering the danger zones intuitively results in short transit times.
 
-The actual arrival times of vehicles $\veh_i,i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, respectively. It is interesting to note that for some vehicles, the actual arrival times are earlier than the scheduled times of arrivals $\sta_i$. This is because in order to arrive at the target by $\sta_i$, these vehicles must depart early enough to avoid major delays resulting from the induced obstacles of other vehicles; these delays would have lead to a late arrival if vehicle $\veh_i$ departed after $\ldt_i$.
+The actual arrival times of vehicles $\veh_i,i=1,2,3,4$ are $0, 0.19, 0.34, 0.31$, respectively. It is interesting to note that for some vehicles, the actual arrival times are earlier than the scheduled times of arrivals $\sta_i$. This is because in order to arrive at the target by $\sta_i$, these vehicles must depart early enough to avoid major delays resulting from the induced obstacles of other vehicles; these delays would have led to a late arrival if vehicle $\veh_i$ departed after $\ldt_i$.
 
 \begin{figure}
 	\centering

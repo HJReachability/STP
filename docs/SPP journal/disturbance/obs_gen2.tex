@@ -43,12 +43,12 @@ In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority
 The least restrictive control method can be summarized as follows:
 \begin{alg}
 \label{alg:lrc}
-\textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:
+\textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
 \begin{enumerate}
-\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t, \sta_i)$.
-\item Compute the FRS $\frs_i^\text{lrc}(t)$ in \eqref{eq:FRS2}. Given $\frs_i^\text{lrc}(\ldt_i, t)$ and $\brs_i^\text{dstb}(t, \sta_i)$, compute the positions that the $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2}.
-\item Compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
+\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+\item compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t, \sta_i)$;
+\item compute the FRS $\frs_i^\text{lrc}(t)$ in \eqref{eq:FRS2}. Given $\frs_i^\text{lrc}(\ldt_i, t)$ and $\brs_i^\text{dstb}(t, \sta_i)$, compute the positions that the $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2};
+\item compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$ using \eqref{eqn:lrcObs1}.
 \end{enumerate}
 \end{alg}
 

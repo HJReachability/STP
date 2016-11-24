@@ -15,7 +15,7 @@ Recall that the SPP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict 
 
 %\noindent with trajectories denoted by $\traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot))$.
 
-In SPP, each vehicle $\veh_i$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. During its path planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
+In SPP, each vehicle $\veh_i$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. During its path planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
 
 From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid\footnote{Note that the index $k$ in $\ioset_k^i$ denotes vehicles with lower priority than $\veh_i$, and the index $j$ in $\ioset_i^j(t)$ denotes vehicles with higher priority than $\veh_i$.}. Therefore, each vehicle $\veh_i$ must plan its path to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
 
@@ -56,9 +56,7 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 
-\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$.
-
-In summary, the basic SPP algorithm is given as follows:
+\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic SPP algorithm is given as follows:
 
 \begin{alg}
 \label{alg:basic}

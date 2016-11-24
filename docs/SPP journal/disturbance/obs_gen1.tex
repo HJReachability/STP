@@ -84,11 +84,11 @@ The FRS $\frs_j^\text{cc}(\ldt_j, t)$ represents the set of possible states at t
 Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{eq:obsseti} gives us the time-varying obstacles $\obsset_i(t)$ needed to define and determine the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. Repeating this process, all vehicles will be able to plan paths that guarantee the vehicles' timely and safe arrival. The centralized control algorithm can be summarized as follows:
 \begin{alg}
 \label{alg:cc}
-\textbf{Centralized control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:
+\textbf{Centralized control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
 \begin{enumerate}
-\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{dstb}(t, \sta_i)$.
-\item Compute the optimal control $\ctrl_i^\text{dstb}(t,\state_i)$ corresponding to $\brs_i^\text{dstb}(t, \sta_i)$ given by \eqref{eq:opt_ctrl_i}. Given $\ctrl_i^\text{dstb}(t,\state_i)$, compute the FRS $\frs_i^\text{cc}(\ldt_i, t)$ in \eqref{eq:FRS1}.
-\item Finally, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the centralized control method, $\ioset_k^i(t)$ is computed using \eqref{eqn:ccObs} where $\pfrs_i(t)$ is given by \eqref{eqn:ccObs_help1}.
+\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+\item compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{dstb}(t, \sta_i)$;
+\item compute the optimal control $\ctrl_i^\text{dstb}(t,\state_i)$ corresponding to $\brs_i^\text{dstb}(t, \sta_i)$ given by \eqref{eq:opt_ctrl_i}. Given $\ctrl_i^\text{dstb}(t,\state_i)$, compute the FRS $\frs_i^\text{cc}(\ldt_i, t)$ in \eqref{eq:FRS1};
+\item finally, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the centralized control method, $\ioset_k^i(t)$ is computed using \eqref{eqn:ccObs} where $\pfrs_i(t)$ is given by \eqref{eqn:ccObs_help1}.
 \end{enumerate}
 \end{alg}

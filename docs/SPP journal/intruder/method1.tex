@@ -210,18 +210,18 @@ Note that even though we have presented the analysis for one intruder, the propo
 We conclude this section with the overall SPP algorithm that takes into account an intruder that may appear for a duration of $\iat$: 
 \begin{alg}
 \label{alg:intruder}
-\textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$:
+\textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
 \begin{enumerate}
-\item Determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$.
-\item Compute the augmented obstacle set $\tilde\obsset_i(t)$ given by \eqref{eqn:inducedobs}, where $\brs^{\mathcal{G}}_{i}(0, \tau)$ is given by \eqref{eqn:inducedobs_help1}.
-\item Given $\tilde\obsset_i(t)$, compute the BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}.
-\item The optimal control to avoid the intruder can be obtained by computing $\brs^{\text{CA}}_{i}(t, \iat)$ in \eqref{eqn:optAvoid} and using \eqref{eqn:optAvoidCtrl}. 
-\item The induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using \eqref{eq:intObs}.
+\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+\item compute the augmented obstacle set $\tilde\obsset_i(t)$ given by \eqref{eqn:inducedobs}, where $\brs^{\mathcal{G}}_{i}(0, \tau)$ is given by \eqref{eqn:inducedobs_help1};
+\item given $\tilde\obsset_i(t)$, compute the BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};
+\item the optimal control to avoid the intruder can be obtained by computing $\brs^{\text{CA}}_{i}(t, \iat)$ in \eqref{eqn:optAvoid} and using \eqref{eqn:optAvoidCtrl};
+\item the induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using \eqref{eq:intObs}.
 \end{enumerate}
 
 \textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $i$ which performed avoidance in response to the intruder,
 \begin{enumerate}
-\item Compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$.
-\item Given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, use any of the three SPP methods discussed in Section \ref{sec:incomp} for re-planning. 
+\item compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$;
+\item given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, use any of the three SPP methods discussed in Section \ref{sec:incomp} for re-planning. 
 \end{enumerate}
 \end{alg}
