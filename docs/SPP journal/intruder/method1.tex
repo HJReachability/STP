@@ -15,25 +15,25 @@ Finally, when $t > \tea$, $\veh_i$ has already successfully avoided the intruder
 %We are now ready to develop a general theory that takes intruders into account. Our approach to a robust path planning can be summarized in the following steps:
 %\begin{itemize}
 %\item \textit{Step-1}: First, we compute the set of obstacles induced by the higher priority vehicles for the lower priority vehicles.  
-%\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures liveness in the absence of intruders. 
-%\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoiding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and liveness. 
+%\item \textit{Step-2}: We then append \textit{all} obstacles (including static ones) by a forward reachable set (FRS) of duration $\iat$. This addendum ensures that if a vehicle starts outside this appended obstacle, then it cannot collide with the obstacle in $\iat$ seconds. Next, we compute a backwards reachable set (BRS) while avoiding these obstacles till it contains the initial state of the vehicle. This set will give us the controller that ensures goal satisfaction in the absence of intruders. 
+%\item \textit{Step-3}: Compute a $\iat$-step FRS of the BRS computed in Step-2. This FRS is the free flight region that allows a vehicle to avoid any intruder for $\iat$ seconds. We then compute a BRS while avoiding the obstacles induced by the higher priority vehicles (computed in Step-1) \textit{and} that contains the FRS calculated in Step-3. This BRS will give us a controller that guarantee intruder avoidance and goal satisfaction. 
 %\item \textit{Step-4}: Compute the relative state space wherein we can successfully avoid the intruder for $\iat$ seconds. If a vehicle sense an intruder while it is still outside this region, the above algorithm will ensure safety at all times.  
 %\end{itemize}
 
 \subsubsection{Induced Obstacle Computation} \label{sec:intruder_iocomp}
 The goal of this section is to compute, for each lower-priority vehicle $\veh_i$, the time-varying obstacles induced by each higher-priority vehicle $\veh_j, j < i$, denoted by $\ioset_i^j(t)$. As before, the total obstacle set $\obsset_i(t)$ can then be obtained using \eqref{eq:obsseti}. To compute the obstacle that $\veh_i$ needs to avoid at time $t$, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then the SPP vehicles would already be in the re-planning phase at time $t$ and hence cannot be in conflict. 
 
-Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section \ref{sec:incomp} to compute the ``base" obstacles $\boset_j(t)$ , the obstacles that would have been induced by $\veh_j$ in the absence of an intruder. The base obstacles are respectively given by \eqref{eqn:ccObs_help2}, \eqref{eqn:lrcObs3} and \eqref{eqn:rttObs} for centralized control, least restrictive control and robust trajectory tracking.  
+Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section \ref{sec:incomp} to compute the ``base" obstacles $\boset_j(t)$; these are the obstacles that would have been induced by $\veh_j$ in the absence of an intruder. The base obstacles are respectively given by \eqref{eqn:ccObs_help2}, \eqref{eqn:lrcObs3} and \eqref{eqn:rttObs} for the centralized control, least restrictive control and robust trajectory tracking methods.
 
-The induced obstacles, $\ioset_i^j(t)$, are then given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles.
+The induced obstacles, $\ioset_i^j(t)$, are then given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing an FRS from the base obstacles.
 \begin{equation} \label{eq:FRS_intObs1}
 \begin{aligned}
-\frs_{j}^{\mathcal{O}}(0, \tau) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(0) \in \boset_j(t-\tau), \\
-& \state_j(\iat) = y\}.
+\frs_{j}^{\mathcal{O}}(t-\tau, t) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(t-\tau) \in \boset_j(t-\tau), \\
+& \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
-$\frs_{j}^{\mathcal{O}}(0, \tau)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+$\frs_{j}^{\mathcal{O}}(t-\tau, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
 \ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j) \label{intobs2}.
 \end{equation} 
@@ -41,13 +41,13 @@ Since $\tau \in [0, \iat]$, the induced obstacles can be obtained as:
 \begin{equation} \label{eq:intObs}
 \begin{aligned}
 \ioset_i^j(t) & = \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \}\\
-\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \bigcup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(0, \tau) \}
+\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \bigcup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(t-\tau, t) \}
 \end{aligned}
 \end{equation}
 
-Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subseteq \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. Thus, $\pfrs_j(t)$ in \eqref{eq:intObs} can be equivalently written as:
+Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subseteq \frs_{j}^{\text{BO}}(t+\tau_1, t+\tau_2) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(t+\tau_1, t+\tau_2)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(t-\tau, t) \subseteq \frs_{j}^{\mathcal{O}}(t-\iat, \iat) ~\forall \tau \in [0, \iat]$. Thus, $\pfrs_j(t)$ in \eqref{eq:intObs} can be equivalently written as
 \begin{equation} \label{eq:intObs_help1}
-\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(0, \iat) \}.
+\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(t-\iat, t) \}.
 \end{equation}
 
 %
@@ -58,7 +58,7 @@ Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subseteq \fr
 \subsubsection{Augmented Obstacle Computation} \label{sec:intruder_aocomp}
 We next need to ensure that $\veh_i$ doesn't collide with the obstacles $\obsset_i(\cdot)$ computed in Section \ref{sec:intruder_iocomp} even when it is avoiding the intruder. In particular, we can compute a region around the obstacles $\obsset_i(\cdot)$ such that for all disturbances, $\veh_i$ can avoid colliding with obstacles for $\iat$ seconds regardless of its avoidance control, if $\veh_i$ starts outside this region. Augmenting $\obsset_i(\cdot)$ with this region gives us the augmented obstacles, $\tilde\obsset_i(\cdot)$, that can then be used during the path planning of $\veh_i$ to ensure collision avoidance with $\obsset_i(\cdot)$.  
 
-Suppose that the intruder appears in the system at time $\tsa = t - \iat + \tau, \tau \in [0, \iat]$. In this case, we need to ensure that $\veh_i$ does not collide with the obstacle $\obsset_i(t + \tau)$ at time $t + \tau$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [\tsa, t + \tau]$. It is, therefore, sufficient to avoid the $\tau$-horizon BRS of $\obsset_i(t + \tau)$ at time $t$. This argument applies for all $\tau \in [0, \iat]$. Mathematically,
+Suppose that the intruder appears in the system at some time time $\tsa = t - \iat + \tau, \tau \in [0, \iat]$. In this case, we need to ensure that $\veh_i$ does not collide with the obstacle $\obsset_i(t + \tau)$ at time $t + \tau$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [\tsa, t + \tau]$. It is, therefore, sufficient to avoid the $\tau$-horizon BRS of $\obsset_i(t + \tau)$ at time $t$. This argument applies for all $\tau \in [0, \iat]$. Mathematically,
 
 %\begin{equation} \label{eqn:inducedobs}
 %\tilde\obsset_i(t) = \bigcup_{\tau \in [0, \iat]} \brs_{\mathcal{G}}(\tau, \obsset_i(t+\tau), \emptyset, \ham_{\mathcal{G}})
@@ -66,14 +66,14 @@ Suppose that the intruder appears in the system at time $\tsa = t - \iat + \tau,
 %where $\brs_{\mathcal{G}}(\tau, \obsset_i(t+\tau), \emptyset, \ham_{\mathcal{G}})$ represents BRS of $\obsset_i(t+\tau)$ computed backwards for $\tau$ seconds. The Hamiltonian 
 %$\ham_{\mathcal{G}}$ is given by:
 \begin{equation} \label{eqn:inducedobs}
-\tilde\obsset_i(t) = \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(0, \tau)
+\tilde\obsset_i(t) = \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(t, t+\tau)
 \end{equation}
-where $\brs^{\mathcal{G}}_{i}(0, \tau)$ represents BRS of $\obsset_i(t+\tau)$ computed backwards for $\tau$ seconds. Formally, 
+where $\brs^{\mathcal{G}}_{i}(t, t+\tau)$ represents BRS of $\obsset_i(t+\tau)$ computed backwards for $\tau$ seconds. Formally, 
 \begin{equation} \label{eqn:inducedobs_help1}
 \begin{aligned}
-\brs^{\mathcal{G}}_{i}(0, \tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
-& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(0) = y, \\
-& \exists s \in [0, \tau], \state_i(s) \in \obsset_i(t + \tau)\}.
+\brs^{\mathcal{G}}_{i}(t, t+\tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, t+\tau], \state_i(s) \in \obsset_i(s)\}.
 \end{aligned}
 \end{equation}
 
@@ -83,7 +83,7 @@ The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdo
 \end{equation}
 
 \begin{remark}
-Note that if we use the robust trajectory tracking method to compute the base obstacles, we need to augment the obstacles in \eqref{eqn:inducedobs} by the error bound of $\veh_i$, $\disckernel_i$, as discussed in section \ref{sec:rtt}.
+Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eqn:inducedobs} by the error bound of $\veh_i$, $\disckernel_i$, as discussed in section \ref{sec:rtt}.
 \end{remark}
 
 Finally, we compute a BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ for path planning that contains the initial state of $\veh_i$ while avoiding these augmented obstacles:
@@ -99,9 +99,9 @@ The Hamiltonian $\ham^{\text{AO}}_{i}$ to compute BRS in \eqref{eqn:intrBRS1} is
 \ham^{\text{AO}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Note that $\brs^{\text{AO}}_{i}(\cdot)$ ensures liveness for $\veh_i$ in the absence of intruder. The liveness controller is given by:
+Note that $\brs^{\text{AO}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ in the absence of intruder. The goal satisfaction controller is given by:
 \begin{equation}
-{\ctrl^{\text{AO}}_{i}} = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+{\ctrl^{\text{AO}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 Moreover, if $\veh_i$ starts within $\brs^{\text{AO}}_{i}$, it is guaranteed to avoid collision for a duration of $\iat$, starting at any $\tsa < \sta_i$, irrespective of the control and disturbance applied during this time period. 
 
@@ -116,7 +116,7 @@ First, we define relative dynamics of the intruder $\veh_{\intr}$ with state $\s
 \end{aligned}
 \end{equation}
 
-Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. This set of states is given by the backwards reachable set $\brs^{\text{CA}}(t, \iat),~ t \in [0, \iat]$:%(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. This set of states is given by the BRS $\brs^{\text{CA}}(t, \iat),~ t \in [0, \iat]$:%(\iat, \targetset_\text{CA}, \obsset_\text{CA}, H_\text{CA})$, with
 
 \begin{equation} \label{eqn:optAvoid}
 \begin{aligned}
@@ -125,20 +125,24 @@ Given the relative dynamics, we compute the set of states from which the joint s
 & \exists s \in [t, \iat], \state_{\intr, i}(s) \in \targetset^{\text{CA}}_{i}, \state_{\intr, i}(t) = y\},
 \end{aligned}
 \end{equation}
-where 
-\begin{equation}
+where $\targetset^{\text{CA}}_{i} = \{\state_{\intr, i}: \|\pos_{\intr, i}\|_2 \le \rc\}$, and the Hamiltonian for computing this BRS is given by
+
+\begin{equation*}
 \begin{aligned}
-\targetset^{\text{CA}}_{i} &= \{\state_{\intr, i}: \|\pos_{\intr, i}\|_2 \le \rc\} \\
-H^{\text{CA}}_{i}(\state_{\intr, i}, \costate) &= \max_{\ctrl_i \in \cset_i} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
+&H^{\text{CA}}_{i}(\state_{\intr, i}, \costate) = \max_{\ctrl_i \in \cset_i} \Big( \\
+&\qquad \qquad \qquad \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \Big)
+\end{aligned}
+\end{equation*}
+
+Once the value function $\valfunc^{\text{CA}}_{i}(t, \state_{\intr, i})$ corresponding to the BRS $\brs^{\text{CA}}_{i}(t, \iat)$ is computed, the optimal avoidance control ${\ctrl^{\text{CA}}_{i}}$ can be obtained as:
+\begin{equation} \label{eqn:optAvoidCtrl}
+\begin{aligned}
+&{\ctrl^{\text{CA}}_{i}}(t, \state_i, \state_\intr)  = \arg \max_{\ctrl_i \in \cset_i} \Big( \\
+&\qquad \qquad \qquad \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \Big)
 \end{aligned}
 \end{equation}
 
-Once the value function $\valfunc^{\text{CA}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{CA}}_{i}}$ can be obtained as:
-\begin{equation} \label{eqn:optAvoidCtrl}
-{\ctrl^{\text{CA}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
-\end{equation}
-
-Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i}(t)) > 0$; as $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i}(t))$ decreases. If $\veh_i$ applies the control ${\ctrl^{\text{CA}}_{i}}$ when $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i}(t)) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
+Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i}) > 0$; as $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i})$ decreases. If $\veh_i$ applies the control ${\ctrl^{\text{CA}}_{i}}$ when $\valfunc^{\text{CA}}_{i}(0, \state_{\intr, i}) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy.
 
 In addition, obstacle augmentation \eqref{eqn:inducedobs} ensures that $\veh_i$ does not collide with $\obsset_i(\cdot)$ during the avoidance maneuver. %Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh_i$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh_j, j \neq i$.
 The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
@@ -146,50 +150,57 @@ The overall control policy for avoiding the intruder and collision with other ve
 {\ctrl^{\text{A}}_{i}}(t) = 
 \left \{ 
 \begin{array}{ll}
-{\ctrl^{\text{AO}}_{i}}(t) & t \leq \tsa\\
-{\ctrl^{\text{CA}}_{i}}(t) & \tsa\leq t \leq \tea
+{\ctrl^{\text{AO}}_{i}}(t, \state_i) & t \leq \tsa\\
+{\ctrl^{\text{CA}}_{i}}(t, \state_i, \state_\intr) & \tsa\leq t \leq \tea
 \end{array}
 \right.
 \end{equation*}
 
 \subsubsection{Replanning after intruder avoidance\label{sec:re-plan_method1}} 
-After the intruder disappears, liveness controllers which ensure that the vehicles reach their destinations can be obtained by solving a SPP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination is given by:
+After the intruder disappears, goal satisfaction controllers which ensure that the vehicles reach their destinations can be obtained by solving an SPP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. Let the optimal control policy corresponding to this goal satisfaction controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination is given by:
 
 \begin{equation*}
 \ctrl_i^*(t) = 
 \left \{ 
 \begin{array}{ll}
-{\ctrl^{\text{A}}_{i}}(t) & t \leq \tea\\
-{\ctrl^{\text{L}}_{i}}(t) & t > \tea
+{\ctrl^{\text{A}}_{i}}(t, \state_i) & t \leq \tea\\
+{\ctrl^{\text{L}}_{i}}(t, \state_i) & t > \tea
 \end{array}
 \right.
 \end{equation*}
 
-Note that in order to re-plan using a SPP method, we need to determine feasible $\sta$s for all vehicles. This can be done by computing an FRS:
+Note that in order to re-plan using a SPP method, we need to determine feasible $\sta_i$ for all vehicles. This can be done by computing an FRS:
 \begin{equation} \label{eq:re-planFRS}
 \begin{aligned} 
-\frs_j^{\text{RP}}(\tea, t) = & \{y \in \R^{n_j}: \exists \ctrl_j(\cdot) \in \cfset_j, \forall \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tea) = \tilde{\state}_j^0, \\
-& \state_j(t) = y, \forall s \in [\tea, t], \state_j(s) \notin \obsset_j^{\text{RP}}(s) \},
+\frs_i^{\text{RP}}(\tea, t) = & \{y \in \R^{n_i}: \exists \ctrl_i(\cdot) \in \cfset_i, \forall \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(\tea) = \tilde{\state}_i^0, \\
+& \state_i(t) = y, \forall s \in [\tea, t], \state_i(s) \notin \obsset_i^{\text{RP}}(s) \},
 \end{aligned}
 \end{equation}
-where $\tilde{\state}_j^0$ represents the state of $\veh_j$ at $t = \tea$; $\obsset_j^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_j$ needs to avoid higher-priority vehicles $\veh_k, k<j$ and is given by:
-\begin{equation} 
-\obsset_j^{\text{RP}}(t) = \bigcup_{k<j} \frs_k^{\text{RP}}(\tea, t), ~~~t > \tea.
-\end{equation}
+\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tea$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ needs to avoid higher-priority vehicles $\veh_j, j<i$ and is defined in an way analogous to \eqref{eq:obsseti}.
+%\begin{equation} 
+%\obsset_j^{\text{RP}}(t) = \bigcup_{k<j} \frs_k^{\text{RP}}(\tea, t), ~~~t > \tea.
+%\end{equation}
 
-The FRS in \eqref{eq:re-planFRS} can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+
 \begin{equation}
-\ham_j^{\text{RP}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \min_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j). 
+\begin{aligned}
+\max \Big\{&D_t \valfuncfwd^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd^{\text{RP}}(t, \state_i)), \\
+&\qquad - \obsfunc^{\text{RP}}(t, \state_i) - \valfuncfwd^{\text{RP}}(t, \state_i) \Big\}\\
+&\valfuncfwd^{\text{RP}}(\tsa, \state_i) = \max\{\fc^{\text{RP}}(\state_i), -\obsfunc^{\text{RP}}(\tsa, \state_i)\} \\
+&\ham_i^{\text{RP}}(\state_i, \costate) = \max_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\end{aligned}
 \end{equation} 
-The new $\sta$ of $\veh_j$ is now given by the earliest time at which $\frs_j^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_j$, $\sta_j := \arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle to its destination by that time, despite the worst case disturbance it might experience.
+
+\noindent where $\valfuncfwd^{\text{RP}}, \obsfunc^{\text{RP}}, \fc^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta$ of $\veh_j$ is now given by the earliest time at which $\frs_j^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_j$, $\sta_j := \arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle to its destination by that time, despite the worst case disturbance it might experience.
 
 \begin{remark}
-Note that we only need to re-plan the trajectories of the vehicles that are affected by the intruder. In particular, if $\valfunc^{\text{CA}}(0, \state_{\intr, i}(t)) > 0$ during the entire duration $t \in [\tsa, \tea]$ for a vehicle, then the vehicle would need not to apply any avoidance control, and hence a re-planning would not be required for this vehicle. 
+Note that we only need to re-plan the trajectories of the vehicles that are affected by the intruder. In particular, if $\valfunc^{\text{CA}}(0, \state_{\intr, i}(t)) > 0$ during the entire duration $t \in [\tsa, \tea]$ for a vehicle, then the vehicle would need not to apply any avoidance control, and hence re-planning would not be required for this vehicle. 
 \end{remark}
 
 \begin{remark}
-In general, an intruder can be present in the system for much longer than $\iat$, as long as it is not affecting the SPP vehicles. $\underbar{t}$ thus really corresponds to the time an intruder starts affecting a SPP vehicle.
+In general, an intruder can be present in the system for much longer than $\iat$, as long as it is not affecting the SPP vehicles. $\tsa$ thus really corresponds to the time an intruder starts affecting a SPP vehicle.
 \end{remark}
 
 \begin{remark}
