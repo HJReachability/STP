@@ -155,9 +155,85 @@ classdef SPPProblem < handle
             [1 1 obj.gN(3) length(obj.tau)]);
           
         case 'SF_dstb_6'
-          params.trackingRadius = 0.5;
-          params.dMaxA = [1.1 0];
           
+          %% Vehicle
+          obj.vRangeA = [0.1 2.5];
+          obj.wMaxA = 2;
+          obj.dMaxA = [0.6 0];
+          
+          %% RTT
+          obj.vReserved = [1 -1.2];
+          obj.wReserved = -0.8;
+          obj.RTT_tR = 0.5;
+          
+          %% Grid
+          obj.gMin = [-50 -50 0];
+          obj.gMax = [500 500 2*pi];
+          obj.gN = [175 175 15];
+
+          obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+          obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+
+          %% Time
+          obj.tMin = -500;
+          obj.dt = 0.5;
+          obj.Rc = 1;
+          obj.tau = obj.tMin:obj.dt:obj.tTarget;
+          
+          %% Initial states
+          numVeh = 50;
+          obj.initStates = cell(numVeh, 1);
+          initState = [475; 200; 220*pi/180];
+          for i = 1:numVeh
+            obj.initStates{i} = initState;
+          end
+          
+          %% Initial targets
+          obj.targetR = 10;
+          
+          targetCentersSet = { ...
+            [300; 400]; ...
+            [50; 175]; ...
+            [75; 25]; ...
+            [450; 25] ...
+            };
+          
+          obj.targetCenters = cell(numVeh,1);
+          for i = 1:numVeh
+            target_ind = randi(length(targetCentersSet));
+            obj.targetCenters{i} = targetCentersSet{target_ind};
+          end
+          
+          %% Obstacles
+          % Financial District
+          Obs1 = shapeRectangleByCorners(obj.g2D, [300; 250], [350; 300]);
+          
+          % Union Square
+          Obs2 = shapeRectangleByCorners(obj.g2D, [-25; -30], [25; 30]);
+          Obs2 = rotateData(obj.g2D, Obs2, 7.5*pi/180, [1 2], []);
+          Obs2 = shiftData(obj.g2D, Obs2, [325 185], [1 2]);
+          Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
+            [0 500]);
+          Obs2 = shapeDifference(Obs2, Obs2b);
+          
+          % City Hall
+          Obs3 = shapeRectangleByCorners(obj.g2D, [-25; -5], [25; 5]);
+          Obs3 = rotateData(obj.g2D, Obs3, 7.5*pi/180, [1 2], []);
+          Obs3 = shiftData(obj.g2D, Obs3, [170 65], [1 2]);
+          
+          % Boundary
+          Obs4 = -shapeRectangleByCorners(obj.g2D, obj.g2D.min+5, obj.g2D.max-5);
+          
+          obj.staticObs = min(Obs1, Obs2);
+          obj.staticObs = min(obj.staticObs, Obs3);
+          obj.staticObs = min(obj.staticObs, Obs4);
+          
+          obj.mapFile = 'map_streets.png';
+          
+          augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
+          obj.augStaticObs = repmat(augStaticObs, ...
+            [1 1 obj.gN(3) length(obj.tau)]);
+                   
         case 'BA_dstb_11'
         case 'SF_intr_2'
         case 'SF_intr_3'
