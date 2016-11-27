@@ -30,6 +30,9 @@ if restart || ~exist(obj.NI_RS_filename, 'file')
   
   % File name to save RS data
   obj.NI_RS_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
+  
+  SPPP = obj;
+  save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')  
 else
   fprintf('Loading NI RS checkpoint...\n')
   load(obj.NI_RS_filename)
