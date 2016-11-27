@@ -36,7 +36,6 @@ if restart || ~exist(obj.NI_RS_filename, 'file')
 else
   fprintf('Loading NI RS checkpoint...\n')
   load(obj.NI_RS_filename)
-  Q = {Q1; Q2; Q3; Q4};
 end
 
 %% Start the computation of reachable sets
