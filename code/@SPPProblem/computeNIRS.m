@@ -49,17 +49,15 @@ for veh = 1:length(Q)
     save(obj.NI_RS_filename, 'Q', 'obstacles', '-v7.3');
   end
   
-  %% Compute the BRS (BRS1) of the vehicle with the above obstacles
-  if isempty(Q{veh}.BRS1)
+  if isempty(Q{veh}.nomTraj)
+    %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     fprintf('Computing BRS1 for vehicle %d\n', veh)
     Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4), obj.folder, veh);
     
     Qthis = Q{veh};
     save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')
-  end
-  
-  %% Compute the nominal trajectories based on BRS1
-  if isempty(Q{veh}.nomTraj)
+    
+    %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
     Q{veh}.computeNomTraj(obj.g, obj.folder, veh);
     
