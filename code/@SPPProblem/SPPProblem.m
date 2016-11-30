@@ -167,9 +167,9 @@ classdef SPPProblem < handle
           obj.RTT_tR = 0.5;
           
           %% Grid
-          obj.gMin = [-4.3 -4.3 0];
+          obj.gMin = [-45 -45 0];
           obj.gMax = [500 500 2*pi];
-          obj.gN = [175 175 15];
+          obj.gN = [201 201 15];
 
           obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
           obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
