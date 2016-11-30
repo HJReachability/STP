@@ -11,7 +11,7 @@ if nargin < 4
 end
 
 % Project RTTRS into 2D
-[RTTRS_g2D, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);
+[RTTRS_g2D, RTTRS2D_raw] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
 
 % Create slightly bigger grid to augment the RTTRS
@@ -22,9 +22,9 @@ small_g2D_N = ceil((small_g2D_max - small_g2D_min) ./ ...
 small_g2D = createGrid(small_g2D_min, small_g2D_max, small_g2D_N);
 
 % Migrate RTTRS set
-RTTRS2D = migrateGrid(RTTRS_g2D, RTTRS2D, small_g2D);
-RTTRS2D = addCRadius(small_g2D, RTTRS2D, R_augment);
-RTTRS2D = migrateGrid(small_g2D, RTTRS2D, SPPP.g2D);
+RTTRS2D_raw = migrateGrid(RTTRS_g2D, RTTRS2D_raw, small_g2D);
+RTTRS2D_raw = addCRadius(small_g2D, RTTRS2D_raw, R_augment);
+RTTRS2D = migrateGrid(small_g2D, RTTRS2D_raw, SPPP.g2D);
 
 obj.obsForRTT_tau = nomTraj_tau;
 obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);
