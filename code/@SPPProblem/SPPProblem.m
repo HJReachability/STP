@@ -54,8 +54,8 @@ classdef SPPProblem < handle
     CARS_filename  % collision avoidance reachable set
     rawAugObs_filename % raw augmented obstacles file name
     
-    NI_RS_filename % no intruder reachable sets
-    NI_RS_filename_small
+    NI_RS_chkpt_filename % no intruder reachable sets
+    NI_RS_filename
     NI_sim_filename
     
     BR_RS_filename % before replanning reachable sets
