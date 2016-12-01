@@ -1,13 +1,16 @@
-function SPPwDisturbanceRTT(problem_name, RTTRS_filename)
+function SPPwDisturbanceRTT(problem_name, extraArgs)
 % SPPwDisturbanceRTT()
 %     Solves the entire SPP with disturbances problem using the RTT method
 
-extraArgs = [];
-if nargin > 1
-  extraArgs.RTTRS_filename = RTTRS_filename;
+if nargin < 2
+  extraArgs = [];
 end
 
-SPPP = SPPProblem(problem_name, extraArgs);
+if isempty(extraArgs.SPPP)
+  SPPP = SPPProblem(problem_name, extraArgs);
+else
+  SPPP = extraArgs.SPPP;
+end
 
 % % RTT parameters for ACC and TCST papers
 % vReserved = [0.25 -0.25];
