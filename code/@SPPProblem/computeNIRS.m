@@ -81,6 +81,7 @@ for veh = 1:length(Q)
   
 end
 
+obj.NI_RS_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
 save(obj.NI_RS_filename, 'Q', '-v7.3')
 
 SPPP = obj;
