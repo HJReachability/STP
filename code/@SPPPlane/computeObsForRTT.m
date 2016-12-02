@@ -11,7 +11,7 @@ if nargin < 4
 end
 
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
-RTTRS2D = migrateRTTRS(RTTRS, target_g2D, R_augment);
+RTTRS2D = migrateRTTRS(RTTRS, SPPP.g2D, R_augment);
 
 obj.obsForRTT_tau = nomTraj_tau;
 obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);

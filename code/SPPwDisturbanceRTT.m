@@ -6,10 +6,10 @@ if nargin < 2
   extraArgs = [];
 end
 
-if isempty(extraArgs.SPPP)
-  SPPP = SPPProblem(problem_name, extraArgs);
-else
+if isfield(extraArgs, 'SPPP')
   SPPP = extraArgs.SPPP;
+else
+  SPPP = SPPProblem(problem_name, extraArgs);
 end
 
 % % RTT parameters for ACC and TCST papers
