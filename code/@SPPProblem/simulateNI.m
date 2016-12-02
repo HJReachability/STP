@@ -47,11 +47,6 @@ tau = tStart:obj.dt:tEnd;
 
 % Add cylindrical obstacles for visualization
 if save_png || save_fig
-  for veh = 1:length(Q)
-    fprintf('Adding obstacles for vehicle %d for visualization...\n', veh)
-    Q{veh}.addObs2D(obj, RTTRS);
-  end
-  
   % For saving graphics
   if ispc
     system(sprintf('mkdir %s\\%s', obj.folder, mfilename));
@@ -77,7 +72,7 @@ if save_png || save_fig
   colors = lines(length(Q));
   
   % Targets
-  plotTargetSets(Q, colors)
+  plotTargetSets(Q, colors);
   
   % Static obstacles
   h = visSetIm(obj.g2D, obj.staticObs, 'k');

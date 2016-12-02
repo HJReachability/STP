@@ -32,7 +32,10 @@ for veh = 1:length(Q)
     end
     
     % Plot position
-    Q{veh}.plotPosition(colors(veh, :));
+    extraArgs.Color = colors(veh, :);
+    extraArgs.ArrowLength = 3;
+    extraArgs.MakerSize = 5;
+    Q{veh}.plotPosition(extraArgs);
   end
 end
 end

@@ -41,7 +41,7 @@ axis on
 grid on
 
 if save_png
-  export_fig(sprintf('%s/setup', obj.folder), '-png', 'm2')
+  export_fig(sprintf('%s/setup', obj.folder), '-png', '-m2')
 end
 
 end

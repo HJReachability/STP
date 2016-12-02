@@ -20,7 +20,6 @@ if ~isempty(obj.nomTraj_AR)
   nomTraj_tau = [nomTraj_tau obj.nomTraj_AR_tau];
 end
 
-g = SPPP.g;
 g2D = SPPP.g2D;
 
 % If there's a replan time, then migrate flattened augmented obstacles
@@ -31,9 +30,8 @@ if ~isempty(SPPP.tReplan) && nargin > 3
 end
 
 % Migrate and add capture radius to RTTRS
-rawObs = migrateGrid(RTTRS.g, RTTRS.data, g);
-[~, rawObs2D] = proj(g, rawObs, [0 0 1]);
-rawObs2D = addCRadius(g2D, rawObs2D, SPPP.Rc);
+R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
+rawObs2D = migrateRTTRS(RTTRS, SPPP.g2D, R_augment);
 
 % Initialize 2D obstacles
 obj.obs2D_tau = nomTraj_tau;
