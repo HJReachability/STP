@@ -59,7 +59,12 @@ for veh = 1:length(Q)
   if isempty(Q{veh}.nomTraj)
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(obj.tau, obj.g, flip(obstacles, 4), obj.folder, veh);
+    if length(obj.tTarget) == 1
+      tau = obj.tau;
+    else
+      tau = obj.tMin:obj.dt:obj.tTarget(veh);
+    end
+    Q{veh}.computeBRS1(tau, obj.g, flip(obstacles, 4), obj.folder, veh);
     
     %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
