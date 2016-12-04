@@ -49,8 +49,8 @@ for veh = 1:length(Q)
   else
     if ~isempty(Q{veh-1}.obsForRTT)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
-      obstacles = updateObstacles(obj.tau, obstacles, Q{veh-1}.obsForRTT_tau, ...
-        Q{veh-1}.obsForRTT);
+      obstacles = updateObstacles(obj.tau, obstacles, ...
+        Q{veh-1}.obsForRTT_tau, Q{veh-1}.obsForRTT);
       Q{veh-1}.trimData({'obsForRTT'});
       save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
@@ -72,7 +72,12 @@ for veh = 1:length(Q)
     
     %% Compute t-IAT backward reachable set from flattened 3D obstacle
     fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForRTT(obj, RTTRS);
+    
+    if veh < length(Q)
+      Q{veh}.computeObsForRTT(obj, RTTRS);
+    else
+      save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+    end
     Q{veh}.addObs2D(obj, RTTRS); % Visualization later when simulating
     
     Qthis = Q{veh};
