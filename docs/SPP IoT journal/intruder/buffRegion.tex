@@ -7,7 +7,7 @@ Intuitively, we want to make sure that at any given time the separation regions 
 We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. Without loss of generality, we can assume that the intruder appears at the separation region of a vehicle at $t = \tsa$, because if it doesn't then the vehicles need not account for intruders until it reaches the boundary of the separation region of a vehicle. To compute the buffer region, we consider the following two cases:     
 
 \subsubsection{Case1- $\state_{\intr}^0 \in \sep_j(\tsa)$} \label{sec:buffCase1}
-Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$:
+Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$: \MCnote{Might be clearer to put ``exists'' before every expression? Mostly to make it easier to differentiate from the case where there is a ``for all''... not sure.}
 
 \begin{equation} \label{eqn:buffBRS}
 \begin{aligned}
@@ -29,7 +29,7 @@ The interpretation of set $\brs^{\text{B}}_{i}(0, \brd)$ is that if the separati
 \buff_{ij}(t) = \sep_j(t) + \brs^{\text{B}}_{i}(0, \brd).
 \end{equation} 
 
-Finally, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is far enough from the boundary of $\buff_{ij}(t)$ such that $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for the remaining duration of $\trd := \iat - \brd$. Thus, during the path planning of $\veh_i$, we need to ensure that $veh_i$ is outside the augmented buffer region:
+Finally, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is far enough from the boundary of $\buff_{ij}(t)$ such that $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for the remaining duration of $\trd := \iat - \brd$. \MCnote{tBRD looks the same as tBRD... probably a typo (forgot to change latex commands?)} Thus, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is outside the augmented buffer region:
 \begin{equation} \label{eqn:augbuffRegion1}
 \tilde{\buff}_{ij}(t) = \buff_{ij}(t) + \brs^{\text{S}}_{i}(0, \trd),
 \end{equation}

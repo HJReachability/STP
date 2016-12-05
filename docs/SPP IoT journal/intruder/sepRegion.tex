@@ -29,7 +29,7 @@ H^{\text{S}}_{j}(\state_{\intr, j}, \costate) &= \max_{\ctrl_j \in \cset_j} \lef
 \end{aligned}
 \end{equation}
 
-The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that as long as $\veh_{\intr}$ is outside the boundary of this set (in relative coordinates), then $\veh_{\intr}$ and $\veh_{j}$ cannot enter the danger zone $\dz_{j\intr}$, irrespective of control applied by them. We can now transform $\brs^{\text{S}}_{j}(0, \iat)$ to absolute coordinates to obtain sets $\sep_j(\cdot)$ as follows:
+The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that as long as $\veh_{\intr}$ is outside the boundary of this set (in relative coordinates), then $\veh_{\intr}$ and $\veh_{j}$ cannot enter the danger zone $\dz_{j\intr}$, irrespective of control applied by them. \MCnote{This is the max min set right? So it should be if intruder is outside, then collision is avoided IF vehicle j uses optimal avoidance control right?} We can now transform $\brs^{\text{S}}_{j}(0, \iat)$ to absolute coordinates to obtain sets $\sep_j(\cdot)$ as follows:
 \begin{equation} \label{eqn:sepRegion}
 \sep_j(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \iat),
 \end{equation}
