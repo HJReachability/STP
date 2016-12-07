@@ -105,7 +105,16 @@ for i = 1:length(tau)
       % Our plane is vehicle A, trying to stay out of reachable set, and the
       % reference virtual plane is vehicle B, trying to get into reachable set
       for s = 1:subSamples;
-        rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
+        % Obtain intermediate nominal trajectory points
+        this_tInd = tInds{veh};
+        prev_tInd = max(1, tInds{veh}-1);
+%         nomTraj_pt = zeros(3,1);
+        w = s/subSamples; % weight that goes from 0 to 1
+        nomTraj_pt = (1-w)*Q{veh}.nomTraj(:,prev_tInd) + ...
+          w*Q{veh}.nomTraj(:,this_tInd);
+        rel_x = nomTraj_pt - Q{veh}.x;
+        
+%         rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
         rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
 
         deriv = eval_u(RTTRS.g, RTTRS.Deriv, rel_x);
