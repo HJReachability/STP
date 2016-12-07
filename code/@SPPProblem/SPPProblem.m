@@ -253,7 +253,7 @@ classdef SPPProblem < handle
           obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
           
           %% Time
-          obj.tMin = -500;
+          obj.tMin = -600;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:obj.tTarget;
