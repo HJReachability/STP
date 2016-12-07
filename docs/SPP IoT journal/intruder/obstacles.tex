@@ -44,7 +44,11 @@ Since $\tau \in [0, \iat]$, the induced obstacles in this case can be obtained a
 \end{aligned}
 \end{equation}
 
-Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. Thus, $\pfrs_j(t)$ in \eqref{eq:intruderObs_case2} can be equivalently written as:
+\begin{observation} \label{obs1_case2}
+Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. 
+\end{observation}
+
+Using observation \ref{obs1_case2}, $\pfrs_j(t)$ in \eqref{eq:intruderObs_case2} can be equivalently written as:
 \begin{equation} \label{eq:intruderObs_case2_inter}
 \pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(0, \iat) \}.
 \end{equation}
@@ -63,7 +67,7 @@ where $\brs^{\mathcal{G}}_{i}(0, \tau)$ represents BRS of $\tilde{\boset}_j(t+\t
 \begin{aligned}
 \brs^{\mathcal{G}}_{i}(0, \tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
 & \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(0) = y, \\
-& \exists s \in [0, \tau], \state_i(s) \in \tilde{\boset}_j(t+\tau)\} \\
+& \state_i(\tau) \in \tilde{\boset}_j(t+\tau)\} \\
 \tilde{\boset}_j & = \{\state_j: \exists (y, h) \in \boset_j(t), \|\pos_j - y\|_2 \le \rc \}.
 \end{aligned}
 \end{equation}
@@ -74,7 +78,53 @@ The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdo
 \end{equation}
 
 \subsubsection{Case4} \label{sec:intruderObs_case4}
+In this case, intruder $\veh_{\intr}$ appears at the boundary of set $\sep_j(\tsa)$ and after forcing $\veh_j$ to apply avoidance control for some duration $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_i(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Once $\veh_j$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. From the perspective of $\veh_i$, $\veh_j$ can apply any control for the next $\iat$ duration. Furthermore, $\veh_i$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ has deviated from its original trajectory \textit{and} $\veh_i$ is avoiding the intruder.   
 
+To compute the induced obstacles in this case, we first make the following observations:
+\begin{observation} \label{obs1_case4}
+To compute the induced obstacle at time $t$ for this case, it is sufficient to consider the scenario where $t_1 + t_2 \leq t - \tsa \leq \iat$. If $t - \tsa < t_1 + t_2$, then at time $t$, $\veh_i$ does not need to avoid the intruder as it is not on the boundary of $\sep_i(t)$. Thus, $\veh_i$ only needs to make sure that it does not enter the danger zone of $\veh_j$, which has already been ensured in Case2. 
+\end{observation}
+\begin{observation} \label{obs2_case4}
+By the design of buffer region in Section \ref{sec:buffRegion}, we have that $t_2 \geq \brd$. Combining this fact with observation \ref{obs1_case4} implies that $t- \tsa \geq \brd$.
+\end{observation}
+
+While avoiding the intruder, $\veh_j$ can reach any state starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles as in \eqref{eq:ObsFRS_case2}. To avoid these unsafe states, $\veh_i$ needs to avoid all the states at time $t$ that can maneuver it to an unsafe state under some control. The set of states that $\veh_i$ needs to avoid can thus be given by the BRS of the unsafe states:
+\begin{equation}  \label{eq:ObsBRS_case4}
+\begin{aligned}
+\brs^{\text{C4}}_{i}(t, \tsa + \iat) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, \tsa + \iat], \state_i(s) \in \tilde{\frs}_j^{\text{C4}}(\tsa, s)\},
+\end{aligned}
+\end{equation}
+where
+\begin{equation} \label{eq:ObsFRS_case4}
+\begin{aligned}
+\tilde{\frs}_{j}^{\text{C4}}(t', s) & = \{\state_j: \exists (y, h) \in \frs_j^{\text{C4}}(t', s), \|\pos_j - y\|_2 \le \rc \},\\
+\frs_j^{\text{C4}}(t', s) & = \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(t') \in \boset_j(t'), \\
+& \state_j(s) = y\}.
+\end{aligned}
+\end{equation} 
+The Hamiltonian $\ham^{\text{C4}}_{i}$ to compute $\brs^{\text{C4}}_{i}(\cdot)$ is given by:
+\begin{equation} \label{eqn:BRS_obsham}
+\ham^{\text{C4}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
+\end{equation}
+Finally, the induced obstacle in this case can be obtained as:
+\begin{equation} \label{eq:intruderObs_case4_alt1} 
+^4\ioset_i^j(t) = \bigcup_{\tau \in [0, \iat - \brd]} \brs^{\text{C4}}_{i}(t, t + \tau),
+\end{equation}
+where range of $\tau$ is obtained via observation \ref{obs2_case4}.
+
+Finally, by the definition of base obstacles, we have that $\frs_j^{\text{C4}}(t', s) \subseteq \frs_j^{\text{C4}}(t'', s), ~\forall t' > t''$. The union in \eqref{eq:intruderObs_case4_alt1} can thus be obtained by computing a single BRS:
+\begin{equation} \label{eq:intruderObs_case4} 
+\begin{aligned}
+^4\ioset_i^j(t) & = \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, t + \iat - \brd], \state_i(s) \in \tilde{\frs}_j^{\text{C4}}(s-\iat, s)\}.
+\end{aligned}
+\end{equation}
+
+\subsubsection{Case5} \label{sec:intruderObs_case5}
 \SBnote{start from here}
 
 

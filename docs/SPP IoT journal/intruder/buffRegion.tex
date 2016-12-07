@@ -29,7 +29,7 @@ The interpretation of set $\brs^{\text{B}}_{i}(0, \brd)$ is that if the separati
 \buff_{ij}(t) = \sep_j(t) + \brs^{\text{B}}_{i}(0, \brd).
 \end{equation} 
 
-Finally, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is far enough from the boundary of $\buff_{ij}(t)$ such that $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for the remaining duration of $\trd := \iat - \brd$. \MCnote{tBRD looks the same as tBRD... probably a typo (forgot to change latex commands?)} Thus, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is outside the augmented buffer region:
+Finally, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is far enough from the boundary of $\buff_{ij}(t)$ such that $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for the remaining duration of $\trd := \iat - \brd$. Thus, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is outside the augmented buffer region:
 \begin{equation} \label{eqn:augbuffRegion1}
 \tilde{\buff}_{ij}(t) = \buff_{ij}(t) + \brs^{\text{S}}_{i}(0, \trd),
 \end{equation}
