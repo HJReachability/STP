@@ -100,7 +100,7 @@
 \title{\LARGE \bf Large-Scale Robust Sequential Path Planning}
 
 \author{Somil Bansal*, Mo Chen*, Ken Tanabe, and Claire J. Tomlin
-\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen and J. F. Fisac have received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
+\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen has received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
 \thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{somil, mochen72, k-tanabe, tomlin\}@eecs.berkeley.edu}
 }
 
@@ -121,7 +121,10 @@ To be written.
 \input{formulation}
 
 % Background material
-\input{background}
+\input{./background/background}
+\input{./background/HJIVI}
+\input{./background/basic}
+\input{./background/obs_gen3_revised}
 
 % Intruder files
 \input{./intruder/intro}
@@ -143,6 +146,6 @@ To be written.
                                   % so it should come on the page before the last. Make
                                   % sure that you do not shorten the textheight too much.
 
-%\bibliographystyle{IEEEtran}
-%\bibliography{IEEEabrv,references}
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,references}
 \end{document}
