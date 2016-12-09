@@ -1,7 +1,5 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \section{Response to Intruders \label{sec:intruder}}
-
-\SBnote{Most of the assumption/notation content in this section will be moved to the problem formulation section.}
 In Section \ref{sec:rtt}, we made the basic SPP algorithm more robust by taking into account disturbances and considering situations in which vehicles may not have complete information about the control strategy of the other vehicles. However, if a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the original plan can lead to vehicles entering into each other's danger zones. If vehicles do not plan with an additional safety margin that takes a potential intruder into account, a vehicle trying to avoid the intruder may effectively become an intruder itself, leading to a domino effect. In this section, we propose a method to allow vehicles to avoid an intruder while maintaining the SPP structure.
 
 In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. Therefore, for our analysis to produce reasonable results, two assumptions about the intruders must be made.
