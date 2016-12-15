@@ -77,6 +77,8 @@ The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdo
 \ham^{\mathcal{G}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
+\SBnote{I need to work on the next 2 cases, but will do that later. ALso, Case5 is clearer compared to Case4 so that might be a good starting point.}
+
 \subsubsection{Case4} \label{sec:intruderObs_case4}
 In this case, intruder $\veh_{\intr}$ appears at the boundary of set $\sep_j(\tsa)$ and after forcing $\veh_j$ to apply avoidance control for some duration $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_i(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Once $\veh_j$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. From the perspective of $\veh_i$, $\veh_j$ can apply any control for the next $\iat$ duration. Furthermore, $\veh_i$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ has deviated from its original trajectory \textit{and} $\veh_i$ is avoiding the intruder.   
 
@@ -125,6 +127,49 @@ Finally, by the definition of base obstacles, we have that $\frs_j^{\text{C4}}(t
 \end{equation}
 
 \subsubsection{Case5} \label{sec:intruderObs_case5}
-\SBnote{start from here}
+In this case, intruder $\veh_{\intr}$ appears at the boundary of set $\sep_i(\tsa)$ and after forcing $\veh_i$ to apply avoidance control for some duration $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_j(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Similar to Case4, once $\veh_i$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. $\veh_j$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ is avoiding the intruder \textit{and} $\veh_i$ has deviated from its original trajectory. It is, therefore, sufficent that $\veh_i$ avoids the following BRS:
+\begin{equation}  \label{eq:ObsBRS_case5}
+\begin{aligned}
+\brs^{\text{C5}}_{i}(t, \tsa + \iat) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t_M, \tsa + \iat], \state_i(s) \in \tilde{\frs}_j^{\text{C5}}(\tsa+t_1+t_2, s)\},
+\end{aligned}
+\end{equation}
+where
+\begin{equation} \label{eq:ObsAltSet_case5}
+\begin{aligned}
+t_M & = max(\tsa+t_1+t_2, t),\\
+\tilde{\frs}_{j}^{\text{C5}}(t', s) & = \{\state_j: \exists (y, h) \in \frs_j^{\text{C5}}(t', s), \|\pos_j - y\|_2 \le \rc \},\\
+\frs_j^{\text{C5}}(t', s) & = \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(t') \in \boset_j(t'), \\
+& \state_j(s) = y\}.
+\end{aligned}
+\end{equation} 
+The Hamiltonian $\ham^{\text{C5}}_{i}$ to compute $\brs^{\text{C5}}_{i}(\cdot)$ is given by:
+\begin{equation} \label{eqn:BRS_obsham}
+\ham^{\text{C5}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
+\end{equation}   
 
+The above set can be interpreted as follows: $\frs_j^{\text{C5}}$ represents the states that $\veh_j$ might be in while avoiding the intruder. Thus to avoid these states, it is sufficient to avoid the BRS of $\frs_j^{\text{C5}}$ (after taking into account the danger zone $\dz_{ij}$) at time $t$, which is given by $\brs^{\text{C5}}_{i}$. Therefore, the induced obstacle in this case can be obtained by taking into account all possible $\tsa, t_1$ and $t_2$:
+\begin{equation} \label{eq:intruderObs_case5_alt1} 
+^5\ioset_i^j(t) = \bigcup_{\tsa \in [t-\iat, t], t_2 \geq \brd, t_1 + t_2 \in (0, \iat)} \brs^{\text{C5}}_{i}(t, \tsa + \iat),
+\end{equation}
+where range of $t_2$ is obtained via observation \ref{obs2_case4} and $t_1 + t_2 \leq \iat$ is implied due to assumption \ref{as:avoidOnce}.
 
+Next we make the following observations:
+\begin{observation} \label{obs1_case5}
+By definition of the base obstacles, $\boset_j(t') \subseteq \frs_j^{\text{BO}}(t'', t')$, where $t'' < t'$ and $\frs_j^{\text{BO}}$ represents the FRS of the base obstacle $\boset_j(t'')$ computed for a duration of $t' - t''$. Therefore, for a given $\tsa$ and $t_2$, we have $\tilde{\frs}_j^{\text{C5}}(\tsa+t_1+t_2, s) \subseteq \tilde{\frs}_j^{\text{C5}}(\tsa+t_2, s) ~\forall t_1 >0$. Therefore, the biggest obstacles are induced for $\veh_i$ when $t_1 = 0$ and hence for the obstacle computation purposes we can assume that $t_1 = 0$. Similar argument can be applied for $t_2$. Therefore, we can assume that $t_2 = \brd$. 
+\end{observation}
+
+\begin{observation} \label{obs2_case5}
+If $\tsa < t- 2\brd$, then $\tsa + t_1 + t_2 < t - \brd$ (see Observation \ref{obs1_case5}). That is $\veh_j$ applies the avoidance maneuver atleast for a duration of $\brd$ before time $t$. Thus, the intruder have enough time before it must disappear to travel through the buffer region and affect $veh_i$ again. But this scenario is already covered in Case4. So for Case5, we can safely assume that $\tsa \in [t-2*\brd, t]$. 
+\end{observation}
+Using the above two observations, the induced obstacle and $\brs^{\text{C5}}_{i}$ can be re-written as:
+\begin{equation} \label{eq:intruderObs_case5} 
+\begin{aligned}
+^5\ioset_i^j(t) = & \bigcup_{\tau \in [t+\iat -2\brd, t+\iat]} \brs^{\text{C5}}_{i}(t, \tau),\\
+\brs^{\text{C5}}_{i}(t, \tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \state_i(\tau) \in \tilde{\frs}_j^{\text{C5}}(\tau-\iat+\brd, \tau)\}.
+\end{aligned}
+\end{equation}

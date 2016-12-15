@@ -1,34 +1,67 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Replanning after intruder avoidance} \label{sec:replan}
-After the intruder disappears, liveness controllers which ensure that the vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. The set of all vehicles $\veh_j$ for whom we need to replan the trajectories, $\rvs$, can be obtained by checking if a vehicle $\veh_j$ applied any avoidnace control during $[\tsa, \tea]$, e.g.,
+Intruder can force some SPP vehicles to deviate from their planned trajectory; therefore, we have to replan the trajectory of these vehicles once $\veh_{intr}$ disappears. The set of all vehicles $\veh_i$ for whom we need to replan the trajectories, $\rvs$, can be obtained by checking if a vehicle $\veh_i$ applied any avoidnace control during $[\tsa, \tea]$, e.g.,
 \begin{equation} \label{eq:RVS}
-\rvs = \{j \in \{1, \ldots, \N \}: \valfunc^{\text{S}}_{j}(0, \state_{\intr, j}(t)) \leq 0, t \in [\tsa, \tea] \}. 
+\rvs = \{\veh_i, i \in \{1, \ldots, \N \}: \valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) \leq 0, t \in [\tsa, \tea] \}. 
 \end{equation}  
 
-Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{j}}(t)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles $j \in \rvs$ is given by:
+Note that due to the presence of separation and buffer regions, atmost $\nva$ vehicles can be affected by $\veh_{intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles in $\rvs$ is given by:
 
 \begin{equation*}
-\ctrl_j^*(t) = 
+\ctrl_i^*(t) = 
 \left \{ 
 \begin{array}{ll}
-{\ctrl^{\text{A}}_{j}}(t) & t \leq \tea\\
-{\ctrl^{\text{L}}_{j}}(t) & t > \tea
+{\ctrl^{\text{A}}_{i}}(t, \state_i) & t \leq \tea\\
+{\ctrl^{\text{L}}_{i}}(t, \state_i) & t > \tea
 \end{array}
 \right.
 \end{equation*}
 
-Note that in order to replan using a SPP method, we need to determine feasible $\sta$s for all vehicles $j \in \rvs$. This can be done by computing an FRS:
-\begin{equation} \label{eq:replanFRS}
+Note that in order to re-plan using a SPP method, we need to determine feasible $\sta_i$ for all vehicles. This can be done by computing an FRS:
+\begin{equation} \label{eq:re-planFRS}
 \begin{aligned} 
-\frs_j^{\text{RP}}(\tea, t) = & \{y \in \R^{n_j}: \exists \ctrl_j(\cdot) \in \cfset_j, \forall \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tea) = \tilde{\state}_j^0, \\
-& \state_j(t) = y\},
+\frs_i^{\text{RP}}(\tea, t) = & \{y \in \R^{n_i}: \exists \ctrl_i(\cdot) \in \cfset_i, \forall \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(\tea) = \tilde{\state}_i^0, \\
+& \state_i(t) = y, \forall s \in [\tea, t], \state_i(s) \notin \obsset_i^{\text{RP}}(s) \},
 \end{aligned}
 \end{equation}
-where $\tilde{\state}_j^0$ represents the state of $\veh_j$ at $t = \tea$. The FRS in \eqref{eq:replanFRS} can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
-\begin{equation}
-\ham_j^{\text{RP}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \min_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j). 
-\end{equation} 
-The new $\sta$ of $\veh_j$ is now given by the earliest time at which $\frs_j^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_j$, $\sta_j := \arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle to its destination by that time, despite the worst case disturbance it might experience.
+\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tea$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ needs to avoid higher-priority vehicles $\veh_j, j<i$ and is defined in an way analogous to \eqref{eq:obsseti}.
+%\begin{equation} 
+%\obsset_j^{\text{RP}}(t) = \bigcup_{k<j} \frs_k^{\text{RP}}(\tea, t), ~~~t > \tea.
+%\end{equation}
 
-\SBnote{This does not seem correct. We have to compute STA for each vehicle in the order of priority and take into account the obstacles that they might experience while computing FRS.}
+The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+
+\begin{equation}
+\begin{aligned}
+\max \Big\{&D_t \valfuncfwd_i^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd_i^{\text{RP}}(t, \state_i)), \\
+&\qquad - \obsfunc_i^{\text{RP}}(t, \state_i) - \valfuncfwd_i^{\text{RP}}(t, \state_i) \Big\} = 0\\
+&\valfuncfwd_i^{\text{RP}}(\tsa, \state_i) = \max\{\fc_i^{\text{RP}}(\state_i), -\obsfunc_i^{\text{RP}}(\tsa, \state_i)\} \\
+&\ham_i^{\text{RP}}(\state_i, \costate) = \max_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\end{aligned}
+\end{equation} 
+
+\noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience.
+
+\begin{remark}
+Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}. 
+\end{remark}
+
+We conclude this section with the overall SPP algorithm that takes into account an intruder that may appear for a duration of $\iat$: 
+\begin{alg}
+\label{alg:intruder}
+\textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
+\begin{enumerate}
+\item determine the separation region and buffer regions given by \eqref{eqn:sepRegion}, \eqref{eqn:augbuffRegion1} and \eqref{eqn:augbuffRegion2}.
+\item compute the induced obstacles for $\veh_i$ by $\veh_j$ given by \eqref{eq:intruderObs_case1}, \eqref{eq:intruderObs_case2}, \eqref{eq:intruderObs_case3}, \eqref{eq:intruderObs_case4} and \eqref{eq:intruderObs_case5}. 
+\item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+\item given $\tilde\obsset_i(t)$, compute the BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};
+\item the optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl};
+\end{enumerate}
+
+\textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $\veh_i \in \rvs$ which performed avoidance in response to the intruder,
+\begin{enumerate}
+\item compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$;
+\item given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and obstacles $\obsset_i^{\text{RP}}$, use any of the three SPP methods discussed in \cite{chen2016robust} for re-planning. 
+\end{enumerate}
+\end{alg}
