@@ -59,8 +59,14 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
 if save_png
-  folder = sprintf('%s_%f', mfilename, now);
-  system(sprintf('mkdir %s', folder));
+  if ispc
+    folder = sprintf('%s\\%s', obj.folder, mfilename);
+    system(sprintf('mkdir %s', folder));
+  else
+    folder = sprintf('%s/%s', obj.folder, mfilename);
+    system(sprintf('mkdir -p %s', folder));
+  end
+  
   extraArgs.fig_filename = sprintf('%s/', folder);
 end
 
@@ -72,9 +78,9 @@ CARS.data = data;
 CARS.tau = tau;
 
 % Update SPPP and save
-obj.CARS_filename = sprintf('CARS_%f.mat', now);
+obj.CARS_filename = sprintf('%s/CARS.mat', obj.folder);
 save(obj.CARS_filename, 'CARS', '-v7.3')
 
 SPPP = obj;
-save(obj.this_filename, 'SPPP', '-v7.3')
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end

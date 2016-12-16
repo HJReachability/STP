@@ -9,6 +9,7 @@ classdef SPPProblem < handle
     
     intrIS
     intrCtrl
+    max_num_affected_vehicles
     
     Rc = 0.1 % collision radius
     
@@ -52,6 +53,9 @@ classdef SPPProblem < handle
     % Files to load
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
+    
+    minMinBRS_filename % minMinBRS file (for computing buffer region)
+    bufferRegion_filename % Buffer region
     rawAugObs_filename % raw augmented obstacles file name
     
     NI_RS_chkpt_filename % no intruder reachable sets
@@ -559,6 +563,89 @@ classdef SPPProblem < handle
           
         case 'BA_dstb_11'
         case 'SF_intr_2'
+          %% Vehicle
+          obj.vRangeA = [0.1 2.5];
+          obj.wMaxA = 2;
+          obj.dMaxA = [0.6 0];
+          
+          %% RTT
+          obj.vReserved = [1 -1.2];
+          obj.wReserved = -0.8;
+          obj.RTT_tR = 0.5;
+          
+          %% Grid
+          obj.gMin = [-46.45 -46.45 0];
+          obj.gMax = [500 500 2*pi];
+          obj.gN = [101 101 15];
+          
+          obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+          obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
+          
+          %% Initial states
+          numVeh = 50;
+          obj.initStates = cell(numVeh, 1);
+          obj.tTarget = zeros(numVeh, 1);
+          initState = [475; 200; 220*pi/180];
+          for i = 1:numVeh
+            obj.initStates{i} = initState;
+            obj.tTarget(i) = -4*i;
+          end
+          
+          %% Time
+          obj.tMin = -1000;
+          obj.dt = 0.5;
+          obj.Rc = 1;
+          obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
+          
+          %% Initial targets
+          obj.targetR = 10;
+          
+          targetCentersSet = { ...
+            [300; 400]; ...
+            [50; 175]; ...
+            [75; 25]; ...
+            [450; 25] ...
+            };
+          
+          obj.targetCenters = cell(numVeh,1);
+          for i = 1:numVeh
+            target_ind = randi(length(targetCentersSet));
+            obj.targetCenters{i} = targetCentersSet{target_ind};
+          end
+          
+          %% Obstacles
+          % Financial District
+          Obs1 = shapeRectangleByCorners(obj.g2D, [300; 250], [350; 300]);
+          
+          % Union Square
+          Obs2 = shapeRectangleByCorners(obj.g2D, [-25; -30], [25; 30]);
+          Obs2 = rotateData(obj.g2D, Obs2, 7.5*pi/180, [1 2], []);
+          Obs2 = shiftData(obj.g2D, Obs2, [325 185], [1 2]);
+          Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
+            [0 500]);
+          Obs2 = shapeDifference(Obs2, Obs2b);
+          
+          % City Hall
+          Obs3 = shapeRectangleByCorners(obj.g2D, [-25; -5], [25; 5]);
+          Obs3 = rotateData(obj.g2D, Obs3, 7.5*pi/180, [1 2], []);
+          Obs3 = shiftData(obj.g2D, Obs3, [170 65], [1 2]);
+          
+          % Boundary
+          Obs4 = -shapeRectangleByCorners(obj.g2D, obj.g2D.min+5, obj.g2D.max-5);
+          
+          obj.staticObs = min(Obs1, Obs2);
+          obj.staticObs = min(obj.staticObs, Obs3);
+          obj.staticObs = min(obj.staticObs, Obs4);
+          
+          obj.mapFile = 'map_streets.png';
+          
+          augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
+          obj.augStaticObs = repmat(augStaticObs, ...
+            [1 1 obj.gN(3) length(obj.tau)]);
+          
+          %% Intruder-related
+          obj.max_num_affected_vehicles = 2;
+          
         case 'SF_intr_3'
         case 'TCST_dstb'
         case 'TCST_intr'
@@ -628,6 +715,11 @@ classdef SPPProblem < handle
       if isfield(extraArgs, 'RTTRS_filename')
         load(extraArgs.RTTRS_filename)
         obj.setRTTRS(RTTRS);
+      end
+      
+      if isfield(extraArgs, 'CARS_filename')
+        load(extraArgs.CARS_filename)
+        obj.setCARS(CARS);
       end
     end
   end
