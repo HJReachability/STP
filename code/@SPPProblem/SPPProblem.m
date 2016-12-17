@@ -54,9 +54,10 @@ classdef SPPProblem < handle
     RTTRS_filename % robust trajectory tracking reachable set
     CARS_filename  % collision avoidance reachable set
     
-    minMinBRS_filename % minMinBRS file (for computing buffer region)
+    minMinBRS_filename    % minMinBRS file (for computing buffer region)
     bufferRegion_filename % Buffer region
-    rawAugObs_filename % raw augmented obstacles file name
+    FRSBRS_filename       % FRSs and BRSs of FRSs
+    rawAugObs_filename    % raw augmented obstacles file name
     
     NI_RS_chkpt_filename % no intruder reachable sets
     NI_RS_filename
