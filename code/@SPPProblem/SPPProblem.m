@@ -563,16 +563,17 @@ classdef SPPProblem < handle
             [1 1 obj.gN(3) length(obj.tau)]);
           
         case 'BA_dstb_11'
+          
         case 'SF_intr_2'
           %% Vehicle
           obj.vRangeA = [0.1 2.5];
           obj.wMaxA = 2;
-          obj.dMaxA = [0.6 0];
+          obj.dMaxA = [1.1 0];
           
           %% RTT
           obj.vReserved = [1 -1.2];
           obj.wReserved = -0.8;
-          obj.RTT_tR = 0.5;
+          obj.RTT_tR = 3.5;
           
           %% Grid
           obj.gMin = [-46.45 -46.45 0];

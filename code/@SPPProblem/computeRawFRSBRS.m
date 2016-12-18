@@ -33,7 +33,7 @@ else
   error('CARS file not found!')
 end
 
-g = createGrid([-50; -50; -pi], [50; 50; pi], [101; 101; 21], 3);
+g = createGrid([-75; -75; -pi], [75; 75; pi], [101; 101; 21], 3);
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 % Computes FRS of RTTRS
@@ -60,16 +60,21 @@ sD_BRS.dMode = 'min';
 sD_BRS.tMode = 'backward';
 sD_BRS.dynSys = dynSys;
 
-FRSBRS.BRS = cell(length(CARS.tau), 1);
-FRSBRS.BRS{1} = FRSBRS.FRS.data(:,:,:,1);
+FRSBRS.BRS.data = cell(length(CARS.tau), 1);
+FRSBRS.BRS.tau = cell(length(CARS.tau), 1);
 
-for i = 2:length(CARS.tau)
-  data0 = FRSBRS.FRS.data(:,:,:,i);
-  tau = CARS.tau(end-i+1:end);
+for i = 1:length(CARS.tau)
+  [~, FRS2D] = proj(g, FRSBRS.FRS.data(:,:,:,i), [0 0 1]);
+  flat_FRS = repmat(FRS2D, [1 1 g.N(3)]);
   
-  extraArgs.fig_filename = sprintf('%s/BRS%d_', folder, i);
-  FRSBRS.BRS{i}.data = HJIPDE_solve(data0, tau, sD_BRS, 'zero', extraArgs);
-  FRSBRS.BRS{i}.tau = tau;
+  tau = CARS.tau(end-i+1:end);
+  FRSBRS.BRS.tau{i} = tau;
+  if i == 1
+    FRSBRS.BRS.data{i} = flat_FRS;
+  else
+    extraArgs.fig_filename = sprintf('%s/BRS%d_', folder, i);
+    FRSBRS.BRS.data{i} = HJIPDE_solve(flat_FRS, tau, sD_BRS, 'zero', extraArgs);    
+  end
 end
 
 % Update SPPP and save
