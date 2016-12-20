@@ -1,4 +1,4 @@
-function computeCARS(obj, Qintr, tIAT, save_png)
+function computeCARS(obj, Qintr, tIAT, save_png, restart)
 % computeCARS(obj, Rc, tIAT, save_png)
 %     Computes collision avoidance reachable set and updates the SPPP object
 %     with the CARS file name
@@ -23,10 +23,16 @@ if nargin < 4
   save_png = true;
 end
 
-if exist(obj.CARS_filename, 'file')
-  fprintf('The CARS file %s already exists. Skipping CARS computation.\n', ...
-    obj.CARS_filename)
-  return
+if nargin < 5
+  restart = false;
+end
+
+if ~restart
+  if exist(obj.CARS_filename, 'file')
+    fprintf('The CARS file %s already exists. Skipping CARS computation.\n', ...
+      obj.CARS_filename)
+    return
+  end
 end
 
 %% Problem parameters
@@ -42,12 +48,17 @@ schemeData.dMode = 'min';
 % grid_max = [5*obj.Rc; 4*obj.Rc; 2*pi];
 % N = [101; 101; 101]; 
 
-% for SPPwIntruderRTT method 2
-grid_min = [-12*obj.Rc; -13*obj.Rc; 0];
-grid_max = [15*obj.Rc; 13*obj.Rc; 2*pi];
+% % for SPPwIntruderRTT method 2 with 11 m/s wind
+% grid_min = [-27*obj.Rc; -27*obj.Rc; 0];
+% grid_max = [27*obj.Rc; 27*obj.Rc; 2*pi];
+
+% for SPPwIntruderRTT method 2 with 6 m/s wind
+grid_min = [-20; -20; 0];
+grid_max = [20; 20; 2*pi];
+
 N = [41; 41; 41]; 
-pdDims = 3;               % 3rd dimension is periodic
-schemeData.grid = createGrid(grid_min, grid_max, N, pdDims);
+% 3rd dimension is periodic
+schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 
 data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], obj.Rc);
 

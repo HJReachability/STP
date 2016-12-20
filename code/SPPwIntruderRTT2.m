@@ -24,7 +24,9 @@ tIAT = 10;
 SPPP.computeCARS(Qintr, tIAT);
 
 SPPP.computeMinMinBRS;
-SPPP.computeRawFRSBRS;
+SPPP.computeBufferRegion;
+
+SPPP.computeFRSBRS;
 
 keyboard
 SPPP.computeRawAugObs2;

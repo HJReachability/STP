@@ -10,96 +10,88 @@ if nargin < 2
   restart = false;
 end
 
-if ~restart && exist(obj.BR_RS_filename_small, 'file')
+if ~restart && exist(obj.BR_RS_filename, 'file')
   fprintf('The BR RS file %s already exists. Skipping BR RS computation.\n', ...
-    obj.BR_RS_filename_small)
+    obj.BR_RS_filename)
   return
 end
 
 %% Load files
-if exist(obj.RTTRS_filename, 'file')
-  fprintf('Loading RTTRS...\n')
-  load(obj.RTTRS_filename)
+% raw FRS BRS data
+if exist(obj.FRSBRS_filename, 'file')
+  fprintf('Loading FRSBRS file...\n')
+  load(obj.FRSBRS_filename)
 else
-  error('RTTRS file not found!')
+  error('FRSBRS file not found!')
 end
 
-if exist(obj.CARS_filename, 'file')
-  fprintf('Loading CARS...\n')
-  load(obj.CARS_filename)
+% Buffer region data
+if exist(obj.bufferRegion_filename, 'file')
+  fprintf('Loading buffer region file...\n')
+  load(obj.bufferRegion_filename)
 else
-  error('CARS file not found!')
+  error('buffer region file not found!')
 end
 
-if exist(obj.rawAugObs_filename, 'file')
-  fprintf('Loading ''raw'' obstacles...\n')
-  load(obj.rawAugObs_filename)
-else
-  error('rawObs file not found!')
-end
 
-if restart || ~exist(obj.BR_RS_filename, 'file')
+if restart || ~exist(obj.BR_RS_chkpt_filename, 'file')
   fprintf('Initializing vehicles and restarting BR RS computation...\n')
   Q = initRTT(obj, RTTRS);
   
   % File name to save RS data
-  obj.BR_RS_filename = sprintf('%s_%f.mat', mfilename, now);  
+  obj.BR_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
 else
   fprintf('Loading BR RS checkpoint...\n')
-  load(obj.BR_RS_filename)
-  Q = {Q1; Q2; Q3; Q4};
+  load(obj.BR_RS_chkpt_filename)
 end
-
-%% Time
-BRS1_tau = obj.tMin:obj.dt:obj.tTarget;
 
 %% Start the computation of reachable sets
 for veh=1:length(Q)
   %% Update obstacle
-  fprintf('Updating obstacles for vehicle %d...\n', veh)
   if veh == 1
-    obstacles = obj.staticObs;
+    obstacles = obj.augStaticObs;
   else
-    obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr);
-    Q{veh-1}.trimData({'BRS1', 'obsForIntr'});
-    save(obj.BR_RS_filename, 'Q', '-v7.3');
+    if ~isempty(Q{veh-1}.obsForRTT)
+      fprintf('Updating obstacles for vehicle %d...\n', veh)
+      obstacles = updateObstacles(obj.tau, obstacles, ...
+        Q{veh-1}.obsForIntr_tau, Q{veh-1}.obsForIntr);
+      Q{veh-1}.trimData({'obsForIntr'});
+      save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+    end
   end
   
-  
-  %% Compute the BRS (BRS1) of the vehicle with the above obstacles
-  if isempty(Q{veh}.BRS1)
-    fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(BRS1_tau, obj.g, obstacles);
-    
-    Q = Q{veh};
-    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
-  end
-  
-  %% Compute the nominal trajectories based on BRS1
   if isempty(Q{veh}.nomTraj)
+    %% Compute the BRS (BRS1) of the vehicle with the above obstacles
+    fprintf('Computing BRS1 for vehicle %d\n', veh)
+    if length(obj.tTarget) == 1
+      tau = obj.tau;
+    else
+      tau = obj.tMin:obj.dt:obj.tTarget(veh);
+    end
+    Q{veh}.computeBRS1(tau, obj.g, flip(obstacles, 4), obj.folder, veh);
+    
+    %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-    Q{veh}.computeNomTraj(obj.g);
-    Q = Q{veh};
-    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
-  end
-  
-  %% Compute t-IAT backward reachable set from flattened 3D obstacle
-  if isempty(Q{veh}.obsForIntr)
-    fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForIntr2(obj.g, rawAugObs);
-    Q = Q{veh};
-    save(sprintf('SPPPlane%d.mat', veh), 'Q', '-v7.3')
+    Q{veh}.computeNomTraj(obj.g, obj.folder, veh);
+    
+    %% Compute induced obstacles
+    fprintf('Computing obstacles for vehicle %d\n', veh)
+    if veh < length(Q)
+      Q{veh}.computeObsForIntr2(obj, bufferRegion, FRSBRS);
+    else
+      save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+    end
+    Q{veh}.addObs2D_Intr2(obj, RTTRS); % Visualization later when simulating
+    
+    Qthis = Q{veh};
+    save(sprintf('%s/Plane_data/Plane%d.mat',obj.folder,veh), 'Qthis', '-v7.3')
+    Q{veh}.trimData({'BRS1'});
   end
 end
 
-%% Trim vehicles for a smaller file
-for veh = 1:length(Q)
-  Q{veh}.trimData({'BRS1', 'obsForIntr'});
-end
-[Q1, Q2, Q3, Q4] = Q{:};
-obj.BR_RS_filename_small = sprintf('%s_sim_%f.mat', mfilename, now);
-save(obj.BR_RS_filename_small, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+obj.BR_RS_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
+save(obj.BR_RS_filename, 'Q', '-v7.3')
 
 SPPP = obj;
-save(obj.this_filename, 'SPPP', '-v7.3')
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end

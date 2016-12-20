@@ -1,4 +1,4 @@
-function computeRawFRSBRS(obj, save_png)
+function computeFRSBRS(obj, save_png)
 % computeRawFRSBRS(obj, save_png)
 
 if nargin < 2
@@ -67,14 +67,10 @@ for i = 1:length(CARS.tau)
   [~, FRS2D] = proj(g, FRSBRS.FRS.data(:,:,:,i), [0 0 1]);
   flat_FRS = repmat(FRS2D, [1 1 g.N(3)]);
   
-  tau = CARS.tau(end-i+1:end);
-  FRSBRS.BRS.tau{i} = tau;
-  if i == 1
-    FRSBRS.BRS.data{i} = flat_FRS;
-  else
-    extraArgs.fig_filename = sprintf('%s/BRS%d_', folder, i);
-    FRSBRS.BRS.data{i} = HJIPDE_solve(flat_FRS, tau, sD_BRS, 'zero', extraArgs);    
-  end
+  extraArgs.fig_filename = sprintf('%s/BRS%d_', folder, i);
+  FRSBRS.BRS.data{i} = HJIPDE_solve(flat_FRS, CARS.tau, sD_BRS, 'zero', ...
+    extraArgs);    
+
 end
 
 % Update SPPP and save

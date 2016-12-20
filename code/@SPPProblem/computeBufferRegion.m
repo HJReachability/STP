@@ -7,12 +7,12 @@ end
 
 fprintf('Executing %s...\n', mfilename)
 
-if exist(obj.bufferRegion_filename, 'file')
-  fprintf(['The buffer region file %s already exists. Skipping ' ...
-    'computation.\n'], ...
-    obj.bufferRegion_filename)
-  return
-end
+% if exist(obj.bufferRegion_filename, 'file')
+%   fprintf(['The buffer region file %s already exists. Skipping ' ...
+%     'computation.\n'], ...
+%     obj.bufferRegion_filename)
+%   return
+% end
 
 if save_png
   if ispc
@@ -55,7 +55,8 @@ tBRD_ind = find(CARS.tau >= tBRD, 1, 'first');
 tRD_ind = length(CARS.tau) - tBRD_ind;
 
 % Migrate to common grid
-g = createGrid([-55; -55; -pi], [55; 55; pi], [41; 41; 21], 3);
+% g = createGrid([-80; -80; -pi], [80; 80; pi], [55; 55; 21], 3); % 11 m/s wind
+g = createGrid([-55; -55; -pi], [55; 55; pi], [75; 75; 21], 3); % 6 m/s wind
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 CARS_final = migrateGrid(CARS.g, CARS.data(:,:,:,end), g);
 CARS_RD = migrateGrid(CARS.g, CARS.data(:,:,:,tRD_ind), g);

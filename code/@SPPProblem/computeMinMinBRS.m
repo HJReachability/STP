@@ -1,16 +1,22 @@
-function computeMinMinBRS(obj, save_png)
+function computeMinMinBRS(obj, save_png, restart)
 % computeMinMinBRS(obj, save_png)
 
 if nargin < 2
   save_png = true;
 end
 
+if nargin < 3
+  restart = false;
+end
+
 fprintf('Executing %s...\n', mfilename)
 
-if exist(obj.minMinBRS_filename, 'file')
-  fprintf('The minMinBRS file %s already exists. Skipping computation.\n', ...
-    obj.minMinBRS_filename)
-  return
+if ~restart
+  if exist(obj.minMinBRS_filename, 'file')
+    fprintf('The minMinBRS file %s already exists. Skipping computation.\n', ...
+      obj.minMinBRS_filename)
+    return
+  end
 end
 
 %% Load CARS
@@ -23,7 +29,9 @@ end
 
 %% Solver parameters and initial condition
 schemeData.dynSys = CARS.dynSys;
-schemeData.grid = createGrid([-65; -70; -pi], [75; 70; pi], ...
+% schemeData.grid = createGrid([-75; -75; -pi], [75; 75; pi], ...
+%   [101; 101; 21], 3); % 11 m/s wind
+schemeData.grid = createGrid([-65; -65; -pi], [65; 65; pi], ...
   [101; 101; 21], 3);
 schemeData.uMode = 'min';
 schemeData.dMode = 'min';

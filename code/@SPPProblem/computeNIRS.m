@@ -48,7 +48,7 @@ for veh = 1:length(Q)
     obstacles = obj.augStaticObs;
   else
     if ~isempty(Q{veh-1}.obsForRTT)
-      fprintf('Updating obstacles for vehicle %d...\n', veh)
+      fprintf('Updating obstacles for vehicle %d...\n', ve
       obstacles = updateObstacles(obj.tau, obstacles, ...
         Q{veh-1}.obsForRTT_tau, Q{veh-1}.obsForRTT);
       Q{veh-1}.trimData({'obsForRTT'});
@@ -70,9 +70,8 @@ for veh = 1:length(Q)
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
     Q{veh}.computeNomTraj(obj.g, obj.folder, veh);
     
-    %% Compute t-IAT backward reachable set from flattened 3D obstacle
-    fprintf('Augmenting obstacles for vehicle %d\n', veh)
-    
+    %% Compute induced obstacles
+    fprintf('Computing obstacles for vehicle %d\n', veh)
     if veh < length(Q)
       Q{veh}.computeObsForRTT(obj, RTTRS);
     else
@@ -81,7 +80,7 @@ for veh = 1:length(Q)
     Q{veh}.addObs2D(obj, RTTRS); % Visualization later when simulating
     
     Qthis = Q{veh};
-    save(sprintf('%s/Plane%d.mat', obj.folder, veh), 'Qthis', '-v7.3')
+    save(sprintf('%s/Plane_data/Plane%d.mat',obj.folder,veh), 'Qthis', '-v7.3')
     Q{veh}.trimData({'BRS1'});
   end
 end
