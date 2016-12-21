@@ -59,16 +59,11 @@ for i = 1:length(obj.nomTraj_tau)
   obj.obs2D = zeros([SPPP.g2D.N' length(obj.nomTraj_tau)]);
   [~, obj.obs2D(:,:,i)] = proj(SPPP.g, obj.obsForIntr(:,:,:,i), [0 0 1]);
   
-  if i > 1
-%     delete(h3D)
-    delete(h2D)
-%     applyLight = false;
+  if i == 1
+    h2D = visSetIm(SPPP.g2D, obj.obs2D(:,:,i), 'b');
+  else
+    h2D.ZData = obj.obs2D(:,:,i);
   end
-  
-%   h3D = visSetIm(SPPP.g, obj.obsForIntr(:,:,:,i), 'r', 0, [], applyLight);
-  h2D = visSetIm(SPPP.g2D, obj.obs2D(:,:,i), 'b');
-  drawnow
-  export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')
   
   %% Add BRS obstacle
   pBRS = obj.nomTraj(1:2, trajIndBRS);
@@ -80,7 +75,55 @@ for i = 1:length(obj.nomTraj_tau)
   
   obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsBRSi);
   
+  %% Add case 4 (intruder affects this vehicle first, then lower priority)
+  % trajIndFRS is still valid here
+  for j = 1:SPPP.remaining_duration_ind
+    base_obs_ind = max(1, i-len_tIAT+j);
+    pFRSBRS = obj.nomTraj(1:2, base_obs_ind);
+    tFRSBRS = obj.nomTraj(3, base_obs_ind);
+    
+    FRS_ind = min(base_obs_ind, len_tIAT);
+    BRS_ind = j; % 1 to remaining_duration
+    
+    obsFRSBRSi_rotated = rotateData(FRSBRS.g, ...
+      FRSBRS.BRS.data{FRS_ind}(:,:,:,BRS_ind), tFRSBRS);
+    obsFRSBRSi_gShifted = shiftGrid(FRSBRS.g, [pFRSBRS; 0]);
+    obsFRSBRSi = migrateGrid(obsFRSBRSi_gShifted, obsFRSBRSi_rotated, SPPP.g);
+    
+    obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsFRSBRSi);
+  end
+  
+  %% Add case 5 (intruder affects lower priority first, then this vehicle)
+  % trajIndFRS is still valid here
+  for j = SPPP.remaining_duration_ind+1:len_tIAT
+    base_obs_ind = max(1, i + j - SPPP.remaining_duration_ind);
+    pFRSBRS = obj.nomTraj(1:2, base_obs_ind);
+    tFRSBRS = obj.nomTraj(3, base_obs_ind);
+    
+    FRS_ind = min(base_obs_ind, SPPP.remaining_duration_ind);
+    BRS_ind = j; 
+    
+    obsFRSBRSi_rotated = rotateData(FRSBRS.g, ...
+      FRSBRS.BRS.data{FRS_ind}(:,:,:,BRS_ind), tFRSBRS);
+    obsFRSBRSi_gShifted = shiftGrid(FRSBRS.g, [pFRSBRS; 0]);
+    obsFRSBRSi = migrateGrid(obsFRSBRSi_gShifted, obsFRSBRSi_rotated, SPPP.g);
+    
+    obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsFRSBRSi);
+  end  
+  
   %% Exclude target set
   obj.obsForIntr(:,:,:,i) = max(obj.obsForIntr(:,:,:,i), -obj.target);
+  
+  %% Project to 2D
+  obj.obs2D = zeros([SPPP.g2D.N' length(obj.nomTraj_tau)]);
+  [~, obj.obs2D(:,:,i)] = proj(SPPP.g, obj.obsForIntr(:,:,:,i), [0 0 1]);
+  
+  if i == 1
+    h2D2 = visSetIm(SPPP.g2D, obj.obs2D(:,:,i), 'k');
+  else
+    h2D2.ZData = obj.obs2D(:,:,i);
+  end
+  drawnow
+  export_fig(sprintf('%s/%d', folder, i), '-png', '-m2')  
 end
 end

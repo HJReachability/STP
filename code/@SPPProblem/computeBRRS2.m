@@ -81,7 +81,6 @@ for veh=1:length(Q)
     else
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
-    Q{veh}.addObs2D_Intr2(obj, RTTRS); % Visualization later when simulating
     
     Qthis = Q{veh};
     save(sprintf('%s/Plane_data/Plane%d.mat',obj.folder,veh), 'Qthis', '-v7.3')

@@ -71,7 +71,6 @@ for i = length(CARS.tau):-1:1
   extraArgs.fig_filename = sprintf('%s/BRS%d_', folder, i);
   FRSBRS.BRS.data{i} = HJIPDE_solve(flat_FRS, CARS.tau, sD_BRS, 'zero', ...
     extraArgs);    
-
 end
 
 % Update SPPP and save

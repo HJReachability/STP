@@ -49,10 +49,8 @@ else
 end
 
 % Buffer region duration and remaining duration indices
-kBar = obj.max_num_affected_vehicles;
-tBRD = max(CARS.tau)/kBar;
-tBRD_ind = find(CARS.tau >= tBRD, 1, 'first');
-tRD_ind = length(CARS.tau) - tBRD_ind;
+tBRD_ind = obj.buffer_duration_ind;
+tRD_ind = obj.remaining_duration_ind;
 
 % Migrate to common grid
 % g = createGrid([-80; -80; -pi], [80; 80; pi], [55; 55; 21], 3); % 11 m/s wind

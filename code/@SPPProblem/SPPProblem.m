@@ -9,7 +9,12 @@ classdef SPPProblem < handle
     
     intrIS
     intrCtrl
+    
+    % Intruder method 2
     max_num_affected_vehicles
+    buffer_duration
+    buffer_duration_ind
+    remaining_duration_ind
     
     Rc = 0.1 % collision radius
     
@@ -590,11 +595,11 @@ classdef SPPProblem < handle
           initState = [475; 200; 220*pi/180];
           for i = 1:numVeh
             obj.initStates{i} = initState;
-            obj.tTarget(i) = -4*i;
+            obj.tTarget(i) = -8*i;
           end
           
           %% Time
-          obj.tMin = -1000;
+          obj.tMin = -1200;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
@@ -674,11 +679,11 @@ classdef SPPProblem < handle
           initState = [475; 200; 220*pi/180];
           for i = 1:numVeh
             obj.initStates{i} = initState;
-            obj.tTarget(i) = -4*i;
+            obj.tTarget(i) = -8*i;
           end
           
           %% Time
-          obj.tMin = -1000;
+          obj.tMin = -1200;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
@@ -758,11 +763,11 @@ classdef SPPProblem < handle
           initState = [475; 200; 220*pi/180];
           for i = 1:numVeh
             obj.initStates{i} = initState;
-            obj.tTarget(i) = -4*i;
+            obj.tTarget(i) = -8*i;
           end
           
           %% Time
-          obj.tMin = -1000;
+          obj.tMin = -1200;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
