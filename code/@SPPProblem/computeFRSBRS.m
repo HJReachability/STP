@@ -33,7 +33,8 @@ else
   error('CARS file not found!')
 end
 
-g = createGrid([-75; -75; -pi], [75; 75; pi], [101; 101; 21], 3);
+% g = createGrid([-75; -75; -pi], [75; 75; pi], [101; 101; 21], 3); % 11 m/s wd
+g = createGrid([-55; -55; -pi], [55; 55; pi], [201; 201; 21], 3); % 6 m/s wd
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 % Computes FRS of RTTRS
@@ -63,7 +64,7 @@ sD_BRS.dynSys = dynSys;
 FRSBRS.BRS.data = cell(length(CARS.tau), 1);
 FRSBRS.BRS.tau = cell(length(CARS.tau), 1);
 
-for i = 1:length(CARS.tau)
+for i = length(CARS.tau):-1:1
   [~, FRS2D] = proj(g, FRSBRS.FRS.data(:,:,:,i), [0 0 1]);
   flat_FRS = repmat(FRS2D, [1 1 g.N(3)]);
   
