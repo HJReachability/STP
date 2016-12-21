@@ -28,9 +28,9 @@ SPPP.computeBufferRegion;
 
 SPPP.computeFRSBRS;
 
-keyboard
-
 SPPP.computeBRRS2;
+
+return
 SPPP.simulateBR2;
 % SPPP.computeARRS2;
 % SPPP.simulateAR;
