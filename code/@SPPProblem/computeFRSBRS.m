@@ -34,7 +34,7 @@ else
 end
 
 % g = createGrid([-75; -75; -pi], [75; 75; pi], [101; 101; 21], 3); % 11 m/s wd
-g = createGrid([-55; -55; -pi], [55; 55; pi], [201; 201; 21], 3); % 6 m/s wd
+g = createGrid([-71; -71; -pi], [71; 71; pi], [251; 251; 21], 3); % 6 m/s wd
 RTTRSdata = migrateGrid(RTTRS.g, -RTTRS.data, g);
 
 % Computes FRS of RTTRS
