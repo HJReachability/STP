@@ -17,6 +17,14 @@ if ~restart && exist(obj.BR_RS_filename, 'file')
 end
 
 %% Load files
+% RTTRS
+if exist(obj.RTTRS_filename, 'file')
+  fprintf('Loading RTTRS...\n')
+  load(obj.RTTRS_filename)
+else
+  error('RTTRS file not found!')
+end
+
 % raw FRS BRS data
 if exist(obj.FRSBRS_filename, 'file')
   fprintf('Loading FRSBRS file...\n')
