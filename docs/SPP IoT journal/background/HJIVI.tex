@@ -9,7 +9,8 @@ We will be using reachability analysis to compute either a backward reachable se
 \end{aligned}
 \end{equation}
 
-In the SPP scheme, a lower-priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal path planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. For our application in SPP, we utilize the time-varying formulation in \cite{Fisac15}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{Fisac15}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
+%In the SPP scheme, a lower-priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal path planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. 
+Several formulations of reachability are able to account for time-varying obstacles \cite{Bokanowski11, Fisac15} (or state constraints in general). For our application in SPP, we utilize the time-varying formulation in \cite{Fisac15}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{Fisac15}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
 
 \begin{equation}
 \label{eq:HJIVI_BRS}
