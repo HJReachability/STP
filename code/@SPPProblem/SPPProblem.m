@@ -69,9 +69,9 @@ classdef SPPProblem < handle
     NI_sim_filename
     
     BR_RS_filename % before replanning reachable sets
-    BR_RS_filename_small
+    BR_RS_chkpt_filename
     AR_RS_filename % after replanning reachable sets
-    AR_RS_filename_small
+    AR_RS_chkpt_filename
     
     BR_sim_filename % before replanning simulation file (simulation results)
     full_sim_filename % full simulation file (simulation results)
