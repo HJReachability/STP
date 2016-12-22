@@ -41,6 +41,13 @@ else
   load(obj.NI_RS_chkpt_filename)
 end
 
+if ispc
+  data_folder = sprintf('%s\\Plane_data', obj.folder);
+else
+  data_folder = sprintf('%s/Plane_data', obj.folder);
+end
+system(sprintf('mkdir %s', data_folder));
+
 %% Start the computation of reachable sets
 for veh = 1:length(Q)
   %% Update obstacle
@@ -80,7 +87,7 @@ for veh = 1:length(Q)
     Q{veh}.addObs2D(obj, RTTRS); % Visualization later when simulating
     
     Qthis = Q{veh};
-    save(sprintf('%s/Plane_data/Plane%d.mat',obj.folder,veh), 'Qthis', '-v7.3')
+    save(sprintf('%s/Plane%d.mat', data_folder, veh), 'Qthis', '-v7.3')
     Q{veh}.trimData({'BRS1'});
   end
 end
