@@ -60,7 +60,7 @@ end
 system(sprintf('mkdir %s', data_folder));
 
 %% Start the computation of reachable sets
-for veh=1:length(Q)
+for veh = 1:length(Q)
   %% Update obstacle
   if veh == 1
     obstacles = obj.augStaticObs;
