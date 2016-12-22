@@ -1,18 +1,18 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Buffer Region} \label{sec:buffRegion}
-In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh_j$ avoids the intruder only if $\state_{\intr}(t) \in \sep_j(t)$. But to ensure that atmost $\nva$ vehicles need to replan their trajectories after the intruder disappears, we need to make sure that the intruder can cause atmost $\nva$ vehicles to deviate from their planned trajectories. Equivalently, we want to ensure that atmost $\nva$ vehicles need to avoid the intruder. 
+In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh_j$ avoids the intruder only if $\state_{\intr}(t) \in \sep_j(t)$. But to ensure that atmost $\nva$ vehicles need to replan their trajectories after the intruder disappears, we need to make sure that the intruder can cause atmost $\nva$ vehicles to deviate from their planned trajectories. Equivalently, we want to ensure that atmost $\nva$ vehicles need to avoid the intruder, that is $\veh_{intr}$ enters the separation regions of atmost $\nva$ vehicles during a duration of $\iat$.
 
-Intuitively, we want to make sure that at any given time the separation regions of any two vehicles are far enough from each other (that is, there is a ``buffer" region between two separation regions) such that it will take at least $\brd := \iat / \nva$ time for the intruder to go from the separation region of one vehicle to that of the other vehicle. This means that there is a ``buffer" time interval of $\brd$ between any $t_1$, $t_2 \in [\tsa, \tea]$ where $\veh_{\intr}$ is in the separation regions of two different vehicles at $t_1$ and $t_2$, e.g. $\state_{\intr}(t_1) \in \sep_j(t)$ and $\state_{\intr}(t_2) \in \sep_i(t)$, $i \neq j$. Thus, in the worst case, the intruder can force atmost $\nva$ vehicles to apply avoidance maneuver in a duration of $\iat$. 
+Intuitively, we want to make sure that at any given time the separation regions of any two vehicles are far enough from each other (that is, there is a ``buffer" region between two separation regions) such that it will take at least $\brd := \iat / \nva$ time for the intruder to go from the separation region of one vehicle to that of the other vehicle. This means that there is a ``buffer" time interval of $\brd$ between any $t_1$, $t_2 \in [\tsa, \tea]$ where $\veh_{\intr}$ is in the separation regions of two different vehicles at $t_1$ and $t_2$, e.g. $\state_{\intr}(t_1) \in \sep_j(t)$ and $\state_{\intr}(t_2) \in \sep_i(t)$, $i \neq j$. Thus, in the worst case, the intruder can force atmost $\nva$ vehicles to apply avoidance maneuver during a duration of $\iat$. 
 
-We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. Without loss of generality, we can assume that the intruder appears at the separation region of a vehicle at $t = \tsa$, because if it doesn't then the vehicles need not account for intruders until it reaches the boundary of the separation region of a vehicle. To compute the buffer region, we consider the following two cases:     
+We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. Without loss of generality, we can assume that the intruder appears at the separation region of a vehicle at $t = \tsa$, because if it does not then the vehicles need not account for intruders until it reaches the boundary of the separation region of a vehicle. To compute the buffer region, we consider the following two cases:     
 
 \subsubsection{Case1- $\state_{\intr}^0 \in \sep_j(\tsa)$} \label{sec:buffCase1}
-Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$: \MCnote{Might be clearer to put ``exists'' before every expression? Mostly to make it easier to differentiate from the case where there is a ``for all''... not sure.}
+Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$:
 
 \begin{equation} \label{eqn:buffBRS}
 \begin{aligned}
-\brs^{\text{B}}_{i}(t, \brd) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \ctrl_\intr(\cdot) \in \cfset_\intr, \dstb_i(\cdot) \in \dfset_i, \\
-& \dstb_\intr(\cdot) \in \dfset_\intr, \state_{i, \intr}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
+\brs^{\text{B}}_{i}(t, \brd) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{i, \intr}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
 & \exists s \in [t, \brd], \state_{i, \intr}(s) \in \targetset^{\text{B}}_{i}, \state_{i, \intr}(t) = y\},
 \end{aligned}
 \end{equation}
@@ -24,6 +24,7 @@ H^{\text{B}}_{i}(\state_{i, \intr}, \costate) &= \min_{\ctrl_i \in \cset_i, \ctr
 \end{aligned}
 \end{equation}
 
+\SBnote{Start from here. This interpretation doesn't seem correct.}
 The interpretation of set $\brs^{\text{B}}_{i}(0, \brd)$ is that if the separation region of $\veh_i$ is outside the boundary of this set and $\veh_{\intr}$ is at the boundary of $\targetset^{\text{B}}_{i}$ (in relative coordinates), then $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for a duration of $\brd$, irrespective of control applied by them. If we augment this set on the separation region of the $\veh_j$, then we get the same property in the state space of $\veh_i$:
 \begin{equation} \label{eqn:buffRegion}
 \buff_{ij}(t) = \sep_j(t) + \brs^{\text{B}}_{i}(0, \brd).
