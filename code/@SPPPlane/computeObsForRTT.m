@@ -11,7 +11,7 @@ if nargin < 4
 end
 
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
-RTTRS2D = migrateRTTRS(RTTRS, SPPP.g2D, R_augment);
+[g2D, RTTRS2D] = migrateRTTRS(RTTRS, R_augment);
 
 obj.obsForRTT_tau = nomTraj_tau;
 obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);
@@ -20,10 +20,11 @@ for i = 1:length(nomTraj_tau)
   % Rotate and shift raw obstacles
   p = nomTraj(1:2,i);
   t = nomTraj(3,i);
-  rawObsDatai = rotateData(SPPP.g2D, RTTRS2D, t, [1 2], []);
-  rawObsDatai = shiftData(SPPP.g2D, rawObsDatai, p, [1 2]);
+  obsi_rot = rotateData(g2D, RTTRS2D, t, [1 2], []);
+  obsi_gShift = shiftGrid(g2D, p);
+  obsi = migrateGrid(obsi_gShift, obsi_rot, SPPP.g2D);
   
-  obj.obsForRTT(:,:,:,i)= repmat(rawObsDatai, [1 1 SPPP.g.N(3)]);
+  obj.obsForRTT(:,:,:,i)= repmat(obsi, [1 1 SPPP.g.N(3)]);
   
   % Exclude target set
   obj.obsForRTT(:,:,:,i) = max(obj.obsForRTT(:,:,:,i), -obj.target);
