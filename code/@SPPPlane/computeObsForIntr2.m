@@ -109,7 +109,7 @@ for i = 1:length(obj.nomTraj_tau)
     obsFRSBRSi = migrateGrid(obsFRSBRSi_gShifted, obsFRSBRSi_rotated, SPPP.g);
     
     obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsFRSBRSi);
-  end  
+  end
   
   %% Exclude target set
   obj.obsForIntr(:,:,:,i) = max(obj.obsForIntr(:,:,:,i), -obj.target);

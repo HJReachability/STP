@@ -65,7 +65,7 @@ for veh = 1:length(Q)
   if veh == 1
     obstacles = obj.augStaticObs;
   else
-    if ~isempty(Q{veh-1}.obsForRTT)
+    if ~isempty(Q{veh-1}.obsForIntr)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
       obstacles = updateObstacles(obj.tau, obstacles, ...
         Q{veh-1}.obsForIntr_tau, Q{veh-1}.obsForIntr);

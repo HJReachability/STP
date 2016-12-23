@@ -599,7 +599,7 @@ classdef SPPProblem < handle
           end
           
           %% Time
-          obj.tMin = -1200;
+          obj.tMin = -800;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
@@ -621,13 +621,16 @@ classdef SPPProblem < handle
           end
           
           %% Obstacles
+          temp_g2D = createGrid([-35 -35], [35 35], [101 101]);
+          
           % Financial District
           Obs1 = shapeRectangleByCorners(obj.g2D, [300; 250], [350; 300]);
           
           % Union Square
-          Obs2 = shapeRectangleByCorners(obj.g2D, [-25; -30], [25; 30]);
-          Obs2 = rotateData(obj.g2D, Obs2, 7.5*pi/180, [1 2], []);
-          Obs2 = shiftData(obj.g2D, Obs2, [325 185], [1 2]);
+          Obs2 = shapeRectangleByCorners(temp_g2D, [-25; -30], [25; 30]);
+          Obs2_rot = rotateData(temp_g2D, Obs2, 7.5*pi/180, [1 2], []);
+          Obs2_gShift = shiftGrid(temp_g2D, [325 185]);
+          Obs2 = migrateGrid(Obs2_gShift, Obs2_rot, obs.g2D);
           Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
             [0 500]);
           Obs2 = shapeDifference(Obs2, Obs2b);
@@ -683,7 +686,7 @@ classdef SPPProblem < handle
           end
           
           %% Time
-          obj.tMin = -1200;
+          obj.tMin = -800;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
@@ -767,7 +770,7 @@ classdef SPPProblem < handle
           end
           
           %% Time
-          obj.tMin = -1200;
+          obj.tMin = -800;
           obj.dt = 0.5;
           obj.Rc = 1;
           obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
