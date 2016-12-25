@@ -31,7 +31,7 @@ end
 
 % Migrate and add capture radius to RTTRS
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
-rawObs2D = migrateRTTRS(RTTRS, SPPP.g2D, R_augment);
+rawObs2D = migrateRTTRS(RTTRS, R_augment);
 
 % Initialize 2D obstacles
 obj.obs2D_tau = nomTraj_tau;

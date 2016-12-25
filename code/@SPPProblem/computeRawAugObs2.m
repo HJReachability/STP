@@ -8,16 +8,15 @@ if exist(obj.rawAugObs_filename, 'file')
   return
 end
 
-if nargin < 2
+if nargin < 3
   save_png = true;
 end
+
+kBar = obj.max_num_affected_vehicles;
 
 %% Load and migrate RTTRS
 fprintf('Loading RTTRS...\n')
 load(obj.RTTRS_filename)
-
-% % For SPPwIntruderRTT method 1
-% g = createGrid([-1; -1; -3*pi/2], [1.2; 1; pi/2], [71; 71; 71], 3);
 
 % For SPPwIntruderRTT method 2
 g = createGrid([-120; -120; -pi], [140; 120; pi], [101; 101; 101], 3);
@@ -33,8 +32,9 @@ schemeData.dynSys = Plane([0; 0; 0], ...
 
 %% Compute intruder exclusive set
 fprintf('Computing intruder exclusive set\n')
-rawAugObs.IES = computeRawObs_IES(RTTRSdata, CARS, obj, g, save_png);
+rawAugObs.IES = computeBufferRegion(RTTRSdata, CARS, obj, g, kBar, save_png);
 
+return
 %% Compute FRS
 fprintf('Computing FRS of raw obstacle...\n')
 schemeData.grid = g;
@@ -76,7 +76,6 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
 rawObsFRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData, 'none', extraArgs);
-
 end
 
 function [obs3D, g2D, obs2D] = computeObs3D(augObsFRS, g, Rc, tR)
@@ -100,47 +99,5 @@ extraArgs.visualize = true;
 extraArgs.deleteLastPlot = true;
 
 rawObsBRS = HJIPDE_solve(RTTRSdata, tauIAT, schemeData,  'zero', extraArgs);
-
-end
-
-function IESet = computeRawObs_IES(RTTRSdata, CARS, SPPP, g, save_png)
-
-if save_png
-  s = dbstack;
-  fn_name = s.name;
-  folder = sprintf('%s_%f', fn_name, now);
-  system(sprintf('mkdir %s', folder));
-  extraArgs.fig_filename = sprintf('%s/', folder);
-end
-
-schemeData.dynSys = CARS.dynSys;
-schemeData.grid = g;
-schemeData.uMode = 'min';
-schemeData.dMode = 'min';
-tau = 0:SPPP.dt:max(CARS.tau);
-data0 = shapeCylinder(g, 3, [0;0;0], SPPP.Rc);
-
-extraArgs.visualize = true;
-extraArgs.deleteLastPlot = true;
-
-minMinBRS = HJIPDE_solve(data0, tau, schemeData, 'zero', extraArgs);
-minMinBRS = minMinBRS(:,:,:,end);
-
-pdims = [1 2];
-adim = 3;
-bdry_only = false;
-barA1 = computeDataByUnion(g, minMinBRS, g, RTTRSdata, pdims, adim, bdry_only);
-
-IESet = computeDataByUnion(g, minMinBRS, g, barA1, pdims, adim, bdry_only);
-
-if save_png
-  figure
-  visSetIm(g, barA1, 'b')
-  export_fig(sprintf('%s/barA1', folder), '-png')
-  
-  figure
-  visSetIm(g, IESet, [0 0.75 0])
-  export_fig(sprintf('%s/IESet', folder), '-png')
-end
 
 end
