@@ -1,4 +1,4 @@
-function computeCARS(obj, Qintr, tIAT, save_png, restart)
+function computeCARS(obj, Qintr, save_png, restart)
 % computeCARS(obj, Rc, tIAT, save_png)
 %     Computes collision avoidance reachable set and updates the SPPP object
 %     with the CARS file name
@@ -13,10 +13,6 @@ function computeCARS(obj, Qintr, tIAT, save_png, restart)
 % vehicles
 if nargin < 2
   Qintr = Plane([0; 0; 0], obj.wMaxA, obj.vRangeA, obj.dMaxA);
-end
-
-if nargin < 3
-  tIAT = 0.25;
 end
 
 if nargin < 4
@@ -63,7 +59,7 @@ schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], obj.Rc);
 
 %% Time stamps
-tau = 0:obj.dt:tIAT;
+tau = 0:obj.dt:obj.tIAT;
 
 %% Compute set
 extraArgs.visualize = true;

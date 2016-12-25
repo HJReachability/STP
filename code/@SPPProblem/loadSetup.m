@@ -76,16 +76,13 @@ switch setup_name
     Obs2 = shapeDifference(Obs2, Obs2b);
     
     % City Hall
-    Obs3 = shapeRectangleByCorners(obj.g2D, [-25; -5], [25; 5]);
-    Obs3 = rotateData(obj.g2D, Obs3, 7.5*pi/180, [1 2], []);
-    Obs3 = shiftData(obj.g2D, Obs3, [170 65], [1 2]);
-    
-    % Boundary
-    Obs4 = -shapeRectangleByCorners(obj.g2D, obj.g2D.min+5, obj.g2D.max-5);
+    Obs3 = shapeRectangleByCorners(temp_g2D, [-25; -5], [25; 5]);
+    Obs3_rot = rotateData(temp_g2D, Obs3, 7.5*pi/180, [1 2], []);
+    Obs3_gShift = shiftGrid(temp_g2D, [170 65]);
+    Obs3 = migrateGrid(Obs3_gShift, Obs3_rot, obj.g2D);
     
     obj.staticObs = min(Obs1, Obs2);
     obj.staticObs = min(obj.staticObs, Obs3);
-    obj.staticObs = min(obj.staticObs, Obs4);
     
     obj.mapFile = 'map_streets.png';
     
@@ -125,10 +122,16 @@ switch setup_name
       switch extraArgs.dstb_or_intr
         case 'dstb'
           augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
-          obj.augStaticObs = repmat(augStaticObs, ...
-            [1 1 obj.gN(3) length(obj.tau)]);
+          obj.augStaticObs = repmat(augStaticObs, [1 1 obj.gN(3)]);
+
+          % Boundary obstacle
+          obs_bdry = -shapeRectangleByCorners(obj.g, obj.g.min + [5;5;-inf], ...
+            obj.g.max - [5;5;-inf]);
+          obj.augStaticObs = min(obj.augStaticObs, obs_bdry);
+          obj.augStaticObs = repmat(obj.augStaticObs, [1 1 1 length(obj.tau)]);
           
         case 'intr'
+          obj.tIAT = 10;
           warning(['Static obstacles will be augmented after computing ' ...
             'bufferRegion and FRSBRS'])
           

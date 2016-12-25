@@ -9,6 +9,7 @@ classdef SPPProblem < handle
     
     intrIS
     intrCtrl
+    tIAT
     
     % Intruder method 2
     max_num_affected_vehicles
