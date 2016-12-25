@@ -13,6 +13,11 @@ end
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by
 [g2D, RTTRS2D] = migrateRTTRS(RTTRS, R_augment);
 
+% Initialize 2D obstacles
+obj.obs2D_tau = nomTraj_tau;
+obj.obs2D = zeros([SPPP.g2D.N' length(nomTraj_tau)]);
+
+% Initialize 3D obstacles
 obj.obsForRTT_tau = nomTraj_tau;
 obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);
 
@@ -24,6 +29,7 @@ for i = 1:length(nomTraj_tau)
   obsi_gShift = shiftGrid(g2D, p);
   obsi = migrateGrid(obsi_gShift, obsi_rot, SPPP.g2D);
   
+  obj.obs2D(:,:,i) = obsi;  
   obj.obsForRTT(:,:,:,i)= repmat(obsi, [1 1 SPPP.g.N(3)]);
   
   % Exclude target set

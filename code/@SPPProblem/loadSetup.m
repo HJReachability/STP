@@ -70,7 +70,7 @@ switch setup_name
     Obs2 = shapeRectangleByCorners(temp_g2D, [-25; -30], [25; 30]);
     Obs2_rot = rotateData(temp_g2D, Obs2, 7.5*pi/180, [1 2], []);
     Obs2_gShift = shiftGrid(temp_g2D, [325 185]);
-    Obs2 = migrateGrid(Obs2_gShift, Obs2_rot, obs.g2D);
+    Obs2 = migrateGrid(Obs2_gShift, Obs2_rot, obj.g2D);
     Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
       [0 500]);
     Obs2 = shapeDifference(Obs2, Obs2b);
