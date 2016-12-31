@@ -48,14 +48,19 @@ switch setup_name
     end
     
     %% Grid
-    if strcmp(extraArgs.dstb_or_intr, 'dstb') && extraArgs.wind_speed == 6
-      obj.gN = [201 201 15];
-    else
-      obj.gN = [101 101 15];
-    end
-    
+    % Defaults
     obj.gMin = [0 0 0];
     obj.gMax = [500 500 2*pi];
+    obj.gN = [101 101 15];
+    
+    % Custom modifications
+    if strcmp(extraArgs.dstb_or_intr, 'dstb') && extraArgs.wind_speed == 6
+      obj.gN = [201 201 15];
+    elseif strcmp(extraArgs.dstb_or_intr, 'intr')
+      obj.gMin = [-50 50 0];
+      obj.gMax = [550 550 2*pi];
+      obj.gN = [125 125 15];
+    end
     
     obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
     obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));

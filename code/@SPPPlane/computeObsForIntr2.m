@@ -9,6 +9,9 @@ end
 
 obj.obsForIntr_tau = obj.nomTraj_tau;
 obj.obsForIntr = inf([SPPP.g.N' length(obj.nomTraj_tau)]);
+obj.obs2D_tau = obj.nomTraj_tau;
+obj.obs2D = zeros([SPPP.g2D.N' length(obj.nomTraj_tau)]);
+
 len_tIAT = length(FRSBRS.FRS.tau);
 
 if save_png
@@ -23,7 +26,6 @@ if save_png
   figure
   plot(obj.nomTraj(1,:), obj.nomTraj(2,:), 'k.-')
   hold on
-%   applyLight = true;
 end
 
 for i = 1:length(obj.nomTraj_tau)
@@ -115,7 +117,6 @@ for i = 1:length(obj.nomTraj_tau)
   obj.obsForIntr(:,:,:,i) = max(obj.obsForIntr(:,:,:,i), -obj.target);
   
   %% Project to 2D
-  obj.obs2D = zeros([SPPP.g2D.N' length(obj.nomTraj_tau)]);
   [~, obj.obs2D(:,:,i)] = proj(SPPP.g, obj.obsForIntr(:,:,:,i), [0 0 1]);
   
   if i == 1

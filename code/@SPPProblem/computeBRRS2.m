@@ -69,6 +69,7 @@ for veh = 1:length(Q)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
       obstacles = updateObstacles(obj.tau, obstacles, ...
         Q{veh-1}.obsForIntr_tau, Q{veh-1}.obsForIntr);
+      
       Q{veh-1}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
@@ -80,7 +81,7 @@ for veh = 1:length(Q)
     if length(obj.tTarget) == 1
       tau = obj.tau;
     else
-      tau = obj.tMin:obj.dt:obj.tTarget(veh);
+      tau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
     end
     Q{veh}.computeBRS1(tau, obj.g, flip(obstacles, 4), obj.folder, veh);
     
@@ -90,9 +91,9 @@ for veh = 1:length(Q)
     
     %% Compute induced obstacles
     fprintf('Computing obstacles for vehicle %d\n', veh)
-    if veh < length(Q)
-      Q{veh}.computeObsForIntr2(obj, bufferRegion, FRSBRS);
-    else
+    Q{veh}.computeObsForIntr2(obj, bufferRegion, FRSBRS);
+    if veh == length(Q)
+      Q{veh}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
     
