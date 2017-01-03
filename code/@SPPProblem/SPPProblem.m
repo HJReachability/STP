@@ -142,9 +142,9 @@ classdef SPPProblem < handle
           obj.max_num_affected_vehicles = 2;
           
         case 'SF_intr_3'
-          extraArgs.number_of_vehicles = 20;
+          extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 45;
+          extraArgs.separation_time = 30;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           

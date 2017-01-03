@@ -78,7 +78,6 @@ for i = 1:length(obj.nomTraj_tau)
   obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsBRSi);
   
   %% Add case 4 (intruder affects this vehicle first, then lower priority)
-  % trajIndFRS is still valid here
   for j = 1:SPPP.remaining_duration_ind
     base_obs_ind = max(1, i-len_tIAT+j);
     pFRSBRS = obj.nomTraj(1:2, base_obs_ind);
@@ -96,9 +95,13 @@ for i = 1:length(obj.nomTraj_tau)
   end
   
   %% Add case 5 (intruder affects lower priority first, then this vehicle)
-  % trajIndFRS is still valid here
   for j = SPPP.remaining_duration_ind+1:len_tIAT
     base_obs_ind = max(1, i + j - SPPP.remaining_duration_ind);
+    
+    if base_obs_ind > length(obj.nomTraj_tau)
+      break
+    end
+    
     pFRSBRS = obj.nomTraj(1:2, base_obs_ind);
     tFRSBRS = obj.nomTraj(3, base_obs_ind);
     
