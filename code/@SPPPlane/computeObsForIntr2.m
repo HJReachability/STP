@@ -1,9 +1,9 @@
-function computeObsForIntr2(obj, SPPP, bufferRegion, FRSBRS, save_png)
+function computeObsForIntr2(obj, SPPP, bufferRegion, FRSBRS, veh, save_png)
 % computeObsForIntr2(obj, g, CARS, rawAugObs)
 %     Computes the FRS + BRS + IES obstacles assuming the RTT method
 %     for SPP with intruders method 2
 
-if nargin < 5
+if nargin < 6
   save_png = true;
 end
 
@@ -16,10 +16,10 @@ len_tIAT = length(FRSBRS.FRS.tau);
 
 if save_png
   if ispc
-    folder = sprintf('%s\\%s', SPPP.folder, mfilename);
+    folder = sprintf('%s\\%s\\%d', SPPP.folder, mfilename, veh);
     system(sprintf('mkdir %s', folder));
   else
-    folder = sprintf('%s/%s', SPPP.folder, mfilename);
+    folder = sprintf('%s/%s/%d', SPPP.folder, mfilename, veh);
     system(sprintf('mkdir -p %s', folder));
   end
   
@@ -30,6 +30,7 @@ end
 
 for i = 1:length(obj.nomTraj_tau)
   fprintf('  Augmenting obstacle %d of %d\n', i, length(obj.nomTraj_tau))
+  
   % Determine trajectory and obstacle indices for each of the raw obstacles
   trajIndBuffer = i;
   trajIndFRS = max(1, i-len_tIAT+1);
@@ -58,7 +59,6 @@ for i = 1:length(obj.nomTraj_tau)
   obj.obsForIntr(:,:,:,i) = min(obj.obsForIntr(:,:,:,i), obsFRSi);
   
   %% Project to 2D
-  obj.obs2D = zeros([SPPP.g2D.N' length(obj.nomTraj_tau)]);
   [~, obj.obs2D(:,:,i)] = proj(SPPP.g, obj.obsForIntr(:,:,:,i), [0 0 1]);
   
   if i == 1

@@ -91,7 +91,7 @@ for veh = 1:length(Q)
     
     %% Compute induced obstacles
     fprintf('Computing obstacles for vehicle %d\n', veh)
-    Q{veh}.computeObsForIntr2(obj, bufferRegion, FRSBRS);
+    Q{veh}.computeObsForIntr2(obj, bufferRegion, FRSBRS, veh);
     if veh == length(Q)
       Q{veh}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');

@@ -57,7 +57,7 @@ switch setup_name
     if strcmp(extraArgs.dstb_or_intr, 'dstb') && extraArgs.wind_speed == 6
       obj.gN = [201 201 15];
     elseif strcmp(extraArgs.dstb_or_intr, 'intr')
-      obj.gMin = [-50 50 0];
+      obj.gMin = [-50 -50 0];
       obj.gMax = [550 550 2*pi];
       obj.gN = [125 125 15];
     end
