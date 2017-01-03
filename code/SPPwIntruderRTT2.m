@@ -27,6 +27,7 @@ SPPP.computeMinMinBRS;
 SPPP.computeBufferRegion;
 
 SPPP.computeFRSBRS;
+SPPP.augment_staticObs_intr2;
 
 SPPP.computeBRRS2;
 SPPP.simulateNI(true, false, SPPP.BR_RS_filename); % Temporary, for testing
