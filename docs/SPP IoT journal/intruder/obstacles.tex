@@ -1,7 +1,6 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Obstacle Computation} \label{sec:intruderObs}
-
-In sections \ref{sec:sepRegion} and \ref{sec:buffRegion}, we computed a separation between any two vehicles, such that itruder can affect atmost $\nva$ vehicles during a duration of $\iat$. However, we need to make sure that while applying avoidance control a vehicle does not enter the danger zone of other vehicle. In this section, we compute the obstacles that reflect this possibility. In particular, we want to find the set of states that a lower priority vehicle $\veh_i$ needs to avoid to avoid entering in the danger zone of a higher priority vehicle $\veh_j$, $j < i$. To find such states, we consider the following five mutually exclusive and exhaustive cases:
+In sections \ref{sec:sepRegion} and \ref{sec:buffRegion}, we computed a separation between any two vehicles, such that the intruder can affect atmost $\nva$ vehicles during a duration of $\iat$. However, we need to make sure that while applying avoidance control a vehicle does not enter the danger zone of other vehicle or collide with the static obstacles. In this section, we compute the obstacles that reflect this possibility. In particular, we want to find the set of states that a lower priority vehicle $\veh_i$ needs to avoid to avoid entering in the danger zone of a higher priority vehicle $\veh_j$, $j < i$. To find such states, we consider the following five mutually exclusive and exhaustive cases:
 \begin{enumerate}
 \item Intruder does not affect $\veh_j$ or $\veh_i$ during their flight.
 \item Intruder affects $\veh_j$, but not $\veh_i$.
@@ -9,7 +8,7 @@ In sections \ref{sec:sepRegion} and \ref{sec:buffRegion}, we computed a separati
 \item Intruder first affects $\veh_j$ and then $\veh_i$.
 \item Intruder first affects $\veh_i$ and then $\veh_j$.
 \end{enumerate}
-We will compute the set of states that $\veh_i$ needs to avoid to avoid a collision with $\veh_j$ for each of the five cases. Let $^k\ioset_i^j(\cdot)$ denotes the set of obstacles corresponding to case $k$ above. 
+For each case, we compute the set of states that $\veh_i$ needs to avoid to avoid entering in $\dz_{ji}$. Let $^k\ioset_i^j(\cdot)$ denotes the set of obstacles corresponding to the case $k$ above. 
 
 \subsubsection{Case1} \label{sec:intruderObs_case1}
 When the intruder does not affect any of the two vehicles, $\veh_i$ simply needs to avoid the set of base obstacles $\boset_j(t)$. Therfore, 
@@ -22,64 +21,75 @@ When the intruder does not affect any of the two vehicles, $\veh_i$ simply needs
 
 
 \subsubsection{Case2} \label{sec:intruderObs_case2}
-To compute the obstacles that $\veh_i$ needs to avoid at time $t$ for the remaining four cases, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence the two vehicles cannot be in conflict at time $t$. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. \SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to menbtion this.}
+To compute the obstacles that $\veh_i$ needs to avoid at time $t$ for the remaining four cases, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence the two vehicles cannot be in conflict at time $t$. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. %\SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to mention this.}
 
 The induced obstacles for Case2 at time $t$ are given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles.
 \begin{equation} \label{eq:ObsFRS_case2}
 \begin{aligned}
-\frs_{j}^{\mathcal{O}}(0, \tau) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(0) \in \boset_j(t-\tau), \\
-& \state_j(\tau) = y\}.
+\frs_{j}^{\mathcal{O}}(\tsa, t) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tsa) \in \boset_j(\tsa), \\
+& \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
-$\frs_{j}^{\mathcal{O}}(0, \tau)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+$\frs_{j}^{\mathcal{O}}(\tsa, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $(t-\tsa)$ starting from inside $\boset_j(\tsa)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
 \ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j).
 \end{equation} 
-Since $\tau \in [0, \iat]$, the induced obstacles in this case can be obtained as:
+Since $\tsa \in [t-\iat, t]$, the induced obstacles in this case can be obtained as:
 \begin{equation} \label{eq:intruderObs_case2} 
 \begin{aligned}
 ^2\ioset_i^j(t) & = \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \}\\
-\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \bigcup_{\tau \in [0, \iat]} \frs_{j}^{\mathcal{O}}(0, \tau) \}
+\pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \bigcup_{\tsa \in [t-\iat, t]} \frs_{j}^{\mathcal{O}}(\tsa, t) \}
 \end{aligned}
 \end{equation}
 
 \begin{observation} \label{obs1_case2}
-Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. 
+Since the base obstacles represent possible states that a vehicle can be in in the absence of the intruder, the base obstacle at any time $\tau_2$ should be contained within the FRS of the base obstacle at time $\tau_1 < \tau_2$, computed forward for a duration of $(\tau_2-\tau_1).$ That is, $\boset_j(\tau_2) \subseteq \frs_{j}^{\text{BO}}(\tau_1, \tau_2)$, where $\frs_{j}^{\text{BO}}(\tau_1, \tau_2)$ denotes the FRS of $\boset_j(\tau_1)$ computed forward for a duration of $(\tau_2-\tau_1)$. The same argument can be applied for the FRS computed from $\boset_j(\tau_2)$ and $\boset_j(\tau_1)$. That is, $\frs_{j}^{\text{BO}}(\tau_2, \tau_3) \subseteq \frs_{j}^{\text{BO}}(\tau_1, \tau_3)$, where $\tau_1 < \tau_2 < \tau_3$.
+%Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. 
 \end{observation}
 
 Using observation \ref{obs1_case2}, $\pfrs_j(t)$ in \eqref{eq:intruderObs_case2} can be equivalently written as:
 \begin{equation} \label{eq:intruderObs_case2_inter}
-\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(0, \iat) \}.
+\pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(t-\iat, t) \}.
 \end{equation}
-
 
 \subsubsection{Case3} \label{sec:intruderObs_case3}
-In this case, we need to ensure that $\veh_i$ doesn't collide with the obstacle set $\boset_j(\cdot)$ even when it is avoiding the intruder. In particular, we can compute a region around the obstacles $\boset_j(\cdot)$ such that for all disturbances, $\veh_i$ can avoid colliding with obstacles for $\iat$ seconds regardless of its avoidance control, if $\veh_i$ starts outside this region. 
+In this case, we need to ensure that $\veh_i$ doesn't collide with the obstacle set $\boset_j(\cdot)$ or any static obstacles even when it is avoiding the intruder. In particular, we can compute a region around the obstacles such that for all disturbances, $\veh_i$ can avoid colliding with them for $\iat$ seconds regardless of its control, if $\veh_i$ starts outside this region. 
 
-Suppose that the intruder appears in the system at time $\tsa = t - \iat + \tau, \tau \in [0, \iat]$. In this case, we need to ensure that $\veh_i$ does not collide with the obstacle $\boset_j(t + \tau)$ at time $t + \tau$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [\tsa, t + \tau]$. It is, therefore, sufficient to avoid the $\tau$-horizon BRS of $\boset_j(t + \tau)$ at time $t$. This argument applies for all $\tau \in [0, \iat]$. Mathematically,
-
-\begin{equation} \label{eq:intruderObs_case3}
-^3\ioset_i^j(t) = \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(0, \tau)
-\end{equation}
-where $\brs^{\mathcal{G}}_{i}(0, \tau)$ represents BRS of $\tilde{\boset}_j(t+\tau)$ computed backwards for $\tau$ seconds. Formally, 
+Suppose that the intruder appears in the system at time $\tsa := t - \iat + \tau, \tau \in [0, \iat]$. In this case, $veh_i$ might be applying avoidance control during the interval $[t - \iat + \tau, t + \tau]$. Thus, we need to ensure that $\veh_i$ does not collide with the obstacle $\boset_j(t + t')$ at time $t + t'$, $t' \in [t, t + \tau]$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [\tsa, t']$. It is, therefore, sufficient to avoid the $t'$-horizon BRS of $\boset_j(t + t')$ at time $t$. This argument applies for all $t' \in [t, t + \tau]$. Thus, for a given $\tau$, we need to avoid the BRS $\brs^{\mathcal{G}}_{i}(t, t+\tau)$:
 \begin{equation}  \label{eq:ObsBRS_case3}
 \begin{aligned}
-\brs^{\mathcal{G}}_{i}(0, \tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
-& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(0) = y, \\
-& \state_i(\tau) \in \tilde{\boset}_j(t+\tau)\} \\
-\tilde{\boset}_j & = \{\state_j: \exists (y, h) \in \boset_j(t), \|\pos_j - y\|_2 \le \rc \}.
+\brs^{\mathcal{G}}_{i}(t, t+\tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, t+\tau], \state_i(s) \in \tilde{\boset}_j(s) \cup \soset_i \}, \\
+\tilde{\boset}_j(s) = & \{\state_j: \exists (y, h) \in \boset_j(s), \|\pos_j - y\|_2 \le \rc \}.
+\end{aligned}
+\end{equation}
+The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdot)$ is given by:
+\begin{equation} \label{eqn:BRS_obsham}
+\ham^{\mathcal{G}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
+\end{equation}
+
+Finally, the induced obstacles in this case can be computed by taking into account all possible $\tau \in [0, \iat]$.
+\begin{equation} \label{eq:intruderObs_case3}
+\begin{aligned}
+^3\ioset_i^j(t) = & \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(t, t+\tau)\\
+= & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, t+\iat], \state_i(s) \in \tilde{\boset}_j(s) \cup \soset_i \}.
 \end{aligned}
 \end{equation}
 
-The Hamiltonian $\ham^{\mathcal{G}}_{i}$ to compute $\brs^{\mathcal{G}}_{i}(\cdot)$ is given by:
-\begin{equation} \label{eqn:BRS_obsham}
-\ham^{\mathcal{G}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
-\end{equation}
-
-\SBnote{I need to work on the next 2 cases, but will do that later. ALso, Case5 is clearer compared to Case4 so that might be a good starting point.}
+The obstacle computation is illustrated in Figure \ref{fig:obsCase3}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{"figs/obsCase3"}
+  \caption{The Red and Green sets denote the base obstacles $\boset_j(\cdot)$ induced by $\veh_j$. They are augmented by the capture radius $\rc$ to get $\tilde{\boset}_j(\cdot)$ (denoted by dotted and solid lines). When $\tsa = t - \iat + \tau_1$, $\veh_i$ might be applying avoidance control during the interval $[t - \iat + \tau_1, t + \tau_1]$; therefore, it must avoid the Red obstacles during the time interval $[t, t + \tau_1]$. Equivalently, $\veh_i$ needs to avoid $\brs^{\mathcal{G}}_{i}(t, t+\tau_1)$ at time $t$. Similarly, if $\tsa = t - \iat + \tau_2$, $\veh_i$ needs to avoid Red obstacles during $[t, t + \tau_1]$ and Green obstacles during $[t + \tau_1, t + \tau_2]$. This is precisely what set $\brs^{\mathcal{G}}_{i}(t, t+\tau_2)$ captures.}
+  \label{fig:obsCase3}
+\end{figure}
 
 \subsubsection{Case4} \label{sec:intruderObs_case4}
+\SBnote{Start from here.}
 In this case, intruder $\veh_{\intr}$ appears at the boundary of set $\sep_j(\tsa)$ and after forcing $\veh_j$ to apply avoidance control for some duration $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_i(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Once $\veh_j$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. From the perspective of $\veh_i$, $\veh_j$ can apply any control for the next $\iat$ duration. Furthermore, $\veh_i$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ has deviated from its original trajectory \textit{and} $\veh_i$ is avoiding the intruder.   
 
 To compute the induced obstacles in this case, we first make the following observations:
