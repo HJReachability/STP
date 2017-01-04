@@ -41,4 +41,6 @@ obs_bdry = -shapeRectangleByCorners(obj.g, obj.g.min + [5; 5; -inf], ...
 obj.augStaticObs = min(augStaticObs, obs_bdry);
 obj.augStaticObs = repmat(obj.augStaticObs, [1 1 1 length(obj.tau)]);
 
+SPPP = obj;
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end
