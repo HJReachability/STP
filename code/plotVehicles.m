@@ -1,5 +1,5 @@
-function [hc, ho, hn] = ...
-  plotVehicles(Q, tInds, g2D, hc, ho, hn, colors, capture_radius)
+function [hc, ho, hn, ht] = ...
+  plotVehicles(Q, tInds, g2D, hc, ho, hn, ht, colors, capture_radius)
 % plotVehicles(Q, hc, ho, colors, capture_radius)
 %     Updates the plot in the SPP simulation
 
@@ -23,12 +23,20 @@ for veh = 1:length(Q)
     end
     
     % Plot nominal trajectory
+    x_nom = Q{veh}.nomTraj(1,tInds{veh});
+    y_nom = Q{veh}.nomTraj(2,tInds{veh});
     if isempty(hn{veh})
-      hn{veh} = plot(Q{veh}.nomTraj(1,tInds{veh}), ...
-        Q{veh}.nomTraj(2,tInds{veh}), '*', 'color', colors(veh,:));
+      hn{veh} = plot(x_nom, y_nom, '*', 'color', colors(veh,:));
     else
-      hn{veh}.XData = Q{veh}.nomTraj(1,tInds{veh});
-      hn{veh}.YData = Q{veh}.nomTraj(2,tInds{veh});
+      hn{veh}.XData = x_nom;
+      hn{veh}.YData = y_nom;
+    end
+    
+    % Plot vehicle number
+    if isempty(ht{veh})
+      ht{veh} = text(x_nom, y_nom, sprintf('%d', veh));
+    else
+      ht{veh}.Position = [x_nom y_nom];
     end
     
     % Plot position

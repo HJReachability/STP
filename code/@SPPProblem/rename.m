@@ -25,5 +25,6 @@ for i = 1:length(P)
   end
 end
 
-
+SPPP = obj;
+save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
 end

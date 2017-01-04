@@ -9,6 +9,7 @@ classdef SPPProblem < handle
     
     intrIS
     intrCtrl
+    tIAT
     
     % Intruder method 2
     max_num_affected_vehicles
@@ -143,7 +144,7 @@ classdef SPPProblem < handle
         case 'SF_intr_3'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 8;
+          extraArgs.separation_time = 30;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           

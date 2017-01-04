@@ -1,4 +1,4 @@
-function simulateNI(obj, save_png, save_fig)
+function simulateNI(obj, save_png, save_fig, NI_RS_filename)
 % simulateNI(obj, save_png, save_fig)
 %     Simulates SPP with disturbances with the RTT method
 
@@ -8,6 +8,10 @@ end
 
 if nargin < 3
   save_fig = false;
+end
+
+if nargin < 4
+  NI_RS_filename = obj.NI_RS_filename;
 end
 
 %% Load files
@@ -20,9 +24,9 @@ else
 end
 
 % Load path planning reachable set
-if exist(obj.NI_RS_filename, 'file')
+if exist(NI_RS_filename, 'file')
   fprintf('Loading RS data...\n')
-  load(obj.NI_RS_filename)
+  load(NI_RS_filename)
 else
   error('RS file not found!')
 end
@@ -81,6 +85,7 @@ if save_png || save_fig
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
   hn = cell(length(Q), 1); % Nominal trajectory
+  ht = cell(length(Q), 1); % Vehicle label
 end
 
 small = 1e-4;
@@ -134,10 +139,8 @@ for i = 1:length(tau)
   
   %% Visualize
   if save_png || save_fig
-    [hc, ho, hn] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, colors, obj.Rc);
-    
-%     xlim([-1.2 1.2])
-%     ylim([-1.2 1.2])
+    [hc, ho, hn, ht] = plotVehicles(Q, tInds, obj.g2D, hc, ho, hn, ht, ...
+      colors, obj.Rc);
     
     title(sprintf('t = %.0f', tau(i)))
     drawnow;
