@@ -147,6 +147,68 @@ switch setup_name
       error('Must specify property ''dstb_or_intr'' in extraArgs!')
     end
     
+    obj.plotSetup(setup_name);
+    
+  case 'Bay_Area'
+    %% Vehicle
+    obj.vRangeA = [0.1 2.5];
+    obj.wMaxA = 2;
+    
+    %% RTT
+    obj.vReserved = [1 -1.2];
+    obj.wReserved = -0.8;
+    
+    %% Initial states and targets
+    if isfield(extraArgs, 'number_of_vehicles')
+      numVeh = extraArgs.number_of_vehicles;
+    else
+      error('Must specify the property ''number_of_vehicles''!')
+    end
+    
+    IC_and_target_centers = {[350; 180]; ...
+      [1190; 380]; ...
+      [1150; 1070]; ...
+      [650; 1620]};
+    
+    obj.targetR = 10;
+    obj.initStates = cell(numVeh, 1);
+    obj.targetCenters = cell(numVeh,1);
+    for i = 1:numVeh
+      % Randomize target and IC
+      IC_index = randi(length(IC_and_target_centers));
+      target_index = randi(length(IC_and_target_centers));
+      while target_index == IC_index
+        target_index = randi(length(IC_and_target_centers));
+      end
+      
+      % Assign IC and target
+      IC_pos = IC_and_target_centers{IC_index};
+      target_pos = IC_and_target_centers{target_index};
+      
+      delta = target_pos - IC_pos;
+      IC_angle = atan2(delta(2), delta(1));
+      
+      obj.initStates{i} = [IC_pos; IC_angle];
+      obj.targetCenters{i} = [target_pos; 0];
+      
+    end
+    
+    %% Sampling and collision radius
+    obj.dt = 0.5;
+    obj.Rc = 1;
+
+    %% Grid
+    obj.gMin = [250 80 0];
+    obj.gMax = [1290 1720 2*pi];
+    obj.gN = [209 329 15];
+
+    obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+    obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));    
+    
+    obj.mapFile = 'bay_area_streets.png';
+    
+    obj.plotSetup(setup_name);
+    
   otherwise
     error('Unknown setup_name!')
 end
