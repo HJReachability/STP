@@ -127,14 +127,12 @@ switch setup_name
       switch extraArgs.dstb_or_intr
         case 'dstb'
           augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
-          obj.augStaticObs = repmat(augStaticObs, [1 1 obj.gN(3)]);
 
           % Boundary obstacle
-          obs_bdry = -shapeRectangleByCorners(obj.g, obj.g.min + [5;5;-inf], ...
-            obj.g.max - [5;5;-inf]);
-          obj.augStaticObs = min(obj.augStaticObs, obs_bdry);
-          obj.augStaticObs = repmat(obj.augStaticObs, [1 1 1 length(obj.tau)]);
-          
+          obs_bdry = -shapeRectangleByCorners(obj.g2D, obj.g2D.min + [5;5], ...
+            obj.g2D.max - [5;5]);
+          obj.augStaticObs = min(augStaticObs, obs_bdry);
+
         case 'intr'
           obj.tIAT = 10;
           warning(['Static obstacles will be augmented after computing ' ...

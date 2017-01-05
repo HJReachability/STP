@@ -48,7 +48,10 @@ end
 extraArgs.fig_filename = sprintf('%s/', folder);
 
 % Set obstacles
-extraArgs.obstacles = obstacles;
+small = 1e-4;
+obsTau_inds = obstacles.tau < max(BRS1_tau)+small & ...
+  obstacles.tau > min(BRS1_tau)-small;
+extraArgs.obstacles = flip(obstacles.data(:,:,:,obsTau_inds), 4);
 
 % Min with target
 extraArgs.targets = obj.targetsm;
