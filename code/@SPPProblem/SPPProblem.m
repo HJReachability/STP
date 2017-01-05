@@ -85,6 +85,9 @@ classdef SPPProblem < handle
         extraArgs = [];
       end
       
+      obj.folder = sprintf('%s_%f', mfilename, now);
+      system(sprintf('mkdir %s', obj.folder));
+      
       switch problem_name
         case 'SF_dstb_11_0sSep'
           extraArgs.number_of_vehicles = 50;
@@ -159,7 +162,13 @@ classdef SPPProblem < handle
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
-          obj.max_num_affected_vehicles = 4;          
+          obj.max_num_affected_vehicles = 4;
+          
+        case 'Bay_Area'
+          extraArgs.number_of_vehicles = 150;
+          extraArgs.wind_speed = 11;
+          extraArgs.separation_time = 4;
+          obj.loadSetup('Bay_Area', extraArgs);
           
         case 'TCST_dstb'
         case 'TCST_intr'
@@ -218,13 +227,8 @@ classdef SPPProblem < handle
       %       obj.tau = obj.tMin:obj.dt:obj.tTarget;
       %       obj.staticObs = inf(obj.gN');
       
-      obj.folder = sprintf('%s_%f', mfilename, now);
-      
       SPPP = obj;
-      system(sprintf('mkdir %s', obj.folder));
       save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
-      
-      obj.plotSetup();
       
       if isfield(extraArgs, 'RTTRS_filename')
         load(extraArgs.RTTRS_filename)
