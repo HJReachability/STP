@@ -47,9 +47,11 @@ if restart || ~exist(obj.BR_RS_chkpt_filename, 'file')
   
   % File name to save RS data
   obj.BR_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
+  vehStart = 1;
 else
   fprintf('Loading BR RS checkpoint...\n')
   load(obj.BR_RS_chkpt_filename)
+  vehStart = veh;
 end
 
 if ispc
@@ -62,7 +64,7 @@ system(sprintf('mkdir %s', data_folder));
 small = 1e-3;
 
 %% Start the computation of reachable sets
-for veh = 1:length(Q)
+for veh = vehStart:length(Q)
   % Potential time stamps for current vehicle
   if length(obj.tTarget) == 1
     thisTau = obj.tau;
