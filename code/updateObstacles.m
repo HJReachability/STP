@@ -7,6 +7,10 @@ if nargin < 4
   staticObs = [];
 end
 
+if numDims(staticObs) == 2
+  staticObs = repmat(staticObs, [1 1 size(newObs, 3)]);
+end
+
 small = 1e-4;
 
 % Update obstacle data for overlapping time indices
@@ -27,7 +31,7 @@ smaller_inds = newObs_tau < min(obstacles.tau)-small;
 if any(smaller_inds)
   obstacles.tau = [newObs_tau(smaller_inds) obstacles.tau];
 
-  staticObsSmaller = repmat(staticObs, [1 1 size(newObs,3) nnz(smaller_inds)]);
+  staticObsSmaller = repmat(staticObs, [1 1 1 nnz(smaller_inds)]);
   newObsSmaller = min(newObs(:,:,:,smaller_inds), staticObsSmaller);
 
   obstacles.data = cat(4, newObsSmaller, obstacles.data);
@@ -38,7 +42,7 @@ larger_inds = newObs_tau > max(obstacles.tau)+small;
 if any(larger_inds)
   obstacles.tau = [obstacles.tau newObs_tau(larger_inds)];
   
-  staticObsLarger = repmat(staticObs, [1 1 size(newObs,3) nnz(larger_inds)]);
+  staticObsLarger = repmat(staticObs, [1 1 1 nnz(larger_inds)]);
   newObsLarger = min(newObs(:,:,:,larger_inds), staticObsLarger);
   
   obstacles.data = cat(4, obstacles.data, newObsLarger);
