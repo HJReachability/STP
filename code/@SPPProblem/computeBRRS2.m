@@ -89,6 +89,7 @@ for veh = vehStart:length(Q)
       obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr_tau, ...
         Q{veh-1}.obsForIntr, obj.augStaticObs);
       
+      fprintf('Trimming obstacle data and saving checkpoint...\n')
       Q{veh-1}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
