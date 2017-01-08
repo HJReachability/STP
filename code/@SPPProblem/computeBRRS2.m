@@ -1,4 +1,4 @@
-function computeBRRS2(obj, restart)
+function computeBRRS2(obj, restart, low_memory)
 % compute_BR_RS(obj, restart)
 %     Computes the before-replanning reachable sets for the SPP problem
 %
@@ -8,6 +8,10 @@ function computeBRRS2(obj, restart)
 
 if nargin < 2
   restart = false;
+end
+
+if nargin < 3
+  low_memory = false;
 end
 
 if ~restart && exist(obj.BR_RS_filename, 'file')
@@ -70,12 +74,15 @@ for veh = vehStart:length(Q)
     thisTau = obj.tau;
   else
     thisTau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
+    old_tau_inds = obstacles.tau > obj.tTarget(veh) + small;
+    obstacles.tau(old_tau_inds) = [];
+    obstacles.data(:,:,:,old_tau_inds) = [];
   end
   
   %% Update obstacle
   if veh == 1
     obstacles.tau = thisTau;
-    obstacles.data = repmat(obj.augStaticObs, [1 1 1 length(thisTau)]);
+    obstacles.data = repmat(single(obj.augStaticObs), [1 1 1 length(thisTau)]);
   else
     if ~isempty(Q{veh-1}.obsForIntr)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
@@ -92,7 +99,7 @@ for veh = vehStart:length(Q)
     fprintf('Computing BRS1 for vehicle %d\n', veh)
 
     Q{veh}.computeBRS1(thisTau, obj.g, obj.augStaticObs, obstacles, ...
-      obj.folder, veh);
+      obj.folder, veh, low_memory);
     
     %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
