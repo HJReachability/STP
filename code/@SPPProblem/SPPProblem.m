@@ -144,6 +144,12 @@ classdef SPPProblem < handle
           %% Intruder-related
           obj.max_num_affected_vehicles = 2;
           
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion2_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;          
+          
         case 'SF_intr_3'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
@@ -158,6 +164,7 @@ classdef SPPProblem < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;
           
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
@@ -168,6 +175,12 @@ classdef SPPProblem < handle
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 4;
+          
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion4_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;          
           
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 150;
