@@ -154,10 +154,10 @@ classdef SPPProblem < handle
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
           
-          SPPP.add_data_file('RTTRS', 'RTTRS6.mat');
-          SPPP.add_data_file('CARS', 'CARS6.mat');
-          SPPP.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
-          SPPP.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
           
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
