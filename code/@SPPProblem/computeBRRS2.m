@@ -74,9 +74,6 @@ for veh = vehStart:length(Q)
     thisTau = obj.tau;
   else
     thisTau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
-    old_tau_inds = obstacles.tau > obj.tTarget(veh) + small;
-    obstacles.tau(old_tau_inds) = [];
-    obstacles.data(:,:,:,old_tau_inds) = [];
   end
   
   %% Update obstacle
@@ -86,6 +83,11 @@ for veh = vehStart:length(Q)
   else
     if ~isempty(Q{veh-1}.obsForIntr)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
+      
+      old_tau_inds = obstacles.tau > obj.tTarget(veh) + small;
+      obstacles.tau(old_tau_inds) = [];
+      obstacles.data(:,:,:,old_tau_inds) = [];
+    
       obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr_tau, ...
         Q{veh-1}.obsForIntr, obj.augStaticObs);
       

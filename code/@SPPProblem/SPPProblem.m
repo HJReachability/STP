@@ -137,7 +137,7 @@ classdef SPPProblem < handle
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 30;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
@@ -147,7 +147,7 @@ classdef SPPProblem < handle
         case 'SF_intr_3'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 30;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
@@ -157,7 +157,7 @@ classdef SPPProblem < handle
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 8;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
