@@ -19,14 +19,15 @@ end
 % 
 % SPPP.computeRTTRS(vReserved, wReserved, trackingRadius);
 
-Qintr = Plane([0; 0; 0], SPPP.wMaxA, SPPP.vRangeA, SPPP.dMaxA);
-tIAT = 10;
-SPPP.computeCARS(Qintr, tIAT);
+% Qintr = Plane([0; 0; 0], SPPP.wMaxA, SPPP.vRangeA, SPPP.dMaxA);
+% tIAT = 10;
+% SPPP.computeCARS(Qintr, tIAT);
+% 
+% SPPP.computeMinMinBRS;
+% SPPP.computeBufferRegion;
+% 
+% SPPP.computeFRSBRS;
 
-SPPP.computeMinMinBRS;
-SPPP.computeBufferRegion;
-
-SPPP.computeFRSBRS;
 SPPP.augment_staticObs_intr2;
 
 SPPP.computeBRRS2;
