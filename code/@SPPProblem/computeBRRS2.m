@@ -94,6 +94,8 @@ for veh = vehStart:length(Q)
       fprintf('Trimming obstacle data and saving checkpoint...\n')
       Q{veh-1}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+
+      close all
     end
   end
   
