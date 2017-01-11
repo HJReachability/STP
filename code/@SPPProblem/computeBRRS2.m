@@ -1,4 +1,4 @@
-function computeBRRS2(obj, restart)
+function computeBRRS2(obj, restart, low_memory)
 % compute_BR_RS(obj, restart)
 %     Computes the before-replanning reachable sets for the SPP problem
 %
@@ -8,6 +8,10 @@ function computeBRRS2(obj, restart)
 
 if nargin < 2
   restart = false;
+end
+
+if nargin < 3
+  low_memory = false;
 end
 
 if ~restart && exist(obj.BR_RS_filename, 'file')
@@ -47,9 +51,11 @@ if restart || ~exist(obj.BR_RS_chkpt_filename, 'file')
   
   % File name to save RS data
   obj.BR_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
+  vehStart = 1;
 else
   fprintf('Loading BR RS checkpoint...\n')
   load(obj.BR_RS_chkpt_filename)
+  vehStart = veh;
 end
 
 if ispc
@@ -59,31 +65,46 @@ else
 end
 system(sprintf('mkdir %s', data_folder));
 
+small = 1e-3;
+
 %% Start the computation of reachable sets
-for veh = 1:length(Q)
+for veh = vehStart:length(Q)
+  % Potential time stamps for current vehicle
+  if length(obj.tTarget) == 1
+    thisTau = obj.tau;
+  else
+    thisTau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
+  end
+  
   %% Update obstacle
   if veh == 1
-    obstacles = obj.augStaticObs;
+    obstacles.tau = thisTau;
+    obstacles.data = repmat(single(obj.augStaticObs), [1 1 1 length(thisTau)]);
   else
     if ~isempty(Q{veh-1}.obsForIntr)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
-      obstacles = updateObstacles(obj.tau, obstacles, ...
-        Q{veh-1}.obsForIntr_tau, Q{veh-1}.obsForIntr);
       
+      old_tau_inds = obstacles.tau > obj.tTarget(veh) + small;
+      obstacles.tau(old_tau_inds) = [];
+      obstacles.data(:,:,:,old_tau_inds) = [];
+    
+      obstacles = updateObstacles(obstacles, Q{veh-1}.obsForIntr_tau, ...
+        Q{veh-1}.obsForIntr, obj.augStaticObs);
+      
+      fprintf('Trimming obstacle data and saving checkpoint...\n')
       Q{veh-1}.trimData({'obsForIntr'});
       save(obj.BR_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+
+      close all
     end
   end
   
   if isempty(Q{veh}.nomTraj)
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    if length(obj.tTarget) == 1
-      tau = obj.tau;
-    else
-      tau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
-    end
-    Q{veh}.computeBRS1(tau, obj.g, flip(obstacles, 4), obj.folder, veh);
+
+    Q{veh}.computeBRS1(thisTau, obj.g, obj.augStaticObs, obstacles, ...
+      obj.folder, veh, low_memory);
     
     %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)

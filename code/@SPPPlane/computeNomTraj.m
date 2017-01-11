@@ -30,23 +30,20 @@ extraArgs.fig_filename = sprintf('%s/', folder);
   computeOptTraj(g, obj.BRS1, obj.BRS1_tau, dynSys, extraArgs);
 
 % Pad based on FRS1_tau, if available
-if ~isempty(obj.FRS1)
+if isempty(obj.FRS1)
+  % Update nominal trajectory if it doesn't exist
+  obj.nomTraj_tau = nomTraj_tau;
+  obj.nomTraj = nomTraj;
+else
   indsBeforeBRS1 = find(obj.FRS1_tau < min(obj.BRS1_tau)-small);
   pad_tau = obj.FRS1_tau(indsBeforeBRS1);
   pad_nomTraj = repmat(nomTraj(:,1), 1, length(indsBeforeBRS1));
   
   nomTraj_tau = [pad_tau nomTraj_tau];
   nomTraj = [pad_nomTraj nomTraj];
+  
+  obj.nomTraj_AR_tau = nomTraj_tau;
+  obj.nomTraj_AR = nomTraj;    
 end
 
-% Update object fields
-if isempty(obj.nomTraj)
-  % Update nominal trajectory if it doesn't exist
-  obj.nomTraj_tau = nomTraj_tau;
-  obj.nomTraj = nomTraj;
-else
-  % Update nominal trajectory after replanning if nominal trajectory exists
-  obj.nomTraj_AR_tau = nomTraj_tau;
-  obj.nomTraj_AR = nomTraj;  
-end
 end
