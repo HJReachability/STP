@@ -137,32 +137,50 @@ classdef SPPProblem < handle
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 8;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 2;
           
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion2_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;          
+          
         case 'SF_intr_3'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 30;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
           
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;
+          
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 8;
+          extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 4;
+          
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion4_6.mat')
+          obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
+          obj.augment_staticObs_intr2;          
           
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 150;
@@ -229,16 +247,6 @@ classdef SPPProblem < handle
       
       SPPP = obj;
       save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
-      
-      if isfield(extraArgs, 'RTTRS_filename')
-        load(extraArgs.RTTRS_filename)
-        obj.setRTTRS(RTTRS);
-      end
-      
-      if isfield(extraArgs, 'CARS_filename')
-        load(extraArgs.CARS_filename)
-        obj.setCARS(CARS);
-      end
     end
   end
 end
