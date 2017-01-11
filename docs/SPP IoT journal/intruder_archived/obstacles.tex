@@ -21,7 +21,10 @@ When the intruder does not affect any of the two vehicles, $\veh_i$ simply needs
 
 
 \subsubsection{Case2} \label{sec:intruderObs_case2}
-To compute the obstacles that $\veh_i$ needs to avoid at time $t$ for the remaining four cases, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence the two vehicles cannot be in conflict at time $t$. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. %\SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to mention this.}
+To compute the obstacles that $\veh_i$ needs to avoid at time $t$ for the remaining four cases, we start with the following observation:
+\begin{observation} \label{obs0_case2}
+It is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence the two vehicles cannot be in conflict at time $t$. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. %\SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to mention this.}
+\end{observation}
 
 The induced obstacles for Case2 at time $t$ are given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles.
 \begin{equation} \label{eq:ObsFRS_case2}
@@ -80,7 +83,7 @@ Finally, the induced obstacles in this case can be computed by taking into accou
 \end{aligned}
 \end{equation}
 
-The obstacle computation is illustrated in Figure \ref{fig:obsCase3}.
+The obstacle computation (sans static obstacles) is illustrated in Figure \ref{fig:obsCase3}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{"figs/obsCase3"}
@@ -89,8 +92,11 @@ The obstacle computation is illustrated in Figure \ref{fig:obsCase3}.
 \end{figure}
 
 \subsubsection{Case4} \label{sec:intruderObs_case4}
-\SBnote{Start from here.}
-In this case, intruder $\veh_{\intr}$ appears at the boundary of set $\sep_j(\tsa)$ and after forcing $\veh_j$ to apply avoidance control for some duration $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_i(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Once $\veh_j$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. From the perspective of $\veh_i$, $\veh_j$ can apply any control for the next $\iat$ duration. Furthermore, $\veh_i$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ has deviated from its original trajectory \textit{and} $\veh_i$ is avoiding the intruder.   
+In this case, $\state_{\intr}^0 \in \partial\sep_j(\tsa)$ (by virtue of Observation \ref{obs1_buffReg}). Since $\veh_{\intr}$ affects both $\veh_i$ and $\veh_j$ in this case, we must also have $\state_{\intr}(t') \in \partial\sep_i(t')$ for some $t' \in [\tsa, \tea]$.
+
+After forcing $\veh_j$ to apply avoidance control for some duration, 
+
+ $t_1 \in \mathbb{R}$, it reaches at the boundary of set $\sep_i(\tsa + t_1 + t_2)$ at time $(\tsa + t_1 + t_2) \in \mathbb{R}$. Once $\veh_j$ starts applying avoidance control at time $\tsa$, it might deviate from its planned trajectory. From the perspective of $\veh_i$, $\veh_j$ can apply any control for the next $\iat$ duration. Furthermore, $\veh_i$ itself might need to apply avoidnace maneuver starting at time $(\tsa + t_1 + t_2)$ and hence to compute obstacles in this case, we need to make sure that $\veh_i$ does not collide with $\veh_j$ when $\veh_j$ has deviated from its original trajectory \textit{and} $\veh_i$ is avoiding the intruder.   
 
 To compute the induced obstacles in this case, we first make the following observations:
 \begin{observation} \label{obs1_case4}

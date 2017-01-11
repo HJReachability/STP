@@ -4,8 +4,11 @@ In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh
 
 Intuitively, we want to make sure that at any given time the separation regions of any two vehicles are far enough from each other (that is, there is a ``buffer" region between two separation regions) such that it will take at least $\brd := \iat / \nva$ time for the intruder to go from the separation region of one vehicle to that of the other vehicle. This means that there is a ``buffer" time interval of $\brd$ between any $t_1$, $t_2 \in [\tsa, \tea]$ where $\veh_{\intr}$ is in the separation regions of two different vehicles at $t_1$ and $t_2$, e.g. $\state_{\intr}(t_1) \in \sep_j(t)$ and $\state_{\intr}(t_2) \in \sep_i(t)$, $i \neq j$. Thus, in the worst case, the intruder can force atmost $\nva$ vehicles to apply avoidance maneuver during a duration of $\iat$. 
 
-We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. Without loss of generality, we can assume that the intruder appears at the separation region of a vehicle at $t = \tsa$, because if it does not then the vehicles need not account for intruders until it reaches the boundary of the separation region of a vehicle. To compute the buffer region, we consider the following two cases:     
-
+We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. We first make the following observation:
+\begin{observation} \label{obs1_buffReg}
+Without loss of generality, we can assume that the intruder appears at the boundary of the separation region of a SPP vehicle at $t = \tsa$, e.g. $\state_{\intr}^0 \in \partial \sep_m(\tsa)$ for some $m \in \{1, \ldots, N\}$, where $\partial \sep_m(\tsa)$ denotes the boundary of $\sep_m(\tsa)$. Otherwise, any vehicle need not account for the intruder until it reaches the boundary of the separation region of a SPP vehicle. 
+\end{observation}
+Therefore, to compute the buffer region between $\veh_j$ and $\veh_i$, it is sufficient to consider the following two cases:     
 \subsubsection{Case1- $\state_{\intr}^0 \in \sep_j(\tsa)$} \label{sec:buffCase1}
 Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$:
 

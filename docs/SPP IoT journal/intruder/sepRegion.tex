@@ -1,37 +1,36 @@
 % !TEX root = ../SPP_IoTjournal.tex
-\subsection{Separation Region} \label{sec:sepRegion}
-Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \cite{chen2016robust} to compute the ``base" obstacles $\boset_j(t)$, the obstacles that would have been induced by $\veh_j$ in the presence of disturbances, but in the absence of an intruder. The base obstacles are respectively given by equations (25), (31) and (37) in \cite{chen2016robust} for centralized control, least restrictive control and robust trajectory tracking algorithms.
+\subsection{Separation and Buffer Regions} \label{sec:sepRegion}
 
-Given $\boset_j(t)$, we compute the set of all states of the intruder for which vehicle $\veh_j$ may have to apply an avoidnace maneuver. We refer to this set as \textit{separation region} here on, and denote it as $\sep_j(t)$. The significance of $\sep_j(t)$ is that as long as the intruder is outside $\sep_j(t)$, that is $\state_{\intr}(t) \in \left(\sep_j(t)\right)^c$, $\veh_j$ can apply any control at time $t$ and still guaranteed to not collide with the intruder. $\sep_j(t)$ can be conveniently computed using the relative dynamics between $\veh_j$ and $\veh_{\intr}$. 
+\SBnote{
+\begin{itemize}
+\item Introduction of the section:
+\begin{itemize}
+\item Main summary: In the next two sections, we are computing separation between any two vehicles such that only one applies the avoidnace maneuver at a time and atmost $\nva$ vehicles need to apply avoidnace maneuver during the entire duration. 
+\item To understand what this means we introduce the notation of avoid start time. Introduce the notation and give its mathematical definition in terms of relative state and avoidnace set computed in the previous section. Now explain that only one vehicle need to apply avoidance control at a time is equivalent to $t_i \neq t_j$. Only $\nva$ vehicles need to apply avoidnace control is equivalent to $t_i - t_j \geq \brd$.  
+\item If we find the set of all states of $\veh_i$ such that this separation is ensured between $\veh_i$ and $\veh_m$ for all $m<i$, then during the path planning of $\veh_i$, we can then ensure that $\veh_i$ is indeed in one of these states and we will be done (as the path planning is sequential). So we next focus on finding all the states of $\veh_i$ at time $t$ such that this separation is ensured between two vehicles $\veh_j$ and $\veh_i$, $j <i$ at time $t$ for all intruding scenarios.
+\end{itemize}
+\item Section1: $t_j < t_i$.
+\begin{itemize}
+\item We next make the following observations: (1) it is sufficient to consider the scenarios where $\tsa$ is within $\iat$ distance. (2) WLOG, initial state of the intruder belongs to a boundary of vehicle $j$.
+\item Section11: First find the set of all states of intruder for which $\veh_j$ is forced to apply an avoidance maneuver. Explain what that set is in relative co-ordinates for different $\tsa$. To compute the set in absolute co-ordinates we need to augment the relative states to the states of $\veh_j$. Explain, how we can compute these states of $\veh_j$ (by FRS).
+\item Section12: Next we want to make sure that $\veh_i$ is far away from this set such that the intruder will need atleast a duration of $\brd$ to reach any state such that $\state_{\intr,i}$ is on the boundary of the avoid set of $\veh_i$. In relative co-ordinates, if we compute min-min set and augment it on set in Section 11, and ensure that the boundary of the avoid region is outside this augmented set then we are done. Draw a table listing the duration of each set. Mention the duration relationships. Draw a diagram showing different sets. 
+\item Section13: Obstacle computation. First compute the directly induced obstacle by $\veh_j$ at time $t$ for all possible $\tsa$. Then compute the obstacle that $\veh_i$ need to avoid at any future time for different $\tsa$. Therefore, compute the BRS that it needs to avoid at $\tsa$.    
+\end{itemize}
+\item Section2: $t_i < t_j$.
+\end{itemize}
+}
 
-We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$:
+In the next two sections, our goal is to ensure that any two vehicles are separated enough from each other such that only one of the vehicles is \textit{forced} to apply the intruder avoidance maneuver at any given time. Moroever, atmost $\nva$ vehicles are \textit{forced} to apply avoidnace maneuver during the entire duration of $\iat$. 
+
+For vehicle $\veh_m$, let $\avoidt_{m} := \{t: \state_{\intr,m}(t) \in \brs^{\text{S}}_{m}(t-\tsa, \iat), t \in [\tsa, \tea]\}$. $\avoidt_{m}$ is thus the set of all times at which $\veh_m$ is forced to apply an intruder avoidance maneuver. We define the avoid start time $\tsa_m$ as:
 \begin{equation}
-\label{eq:reldyn}
-\begin{aligned}
-\state_{\intr, i} &= \state_\intr - \state_i \\
-\dot \state_{\intr, i} &= f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
-\end{aligned}
-\end{equation}
-Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{j}$ can enter danger zone $\dz_{j\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_j$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{S}}_j(\tau, \iat)$:
+\tsa_m  = 
+\left \{ 
+\begin{array}{ll}
+\min\{t: t \in  \avoidt_{m}\} & \mbox{if~} \avoidt_{m} \neq \emptyset\\
+\infty & \mbox{otherwise}
+\end{array}
+\right.
+\end{equation}  
 
-\begin{equation} \label{eqn:sepBRS}
-\begin{aligned}
-\brs^{\text{S}}_{j}(\tau, \iat) = & \{y: \forall \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
-& \exists s \in [\tau, \iat], \state_{\intr, j}(s) \in \targetset^{\text{S}}_{j}, \state_{\intr, j}(\tau) = y\},
-\end{aligned}
-\end{equation}
-where 
-\begin{equation}
-\begin{aligned}
-\targetset^{\text{S}}_{j} = & \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
-H^{\text{S}}_{j}(\state_{\intr, j}, \costate) = & \max_{\ctrl_j \in \cset_j} \left( \right.\\
-&\left. \min_{\ctrl_\intr \in \cset_\intr, \dstb_j \in \dset_j, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr) \right)
-\end{aligned}
-\end{equation}
-
-The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that as long as $\veh_{\intr}$ is outside the boundary of this set (in relative coordinates), then $\veh_{\intr}$ and $\veh_{j}$ cannot enter the danger zone $\dz_{j\intr}$, irrespective of control applied by them. But once $\veh_{\intr}$ is on the boundary of this set, then $\veh_{j}$ needs to apply the optimal avoidance control to avoid collision with $\veh_{\intr}$. We can now transform $\brs^{\text{S}}_{j}(0, \iat)$ to absolute coordinates to obtain sets $\sep_j(\cdot)$ as follows:
-\begin{equation} \label{eqn:sepRegion}
-\sep_j(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \iat),
-\end{equation}
-where the ``$+$'' in \eqref{eqn:sepRegion} denotes the Minkowski sum.
+Only one vehicle applying the avoidance maneuver at a time in the presence of an intruder is thus equivalent to $\tsa_i \neq \tsa_j \forall i \neq j$. Similarly, if we ensure that $\forall i \neq j, |\tsa_i - \tsa_j| \geq \iat / \nva  := \brd$, then atmost $\nva$ vehicles are forced to apply the avoidance maneuver during the time interval $[\tsa, \tea]$. We refer to these two conditions as \textit{separation requirements} hereon. For any given time $t$, if we could find the set of all states of $\veh_i$ such that the separation requirements hold for $\veh_i$ and $\veh_m \forall ~ m<i$, then during the path planning of $\veh_i$, we can ensure that $\veh_i$ is in one of these states at time $t$. The sequential path planning will therefore guarantee that the separation requirements hold for every SPP vehicle pair. Hereon, we thus focus on finding all the states $\state_i(t)$ such that the separation requirements are ensured between vehicles $\veh_j$ and $\veh_i$, $j <i$ at time $t$. We consider the following two mutually exclusive and exhaustive cases: $\tsa_i < \tsa_j$ and $\tsa_i \geq \tsa_j$. %As we will see shortly, our construction ensures that $\tsa_i \neq \tsa_j$.

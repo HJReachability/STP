@@ -1,0 +1,49 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsubsection{Case1: $\tsa_i \geq \tsa_j$} \label{sec:case1}
+In this case, the intruder forces $\veh_j$ to apply avoidance control before or at the same time as $\veh_i$. If $\tsa_i = \tsa_j = \infty$, then none of $\veh_i$ and $\veh_j$ need to apply avoidance control and hence trivially won't be involved in re-planning. To ensure the separation requirements in other case, we begin with the following observations:
+
+\begin{observation} \label{obs1_case1}
+It is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence we need not ensure separation requirements for them during the planning phase. On the other hand, if $\tsa > t$, then we need not account for the intruder as it has not appeared in the system yet. %\SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to mention this.}
+\end{observation}
+
+\begin{observation} \label{obs2_case1}
+Without loss of generality, we can assume that the intruder appears at the boundary of the avoid region of $\veh_j$, e.g. $\state_{\intr, j}(\tsa) \in \partial \brs^{\text{S}}_{j}(\tau, \iat)$ for some $\tau \in [0, \iat]$. Otherwise, vehicles need not account for the intruder until it reaches the boundary of the avoid region of $\veh_j$. Also note that by the case assumption, $\veh_{\intr}$ first reaches the boundary of $\veh_j$. 
+\end{observation}
+
+\SBnote{Start from here}
+
+Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \cite{chen2016robust} to compute the ``base" obstacles $\boset_j(t)$, the obstacles that would have been induced by $\veh_j$ in the presence of disturbances, but in the absence of an intruder. The base obstacles are respectively given by equations (25), (31) and (37) in \cite{chen2016robust} for centralized control, least restrictive control and robust trajectory tracking algorithms.
+
+Given $\boset_j(t)$, we compute the set of all states of the intruder for which vehicle $\veh_j$ may have to apply an avoidnace maneuver. We refer to this set as \textit{separation region} here on, and denote it as $\sep_j(t)$. The significance of $\sep_j(t)$ is that as long as the intruder is outside $\sep_j(t)$, that is $\state_{\intr}(t) \in \left(\sep_j(t)\right)^c$, $\veh_j$ can apply any control at time $t$ and still guaranteed to not collide with the intruder. $\sep_j(t)$ can be conveniently computed using the relative dynamics between $\veh_j$ and $\veh_{\intr}$. 
+
+We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$:
+\begin{equation}
+\label{eq:reldyn}
+\begin{aligned}
+\state_{\intr, i} &= \state_\intr - \state_i \\
+\dot \state_{\intr, i} &= f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
+\end{aligned}
+\end{equation}
+Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{j}$ can enter danger zone $\dz_{j\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_j$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{S}}_j(\tau, \iat)$:
+
+\begin{equation} \label{eqn:sepBRS}
+\begin{aligned}
+\brs^{\text{S}}_{j}(\tau, \iat) = & \{y: \forall \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
+& \exists s \in [\tau, \iat], \state_{\intr, j}(s) \in \targetset^{\text{S}}_{j}, \state_{\intr, j}(\tau) = y\},
+\end{aligned}
+\end{equation}
+where 
+\begin{equation}
+\begin{aligned}
+\targetset^{\text{S}}_{j} = & \{\state_{\intr, j}: \|\pos_{\intr, j}\|_2 \le \rc\} \\
+H^{\text{S}}_{j}(\state_{\intr, j}, \costate) = & \max_{\ctrl_j \in \cset_j} \left( \right.\\
+&\left. \min_{\ctrl_\intr \in \cset_\intr, \dstb_j \in \dset_j, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr) \right)
+\end{aligned}
+\end{equation}
+
+The interpretation of set $\brs^{\text{S}}_{j}(0, \iat)$ is that as long as $\veh_{\intr}$ is outside the boundary of this set (in relative coordinates), then $\veh_{\intr}$ and $\veh_{j}$ cannot enter the danger zone $\dz_{j\intr}$, irrespective of control applied by them. But once $\veh_{\intr}$ is on the boundary of this set, then $\veh_{j}$ needs to apply the optimal avoidance control to avoid collision with $\veh_{\intr}$. We can now transform $\brs^{\text{S}}_{j}(0, \iat)$ to absolute coordinates to obtain sets $\sep_j(\cdot)$ as follows:
+\begin{equation} \label{eqn:sepRegion}
+\sep_j(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \iat),
+\end{equation}
+where the ``$+$'' in \eqref{eqn:sepRegion} denotes the Minkowski sum.
