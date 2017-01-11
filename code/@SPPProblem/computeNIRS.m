@@ -37,12 +37,14 @@ if restart || ~exist(obj.NI_RS_chkpt_filename, 'file')
   
   % File name to save RS data
   obj.NI_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
+  vehStart = 1;
   
   SPPP = obj;
   save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')  
 else
   fprintf('Loading NI RS checkpoint...\n')
   load(obj.NI_RS_chkpt_filename)
+  vehStart = veh;
 end
 
 if ispc
@@ -55,7 +57,7 @@ system(sprintf('mkdir %s', data_folder));
 small = 1e-3;
 
 %% Start the computation of reachable sets
-for veh = 1:length(Q)
+for veh = vehStart:length(Q)
   % Potential time stamps for current vehicle
   if length(obj.tTarget) == 1
     thisTau = obj.tau;

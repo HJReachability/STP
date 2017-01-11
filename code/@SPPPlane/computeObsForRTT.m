@@ -30,7 +30,7 @@ for i = 1:length(nomTraj_tau)
   obsi = migrateGrid(obsi_gShift, obsi_rot, SPPP.g2D);
   
   obj.obs2D(:,:,i) = obsi;  
-  obj.obsForRTT(:,:,:,i)= repmat(obsi, [1 1 SPPP.g.N(3)]);
+  obj.obsForRTT(:,:,:,i) = repmat(obsi, [1 1 SPPP.g.N(3)]);
   
   % Exclude target set
   obj.obsForRTT(:,:,:,i) = max(obj.obsForRTT(:,:,:,i), -obj.target);

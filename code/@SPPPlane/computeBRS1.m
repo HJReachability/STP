@@ -76,14 +76,7 @@ if any(smaller_inds)
   extraArgs.obstacles = cat(4, extraArgs.obstacles, staticObsSmaller);
 end
 
-% Obstacles for elements of BRS1_tau that are larger than in obstacles.tau
-larger_inds = BRS1_tau > max(BRS1_tau)+small;
-if any(larger_inds)
-  staticObsLarger = repmat(staticObs, [1 1 1 nnz(larger_inds)]);
-  
-  % Concatenation is done "in reverse" to flip the obstacle order for BRS
-  extraArgs.obstacles = cat(4, staticObsLarger, extraArgs.obstacles);
-end
+% No need to consider elements of BRS1_tau that are larger than in obstacles.tau
 
 %% Extra solver parameters
 % Min with target
@@ -95,7 +88,6 @@ extraArgs.stopInit = obj.x;
 [obj.BRS1, tau] = HJIPDE_solve(targetsm, BRS1_tau, schemeData, 'none', ...
   extraArgs);
 
-% Reverse the order of time elements
 obj.BRS1_tau = BRS1_tau(end-length(tau)+1:end);
 
 if ~low_memory
