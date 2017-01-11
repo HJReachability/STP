@@ -1,4 +1,4 @@
-function computeNIRS(obj, restart)
+function computeNIRS(obj, restart, low_memory)
 % computeNIRS(obj, restart)
 %     Computes the before-replanning reachable sets for the SPP problem
 %
@@ -8,6 +8,10 @@ function computeNIRS(obj, restart)
 
 if nargin < 2
   restart = false;
+end
+
+if nargin < 3
+  low_memory = false;
 end
 
 %% Check to see if 
@@ -48,6 +52,8 @@ else
 end
 system(sprintf('mkdir %s', data_folder));
 
+small = 1e-3;
+
 %% Start the computation of reachable sets
 for veh = 1:length(Q)
   % Potential time stamps for current vehicle
@@ -64,17 +70,27 @@ for veh = 1:length(Q)
   else
     if ~isempty(Q{veh-1}.obsForRTT)
       fprintf('Updating obstacles for vehicle %d...\n', veh)
+      
+      old_tau_inds = obstacles.tau > obj.tTarget(veh) + small;
+      obstacles.tau(old_tau_inds) = [];
+      obstacles.data(:,:,:,old_tau_inds) = [];
+      
       obstacles = updateObstacles(obstacles, Q{veh-1}.obsForRTT_tau, ...
-        Q{veh-1}.obsForRTT);
+        Q{veh-1}.obsForRTT, obj.augStaticObs);
+      
+      fprintf('Trimming obstacle data and saving checkpoint...\n')
       Q{veh-1}.trimData({'obsForRTT'});
       save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
+      
+      close all
     end
   end
   
   if isempty(Q{veh}.nomTraj)
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(thisTau, obj.g, obstacles, obj.folder, veh);
+    Q{veh}.computeBRS1(thisTau, obj.g, obj.augStaticObs, obstacles, ...
+      obj.folder, veh, low_memory);
     
     %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
