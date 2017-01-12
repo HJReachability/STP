@@ -36,7 +36,7 @@ We refer to $\brs^{\text{A}}_i(\tau, \iat)$ as \textit{avoid region} hereon. Onc
 Let $\partial \brs^{\text{A}}_{i}(\cdot, \iat)$ denotes the boundary of the set $\brs^{\text{A}}_{i}(\cdot, \iat)$. The interpretation of $\brs^{\text{A}}_{i}(\tau, \iat)$ is that if $\state_{\intr, i}(t) \in \partial \brs^{\text{A}}_{i}(\tau, \iat)$, then $\veh_i$ can successfully avoid the intruder for a duration of $(\iat - \tau)$ using the optimal avoidance control in \eqref{eqn:optAvoidCtrl}. In the worst case, $\veh_i$ might need to avoid the intruder for a duration of $\iat$; thus, we must have that  
 $\state_{\intr, i}(\tsa) \in \left(\brs^{\text{A}}_{i}(0, \iat)\right)^C$. Equivalently, every SPP vehicle should be able to detect the intruder at a distance of $\dsen$, where
 \begin{equation} \label{eqn:sen_distance}
-\dsen = \max\{ \|p_i\|: \exists \npos_i, (p_i, \npos_i) \in \brs^{\text{A}}_{i}(0, \iat) \}.
+\dsen = \max\{ \|a\|: a \in \brs^{\text{A}}_{i}(0, \iat) \}.
 \end{equation} 
 Hereon, we assume that every SPP vehicle can detect the intruder at a distance of $\dsen$.
 

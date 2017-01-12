@@ -1,23 +1,12 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsubsection{Separation region} \label{sec:sepRegion_case1}
-In this section, we find the set of all states $\state_{\intr}(t)$ for which $\veh_j$ is forced to apply an avoidnace maneuver for a given $\tsa$. We refer to this set as \textit{separation region}, and denote it as $\sep_j(\tsa, t)$. As discussed in Section \ref{sec:intruder_avoid}, $\veh_j$ needs to apply avoidnace maneuver at time $t$ only if $\state_{\intr, j}(t) \in \partial \brs^{\text{A}}_{j}(t-\tsa, \iat)$. To compute set $\sep_j(\tsa, t)$, we thus need to translate this set in relative coordinates to absolute coordinates, for which we need to know all possible states of $\veh_j$ at time $t$.
 
-Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \cite{chen2016robust} to compute the ``base" obstacles $\boset_j(t)$, the obstacles that would have been induced by $\veh_j$ in the presence of disturbances, but in the absence of an intruder. The base obstacles are respectively given by equations (25), (31) and (37) in \cite{chen2016robust} for centralized control, least restrictive control and robust trajectory tracking algorithms.
+Consider any $\tsa \in \R$. In this section, we find the set of all states $\state_{\intr}^0 := \state_{\intr}(\tsa)$ for which $\veh_j$ is forced to apply an avoidnace maneuver. We refer to this set as \textit{separation region}, and denote it as $\sep_j(\tsa)$. As discussed in Section \ref{sec:intruder_avoid}, $\veh_j$ needs to apply avoidnace maneuver at time $\tsa$ only if $\state_{\intr, j}(\tsa) \in \partial \brs^{\text{A}}_{j}(0, \iat)$. To compute set $\sep_j(\tsa)$, we thus need to translate this set in relative coordinates to a set in absolute coordinates, for which we need to know all possible states of $\veh_j$ at time $\tsa$.
 
-Given $\boset_j(t)$, we compute the set of all possible states of $\veh_j$ at time $t$ given $\tsa$. Regardless of the avoidnace control applied by $\veh_j$ during $[\tsa, t]$, $\state_j(t)$ will still be contained withing the FRS $\frs^{\text{S}}_{j}(\tsa, \iat)$:  
-\begin{equation} \label{eq:sepRegionFRS_case1}
-\begin{aligned}
-\frs_{j}^{\text{S}}(\tsa, t) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tsa) \in \boset_j(\tsa), \\
-& \state_j(t) = y\}.
-\end{aligned}
-\end{equation}
-$\frs_{j}^{\text{S}}(\tsa, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $(t-\tsa)$ starting from inside $\boset_j(\tsa)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
-\begin{equation}
-\ham_{j}^{\text{S}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j).
-\end{equation} 
-Thus, $\sep_j(\tsa, t)$ can be obtained as:
+Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section 5 in \cite{chen2016robust} to compute the ``base" obstacles $\boset_j(\tsa)$, the obstacles that would have been induced by $\veh_j$ in the presence of disturbances, but in the absence of an intruder. The base obstacles are respectively given by equations (25), (31) and (37) in \cite{chen2016robust} for centralized control, least restrictive control and robust trajectory tracking algorithms.
+
+Given $\boset_j(\tsa)$, $\sep_j(\tsa)$ can be obtained as:
 \begin{equation} \label{eqn:sepRegion_case1}
-\sep_j(\tsa, t) = \frs_{j}^{\text{S}}(\tsa, t) + \brs^{\text{A}}_{j}(t-\tsa, \iat), ~\tsa \in [t-\iat, t],
+\sep_j(\tsa) = \boset_j(\tsa) + \partial \brs^{\text{A}}_{j}(0, \iat), ~\tsa \in \R,
 \end{equation}
-where the ``$+$'' in \eqref{eqn:sepRegion_case1} denotes the Minkowski sum.
+where the ``$+$'' in \eqref{eqn:sepRegion_case1} denotes the Minkowski sum. Since $\sep_j(\tsa)$ represents the set of all states of $\veh_\intr$ for which $\veh_j$ is forced to apply an avoidnace maneuver, we have $\state_{\intr}(\tsa) \in \sep_j(\tsa)$ in Case1.
