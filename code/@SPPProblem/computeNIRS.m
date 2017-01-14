@@ -100,9 +100,10 @@ for veh = vehStart:length(Q)
     
     %% Compute induced obstacles
     fprintf('Computing obstacles for vehicle %d\n', veh)
-    if veh < length(Q)
-      Q{veh}.computeObsForRTT(obj, RTTRS);
-    else
+    
+    Q{veh}.computeObsForRTT(obj, RTTRS);
+    if veh == length(Q)
+      Q{veh}.trimData({'obsForRTT'});
       save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
     

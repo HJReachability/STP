@@ -33,8 +33,9 @@ extraArgs.fig_filename = sprintf('%s/', folder);
 if isempty(obj.FRS1)
   % Update nominal trajectory if it doesn't exist
   obj.nomTraj_tau = nomTraj_tau;
-  obj.nomTraj = nomTraj;
+  obj.nomTraj = nomTraj;  
 else
+  
   indsBeforeBRS1 = find(obj.FRS1_tau < min(obj.BRS1_tau)-small);
   pad_tau = obj.FRS1_tau(indsBeforeBRS1);
   pad_nomTraj = repmat(nomTraj(:,1), 1, length(indsBeforeBRS1));
