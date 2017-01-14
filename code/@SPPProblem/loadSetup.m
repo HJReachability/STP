@@ -21,12 +21,6 @@ switch setup_name
       error('Must specify the property ''number_of_vehicles''!')
     end
     
-    obj.initStates = cell(numVeh, 1);
-    initState = [475; 200; 220*pi/180];
-    for i = 1:numVeh
-      obj.initStates{i} = initState;
-    end
-    
     %% Sampling and collision radius
     obj.dt = 0.5;
     obj.Rc = 1;
@@ -41,11 +35,21 @@ switch setup_name
       [450; 25] ...
       };
     
+    initPos = [475; 200];
+    obj.initStates = cell(numVeh, 1);
     obj.targetCenters = cell(numVeh,1);
     for i = 1:numVeh
       target_ind = randi(length(targetCentersSet));
       obj.targetCenters{i} = targetCentersSet{target_ind};
+      
+      targetDirection = obj.targetCenters{i} - initPos;
+      initHeading = wrapTo2Pi(atan2(targetDirection(2), targetDirection(1)));
+      obj.initStates{i} = [initPos; initHeading];
     end
+    
+    for i = 1:numVeh
+      
+    end    
     
     %% Grid
     % Defaults
@@ -184,7 +188,7 @@ switch setup_name
       target_pos = IC_and_target_centers{target_index};
       
       delta = target_pos - IC_pos;
-      IC_angle = atan2(delta(2), delta(1));
+      IC_angle = wrapTo2Pi(atan2(delta(2), delta(1)));
       
       obj.initStates{i} = [IC_pos; IC_angle];
       obj.targetCenters{i} = [target_pos; 0];
