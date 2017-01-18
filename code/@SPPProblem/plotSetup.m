@@ -16,8 +16,9 @@ switch setup_name
     I = flip(I, 1);
     imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
     
-    ArrowLength = 5;
-    MarkerSize = 25;
+    ArrowLength = 25;
+    MarkerSize = 15;
+    
   case 'Bay_Area'
     I = I(155:915, 1120:1770, :);
     I = flip(I, 1);

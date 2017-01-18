@@ -127,7 +127,7 @@ classdef SPPProblem < handle
         case 'SF_dstb_11_6sSep'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 4;
+          extraArgs.separation_time = 6;
           extraArgs.dstb_or_intr = 'dstb';
           obj.loadSetup('SF', extraArgs);
           
