@@ -47,10 +47,6 @@ In this section, we consider Case1: $\infty < \tsa_j \leq \tsa_i$. Case2 is disc
 
 In Case1, the intruder forces $\veh_j$ to apply avoidance control before or at the same time as $\veh_i$. %If $\tsa_i = \tsa_j = \infty$, then none of $\veh_i$ and $\veh_j$ need to apply avoidance control and hence trivially won't be involved in re-planning. 
 To ensure the separation requirement in this case, we begin with the following observation which narrows down the intruder scenarios that we need to consider:
-%\begin{observation} \label{obs1_case1}
-%At any time $t$, it is sufficient to consider the intruder scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then $\veh_i$ and/or $\veh_j$ will already be in the replanning phase at time $t$ (see assumption \ref{as:avoidOnce}) and hence we need not ensure separation requirements for them during the planning phase. On the other hand, if $\tsa > t$, then we need not ensure separation requirements at time $t$ as the intruder has not appeared in the system yet. %\SBnote{Actually, we compute obstacles at time $t'$ in a way such that their effect doesn't propagate to $t < t'$, but not sure if we need to mention this.}
-%\end{observation}
-
 \begin{observation} \label{obs1_case1}
 Without loss of generality, we can assume that the intruder appears at the boundary of the avoid region of $\veh_j$, e.g. $\state_{\intr, j}(\tsa) \in \partial \brs^{\text{A}}_{j}(0, \iat)$. Otherwise, vehicles $\veh_j$ and $\veh_i$ need not account for the intruder until it reaches the boundary of the avoid region of $\veh_j$. Also note that since $\infty < \tsa_j \leq \tsa_i$, $\veh_{\intr}$ reaches the boundary of the avoid region of $\veh_j$ first. Equivalently, we can assume that $\tsa_j = \tsa$.
 \end{observation}
