@@ -1,4 +1,4 @@
-% !TEX root = ../SPP_IoTjournal.tex
+% !TEX root = ../../SPP_IoTjournal.tex
 \subsubsection{Buffer Region} \label{sec:buffRegion_case1}
 From Section \ref{sec:sepRegion_case1}, we know that $\state_{\intr}^0 := \state_{\intr}(\tsa) \in \sep_j(\tsa) := \sep_j(\tsa_j)$, where last equivalence holds because $\tsa_j = \tsa$ (by Observation \ref{obs1_case1}). Moroever, since avoid start time of $\veh_i$ is $\tsa_i$, we must have $\state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$.
 
@@ -14,11 +14,11 @@ We refer to the set $\buff_{ij}(\tsa)$ as \textit{buffer region} hereon. To comp
 \end{aligned}
 \end{equation}
 where 
-\begin{equation}
+\begin{equation} 
 H^{\text{B}}_{i}(\state_{i, \intr}, \costate) = \min_{\ctrl_i \in \cset_i, \ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{i, \intr}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
 \end{equation}
 
-Note that we use $-\brs^{\text{A}}_{i}(0, \iat)$ as the target set for our computation above because we are computing BRS $\brs^{\text{B}}_{i}(0, \brd)$ using the relative state $\state_{i, \intr}$ and not $\state_{\intr, i}$. Also, since $\veh_{\intr}$ appears for a maximum duration of $\iat$, it is sufficient to ensure that $\veh_{\intr}$ and $\veh_i$ do not reach the set $\brs^{\text{A}}_{i}(\brd, \iat)$ instead of $\brs^{\text{A}}_{i}(0, \iat)$, as a duration of $brd$ is already spent by $\veh_{\intr}$ to reach the avoid region of $\veh_i$.
+Note that we use $-\brs^{\text{A}}_{i}(0, \iat)$ as the target set for our computation above because we are computing BRS $\brs^{\text{B}}_{i}(0, \brd)$ using the relative state $\state_{i, \intr}$ and not $\state_{\intr, i}$. Also, since $\veh_{\intr}$ appears for a maximum duration of $\iat$, it is sufficient to ensure that $\veh_{\intr}$ and $\veh_i$ do not reach the set $\brs^{\text{A}}_{i}(\brd, \iat)$ instead of $\brs^{\text{A}}_{i}(0, \iat)$, as a duration of $\brd$ is already spent by $\veh_{\intr}$ to reach the avoid region of $\veh_i$.
 
 The buffer region can not be computed by augmenting $\brs^{\text{B}}_{i}(0, \brd)$ on the separation region of the $\veh_j$:
 \begin{equation} \label{eqn:buffRegion_case1}
@@ -27,56 +27,3 @@ The buffer region can not be computed by augmenting $\brs^{\text{B}}_{i}(0, \brd
 We can thus ensure that $(\tsa_i - \tsa_j) \geq \brd$ as long as $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$.
 
 \SBnote{Add an image explaining the computation of buffer region.}
-
-%In section \ref{sec:sepRegion}, we computed sets $\sep_j(\cdot)$ such that $\veh_j$ avoids the intruder only if $\state_{\intr}(t) \in \sep_j(t)$. But to ensure that atmost $\nva$ vehicles need to replan their trajectories after the intruder disappears, we need to make sure that the intruder can cause atmost $\nva$ vehicles to deviate from their planned trajectories. Equivalently, we want to ensure that atmost $\nva$ vehicles need to avoid the intruder, that is $\veh_{\intr}$ enters the separation regions of atmost $\nva$ vehicles during a duration of $\iat$.
-%
-%Intuitively, we want to make sure that at any given time the separation regions of any two vehicles are far enough from each other (that is, there is a ``buffer" region between two separation regions) such that it will take at least $\brd := \iat / \nva$ time for the intruder to go from the separation region of one vehicle to that of the other vehicle. This means that there is a ``buffer" time interval of $\brd$ between any $t_1$, $t_2 \in [\tsa, \tea]$ where $\veh_{\intr}$ is in the separation regions of two different vehicles at $t_1$ and $t_2$, e.g. $\state_{\intr}(t_1) \in \sep_j(t)$ and $\state_{\intr}(t_2) \in \sep_i(t)$, $i \neq j$. Thus, in the worst case, the intruder can force atmost $\nva$ vehicles to apply avoidance maneuver during a duration of $\iat$. 
-%
-%We next focus on computing the buffer region between any two vehicles $\veh_j$ and $\veh_i$, $j < i$. We first make the following observation:
-%\begin{observation} \label{obs1_buffReg}
-%Without loss of generality, we can assume that the intruder appears at the boundary of the separation region of a SPP vehicle at $t = \tsa$, e.g. $\state_{\intr}^0 \in \partial \sep_m(\tsa)$ for some $m \in \{1, \ldots, N\}$, where $\partial \sep_m(\tsa)$ denotes the boundary of $\sep_m(\tsa)$. Otherwise, any vehicle need not account for the intruder until it reaches the boundary of the separation region of a SPP vehicle. 
-%\end{observation}
-%Therefore, to compute the buffer region between $\veh_j$ and $\veh_i$, it is sufficient to consider the following two cases:     
-%\subsubsection{Case1- $\state_{\intr}^0 \in \sep_j(\tsa)$} \label{sec:buffCase1}
-%Given the relative dynamics $\state_{i, \intr}$ in \eqref{eq:reldyn}, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ within a duration of $\brd$ when both $\veh_{i}$ and $\veh_{\intr}$ are using \textit{optimal control to collide} with each other. This set of states is given by the backwards reachable set $\brs^{\text{B}}_i(\tau, \brd)$:
-%
-%\begin{equation} \label{eqn:buffBRS}
-%\begin{aligned}
-%\brs^{\text{B}}_{i}(t, \brd) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_i(\cdot) \in \dfset_i, \\
-%& \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{i, \intr}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
-%& \exists s \in [t, \brd], \state_{i, \intr}(s) \in \targetset^{\text{B}}_{i}, \state_{i, \intr}(t) = y\},
-%\end{aligned}
-%\end{equation}
-%where 
-%\begin{equation}
-%\begin{aligned}
-%\targetset^{\text{B}}_{i} &= \{\state_{i, \intr}: \|\pos_{i, \intr}\|_2 \le \rc\} \\
-%H^{\text{B}}_{i}(\state_{i, \intr}, \costate) &= \min_{\ctrl_i \in \cset_i, \ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{i, \intr}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
-%\end{aligned}
-%\end{equation}
-%
-%The interpretation of set $\brs^{\text{B}}_{i}(0, \brd)$ is that if $\state_{i, \intr}$ is outside the boundary of this set, then $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for a duration of $\brd$, irrespective of control applied by them. When $\state_{\intr}^0 \in \sep_j(\tsa)$, we can get the same property in absolute co-ordinates by augmenting this set on the separation region of the $\veh_j$
-%\begin{equation} \label{eqn:buffRegion}
-%\buff_{ij}(t) = \sep_j(t) + \brs^{\text{B}}_{i}(0, \brd),
-%\end{equation} 
-%and ensuring that $\veh_i$ is outside the boundary of $\buff_{ij}(t)$.
-%
-%Finally, during the path planning of $\veh_i$, we also need to ensure that $\veh_i$ is far enough from the boundary of $\buff_{ij}(t)$ such that $\veh_{\intr}$ and $\veh_{i}$ cannot enter the danger zone $\dz_{i\intr}$ for the remaining duration of $\trd := \iat - \brd$. Thus, during the path planning of $\veh_i$, we need to ensure that $\veh_i$ is outside the augmented buffer region:
-%\begin{equation} \label{eqn:augbuffRegion1}
-%\tilde{\buff}_{ij}(t) = \buff_{ij}(t) + \brs^{\text{S}}_{i}(0, \trd),
-%\end{equation}
-%where $\brs^{\text{S}}_{i}(0, \trd)$ can be computed as described in Section \ref{sec:sepRegion}. Region $\tilde{\buff}_{ij}(t)$ is also illustrated in Figure \ref{fig:buffRegion}.
-%
-%\begin{figure}[H]
-%  \centering
-%  \includegraphics[width=0.4\textwidth]{"figs/buffRegion"}
-%  \caption{Illustration of region $\tilde{\buff}_{ij}(t)$ (best visualized in color). The Blue region denotes the base obstacle $\boset_j(t)$ induced by $\veh_j$ at time $t$. The base obstacle is augmented by the set $\brs^{\text{S}}_{j}(0, \iat)$, denoted as the Yellow region. The region within the dotted Black boundary is thus the separation region $\sep_j(t)$. As long as the intruder is outside the dotted Black boundary, $\veh_j$ can apply any control and still guaranteed to not enter the danger zone $\dz_{j\intr}$. The separation region is augmented by $\brs^{\text{B}}_{i}(0, \brd)$, giving the buffer region $\buff_{ij}(t)$ (the region within the solid Black boundary). Finally, the buffer region is augmented by $\brs^{\text{S}}_{i}(0, \trd)$ to get $\tilde{\buff}_{ij}(t)$ (the region within the dashed Black boundary). If we make sure that $\veh_i$ is outside the dashed Black boundary, any intruder appearing at the boundary of the separation region of $\veh_j$ (dotted Black boundary) must ``travel" through the Grey region before it can reach the boundary of the separation region of $\veh_i$ (solid Black boundary). Since the Grey region is computed for a duration of $\brd$, there should atleast a gap of $\brd$ between two time instants where $\veh_{\intr}$  affects $\veh_i$ and $\veh_j$.}
-%  \label{fig:buffRegion}
-%\end{figure}
-%
-%\subsubsection{Case2- $\state_{\intr}^0 \in \sep_i(\tsa)$} \label{sec:buffCase2}
-%This case can be treated in a similar fashion as Section \ref{sec:buffCase1}. We can now look at the same problem from $\veh_i$'s perspective and compute the augmented buffer region $\tilde{\buff}_{ji}(t)$ as:
-%\begin{equation} \label{eqn:augbuffRegion2}
-%\tilde{\buff}_{ji}(t) = \boset_j(t) + \brs^{\text{S}}_{j}(0, \trd) + \brs^{\text{B}}_{j}(0, \brd) + \brs^{\text{S}}_{i}(0, \iat).
-%\end{equation}
-%During the path planning of $\veh_i$, we also need to ensure that $\veh_i$ is outside $\tilde{\buff}_{ji}(t)$. 

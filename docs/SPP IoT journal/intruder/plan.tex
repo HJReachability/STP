@@ -1,53 +1,39 @@
 % !TEX root = ../SPP_IoTjournal.tex
-\subsection{Optimal Avoidance Controller} \label{sec:path_planning}
+\subsection{Path Planning} \label{sec:path_planning}
 Given the separation and buffer regions and induced obstacles, the overall obstacle for $\veh_i$ is given by:
 \begin{equation}
 \label{eq:obsseti_intr}
-\obsset_i(t)  = \soset_i \cup \bigcup_{j=1}^{i-1} \left( \tilde{\buff}_{ij}(t) \cup \tilde{\buff}_{ji}(t) \cup_{k=1}^{5} {^k\ioset_i^j}(t) \right)
+\obsset_i(t)  = \bigcup_{j=1}^{i-1} \left( \buff_{ij}(t) \cup \buff_{ji}(t) \bigcup_{k \in\{1, 2\}, l \in \{A, B\}}^{5} {_k^l\ioset_i^j}(t) \right)
 \end{equation}
 
 Given $\obsset_i(t)$, we compute a BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ for path planning that contains the initial state of $\veh_i$ while avoiding these obstacles:
 \begin{equation} \label{eqn:intrBRS1}
 \begin{aligned}
-\brs^{\text{AO}}_{i}(t, \sta_i) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \forall \dstb_i(\cdot) \in \dfset_i, \\
+\brs^{\text{PP}}_{i}(t, \sta_i) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \forall \dstb_i(\cdot) \in \dfset_i, \\
 & \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \forall s \in [t, \sta_i], \state_i(s) \notin \obsset_i(s), \\
 & \exists s \in [t, \sta_i], \state_i(s) \in \targetset_i, \state_i(t) = y \}.
 \end{aligned}
 \end{equation}
-The Hamiltonian $\ham^{\text{AO}}_{i}$ to compute BRS in \eqref{eqn:intrBRS1} is given by:
+The Hamiltonian $\ham^{\text{PP}}_{i}$ to compute BRS in \eqref{eqn:intrBRS1} is given by:
 \begin{equation} \label{eqn:BRSham}
-\ham^{\text{AO}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+\ham^{\text{PP}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Note that $\brs^{\text{AO}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ in the absence of intruder. The goal satisfaction controller is given by:
+Note that $\brs^{\text{PP}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ in the absence of intruder. The goal satisfaction controller is given by:
 \begin{equation}
-{\ctrl^{\text{AO}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
+{\ctrl^{\text{PP}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
-Moreover, if $\veh_i$ starts within $\brs^{\text{AO}}_{i}$, it is guaranteed to avoid collision with other vehicles for a duration of $\iat$, starting at any $\tsa < \sta_i$, irrespective of the control and disturbance applied by vehicles (including $\veh_i$ itself) during this time period. 
-
-\begin{remark}
-Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$, as discussed in section \ref{sec:rtt}.
-\end{remark}
-
-To compute the optimal avoidance control for $\veh_i$ in presence of $\veh_{\intr}$, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. Given the relative dynamics in \eqref{eq:reldyn}, this set of states is given by the BRS $\brs^{\text{S}}_{i}(\tau, \iat),~ \tau \in [0, \iat]$, given by \eqref{eqn:sepBRS}.
-
-Once the value function $\valfunc^{\text{S}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{S}}_{i}}$ can be obtained as:
-\begin{equation} \label{eqn:optAvoidCtrl}
-{\ctrl^{\text{S}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
-\end{equation}
-
-Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) > 0$; as $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t))$ decreases. If $\veh_i$ applies the control ${\ctrl^{\text{S}}_{i}}$ when $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.
-
-In addition, computation of $\obsset_i(\cdot)$ ensures that $\veh_i$ does not collide with any other SPP vehicle during the avoidance maneuver. %Therefore, applying $\ctrl_I^A$ for a duration of $\iat$ is still guaranteed to keep $\veh_i$ safe from all obstacles, and hence safe from collision with respect to all other vehicles $\veh_j, j \neq i$.
-The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
+Moreover, if $\veh_i$ starts within $\brs^{\text{PP}}_{i}$ and use avoidance control strategy in \eqref{eqn:optAvoidCtrl}, it is guaranteed to avoid collision with the intruder and other SPP vehicles, regardless of the control strategy of $\veh_{\intr}$. Finally, since we use separation and buffer regions as obstacles during the path planning of $\veh_i$, it is guaranteed that $|\tsa_i - \tsa_j| \geq \brd$ for all $j < i$. The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
 \begin{equation*}
-{\ctrl^{\text{A}}_{i}}(t) = 
+{\ctrl^*_{i}}(t) = 
 \left \{ 
 \begin{array}{ll}
-{\ctrl^{\text{AO}}_{i}}(t) & t \leq \tsa\\
-{\ctrl^{\text{S}}_{i}}(t) & \tsa\leq t \leq \tea
+{\ctrl^{\text{PP}}_{i}}(t) & t \leq \tsa\\
+{\ctrl^{\text{A}}_{i}}(t) & \tsa\leq t \leq \tea
 \end{array}
 \right.
 \end{equation*}
 
-\SBnote{Somewhere mention the conditions under which our method is guaranteed to avoid the intruder.} 
+\begin{remark}
+Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$, as discussed in section \ref{sec:rtt}.
+\end{remark}
