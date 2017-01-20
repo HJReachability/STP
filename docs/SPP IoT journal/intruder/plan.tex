@@ -1,9 +1,26 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Path Planning} \label{sec:path_planning}
-Given the separation and buffer regions and induced obstacles, the overall obstacle for $\veh_i$ is given by:
-\begin{equation}
-\label{eq:obsseti_intr}
-\obsset_i(t)  = \bigcup_{j=1}^{i-1} \left( \buff_{ij}(t) \cup \buff_{ji}(t) \bigcup_{k \in\{1, 2\}, l \in \{A, B\}}^{5} {_k^l\ioset_i^j}(t) \right)
+In sections \ref{sec:case1} and \ref{sec:case2}, we computed obstacles for $\veh_i$ such that $\veh_i$ and $\veh_j$ do not collide with each other while avodiing intruder. We next compute the states that $\veh_i$ needs to avoid to avoid a collision with static obstacles, regardless of the avoidance maneuver applied by it. Since $\veh_i$ applies avoidnace maneuver for a maximum duration of $\iat$ this set is given by the following BRS:
+\begin{equation} \label{eq:ObsBRS_static}
+\begin{aligned}
+\brs^{\text{S}}_{i}(t, t+\iat) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
+& \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
+& \exists s \in [t, t+\iat], \state_i(s) \in \mathcal{K}^{\text{S}}(s) \},\\
+\mathcal{K}^{\text{S}}(s) = & \{\state_i: \exists (y, h) \in \soset_i, \|\pos_i - y\|_2 \le \rc \}.
+\end{aligned}
+\end{equation}
+The Hamiltonian $\ham^{\text{S}}_{i}$ to compute $\brs^{\text{S}}_{i}(t, t+\iat)$ is given by:
+\begin{equation} \label{eqn:BRS_obsham_static}
+\ham^{\text{S}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
+\end{equation}
+
+The overall obstacle for $\veh_i$ is thus given by:
+\begin{equation} \label{eq:obsseti_intr}
+\begin{aligned}
+\obsset_i(t)  =  & \bigcup_{j=1}^{i-1} \left( \buff_{ij}(t) \cup \buff_{ji}(t) \bigcup_{k \in\{1, 2\}} {}_k^A\ioset_i^j(t)
+\bigcup_{k \in\{1, 2\}} {}_k^B\ioset_i^j(t) \right)\\
+& \bigcup \brs^{\text{S}}_{i}(t, t+\iat).
+\end{aligned}
 \end{equation}
 
 Given $\obsset_i(t)$, we compute a BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ for path planning that contains the initial state of $\veh_i$ while avoiding these obstacles:

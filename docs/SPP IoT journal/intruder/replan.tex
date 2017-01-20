@@ -53,7 +53,7 @@ We conclude this section by summarizing the overall SPP algorithm:
 \textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
 \begin{enumerate}
 \item determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}.
-\item compute the induced obstacles for $\veh_i$ by $\veh_j$ given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA} and \eqref{eq:intruderObs_case2_caseB}. 
+\item compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, \eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. 
 \item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};
 \item the optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl};

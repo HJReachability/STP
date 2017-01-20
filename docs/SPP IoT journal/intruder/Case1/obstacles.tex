@@ -36,7 +36,7 @@ Since the base obstacles represent possible states that a vehicle can be in in t
 %Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subset \frs_{j}^{\text{BO}}(0, \tau_2-\tau_1) ~\forall t, \tau_2 > \tau_1$, where $\frs_{j}^{\text{BO}}(0, \tau_2-\tau_1)$ denotes the FRS of $\boset_j(t+\tau_1)$ computed for a duration of $\tau_2-\tau_1$. Therefore, we have that $\frs_{j}^{\mathcal{O}}(0, \tau) \subset \frs_{j}^{\mathcal{O}}(0, \iat) ~\forall \tau \in [0, \iat)$. 
 \end{observation}
 
-Using observation \ref{obs1_case1_caseA}, $\pfrs_j(t)$ in \eqref{eq:intruderObs_case2} can be equivalently written as:
+Using observation \ref{obs1_case1_caseA}, $\pfrs_j(t)$ in \eqref{eq:intruderObs_case1_caseA} can be equivalently written as:
 \begin{equation} \label{eq:intruderObs_case1_caseA_inter}
 \pfrs_j(t) = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \frs_{j}^{\mathcal{O}}(t-\iat, t) \}.
 \end{equation}
@@ -48,22 +48,23 @@ For computing $_1^B\ioset_i^j(t)$, it is sufficient to consider $\tsa_i = t$. If
 
 Due to the separation and buffer regions, we have $\tsa_i - \tsa_j \geq \brd$. Combining this with Observations \ref{obs1_case1Obs} and \ref{obs1_case1_caseB} implies that $\tsa_j \in [t-\iat, t-\brd]$. From the perspective of $\veh_i$, $\veh_j$ can reach any state in $\frs_{j}^{\mathcal{O}}(\tsa_j, t')$ at time $t' \in [\tsa_j, \tsa_j+\iat]$ starting from some state in $\boset_j(\tsa_j)$ at time $\tsa_j$. Here, $\frs_{j}^{\mathcal{O}}(\tsa_j, t')$ represents the FRS of $\boset_j(\tsa_j)$ computed for a duration of $(t' - \tsa_j)$ and is given by \eqref{eq:ObsFRS_case1_caseA}. Taking into account all possible $\tsa_j \in [t-\iat, t-\brd]$, $\state_j(\tau)$ is contained in the set:
 \begin{equation}
-\mathcal{K}(\tau) = \bigcup_{\tsa_j \in [\tau-\iat, t-\brd]} \frs_{j}^{\mathcal{O}}(\tsa_j, \tau)
+\mathcal{K}^{\text{B1}}(\tau) = \bigcup_{\tsa_j \in [\tau-\iat, t-\brd]} \frs_{j}^{\mathcal{O}}(\tsa_j, \tau)
 \end{equation} 
-at time $\tau \in [t, t-\brd+\iat]$. From Observation \ref{obs1_case1_caseA}, we have $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau) \subseteq \frs_{j}^{\mathcal{O}}(\tau-\iat, \tau)$ for all $\tsa_j \in [\tau-\iat, t-\brd]$. Therefore, $\mathcal{K}(\tau) = \frs_{j}^{\mathcal{O}}(\tau-\iat, \tau)$.
+at time $\tau \in [t, t-\brd+\iat]$. From Observation \ref{obs1_case1_caseA}, we have $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau) \subseteq \frs_{j}^{\mathcal{O}}(\tau-\iat, \tau)$ for all $\tsa_j \in [\tau-\iat, t-\brd]$. Therefore, $\mathcal{K}^{\text{B1}}(\tau) = \frs_{j}^{\mathcal{O}}(\tau-\iat, \tau)$.
 
-From the perspective of $\veh_i$, it needs to avoid all states at time $t$ that can reach $\mathcal{K}(\tau)$ for some control action of $\veh_i$ during time duration $[t, \tau]$. This will ensure that $\veh_i$ and $\veh_j$ will not enter into each other's danger zones regardless of the avoidance maneuver applied by them. This set of states is given by the following BRS:
+From the perspective of $\veh_i$, it needs to avoid all states at time $t$ that can reach $\mathcal{K}^{\text{B1}}(\tau)$ for some control action of $\veh_i$ during time duration $[t, \tau]$. This will ensure that $\veh_i$ and $\veh_j$ will not enter into each other's danger zones regardless of the avoidance maneuver applied by them. This set of states is given by the following BRS:
 
 \begin{equation}  \label{eq:ObsBRS_case1_caseB}
 \begin{aligned}
 \brs^{\text{B1}}_{i}(t, t-\brd+\iat) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
 & \state_i(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_i(t) = y, \\
-& \exists s \in [t, t-\brd+\iat], \state_i(s) \in \tilde{\mathcal{K}}(s)\},
+& \exists s \in [t, t-\brd+\iat],\\
+& \state_i(s) \in \tilde{\mathcal{K}}^{\text{B1}}(s)\},
 \end{aligned}
 \end{equation}
 where
 \begin{equation*}
-\tilde{\mathcal{K}}(s) = \{\state_j: \exists (y, h) \in \mathcal{K}(s), \|\pos_j - y\|_2 \le \rc \}.
+\tilde{\mathcal{K}}^{\text{B1}}(s) = \{\state_j: \exists (y, h) \in \mathcal{K}^{\text{B1}}(s), \|\pos_j - y\|_2 \le \rc \}.
 \end{equation*} 
 The Hamiltonian $\ham^{\text{B1}}_{i}$ to compute $\brs^{\text{B1}}_{i}(\cdot)$ is given by:
 \begin{equation} \label{eqn:BRS_obsham_case1_caseB}
@@ -73,5 +74,4 @@ Finally, the induced obstacle in this case can be obtained as:
 \begin{equation} \label{eq:intruderObs_case1_caseB} 
 _1^B\ioset_i^j(t) = \brs^{\text{B1}}_{i}(t, t-\brd+\iat).
 \end{equation}
-\SBnote{Maybe add an image to explain the obstacle computation and time range manipulations.}
 \end{itemize}
