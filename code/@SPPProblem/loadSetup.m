@@ -46,11 +46,7 @@ switch setup_name
       initHeading = wrapTo2Pi(atan2(targetDirection(2), targetDirection(1)));
       obj.initStates{i} = [initPos; initHeading];
     end
-    
-    for i = 1:numVeh
-      
-    end    
-    
+
     %% Grid
     % Defaults
     obj.gMin = [0 0 0];
@@ -208,6 +204,34 @@ switch setup_name
     obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));    
     
     obj.mapFile = 'bay_area_streets.png';
+    
+    %% Wind speed
+    if isfield(extraArgs, 'wind_speed')
+      switch extraArgs.wind_speed
+        case 11
+          obj.dMaxA = [1.1 0];
+          obj.RTT_tR = 3.5;
+        otherwise
+          error('Only 11 m/s wind has been properly implemented!')
+      end
+    else
+      error('Must specify property ''wind_speed'' in m/s in extraArgs!')
+    end
+    
+    %% Target separation time
+    if isfield(extraArgs, 'separation_time')
+      % Scheduled times of arrival
+      obj.tTarget = zeros(numVeh, 1);
+      for i = 1:numVeh
+        obj.tTarget(i) = -extraArgs.separation_time*(i-1);
+      end
+      
+      % Adjust global time horizon
+      obj.tMin = -500 - numVeh*extraArgs.separation_time;
+      obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
+    else
+      error('Must specify property ''separation time'' in s in extraArgs!')
+    end    
     
     obj.plotSetup(setup_name);
     
