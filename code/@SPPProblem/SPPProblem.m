@@ -131,9 +131,6 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'dstb';
           obj.loadSetup('SF', extraArgs);
           
-        case 'BA_dstb_11'
-          error('Not implemented yet...')
-          
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
           extraArgs.wind_speed = 6;
@@ -185,7 +182,7 @@ classdef SPPProblem < handle
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 150;
           extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 4;
+          extraArgs.separation_time = 6;
           obj.loadSetup('Bay_Area', extraArgs);
           
         case 'TCST_dstb'
