@@ -161,13 +161,17 @@ switch setup_name
     obj.targetR = 10;
     obj.initStates = cell(numVeh, 1);
     obj.targetCenters = cell(numVeh,1);
+    numTar = length(IC_and_target_centers);
+    tarCount = zeros(numTar);
     for i = 1:numVeh
       % Randomize target and IC
-      IC_index = randi(length(IC_and_target_centers));
-      target_index = randi(length(IC_and_target_centers));
+      IC_index = randi(numTar);
+      target_index = randi(numTar);
       while target_index == IC_index
-        target_index = randi(length(IC_and_target_centers));
+        target_index = randi(numTar);
       end
+      
+      tarCount(IC_index, target_index) = tarCount(IC_index, target_index) + 1;
       
       % Assign IC and target
       IC_pos = IC_and_target_centers{IC_index};
@@ -178,8 +182,10 @@ switch setup_name
       
       obj.initStates{i} = [IC_pos; IC_angle];
       obj.targetCenters{i} = [target_pos; 0];
-      
     end
+    
+    disp('tarCount = ')
+    disp(tarCount)
     
     %% Sampling and collision radius
     obj.dt = 0.5;
