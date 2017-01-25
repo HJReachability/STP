@@ -1,0 +1,84 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{Time-Varying Reachability Background \label{sec:HJIVI}}
+We will be using reachability analysis to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ in a time interval $[t, t_f]$ or FRS $\frs$ in a time interval $[t_0, t]$ will be denoted by
+
+\begin{equation}
+\begin{aligned}
+\brs(t, t_f) &\quad \text{ (backward reachable set)}\\
+\frs(t_0, t) &\quad \text{ (forward reachable set)}
+\end{aligned}
+\end{equation}
+
+%In the SPP scheme, a lower-priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal path planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. 
+Several formulations of reachability are able to account for time-varying obstacles \cite{Bokanowski11, Fisac15} (or state constraints in general). For our application in SPP, we utilize the time-varying formulation in \cite{Fisac15}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{Fisac15}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
+
+\begin{equation}
+\label{eq:HJIVI_BRS}
+\begin{aligned}
+\max \Big\{ \min \{&D_t \valfunc(t, \state) + \ham(t, \state, \nabla \valfunc(t, \state)), \fc(\state) - \valfunc(t, \state) \}, \\
+&-\obsfunc(t, \state) - \valfunc(t, \state) \Big\} = 0, \quad t \le t_f \\
+&\valfunc(t_f, \state) = \max\{\fc(\state), -\obsfunc(t_f, \state)\}
+\end{aligned}
+\end{equation}
+
+In a similar fashion, the FRS is computed by solving the following \textit{initial value} HJ PDE:
+
+\begin{equation}
+\label{eq:HJIVI_FRS}
+\begin{aligned}
+D_t \valfuncfwd(t, \state) + &\ham(t, \state, \nabla \valfuncfwd(t, \state)) = 0 , \quad t \ge t_0  \\
+&\valfuncfwd(t_0, \state) = \max\{\fc(\state), -\obsfunc(t_0, \state)\}
+\end{aligned}
+\end{equation}
+
+In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)$ is the implicit surface function representing the target set $\targetset = \{\state: \ic(\state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state: \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t, t_f)$ and FRS $\frs(t_0, t)$ are given by
+
+\begin{equation}
+\label{eq:implicitValfuncs}
+\begin{aligned}
+\brs(t, t_f) &= \{\state: \valfunc(t, \state) \le 0\} \\
+\frs(t_0, t) &= \{\state: \valfuncfwd(t, \state) \le 0 \}
+\end{aligned}
+\end{equation}
+
+Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$ which effectively means that the outside maximum is ignored in \eqref{eq:HJIVI_BRS}. Also, note that unlike in \eqref{eq:HJIVI_BRS}, there is no inner minimization in \eqref{eq:HJIVI_FRS}. As we will see later, we will be using the BRS to determine all states that can reach some target set \textit{within the time horizon} $[t,t_f]$, whereas we will be using the FRS to determine where a vehicle could be \textit{at some particular time} $t$. In addition, \eqref{eq:HJIVI_FRS} has no outer maximum, since the FRSs that we will compute will not involve any obstacles.
+
+%\MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
+%
+%\begin{equation}
+%\begin{aligned}
+%\valfunc(t, \state; \targetset, \obsset(\cdot), \ham) &\quad \text{(Value function representing BRS)} \\
+%\valfuncfwd(t, \state; \targetset, \obsset(\cdot), \ham) &\quad \text{(Value function representing FRS)}
+%\end{aligned}
+%\end{equation}
+
+The Hamiltonian, $\ham(t, \state, \nabla \valfunc(t,\state))$, depends on the system dynamics, and the role of control and disturbance. Whenever $\ham$ does not depend explicit on $t$, we will drop the argument. In addition, the Hamiltonian is an optimization that produces the optimal control $\ctrl^*(t, \state)$ and optimal disturbance $\dstb^*(t, \state)$, once $\valfunc$ is determined. For BRSs, whenever the existence of a control (``$\exists \ctrl$'') or disturbance is sought, the optimization is a minimum over the set of controls or disturbance. Whenever a BRS characterizes the behavior of the system for all controls (``$\forall \ctrl$'') or disturbances, the optimization is a maximum. We will introduce precise definitions of reachable sets, expressions for the Hamiltonian, expressions for the optimal controls as needed for the many different reachability calculations we use. %As an example, suppose we are given a generic dynamical system $\dot \state = \fdyn(t, \state, \ctrl, \dstb)$ in which the control $\ctrl(\cdot)$ aims to reach the target $\targetset$ while the disturbance aims to keep the system away from the target, then
+%
+%\begin{equation}
+%\label{eq:ham_ex}
+%\begin{aligned}
+%\ham(\state, \nabla \valfunc(t,\state)) = \min_\ctrl \max_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(t, \state, \ctrl, \dstb)
+%\end{aligned}
+%\end{equation}
+%
+%In addition, given the Hamiltonian \eqref{eq:ham_ex}, the optimal control and disturbance can be obtained as the optimum of the optimization:
+%
+%\begin{equation}
+%\label{eq:opt_ctrl_dstb_ex}
+%\begin{aligned}
+%\ctrl^*(t) &= \arg \max \min_\dstb \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl, \dstb)\\
+%\dstb^*(t) &= \arg \min \nabla \valfunc(t,\state) \cdot \fdyn(\state, \ctrl^*(t), \dstb)
+%\end{aligned}
+%\end{equation}
+%
+%In anticipation of the many different reachable sets that will be computed, we will in general denote the optimal control and disturbance derived from a BRS $\brs(t; \targetset, \obsset(\cdot), \ham)$ given the target set $\targetset(t)$, obstacles $\obsset(t)$, and Hamiltonian $\ham$ as 
+%
+%\begin{equation}
+%\label{eq:opt_ctrl}
+%\begin{aligned}
+%\ctrl^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal control)} \\
+%\dstb^*(t, \state_i; \targetset, \obsset(\cdot), \ham) &\quad \text{(optimal disturbance)}
+%\end{aligned}
+%\end{equation}
+%
+%\textcolor{red}{Only keep time and/or state arguments when notation gets too heavy; use subscripts to specify the different sets instead.}
