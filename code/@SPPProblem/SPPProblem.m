@@ -89,46 +89,11 @@ classdef SPPProblem < handle
       system(sprintf('mkdir %s', obj.folder));
       
       switch problem_name
-        case 'SF_dstb_11_0sSep'
+        case 'SF_dstb'
           extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 0;
           extraArgs.dstb_or_intr = 'dstb';
-          obj.loadSetup('SF', extraArgs);
+          extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-        case 'SF_dstb_6_0sSep'
-          extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 0;
-          extraArgs.dstb_or_intr = 'dstb';
-          obj.loadSetup('SF', extraArgs);
-          
-        case 'SF_dstb_6_2sSep'
-          extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 6;
-          extraArgs.separation_time = 2;
-          extraArgs.dstb_or_intr = 'dstb';
-          obj.loadSetup('SF', extraArgs);
-          
-        case 'SF_dstb_11_2sSep'
-          extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 2;
-          extraArgs.dstb_or_intr = 'dstb';
-          obj.loadSetup('SF', extraArgs);
-          
-        case 'SF_dstb_11_4sSep'
-          extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 4;
-          extraArgs.dstb_or_intr = 'dstb';
-          obj.loadSetup('SF', extraArgs);
-          
-        case 'SF_dstb_11_6sSep'
-          extraArgs.number_of_vehicles = 50;
-          extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 6;
-          extraArgs.dstb_or_intr = 'dstb';
           obj.loadSetup('SF', extraArgs);
           
         case 'SF_intr_2'
@@ -136,6 +101,8 @@ classdef SPPProblem < handle
           extraArgs.wind_speed = 6;
           extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
+          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
@@ -152,6 +119,8 @@ classdef SPPProblem < handle
           extraArgs.wind_speed = 6;
           extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
+          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
@@ -168,6 +137,8 @@ classdef SPPProblem < handle
           extraArgs.wind_speed = 6;
           extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
+          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
           obj.loadSetup('SF', extraArgs);
           
           %% Intruder-related
@@ -183,6 +154,8 @@ classdef SPPProblem < handle
           extraArgs.number_of_vehicles = 150;
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 6;
+          extraArgs.ISTC_filename = 'BA_ISTC.mat';
+          
           obj.loadSetup('Bay_Area', extraArgs);
           
         case 'TCST_dstb'

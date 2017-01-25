@@ -28,23 +28,14 @@ switch setup_name
     %% Initial targets
     obj.targetR = 10;
     
-    targetCentersSet = { ...
-      [300; 400]; ...
-      [50; 175]; ...
-      [75; 25]; ...
-      [450; 25] ...
-      };
-    
-    initPos = [475; 200];
-    obj.initStates = cell(numVeh, 1);
-    obj.targetCenters = cell(numVeh,1);
-    for i = 1:numVeh
-      target_ind = randi(length(targetCentersSet));
-      obj.targetCenters{i} = targetCentersSet{target_ind};
-      
-      targetDirection = obj.targetCenters{i} - initPos;
-      initHeading = wrapTo2Pi(atan2(targetDirection(2), targetDirection(1)));
-      obj.initStates{i} = [initPos; initHeading];
+    if isfield(extraArgs, 'ISTC_filename')
+      fprintf('Loading initial states and target centers...\n')
+      load(extraArgs.ISTC_filename)
+      obj.initStates = IS;
+      obj.targetCenters = TC;
+    else
+      [obj.initStates, obj.targetCenters] = ...
+        gen_targets_initStates(setup_name, numVeh);
     end
 
     %% Grid
@@ -53,8 +44,14 @@ switch setup_name
     obj.gMax = [500 500 2*pi];
     obj.gN = [101 101 15];
     
+    wind_prompt = 'Please enter wind speed in m/s (6 or 11 only): ';
+    wind_speed = input(wind_prompt);
+    while ~any(wind_speed == [6 11])
+      wind_speed = input(wind_prompt);
+    end
+    
     % Custom modifications
-    if strcmp(extraArgs.dstb_or_intr, 'dstb') && extraArgs.wind_speed == 6
+    if strcmp(extraArgs.dstb_or_intr, 'dstb') && wind_speed == 6
       obj.gN = [201 201 15];
     elseif strcmp(extraArgs.dstb_or_intr, 'intr')
       obj.gMin = [-50 -50 0];
@@ -92,35 +89,28 @@ switch setup_name
     obj.mapFile = 'map_streets.png';
     
     %% Wind speed
-    if isfield(extraArgs, 'wind_speed')
-      switch extraArgs.wind_speed
-        case 6
-          obj.dMaxA = [0.6 0];
-          obj.RTT_tR = 0.5;
-        case 11
-          obj.dMaxA = [1.1 0];
-          obj.RTT_tR = 3.5;
-        otherwise
-          error('Only 6 m/s and 11 m/s winds have been properly implemented!')
-      end
-    else
-      error('Must specify property ''wind_speed'' in m/s in extraArgs!')
+    switch wind_speed
+      case 6
+        obj.dMaxA = [0.6 0];
+        obj.RTT_tR = 0.5;
+      case 11
+        obj.dMaxA = [1.1 0];
+        obj.RTT_tR = 3.5;
     end
     
+    
     %% Target separation time
-    if isfield(extraArgs, 'separation_time')
-      % Scheduled times of arrival
-      obj.tTarget = zeros(numVeh, 1);
-      for i = 1:numVeh
-        obj.tTarget(i) = -extraArgs.separation_time*(i-1);
-      end
-      
-      % Adjust global time horizon
-      obj.tMin = -500 - numVeh*extraArgs.separation_time;
-      obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
-    else
-      error('Must specify property ''separation time'' in s in extraArgs!')
+    separation_time = input('Please enter separation time in seconds: ');
+    
+    % Scheduled times of arrival
+    obj.tTarget = zeros(numVeh, 1);
+    for i = 1:numVeh
+      obj.tTarget(i) = -separation_time*(i-1);
     end
+    
+    % Adjust global time horizon
+    obj.tMin = -500 - numVeh*separation_time;
+    obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
     
     %% Augment static obstacles
     if isfield(extraArgs, 'dstb_or_intr')
@@ -206,32 +196,20 @@ switch setup_name
     obj.mapFile = 'bay_area_streets.png';
     
     %% Wind speed
-    if isfield(extraArgs, 'wind_speed')
-      switch extraArgs.wind_speed
-        case 11
-          obj.dMaxA = [1.1 0];
-          obj.RTT_tR = 3.5;
-        otherwise
-          error('Only 11 m/s wind has been properly implemented!')
-      end
-    else
-      error('Must specify property ''wind_speed'' in m/s in extraArgs!')
-    end
+    obj.dMaxA = [1.1 0];
+    obj.RTT_tR = 3.5;
     
     %% Target separation time
-    if isfield(extraArgs, 'separation_time')
-      % Scheduled times of arrival
-      obj.tTarget = zeros(numVeh, 1);
-      for i = 1:numVeh
-        obj.tTarget(i) = -extraArgs.separation_time*(i-1);
-      end
-      
-      % Adjust global time horizon
-      obj.tMin = -500 - numVeh*extraArgs.separation_time;
-      obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
-    else
-      error('Must specify property ''separation time'' in s in extraArgs!')
-    end    
+    % Scheduled times of arrival
+    separation_time = 45;
+    obj.tTarget = zeros(numVeh, 1);
+    for i = 1:numVeh
+      obj.tTarget(i) = -separation_time*(i-1);
+    end
+    
+    % Adjust global time horizon
+    obj.tMin = -1500 - numVeh*separation_time;
+    obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
     
     obj.plotSetup(setup_name);
     
