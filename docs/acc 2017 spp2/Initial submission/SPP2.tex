@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+%\documentclass[onecolumn, draftcls]{ieeeconf}      
+
+ 
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+\usepackage{amsmath}    % need for sub equations
+\usepackage{amsfonts}
+\usepackage{graphicx}   % need for figures
+\usepackage{subcaption}
+\usepackage{epsfig} 
+\usepackage{cancel}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{cite}
+\usepackage{bm}
+\usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
+\usepackage{todonotes} \setlength{\marginparwidth}{1.7cm} 
+\usepackage{float}
+
+\newcommand{\JFFnote}{\todo[size=\small,author=JFF,color=green]}
+\newcommand{\MCnote}{\textcolor{red}}
+\newcommand{\SBnote}{\todo[size=\small,author=SB,color=pink]}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cset}{\mathcal{U}}
+\newcommand{\cfset}{\mathbb{U}}
+\newcommand{\dfset}{\mathbb{D}}
+\newcommand{\dset}{\mathcal{D}}
+\newcommand{\obsset}{\mathcal{G}} % Obstacle (the one used to solve PDE)
+\newcommand{\ioset}{\mathcal{O}} % Induced obstacle
+\newcommand{\brs}{\mathcal{V}} % backwards reachable set
+\newcommand{\frs}{\mathcal{W}} % forwards reachable set
+\newcommand{\pfrs}{\mathcal{P}} % projected forwards reachable set
+\newcommand{\targetset}{\mathcal{T}}
+\newcommand{\edt}{t^\text{EDT}}
+\newcommand{\ldt}{t^\text{LDT}}
+\newcommand{\sta}{t^\text{STA}}
+\newcommand{\dz}{\mathcal{A}} % Avoid set
+\newcommand{\cradius}{R_c} % Capture radius
+\newcommand{\pos}{p} % position
+\newcommand{\npos}{h} % non-position states
+\newcommand{\veh}{Q} % vehicle
+\newcommand{\dist}{\text{dist}} % Distance
+\newcommand{\rc}{R_c} % Capture radius
+\newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
+\newcommand{\disckernel}{\Omega} % Discriminating kernel
+\newcommand{\tracklaw}{\kappa} % Robust tracking law
+
+\title{\LARGE \bf
+Safe Sequential Path Planning of Multi-Vehicle Systems Under Disturbances and Imperfect Information}
+\author{Somil Bansal*, Mo Chen*, Jaime F. Fisac, and Claire J. Tomlin
+\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen and J. F. Fisac have received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
+\thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{somil, mochen72, jfisac, tomlin\}@eecs.berkeley.edu}
+}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+%%%
+\begin{abstract}
+Multi-UAV systems are safety-critical, and guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems typically of no more than two vehicles because of the exponentially-scaling computation complexity. Previously, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. However, the previous SPP formulation assumed that there are no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods to account for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has different assumptions about information sharing. We demonstrate our proposed methods in simulations.
+\end{abstract}
+
+ \vspace{-0.5em} 
+\input{introduction.tex}
+% Introduction (1-1.5p)
+%% Motivation
+%% Related work
+%% Summary of results
+
+\input{formulation.tex}
+% Problem formulation (1.5p)
+%% A number of aircrafts aiming to reach a number of destinations respectively, on a certain schedule
+%% Disturbance
+%% How to guarantee they all get there and on time?
+%% Feedback control (centralized server) or distributed control (naive forward reachable set)
+
+\input{background.tex}
+% Solution methodology (1.5-2.5p)
+%% Variational inequality to be solved
+%% Backwards reachability
+
+% Obstacle generation
+\input{obs_gen1} % with feedback control
+\input{obs_gen2} % with intersection of FRS and BRS
+%\input{obs_gen3} % with bubbles
+\input{obs_gen3_revised} % with bubbles
+
+\input{results1.tex}
+\input{results2.tex}
+\input{results3.tex}
+\input{comparison.tex}
+% Numerical Simuations (1-2p)
+
+\input{conclusion.tex}
+% Conclusion (0.5p)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\addtolength{\textheight}{1cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+                                  
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+\end{document}
