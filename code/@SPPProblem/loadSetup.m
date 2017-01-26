@@ -7,7 +7,7 @@ switch setup_name
     end
     
     %% Vehicle
-    obj.vRangeA = [0.1 2.5];
+    obj.vRangeA = [0 2.5];
     obj.wMaxA = 2;
     
     %% RTT
@@ -139,7 +139,7 @@ switch setup_name
     
   case 'Bay_Area'
     %% Vehicle
-    obj.vRangeA = [0.1 2.5];
+    obj.vRangeA = [0 2.5];
     obj.wMaxA = 2;
     
     %% RTT
