@@ -55,6 +55,13 @@
 \newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
 \newcommand{\disckernel}{\Omega} % Discriminating kernel
 \newcommand{\tracklaw}{\kappa} % Robust tracking law
+\newcommand{\state}{x} % state
+\newcommand{\ctrl}{u} % control
+\newcommand{\dstb}{d} % disturbance
+\newcommand{\fdyn}{f} % full dynamics
+\newcommand{\costate}{\lambda}
+\newcommand{\boset}{\mathcal{B}} % Base obstacle
+\newcommand{\ham}{H} % Hamiltonian
 
 \title{\LARGE \bf
 Safe Sequential Path Planning of Multi-Vehicle Systems Under Disturbances and Imperfect Information}
@@ -95,13 +102,12 @@ Multi-UAV systems are safety-critical, and guarantees must be made to ensure no 
 % Obstacle generation
 \input{obs_gen1} % with feedback control
 \input{obs_gen2} % with intersection of FRS and BRS
-%\input{obs_gen3} % with bubbles
 \input{obs_gen3_revised} % with bubbles
 
 \input{results1.tex}
 \input{results2.tex}
 \input{results3.tex}
-\input{comparison.tex}
+% \input{comparison.tex}
 % Numerical Simuations (1-2p)
 
 \input{conclusion.tex}

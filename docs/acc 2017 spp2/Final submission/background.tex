@@ -1,6 +1,5 @@
 % !TEX root = SPP2.tex
 \section{Background \label{sec:background}}
-\SBnote{Take out the unnecessary sentences that are just being repeated.}
 This section provides a brief summary of \cite{Chen15}, in which the SPP scheme is proposed under perfect information and absence of disturbances. Here, the dynamics of $\veh_i$ becomes
 
 \begin{equation}
@@ -43,13 +42,12 @@ To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the followin
 &V_i(\sta_i, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}\\ 
 \end{aligned}
 \end{equation}
-
 \begin{equation}
+\label{eq:basicSPPHam}
 H_i\left(t, x_i, \lambda\right) = \min_{u_i \in \cset_i} \lambda \cdot f_i(t, x_i, u_i)
 \end{equation}
 
 \noindent where $\lambda$ is the gradient of the value function, $D_{x_i} V_i$, and $l_i(x_i), g_i(t,x_i),V_i(t,x_i)$ are implicit surface functions representing the target $\targetset_i$, the time-varying obstacles $\obsset_i(t)$, and the backward reachable set $\brs_i(t)$, respectively: 
-
 \begin{equation}
 \label{eq:impl_surf}
 \begin{aligned}
