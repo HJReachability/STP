@@ -78,6 +78,11 @@ end
 
 % No need to consider elements of BRS1_tau that are larger than in obstacles.tau
 
+% Just in case obstacles is empty
+if isempty(extraArgs.obstacles)
+  extraArgs = rmfield(extraArgs, 'obstacles');
+end
+
 %% Extra solver parameters
 % Min with target
 extraArgs.targets = obj.targetsm;
