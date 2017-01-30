@@ -62,26 +62,33 @@ if save_png || save_fig
   f = figure;
   
   % Map
-  I = imread('map_streets.png');
-  I = I(1:800, 701:1500, :);
-  I = flip(I, 1);
-  imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
-
+  I = imread(obj.mapFile);
+  if strcmp(obj.mapFile, 'mat_streets.png')
+    I = I(1:800, 701:1500, :);
+    I = flip(I, 1);
+    imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
+  elseif strcmp(obj.mapFile, 'bay_area_streets.png')
+    I = I(155:915, 1120:1770, :);
+    I = flip(I, 1);
+    imshow(I, 'InitialMagnification', 100, 'XData', [-125 1500], 'YData', [0 1900]);
+  end
+  
   axis xy
   axis on
   grid on
   
   hold on
-
+  
   colors = lines(length(Q));
   
   % Targets
   plotTargetSets(Q, colors);
   
   % Static obstacles
-  h = visSetIm(obj.g2D, obj.staticObs, 'k');
-  h.LineWidth = 3;
-
+  if ~isempty(obj.staticObs)
+    h = visSetIm(obj.g2D, obj.staticObs, 'k');
+    h.LineWidth = 3;
+  end
   hc = cell(length(Q), 1); % Capture radius
   ho = cell(length(Q), 1); % Obstacle
   hn = cell(length(Q), 1); % Nominal trajectory

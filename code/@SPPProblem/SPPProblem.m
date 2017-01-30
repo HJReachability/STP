@@ -40,6 +40,7 @@ classdef SPPProblem < handle
     tTarget = 0  % initial target time
     tIntr        % Intruder appearance time
     tReplan      % time at which replanning is done (intruder disappearance)
+    max_BRS_time
     
     % Space
     gMin
@@ -153,7 +154,7 @@ classdef SPPProblem < handle
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 150;
           extraArgs.wind_speed = 11;
-          extraArgs.separation_time = 6;
+          extraArgs.separation_time = 10;
           extraArgs.ISTC_filename = 'BA_ISTC.mat';
           
           obj.loadSetup('Bay_Area', extraArgs);
