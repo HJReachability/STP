@@ -40,6 +40,7 @@ classdef SPPProblem < handle
     tTarget = 0  % initial target time
     tIntr        % Intruder appearance time
     tReplan      % time at which replanning is done (intruder disappearance)
+    max_BRS_time
     
     % Space
     gMin

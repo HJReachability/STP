@@ -62,7 +62,7 @@ for veh = vehStart:length(Q)
   if length(obj.tTarget) == 1
     thisTau = obj.tau;
   else
-    thisTau = obj.tTarget(veh)-500:obj.dt:obj.tTarget(veh);
+    thisTau = obj.tTarget(veh)-obj.max_BRS_time:obj.dt:obj.tTarget(veh);
   end
   
   %% Update obstacle
