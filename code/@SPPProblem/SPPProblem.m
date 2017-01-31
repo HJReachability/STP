@@ -90,6 +90,9 @@ classdef SPPProblem < handle
       system(sprintf('mkdir %s', obj.folder));
       
       switch problem_name
+        case 'buffer_illustration'
+          obj.loadSetup(problem_name);
+          
         case 'SF_dstb'
           extraArgs.number_of_vehicles = 50;
           extraArgs.dstb_or_intr = 'dstb';
