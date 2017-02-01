@@ -1,5 +1,28 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Robust Trajectory Tracking (RTT) \label{sec:rtt}}
+In this section, we first summarize the basic SPP algorithm in the absence of disturbances and intruder. Robust trajectory tracking method is presented next which account for the disturbances in vehicles' dynamics. The material in this section is taken partially from \cite{Chen15c} and \cite{Bansal2017}. Moreover, only a concise and partial introduction to algorithms is presented here. For more details, interested readers are referred to \cite{Bansal2017}. 
+
+Consider the vehicles' dynamics with disturbances. Here, the dynamics of $\veh_i$ becomes
+\begin{equation}
+\label{eq:dyn_no_dstb}
+\begin{aligned}
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \le \sta_i \\
+\ctrl_i &\in \cset_i, \qquad i = 1 \ldots, \N
+\end{aligned}
+\end{equation}
+\noindent where the difference compared to \eqref{eq:dyn} is that the disturbance $d_i$ is no longer a part of the dynamics.
+
+\begin{alg}
+\label{alg:basic}
+\textbf{Basic SPP algorithm}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
+\begin{enumerate}
+\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+\item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
+\item determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};
+\item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset}.
+\end{enumerate}
+\end{alg}
+
 In the basic SPP algorithm, lower priority vehicles know the trajectories of all higher priority vehicles. The region that a lower priority vehicle needs to avoid is thus simply given by the danger zones around these trajectories; however, disturbances and incomplete information significantly complicate the SPP scheme. Committing to exact trajectories is no longer possible, since the disturbance $\dstb_i(\cdot)$ is \textit{a priori} unknown. Thus, the induced obstacles $\ioset_i^j(t)$ are no longer just the danger zones centered around positions. In this section, we provide an overview of the RTT algorithm that can overcome these issues. For simplicity of explanation, we will assume that no static obstacles exist, but method can be generalized even when static obstacles do exist \cite{Bansal2017}. The material in this section is taken partially from \cite{Bansal2017}. Note that even though the theoretical development in Section \ref{sec:intruder} is valid for all three algorithms developed in \cite{Bansal2017} to account for the disturbances, we use RTT algorithm for the simulations in this paper and only present RTT algorithm here. Interested readers are referred to \cite{Bansal2017} for the other two algorithms. 
 
 Even though it is impossible to commit to and track an exact trajectory in the presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the \textit{planning phase} and the \textit{disturbance rejection phase}. 

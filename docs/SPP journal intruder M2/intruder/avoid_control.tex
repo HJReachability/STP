@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Optimal Avoidance Controller} \label{sec:intruder_avoid}
-To compute the optimal avoidance control for $\veh_i$ in presence of $\veh_{\intr}$, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. 
+In this section, our goal is to compute the control policy that a vehicle $\veh_i$ can use to avoid entering in the danger region $\dz_{i\intr}$. To compute the optimal avoidance control, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_i$ can enter danger zone $\dz_{i\intr}$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. 
 
 We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\intr$ with respect to $\veh_i$ with state $\state_i$:
 \begin{equation}
@@ -10,34 +10,36 @@ We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\i
 \dot \state_{\intr, i} &= f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
 \end{aligned}
 \end{equation}
-Given the relative dynamics, we compute the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$. Under the relative dynamics \eqref{eq:reldyn}, this set of states is given by the backwards reachable set $\brs^{\text{A}}_i(\tau, \iat),~ \tau \in [0, \iat]$:
+Given the relative dynamics, the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$ is given by the backwards reachable set $\brs^{\text{A}}_i(\tau, \iat),~ \tau \in [0, \iat]$:
 
 \begin{equation} \label{eqn:avoidBRS}
 \begin{aligned}
 \brs^{\text{A}}_{i}(\tau, \iat) = & \{y: \forall \ctrl_i(\cdot) \in \cfset_i, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_i(\cdot) \in \dfset_i, \\
 & \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, i}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
-& \exists s \in [\tau, \iat], \state_{\intr, i}(s) \in \targetset^{\text{A}}_{i}, \state_{\intr, i}(\tau) = y\},
+& \exists s \in [\tau, \iat], \state_{\intr, i}(s) \in \targetset^{\text{A}}_{i}, \state_{\intr, i}(\tau) = y\},\\
+\targetset^{\text{A}}_{i} = & \{\state_{\intr, i}: \|\pos_{\intr, i}\|_2 \le \rc\}.
 \end{aligned}
 \end{equation}
-where 
+The Hamiltonian to compute $\brs^{\text{A}}_{i}(\tau, \iat)$ is given as:
+%\begin{equation}
+%\begin{aligned}
+%H^{\text{A}}_{i}(\state_{\intr, i}, \costate) = & \max_{\ctrl_i \in \cset_i} \left( \right.\\
+%&\left. \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
+%\end{aligned}
+%\end{equation}
 \begin{equation}
-\begin{aligned}
-\targetset^{\text{A}}_{i} = & \{\state_{\intr, i}: \|\pos_{\intr, i}\|_2 \le \rc\} \\
-H^{\text{A}}_{i}(\state_{\intr, i}, \costate) = & \max_{\ctrl_i \in \cset_i} \left( \right.\\
-&\left. \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
-\end{aligned}
+H^{\text{A}}_{i}(\state_{\intr, i}, \costate) = \max_{\ctrl_i \in \cset_i} \min_{\substack{\ctrl_\intr \in \cset_\intr, \\ \dstb_\intr \in \dset_\intr, \\ \dstb_i \in \dset_i}} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr).
 \end{equation}
-
 We refer to $\brs^{\text{A}}_i(\tau, \iat)$ as \textit{avoid region} hereon. Once the value function $\valfunc^{\text{A}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{A}}_{i}}$ can be obtained as:
 \begin{equation} \label{eqn:optAvoidCtrl}
-{\ctrl^{\text{A}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \left( \min_{\ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr) \right)
+{\ctrl^{\text{A}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \min_{\substack{\ctrl_\intr \in \cset_\intr, \\ \dstb_\intr \in \dset_\intr, \\ \dstb_i \in \dset_i}} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr).
 \end{equation}
 
-Let $\partial \brs^{\text{A}}_{i}(\cdot, \iat)$ denotes the boundary of the set $\brs^{\text{A}}_{i}(\cdot, \iat)$. The interpretation of $\brs^{\text{A}}_{i}(\tau, \iat)$ is that if $\state_{\intr, i}(t) \in \partial \brs^{\text{A}}_{i}(\tau, \iat)$, then $\veh_i$ can successfully avoid the intruder for a duration of $(\iat - \tau)$ using the optimal avoidance control in \eqref{eqn:optAvoidCtrl}. In the worst case, $\veh_i$ might need to avoid the intruder for a duration of $\iat$; thus, we must have that  
-$\state_{\intr, i}(\tsa) \in \left(\brs^{\text{A}}_{i}(0, \iat)\right)^C$. Equivalently, every SPP vehicle should be able to detect the intruder at a distance of $\dsen$, where
-\begin{equation} \label{eqn:sen_distance}
-\dsen = \max\{ \|p_i\|: \exists \npos_i, (p_i, \npos_i) \in \brs^{\text{A}}_{i}(0, \iat) \}.
-\end{equation} 
-Hereon, we assume that every SPP vehicle can detect the intruder at a distance of $\dsen$.
+Let $\partial \brs^{\text{A}}_{i}(\cdot, \iat)$ denotes the boundary of the set $\brs^{\text{A}}_{i}(\cdot, \iat)$. The interpretation of $\brs^{\text{A}}_{i}(\tau, \iat), \tau < \iat$ is that if $\state_{\intr, i}(t) \in \partial \brs^{\text{A}}_{i}(\tau, \iat)$, $\veh_i$ can successfully avoid the intruder for a duration of $(\iat-\tau)$ using the optimal avoidance control in \eqref{eqn:optAvoidCtrl}. Moreover, if $\state_{\intr, i}(t) \in \left( \brs^{\text{A}}_{i}(\tau, \iat)\right)^C$, then $\veh_i$ and $\veh_{\intr}$ instantaneoulsy cannot enter the danger zone $\dz_{i\intr}$, irrespective of the control applied by them at time $t$. 
 
+In the worst case, $\veh_i$ might need to avoid the intruder for a duration of $\iat$; thus, we must have that $\state_{\intr, i}(\tsa) \in \left(\brs^{\text{A}}_{i}(0, \iat)\right)^C$ to ensure successful avoidance irrespective of the intruder control strategy. Equivalently, every SPP vehicle must be able to detect the intruder at a distance of $\dsen$, where
+\begin{equation} \label{eqn:sen_distance}
+\dsen = \max\{ \|p_i\|: \exists \npos_i, (p_i, \npos_i) \in \brs^{\text{A}}_{i}(0, \iat) \};
+\end{equation} 
+otherwise, there exist an intruder control strategy such that $\veh_i$ and $\veh_{\intr}$ will collide irrespective of the control used by $\veh_i$. Thus, $\dsen$ is the \textit{minimum} detection range required by any path-planning algorithm to ensure a successful intruder avoidance for all intruder strategies. Hence, for analysis to follow, we assume that every SPP vehicle can detect the intruder at a distance of $\dsen$. Interestingly, this detection range is also sufficient to avoid an intruder. In fact, the proposed algorithm does not require detection beyond $\dsen$.
 %Under normal circumstances when the intruder $\veh_{\intr}$ is far away, we have $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) > 0$; as $\veh_{\intr}$ gets closer to $\veh_i$, $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t))$ decreases. If $\veh_i$ applies the control ${\ctrl^{\text{S}}_{i}}$ when $\valfunc^{\text{S}}_{i}(0, \state_{\intr, i}(t)) = 0$, then collision avoidance between $\veh_i$ and $\veh_{\intr}$ is guaranteed for a duration of $\iat$ under the worst-case intruder control strategy $\ctrl_\intr$.

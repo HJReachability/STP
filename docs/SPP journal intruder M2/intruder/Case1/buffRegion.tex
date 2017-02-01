@@ -1,5 +1,6 @@
 % !TEX root = ../../SPP_IoTjournal.tex
 \subsubsection{Buffer Region} \label{sec:buffRegion_case1}
+\SBnote{Start from here.}
 From Section \ref{sec:sepRegion_case1}, we know that $\state_{\intr}^0 := \state_{\intr}(\tsa) \in \sep_j(\tsa) := \sep_j(\tsa_j)$, where last equivalence holds because $\tsa_j = \tsa$ (by Observation \ref{obs1_case1}). Moroever, since avoid start time of $\veh_i$ is $\tsa_i$, we must have $\state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$.
 
 In this section, we first compute the set of all relative states $\brs^{\text{B}}_{i}$ from which it is possible to reach $\brs^{\text{A}}_{i}(0, \iat)$ for some control applied by $\veh_{\intr}$ and $\veh_i$. If we augment this relative coordinates set $\brs^{\text{B}}_{i}$ on $\sep_j(\tsa)$ to get $\buff_{ij}(\tsa)$, then we can guarantee that $\veh_{\intr}$ cannot reach the boundary (or inside) of $\brs^{\text{A}}_{i}(0, \iat)$ before $t = \tsa + \brd$ irrespective of the control applied by $\veh_{\intr}$ and $\veh_i$ during $[\tsa, t]$, if $\state_{\intr}(\tsa) \in \sep_j(\tsa)$ and $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$. Equivalently, $(\tsa_i - \tsa_j) \geq \brd$, if $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$ ($\state_{\intr}(\tsa) \in \sep_j(\tsa)$ from Section \ref{sec:sepRegion_case1} and $\tsa = \tsa_j$ by Observation 1).
