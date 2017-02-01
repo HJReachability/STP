@@ -64,6 +64,7 @@ classdef SPPProblem < handle
     minMinBRS_filename    % minMinBRS file (for computing buffer region)
     bufferRegion_filename % Buffer region
     FRSBRS_filename       % FRSs and BRSs of FRSs
+    RBR_filename          % "Relative buffer region" (min min on top of max min)
     rawAugObs_filename    % raw augmented obstacles file name
     
     NI_RS_chkpt_filename % no intruder reachable sets

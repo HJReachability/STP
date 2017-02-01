@@ -42,16 +42,12 @@ for i = 1:4
       set(gca, 'zticklabels', {'0', '\pi', '2\pi'})      
       
     case 4
-      load(obj.minMinBRS_filename)
+      if ~exist(obj.RBR_filename, 'file')
+        obj.computeRBR;
+      end
       
-      rdi = obj.remaining_duration_ind;
-      CARSdata = migrateGrid(CARS.g, CARS.data(:,:,:,rdi), minMinBRS.g);
-      
-      bdi = obj.buffer_duration_ind;
-      RBR = computeDataByUnion(minMinBRS.g, minMinBRS.data(:,:,:,bdi), ...
-        minMinBRS.g, CARSdata, [1 2], 3, false);
-      
-      visSetIm(minMinBRS.g, RBR);
+      load(obj.RBR_filename)
+      visSetIm(RBR.g, RBR.data);
       
       title({'(Relative) Buffer Region', ...
         '\qquad($\mathcal{V}^B(0, t^\mathrm{BRD})$)'}, 'Interpreter', ...
