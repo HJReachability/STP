@@ -48,9 +48,13 @@ schemeData.dMode = 'min';
 % grid_min = [-27*obj.Rc; -27*obj.Rc; 0];
 % grid_max = [27*obj.Rc; 27*obj.Rc; 2*pi];
 
-% for SPPwIntruderRTT method 2 with 6 m/s wind
-grid_min = [-20; -20; 0];
-grid_max = [20; 20; 2*pi];
+% % for SPPwIntruderRTT method 2 with 6 m/s wind
+% grid_min = [-20; -20; 0];
+% grid_max = [20; 20; 2*pi];
+
+% For 0 m/s wind
+grid_min = [-2; -3; 0];
+grid_max = [4; 3; 2*pi];
 
 N = [41; 41; 41]; 
 % 3rd dimension is periodic

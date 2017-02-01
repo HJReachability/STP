@@ -1,6 +1,19 @@
 function loadSetup(obj, setup_name, extraArgs)
 
 switch setup_name
+  case 'buffer_illustration'
+    %% Vehicle
+    obj.vRangeA = [0 2.5];
+    obj.wMaxA = 2;
+    obj.dMaxA = [0 0];
+    
+    obj.dt = 0.1;
+    obj.Rc = 1;
+    
+    obj.tIAT = 10;
+    
+    obj.max_num_affected_vehicles = 3;
+    
   case 'SF'
     if nargin < 3
       error('Must specify extraArgs for ''SF'' setup!')
@@ -22,6 +35,7 @@ switch setup_name
     end
     
     %% Sampling and collision radius
+    obj.max_BRS_time = 500;
     obj.dt = 0.5;
     obj.Rc = 1;
     
@@ -109,7 +123,7 @@ switch setup_name
     end
     
     % Adjust global time horizon
-    obj.tMin = -500 - numVeh*separation_time;
+    obj.tMin = -obj.max_BRS_time - numVeh*separation_time;
     obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
     
     %% Augment static obstacles
@@ -188,6 +202,7 @@ switch setup_name
     disp(tarCount)
     
     %% Sampling and collision radius
+    obj.max_BRS_time = 1500;
     obj.dt = 0.5;
     obj.Rc = 1;
 
