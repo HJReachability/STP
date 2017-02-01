@@ -155,10 +155,9 @@ classdef SPPProblem < handle
           obj.augment_staticObs_intr2;          
           
         case 'Bay_Area'
-          extraArgs.number_of_vehicles = 150;
+          extraArgs.number_of_vehicles = 200;
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 10;
-          extraArgs.ISTC_filename = 'BA_ISTC.mat';
           
           obj.loadSetup('Bay_Area', extraArgs);
           
