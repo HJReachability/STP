@@ -53,10 +53,10 @@ schemeData.dMode = 'min';
 % grid_max = [20; 20; 2*pi];
 
 % For 0 m/s wind
-grid_min = [-2; -3; 0];
-grid_max = [4; 3; 2*pi];
+grid_min = [-4; -4; 0];
+grid_max = [4; 4; 2*pi];
 
-N = [41; 41; 41]; 
+N = [41; 41; 41];
 % 3rd dimension is periodic
 schemeData.grid = createGrid(grid_min, grid_max, N, 3);
 

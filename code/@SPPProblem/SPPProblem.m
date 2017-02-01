@@ -64,6 +64,7 @@ classdef SPPProblem < handle
     minMinBRS_filename    % minMinBRS file (for computing buffer region)
     bufferRegion_filename % Buffer region
     FRSBRS_filename       % FRSs and BRSs of FRSs
+    RBR_filename          % "Relative buffer region" (min min on top of max min)
     rawAugObs_filename    % raw augmented obstacles file name
     
     NI_RS_chkpt_filename % no intruder reachable sets
@@ -117,6 +118,22 @@ classdef SPPProblem < handle
           obj.add_data_file('bufferRegion', 'bufferRegion2_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
           obj.augment_staticObs_intr2;          
+
+        case 'buffer_region_steps'
+          extraArgs.number_of_vehicles = 1;
+          extraArgs.wind_speed = 6;
+          extraArgs.separation_time = 45;
+          extraArgs.dstb_or_intr = 'intr';
+          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
+          obj.loadSetup('SF', extraArgs);
+          
+          %% Intruder-related
+          obj.max_num_affected_vehicles = 3;
+          
+          obj.add_data_file('RTTRS', 'RTTRS6.mat');
+          obj.add_data_file('CARS', 'CARS6.mat');
+          obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
           
         case 'SF_intr_3'
           extraArgs.number_of_vehicles = 50;
@@ -155,7 +172,7 @@ classdef SPPProblem < handle
           obj.augment_staticObs_intr2;          
           
         case 'Bay_Area'
-          extraArgs.number_of_vehicles = 150;
+          extraArgs.number_of_vehicles = 200;
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 10;
           extraArgs.ISTC_filename = 'BA_ISTC.mat';
