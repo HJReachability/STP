@@ -26,6 +26,8 @@
 \usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
 \usepackage{todonotes} \setlength{\marginparwidth}{1.7cm} 
 \usepackage{float}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*}
 
 \newcommand{\JFFnote}{\todo[size=\small,author=JFF,color=green]}
 \newcommand{\MCnote}{\textcolor{red}}
@@ -77,10 +79,9 @@ Safe Sequential Path Planning of Multi-Vehicle Systems Under Disturbances and Im
 
 %%%
 \begin{abstract}
-Multi-UAV systems are safety-critical, and guarantees must be made to ensure no undesirable configurations such as collisions occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems because it provides safety guarantees and is flexible in terms of system dynamics; however, its direct application is limited to small-scale systems typically of no more than two vehicles because of the exponentially-scaling computation complexity. Previously, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. However, the previous SPP formulation assumed that there are no disturbances in the vehicle dynamics, and that every vehicle has perfect knowledge of the position of higher-priority vehicles. In this paper, we make SPP more practical by providing three different methods to account for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has different assumptions about information sharing. We demonstrate our proposed methods in simulations.
+Multi-UAV systems are safety-critical, and guarantees must be made to ensure no unsafe configurations occur. Hamilton-Jacobi (HJ) reachability is ideal for analyzing such safety-critical systems; however, its direct application is limited to small-scale systems of no more than two vehicles due to a exponentially-scaling computational complexity. Previously, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computational complexity. However, the previous formulation assumed that there are no disturbances, and that every vehicle has perfect knowledge of higher-priority vehicles' positions. In this paper, we make SPP more practical by providing three different methods to account for disturbances in dynamics and imperfect knowledge of higher-priority vehicles' states. Each method has different assumptions about information sharing. We demonstrate our proposed methods in simulations.
 \end{abstract}
 
- \vspace{-0.5em} 
 \input{introduction.tex}
 % Introduction (1-1.5p)
 %% Motivation
