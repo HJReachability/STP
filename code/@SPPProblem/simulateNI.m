@@ -63,7 +63,7 @@ if save_png || save_fig
   
   % Map
   I = imread(obj.mapFile);
-  if strcmp(obj.mapFile, 'mat_streets.png')
+  if strcmp(obj.mapFile, 'map_streets.png')
     I = I(1:800, 701:1500, :);
     I = flip(I, 1);
     imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
