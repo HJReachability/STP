@@ -40,7 +40,7 @@ Denote the rest of the states $\npos_i$, so that $x_i = (\pos_i, \npos_i)$. The 
  
 The problem of driving each of the vehicles in \eqref{eq:dyn} into their respective target sets $\targetset_i$ would be in general a differential game of dimension $\sum_i n_i$. However, due to the exponential scaling of the complexity with the problem dimension, an optimal solution is computationally intractable even for $N>2$, with $n_i$ as small as $3$.
 
-In this paper, we assume that vehicles have assigned priorities as in the SPP method \cite{Chen15}. While traveling to its target set, a vehicle may ignore the presence of lower-priority vehicles, but must take full responsibility for avoiding higher-priority vehicles. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to consider these practically important aspects of the problem. In particular, we answer the following inter-dependent questions that were not previously addressed:
+In this paper, we assume that vehicles have assigned priorities as in the SPP method \cite{Chen15}. Since the analysis in \cite{Chen15} did not take into account the presence of disturbances $d_i$ and limited information available to each vehicle, we extend the work in \cite{Chen15} to answer the following:
 \begin{enumerate}
 \item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite the disturbances it and other vehicles experience?
 %\item How can each vehicle take into account the disturbances that other vehicles experience?
