@@ -1,6 +1,6 @@
 % !TEX root = ../../SPP_IoTjournal.tex
 \subsubsection{Buffer Region} \label{sec:buffRegion_case2}
-We now want to compute the set of all states $\state_{\intr}$ such that if $\veh_{\intr}$ starts in this set at time $t$, it cannot reach $\sep_j(\cdot)$ before $t_1 = t + \brd$, regardless of the control applied by $\veh_j$ and $\veh_{\intr}$ during interval $[t, t_1]$. Similar to Section \ref{sec:buffRegion_case1}, this set is given by $\brs^{\text{B}}_{j}(0, \brd)$: 
+The idea behind the design of buffer region is same as that in Case1: we want to make sure that $\veh_{\intr}$ spends at least a duration of $\brd$ to go from the boundary of the avoid region of one SPP vehicle to the boundary of the avoid region of some other SPP vehicle. Mathematically, we want to compute the set of all states $\state_{\intr}$ such that if $\veh_{\intr}$ starts in this set at time $t$, it cannot reach $\sep_j(\cdot)$ before $t_1 = t + \brd$, regardless of the control applied by $\veh_j$ and $\veh_{\intr}$ during interval $[t, t_1]$. Similar to Section \ref{sec:buffRegion_case1}, this set is given by $\brs^{\text{B}}_{j}(0, \brd)$: 
 \begin{equation} \label{eqn:buffBRS_case1}
 \begin{aligned}
 \brs^{\text{B}}_{j}(0, \brd) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
@@ -11,13 +11,11 @@ We now want to compute the set of all states $\state_{\intr}$ such that if $\veh
 \end{equation}
 where 
 \begin{equation}
-H^{\text{B}}_{j}(\state_{\intr, j}, \costate) = \min_{\ctrl_j \in \cset_j, \ctrl_\intr \in \cset_\intr, \dstb_j \in \dset_j, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr)
+H^{\text{B}}_{j}(\state_{\intr, j}, \costate) = \min_{\substack{\ctrl_j \in \cset_j, \ctrl_\intr \in \cset_\intr, \\ \dstb_j \in \dset_j, \dstb_\intr \in \dset_\intr}} \costate \cdot f_r(\state_{\intr, j}, \ctrl_j, \ctrl_\intr, \dstb_j, \dstb_\intr)
 \end{equation}
 
-In absolute coordinates, we thus have that if the intruder starts outside $\tilde{\buff}_{ji}(t) = \boset_j(t) + \brs^{\text{B}}_{j}(0, \brd)$ at time $t$, then it cacnot reach $\sep_j(\cdot)$ before time $t + \brd$. Finally, if we can ensure that the avoid region of $\veh_i$ at time $t$ is outside $\tilde{\buff}_{ji}(t)$, then $\state_{\intr, i}(\tsa) := \state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$ implies that $\tsa_j - \tsa_i \geq \brd$. Mathematically, if we define the set,  
+In absolute coordinates, we thus have that if the intruder starts outside $\tilde{\buff}_{ji}(t) = \boset_j(t) + \brs^{\text{B}}_{j}(0, \brd)$ at time $t$, then it cannot reach $\sep_j(\cdot)$ before time $t + \brd$. Finally, if we can ensure that the avoid region of $\veh_i$ at time $t$ is outside $\tilde{\buff}_{ji}(t)$, then $\state_{\intr, i}(\tsa) := \state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$ implies that $\tsa_j - \tsa_i \geq \brd$. Mathematically, if we define the set,  
 \begin{equation} \label{eqn:buffRegion_case2}
 \buff_{ji}(\tsa) = \boset_j(\tsa) + \brs^{\text{B}}_{j}(0, \brd) + \left(-\brs^{\text{A}}_{i}(0, \iat)\right),
 \end{equation} 
-then $(\tsa_j - \tsa_i) \geq \brd$ as long as $\state_i(\tsa) \in \left(\buff_{ji}(\tsa)\right)^C$.
-
-
+then $(\tsa_j - \tsa_i) \geq \brd$ as long as $\state_i(\tsa) \in \left(\buff_{ji}(\tsa)\right)^C$. Thus, if $\state_i(\tsa) \in \left(\buff_{ji}(\tsa)\right)^C$, then the separation requirement is satisfied in Case2. Further, if $\state_i(\tsa) \in \left(\buff_{ji}(\tsa) \cup \buff_{ij}(\tsa)\right)^C$, then the separation requirement is satisfied regardless of \textit{any} intruder strategy.

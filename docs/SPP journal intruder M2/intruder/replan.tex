@@ -1,11 +1,13 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Replanning after intruder avoidance} \label{sec:replan}
-Intruder can force some SPP vehicles to deviate from their planned trajectory; therefore, we have to replan the trajectory of these vehicles once $\veh_{\intr}$ disappears. The set of all vehicles $\veh_i$ for whom we need to replan the trajectories, $\rvs$, can be obtained by checking if a vehicle $\veh_i$ applied any avoidnace control during $[\tsa, \tea]$, e.g.,
+As discussed in Section \ref{sec:path_planning}, the intruder can force some SPP vehicles to deviate from their planned nominal trajectory; therefore, goal satisfaction is no longer guaranteed once a vehicle is forced to apply an avoidance maneuver. Therefore, we have to replan the trajectories of these vehicles once $\veh_{\intr}$ disappears. The set of all vehicles $\veh_i$ for whom we need to replan the trajectories, $\rvs$, can be obtained by checking if a vehicle $\veh_i$ applied any avoidance control during $[\tsa, \tea]$, e.g.,
 \begin{equation} \label{eq:RVS}
 \rvs = \{\veh_i: \tsa_i < \infty, i \in \{1, \ldots, \N \} \}. 
 \end{equation}  
 
-Note that due to the presence of separation and buffer regions, atmost $\nva$ vehicles can be affected by $\veh_{\intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles in $\rvs$ is given by:
+Note that due to the presence of separation and buffer regions, at most $\nva$ vehicles can be affected by $\veh_{\intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Note that we can pick $\nva$ beforehand and design buffer regions accordingly. Thus, by picking compatible $\nva$ based on the available computation resources during run-time, we can ensure that this replanning can be done in real time. 
+
+Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles in $\rvs$ is given by:
 
 \begin{equation*}
 \ctrl_i^{\text{RP}}(t) = 
@@ -25,13 +27,7 @@ Note that in order to re-plan using a SPP method, we need to determine feasible 
 & \state_i(t) = y, \forall s \in [\tea, t], \state_i(s) \notin \obsset_i^{\text{RP}}(s) \},
 \end{aligned}
 \end{equation}
-\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tea$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ now needs to avoid all other vehicles $\veh_j \notin \rvs$ and is defined in a way analogous to \eqref{eq:obsseti}.
-%\begin{equation} 
-%\obsset_j^{\text{RP}}(t) = \bigcup_{k<j} \frs_k^{\text{RP}}(\tea, t), ~~~t > \tea.
-%\end{equation}
-
-The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
-
+\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tea$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ now needs to avoid all other vehicles in $(\rvs)^C$ and is defined in a way analogous to \eqref{eq:obsseti}. The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
 \begin{aligned}
 \max \Big\{&D_t \valfuncfwd_i^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd_i^{\text{RP}}(t, \state_i)), \\
@@ -44,7 +40,7 @@ The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref
 \noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta_i$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience.
 
 \begin{remark}
-Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}. 
+Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time} by designing buffer regions during replanning as well.
 \end{remark}
 
 We conclude this section by summarizing the overall SPP algorithm: 
@@ -54,8 +50,8 @@ We conclude this section by summarizing the overall SPP algorithm:
 \begin{enumerate}
 \item determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}.
 \item compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, \eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. 
-\item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
-\item given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};
+\item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$;
+\item given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy}
 \item the optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl};
 \end{enumerate}
 

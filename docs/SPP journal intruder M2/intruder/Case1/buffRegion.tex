@@ -1,28 +1,29 @@
 % !TEX root = ../../SPP_IoTjournal.tex
 \subsubsection{Buffer Region} \label{sec:buffRegion_case1}
-\SBnote{Start from here.}
-From Section \ref{sec:sepRegion_case1}, we know that $\state_{\intr}^0 := \state_{\intr}(\tsa) \in \sep_j(\tsa) := \sep_j(\tsa_j)$, where last equivalence holds because $\tsa_j = \tsa$ (by Observation \ref{obs1_case1}). Moroever, since avoid start time of $\veh_i$ is $\tsa_i$, we must have $\state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$.
+Recall that from the definition of avoid start time, it follows that $\state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(\tsa_i-\tsa, \iat)$. In this section, we first compute the set of all relative states, $\brs^{\text{B}}_{i}$, from which it is possible to reach $\partial \brs^{\text{A}}_{i}(\tsa_i-\tsa_j, \iat)$ in a duration of $\brd$ for some control applied by $\veh_{\intr}$ and $\veh_i$, where $\brd$ is defined in \eqref{eqn:sep_cond}. Further, if $\brs^{\text{B}}_{i}$ is augmented on $\sep_j(\tsa_j)$ (to get $\buff_{ij}(\tsa_j)$), then we can guarantee that $\veh_{\intr}$ cannot reach the boundary (or inside) of $\brs^{\text{A}}_{i}(t-\tsa_j, \iat)$ before $t = \tsa_j + \brd$, irrespective of the control applied by $\veh_{\intr}$ and $\veh_i$ during $[\tsa_j, t]$, if $\state_{\intr}(\tsa_j) \in \sep_j(\tsa_j)$ and $\state_i(\tsa_j) \in \left(\buff_{ij}(\tsa_j)\right)^C$. Equivalently, $\tsa_i \geq \tsa_j + \brd$, if $\state_i(\tsa_j) \in \left(\buff_{ij}(\tsa_j)\right)^C$. Note that $\state_{\intr}(\tsa_j) \in \sep_j(\tsa_j)$ is already ensured by the construction of $\sep_j(\tsa_j)$.
+%
+%From Section \ref{sec:sepRegion_case1}, we know that in Case1 $\state_{\intr}^0 \equiv \state_{\intr}(\tsa) \in \sep_j(\tsa) \equiv \sep_j(\tsa_j)$, where the last equivalence holds because $\tsa_j = \tsa$ (by Observation \ref{obs1_case1}). Moreover, since avoid start time of $\veh_i$ is $\tsa_i$, we must have $\state_{\intr, i}(\tsa_i) \in \partial \brs^{\text{A}}_{i}(0, \iat)$.
+%
+%In this section, we first compute the set of all relative states $\brs^{\text{B}}_{i}$ from which it is possible to reach $\brs^{\text{A}}_{i}(0, \iat)$ for some control applied by $\veh_{\intr}$ and $\veh_i$. If we augment this relative coordinates set $\brs^{\text{B}}_{i}$ on $\sep_j(\tsa)$ to get $\buff_{ij}(\tsa)$, then we can guarantee that $\veh_{\intr}$ cannot reach the boundary (or inside) of $\brs^{\text{A}}_{i}(0, \iat)$ before $t = \tsa + \brd$ irrespective of the control applied by $\veh_{\intr}$ and $\veh_i$ during $[\tsa, t]$, if $\state_{\intr}(\tsa) \in \sep_j(\tsa)$ and $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$. Equivalently, $(\tsa_i - \tsa_j) \geq \brd$, if $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$ ($\state_{\intr}(\tsa) \in \sep_j(\tsa)$ from Section \ref{sec:sepRegion_case1} and $\tsa = \tsa_j$ by Observation 1).
 
-In this section, we first compute the set of all relative states $\brs^{\text{B}}_{i}$ from which it is possible to reach $\brs^{\text{A}}_{i}(0, \iat)$ for some control applied by $\veh_{\intr}$ and $\veh_i$. If we augment this relative coordinates set $\brs^{\text{B}}_{i}$ on $\sep_j(\tsa)$ to get $\buff_{ij}(\tsa)$, then we can guarantee that $\veh_{\intr}$ cannot reach the boundary (or inside) of $\brs^{\text{A}}_{i}(0, \iat)$ before $t = \tsa + \brd$ irrespective of the control applied by $\veh_{\intr}$ and $\veh_i$ during $[\tsa, t]$, if $\state_{\intr}(\tsa) \in \sep_j(\tsa)$ and $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$. Equivalently, $(\tsa_i - \tsa_j) \geq \brd$, if $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$ ($\state_{\intr}(\tsa) \in \sep_j(\tsa)$ from Section \ref{sec:sepRegion_case1} and $\tsa = \tsa_j$ by Observation 1).
-
-We refer to the set $\buff_{ij}(\tsa)$ as \textit{buffer region} hereon. To compute $\buff_{ij}(\tsa)$, we first compute $\brs^{\text{B}}_{i}$ which is given by the following BRS:
+We refer to the set $\buff_{ij}(t)$ as \textit{buffer region} hereon. Thus, if $\state_i(t) \notin \buff_{ij}(t)$, then the separation requirement holds in Case1. To compute $\buff_{ij}(\tsa)$, we first compute $\brs^{\text{B}}_{i}$ which is given by the following BRS:
 \begin{equation} \label{eqn:buffBRS_case1}
 \begin{aligned}
 \brs^{\text{B}}_{i}(0, \brd) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_i(\cdot) \in \dfset_i, \\
 & \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{i, \intr}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
-& \exists s \in [0, \brd], \state_{i, \intr}(s) \in -\brs^{\text{A}}_{i}(0, \iat),\\
-& \state_{i, \intr}(t) = y\},
+& \exists s \in [0, \brd], \state_{i, \intr}(s) \in -\brs^{\text{A}}_{i}(\brd, \iat),\\
+& \state_{i, \intr}(t) = y\},\\
+-\brs^{\text{A}}_{i}(\brd, \iat) = & \{y: -y \in \brs^{\text{A}}_{i}(\brd, \iat) \}.
 \end{aligned}
 \end{equation}
-where 
+The Hamiltonian to compute $\brs^{\text{B}}_{i}(0, \brd)$ is given by:
 \begin{equation} 
-H^{\text{B}}_{i}(\state_{i, \intr}, \costate) = \min_{\ctrl_i \in \cset_i, \ctrl_\intr \in \cset_\intr, \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr} \costate \cdot f_r(\state_{i, \intr}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
+H^{\text{B}}_{i}(\state_{i, \intr}, \costate) = \min_{\substack{\ctrl_i \in \cset_i, \ctrl_\intr \in \cset_\intr, \\ \dstb_i \in \dset_i, \dstb_\intr \in \dset_\intr}} \costate \cdot f_r(\state_{i, \intr}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr).
 \end{equation}
+Intuitively, $\brs^{\text{B}}_{i}(0, \brd)$ represents the set of all relative states $\state_{i, \intr}$ from which it is possible to reach the boundary of $\brs^{\text{A}}_{i}(\brd, \iat)$ within a duration of $\brd$. Note that we use $-\brs^{\text{A}}_{i}(0, \iat)$ instead of $\brs^{\text{A}}_{i}(0, \iat)$ as the target set for our computation above because we are computing BRS $\brs^{\text{B}}_{i}(0, \brd)$ using the relative state $\state_{i, \intr}$ and not $\state_{\intr, i}$. We refer to set $\brs^{\text{B}}_{i}(0, \brd)$ as \textit{relative buffer region} here on. %Also, since $\veh_{\intr}$ appears for a maximum duration of $\iat$, it is sufficient to ensure that $\veh_{\intr}$ and $\veh_i$ do not reach the set $\brs^{\text{A}}_{i}(\brd, \iat)$ instead of $\brs^{\text{A}}_{i}(0, \iat)$, as a duration of $\brd$ is already spent by $\veh_{\intr}$ to reach the avoid region of $\veh_i$.
 
-Note that we use $-\brs^{\text{A}}_{i}(0, \iat)$ as the target set for our computation above because we are computing BRS $\brs^{\text{B}}_{i}(0, \brd)$ using the relative state $\state_{i, \intr}$ and not $\state_{\intr, i}$. Also, since $\veh_{\intr}$ appears for a maximum duration of $\iat$, it is sufficient to ensure that $\veh_{\intr}$ and $\veh_i$ do not reach the set $\brs^{\text{A}}_{i}(\brd, \iat)$ instead of $\brs^{\text{A}}_{i}(0, \iat)$, as a duration of $\brd$ is already spent by $\veh_{\intr}$ to reach the avoid region of $\veh_i$.
-
-The buffer region can not be computed by augmenting $\brs^{\text{B}}_{i}(0, \brd)$ on the separation region of the $\veh_j$:
+The buffer region can now be computed by augmenting $\brs^{\text{B}}_{i}(0, \brd)$ on the separation region of $\sep_j(\tsa)$:
 \begin{equation} \label{eqn:buffRegion_case1}
 \buff_{ij}(\tsa) = \sep_j(\tsa) + \brs^{\text{B}}_{i}(0, \brd).
 \end{equation} 
-We can thus ensure that $(\tsa_i - \tsa_j) \geq \brd$ as long as $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$.
+Thus, we can ensure that $(\tsa_i - \tsa_j) \geq \brd$ as long as $\state_i(\tsa) \in \left(\buff_{ij}(\tsa)\right)^C$. Therefore, $\veh_{\intr}$ can force at most $\nva$ vehicles to apply an avoidance maneuver during a duration of $\iat$.

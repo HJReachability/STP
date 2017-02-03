@@ -35,7 +35,7 @@ On its way to $\targetset_i$, $\veh_i$ must avoid a set of static obstacles $\so
 \begin{equation}
 \dz_{ij} = \{(\state_i, \state_j): \|\pos_i - \pos_j\|_2 \le \rc\}
 \end{equation}
-\noindent whose interpretation is that $\veh_i$ and $\veh_j$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other. In particular, $\veh_i$ and $\veh_j$ are said to have collided, ifif $(\state_i, \state_j) \in \dz_{ij}$.
+\noindent whose interpretation is that $\veh_i$ and $\veh_j$ are considered to be in an unsafe configuration when they are within a distance of $\rc$ of each other. In particular, $\veh_i$ and $\veh_j$ are said to have collided, if $(\state_i, \state_j) \in \dz_{ij}$.
 
 In addition to the obstacles and danger zones, an intruder vehicle can also appear in the system, which can potentially have malicious intents. In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. Therefore, we make the following two assumptions: 
 \begin{assumption}
@@ -52,7 +52,7 @@ The dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(
 
 Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead. We also denote the initial state of the intruder as $\state_{\intr}^0.$ Note that $\state_{\intr}^0$ is unknown.
 
-Given the set of SPP vehicles, their targets $\targetset_i$, the static obstacles $\soset_i$, the vehicles' danger zones with respect to each other $\dz_{ij}$, and the intruder dynamics $f_\intr(\cdot)$, our goal is, for each vehicle $\veh_i$, to synthesize a controller which guarantees that $\veh_i$ reaches its target $\targetset_i$ at or before the scheduled time of arrival $\sta_i$, while avoiding the static obstacles $\soset_i$, the danger zones with respect to all other vehicles $\dz_{ij}, j\neq i$, and the intruder vehicle $\veh_{\intr}$, irrepsective of the control strategy of the intruder. In addition, we would like to obtain the latest departure time $\ldt_i$ such that $\veh_i$ can still arrive at $\targetset_i$ on time.
+Given the set of SPP vehicles, their targets $\targetset_i$, the static obstacles $\soset_i$, the vehicles' danger zones with respect to each other $\dz_{ij}$, and the intruder dynamics $f_\intr(\cdot)$, our goal is, for each vehicle $\veh_i$, to synthesize a controller which guarantees that $\veh_i$ reaches its target $\targetset_i$ at or before the scheduled time of arrival $\sta_i$, while avoiding the static obstacles $\soset_i$, the danger zones with respect to all other vehicles $\dz_{ij}, j\neq i$, and the intruder vehicle $\veh_{\intr}$, irrespective of the control strategy of the intruder. In addition, we would like to obtain the latest departure time $\ldt_i$ such that $\veh_i$ can still arrive at $\targetset_i$ on time.
 
 In general, the above optimal path planning problem must be solved in the joint space of all $\N$ SPP vehicles and the intruder vehicle. However, due to the high joint dimensionality, a direct dynamic programming-based solution is intractable. Therefore, authors in \cite{Chen15c} proposed to assign a priority to each vehicle, and perform SPP given the assigned priorities. Without loss of generality, let $\veh_j$ have a higher priority than $\veh_i$ if $j<i$. Under the SPP scheme, higher-priority vehicles can ignore the presence of lower-priority vehicles, and perform path planning without taking into account the lower-priority vehicles' danger zones. A lower-priority vehicle $\veh_i$, on the other hand, must ensure that it does not enter the danger zones of the higher-priority vehicles $\veh_j, j<i$ or the intruder vehicle $\veh_{\intr}$; each higher-priority vehicle $\veh_j$ induces a set of time-varying obstacles $\ioset_i^j(t)$, which represents the possible states of $\veh_i$ such that a collision between $\veh_i$ and $\veh_j$ or $\veh_i$ and $\veh_{\intr}$ could occur.
 
@@ -62,5 +62,5 @@ However, when an intruder appears in the system, depending on the initial state 
 \begin{enumerate}
 \item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite no knowledge of the intruder initial state, the time at which it appears and its control strategy?
 \item How can it be ensured that only a small number of vehicles need to replan their trajectories after the intruder disappears from the system? 
-\item Can we control the number the vehicles that need to replan their tarjectories?
+\item Can we control the number the vehicles that need to replan their trajectories?
 \end{enumerate}

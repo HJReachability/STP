@@ -1,6 +1,6 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Path Planning} \label{sec:path_planning}
-In sections \ref{sec:case1} and \ref{sec:case2}, we computed obstacles for $\veh_i$ such that $\veh_i$ and $\veh_j$ do not collide with each other while avodiing intruder. We next compute the states that $\veh_i$ needs to avoid to avoid a collision with static obstacles, regardless of the avoidance maneuver applied by it. Since $\veh_i$ applies avoidnace maneuver for a maximum duration of $\iat$ this set is given by the following BRS:
+In sections \ref{sec:intruderObs_case1} and \ref{sec:intruderObs_case2}, we computed obstacles for $\veh_i$ such that $\veh_i$ and $\veh_j$ do not collide with each other while avoiding intruder. We next compute the states that $\veh_i$ needs to avoid to avoid a collision with static obstacles while it is applying an avoidance maneuver. Since $\veh_i$ applies avoidance maneuver for a maximum duration of $\iat$ this set is given by the following BRS:
 \begin{equation} \label{eq:ObsBRS_static}
 \begin{aligned}
 \brs^{\text{S}}_{i}(t, t+\iat) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
@@ -11,15 +11,15 @@ In sections \ref{sec:case1} and \ref{sec:case2}, we computed obstacles for $\veh
 \end{equation}
 The Hamiltonian $\ham^{\text{S}}_{i}$ to compute $\brs^{\text{S}}_{i}(t, t+\iat)$ is given by:
 \begin{equation} \label{eqn:BRS_obsham_static}
-\ham^{\text{S}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \min_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
+\ham^{\text{S}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i, \dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
 \end{equation}
+$\brs^{\text{S}}_{i}(t, t+\iat)$ represents the set of all states of $\veh_i$ at time $t$ that can lead to a collision with a static obstacle for some $\tau > t$ for some control strategy of $\veh_i$.
 
-The overall obstacle for $\veh_i$ is thus given by:
+During the path planning of $\veh_i$, if we use $\buff_{ij}(t)$ and $\buff_{ji}(t)$ as obstacles at time $t$, then the separation requirement is ensured between $\veh_i$ and $\veh_j$ for all intruder strategies and $\tsa = t$. Similarly, if obstacles computed in sections \ref{sec:intruderObs_case1} and \ref{sec:intruderObs_case2} as obstacles in path planning, then we can guarantee collision avoidance between $\veh_i$ and $\veh_j$ while they are avoiding the intruder. The overall obstacle for $\veh_i$ is thus given by:
 \begin{equation} \label{eq:obsseti_intr}
 \begin{aligned}
-\obsset_i(t)  =  & \bigcup_{j=1}^{i-1} \left( \buff_{ij}(t) \cup \buff_{ji}(t) \bigcup_{k \in\{1, 2\}} {}_k^A\ioset_i^j(t)
-\bigcup_{k \in\{1, 2\}} {}_k^B\ioset_i^j(t) \right)\\
-& \bigcup \brs^{\text{S}}_{i}(t, t+\iat).
+\obsset_i(t)  =  & \brs^{\text{S}}_{i}(t, t+\iat) \bigcup \\
+& \bigcup_{j=1}^{i-1} \left( \buff_{ij}(t) \cup \buff_{ji}(t) \bigcup_{k \in\{1, 2\}} {}_k^A\ioset_i^j(t) \bigcup_{k \in\{1, 2\}} {}_k^B\ioset_i^j(t) \right).
 \end{aligned}
 \end{equation}
 
@@ -40,7 +40,7 @@ Note that $\brs^{\text{PP}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ i
 \begin{equation} \label{eqn:PPPolicy}
 {\ctrl^{\text{PP}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
-Moreover, if $\veh_i$ starts within $\brs^{\text{PP}}_{i}$ and use avoidance control strategy in \eqref{eqn:optAvoidCtrl}, it is guaranteed to avoid collision with the intruder and other SPP vehicles, regardless of the control strategy of $\veh_{\intr}$. Finally, since we use separation and buffer regions as obstacles during the path planning of $\veh_i$, it is guaranteed that $|\tsa_i - \tsa_j| \geq \brd$ for all $j < i$. The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
+When intruder is not present in the system, $\veh_i$ applies the control ${\ctrl^{\text{PP}}_{i}}$ and we get the `nominal trajectory' of $\veh_i$. Once intruder appears in the system, $\veh_i$ applies the avoidance control ${\ctrl^{\text{A}}}$ and hence might deviate from its nominal trajectory. The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
 \begin{equation*}
 {\ctrl^*_{i}}(t) = 
 \left \{ 
@@ -51,6 +51,8 @@ Moreover, if $\veh_i$ starts within $\brs^{\text{PP}}_{i}$ and use avoidance con
 \right.
 \end{equation*}
 
+Note that if $\veh_i$ starts within $\brs^{\text{PP}}_{i}$ and use avoidance control strategy in \eqref{eqn:optAvoidCtrl}, it is guaranteed to avoid collision with the intruder and other SPP vehicles, regardless of the control strategy of $\veh_{\intr}$. Finally, since we use separation and buffer regions as obstacles during the path planning of $\veh_i$, it is guaranteed that $|\tsa_i - \tsa_j| \geq \brd$ for all $j < i$. 
+
 \begin{remark}
-Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$, as discussed in section \ref{sec:rtt}.
+Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$ (for details, see Section 4C in \cite{Bansal2017}). Also, the BRS in \eqref{eqn:intrBRS1} is computed assuming no disturbance in $\veh_i$'s dynamics.
 \end{remark}

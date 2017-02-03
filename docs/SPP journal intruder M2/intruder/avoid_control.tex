@@ -30,12 +30,12 @@ The Hamiltonian to compute $\brs^{\text{A}}_{i}(\tau, \iat)$ is given as:
 \begin{equation}
 H^{\text{A}}_{i}(\state_{\intr, i}, \costate) = \max_{\ctrl_i \in \cset_i} \min_{\substack{\ctrl_\intr \in \cset_\intr, \\ \dstb_\intr \in \dset_\intr, \\ \dstb_i \in \dset_i}} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr).
 \end{equation}
-We refer to $\brs^{\text{A}}_i(\tau, \iat)$ as \textit{avoid region} hereon. Once the value function $\valfunc^{\text{A}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{A}}_{i}}$ can be obtained as:
+We refer to $\brs^{\text{A}}_i(\tau, \iat)$ as \textit{avoid region} here on. Once the value function $\valfunc^{\text{A}}_{i}(\cdot)$ is computed, the optimal avoidance control ${\ctrl^{\text{A}}_{i}}$ can be obtained as:
 \begin{equation} \label{eqn:optAvoidCtrl}
 {\ctrl^{\text{A}}_{i}} = \arg \max_{\ctrl_i \in \cset_i} \min_{\substack{\ctrl_\intr \in \cset_\intr, \\ \dstb_\intr \in \dset_\intr, \\ \dstb_i \in \dset_i}} \costate \cdot f_r(\state_{\intr, i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr).
 \end{equation}
 
-Let $\partial \brs^{\text{A}}_{i}(\cdot, \iat)$ denotes the boundary of the set $\brs^{\text{A}}_{i}(\cdot, \iat)$. The interpretation of $\brs^{\text{A}}_{i}(\tau, \iat), \tau < \iat$ is that if $\state_{\intr, i}(t) \in \partial \brs^{\text{A}}_{i}(\tau, \iat)$, $\veh_i$ can successfully avoid the intruder for a duration of $(\iat-\tau)$ using the optimal avoidance control in \eqref{eqn:optAvoidCtrl}. Moreover, if $\state_{\intr, i}(t) \in \left( \brs^{\text{A}}_{i}(\tau, \iat)\right)^C$, then $\veh_i$ and $\veh_{\intr}$ instantaneoulsy cannot enter the danger zone $\dz_{i\intr}$, irrespective of the control applied by them at time $t$. 
+Let $\partial \brs^{\text{A}}_{i}(\cdot, \iat)$ denotes the boundary of the set $\brs^{\text{A}}_{i}(\cdot, \iat)$. The interpretation of $\brs^{\text{A}}_{i}(\tau, \iat), \tau < \iat$ is that if $\state_{\intr, i}(t) \in \partial \brs^{\text{A}}_{i}(\tau, \iat)$, $\veh_i$ can successfully avoid the intruder for a duration of $(\iat-\tau)$ using the optimal avoidance control in \eqref{eqn:optAvoidCtrl}. Moreover, if $\state_{\intr, i}(t) \in \left( \brs^{\text{A}}_{i}(\tau, \iat)\right)^C$, then $\veh_i$ and $\veh_{\intr}$ instantaneously cannot enter the danger zone $\dz_{i\intr}$, irrespective of the control applied by them at time $t$. 
 
 In the worst case, $\veh_i$ might need to avoid the intruder for a duration of $\iat$; thus, we must have that $\state_{\intr, i}(\tsa) \in \left(\brs^{\text{A}}_{i}(0, \iat)\right)^C$ to ensure successful avoidance irrespective of the intruder control strategy. Equivalently, every SPP vehicle must be able to detect the intruder at a distance of $\dsen$, where
 \begin{equation} \label{eqn:sen_distance}
