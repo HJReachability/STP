@@ -3,46 +3,70 @@
 We now illustrate the proposed algorithm using a fifty-vehicle example. 
 
 \subsection{Setup \label{sec:simSetup}}
-For this example, we will use the following dynamics for each vehicle:
+Our goal is to simulate a scenario where UAVs are flying through an urban environment. This setup can be representative of many UAV applications, such as package delivery, aerial surveillance, etc. For this purpose, we grid San Francisco (SF) city in California, US and use it as our state space, as shown in Figure \ref{fig:sf_setup}. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/sf_setup"}
+  \caption{Simulation setup. A $25 km^2$ area of San Francisco city is used as the state-space for vehicles. SPP vehicles originate from the Blue star and go to one of the four destinations, denoted by circles. Tall buildings in the downtown area are used as static obstacles, represented by the black contours.}
+  \label{fig:sf_setup}
+\end{figure}
+Each box in Figure \ref{fig:sf_setup} represents a $500m \times 500m$ area of SF. The origin point for the vehicles is denoted by the Blue star. Four different areas in the city are chosen as the destinations for the vehicles. Mathematically, the target sets $\targetset_i$ of the vehicles are circles of radius $r$ in the position space, i.e. each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target sets are defined as
+\begin{equation}
+\label{eq:target_sim}
+\targetset_i = \{\state_i: \|\pos_i - c_i\|_2 \le r\}
+\end{equation}
+\noindent where $c_i$ are centers of the target circles. In this simulation, we use $r = 100m$. The four targets are represented by four circles in Figure \ref{fig:sf_setup}. The destination of each vehicle is chosen randomly from these four destinations. Finally, tall buildings in downtown San Francisco are used as static obstacles for the SPP vehicles, denoted by black contours in Figure \ref{fig:sf_setup}.
+
+For this simulation, we use the following dynamics for each vehicle:
 \begin{equation}
 \label{eq:dyn_i}
 \begin{aligned}
 \dot{\pos}_{x,i} &= v_i \cos \theta_i + d_{x,i} \\
 \dot{\pos}_{y,i} &= v_i \sin \theta_i + d_{y,i}\\
 \dot{\theta}_i &= \omega_i, \\
-\underline{v} \le v_i \le \bar{v}, & |\omega_i| \le \bar{\omega}, \|(d_{x,i}, & d_{y,i}) \|_2 \le d_{r},
+\underline{v} \le v_i \le \bar{v}, & ~|\omega_i| \le \bar{\omega}, ~\|(d_{x,i}, d_{y,i}) \|_2 \le d_{r},
 \end{aligned}
 \end{equation}
-\noindent where $\state_i = (\pos_{x,i}, \pos_{y,i}, \theta_i)$ is the state of vehicle $\veh_i$, $\pos_i = (\pos_{x,i}, \pos_{y,i})$ is the position, $\theta_i$ is the heading, and $d = (d_{x,i}, d_{y,i})$ represents $\veh_i$'s disturbances, for example wind, that affect its position evolution. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. 
-
-Our goal is to simulate a scenario where UAVs are flying through an urban environment. This setup can be representative of many UAV applications, such as package delivery, aerial surveillance, etc. For this purpose, we grid San Francisco (SF) city in California, US and use it as our state space, as shown in Figure \ref{fig:sf_setup}. Each box in Figure \ref{fig:sf_setup} represents a $500m \times 500m$ area of SF. The origin point for the vehicles is denoted by the Blue star. Four different areas in the city are chosen as the destinations for the vehicles. Mathematically, the target sets $\targetset_i$ of the vehicles are circles of radius $r$ in the position space, i.e. each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target sets are defined as
-
-\begin{equation}
-\label{eq:target_sim}
-\targetset_i = \{\state_i: \|\pos_i - c_i\|_2 \le r\}
-\end{equation}
-
-\noindent where $c_i$ are centers of the target circles. In this simulation, we use $r = 100m$. %The target centers $c_i$ are as follows:
-%\begin{equation} \label{eqn:NumIC}
-%\begin{aligned}
-%c_1 = (0.7, 0.2)\\
-%c_2 = (-0.7, 0.2)\\
-%c_3 = (0.7, -0.7)\\
-%c_4 = (-0.7, -0.7)
-%\end{aligned}
-%\end{equation}  
-The four targets are represented by four circles in Figure \ref{fig:sf_setup}. The destination of each vehicle is chosen randomly from these four destinations. Finally, tall buildings in downtown San Frnacisco are used as static obstacles for SPP vehicles, denoted by black contours in Figure \ref{fig:sf_setup}.
-
-To make our simulations as close as possible to real scenarios, we choose velocity and turn-rate bounds as $\underline{v} = 0m/s, \bar{v} = 25m/s, \bar\omega = 2 rad/s$, aligned with the modern UAV specs \cite{UAVspecs1, UAVspecs2}. The disturbance bound is chosen as $d_{r} = 11 m/s$, which corresponds to \textit{strong winds} on Beaufort wind force scale \cite{Windscale}. Note that we have used same dynamics and input bounds across all vehicles for clarity of illustration; however, our method can easily handle more general systems of the form in which the vehicles have different control bounds and dynamics.
+\noindent where $\state_i = (\pos_{x,i}, \pos_{y,i}, \theta_i)$ is the state of vehicle $\veh_i$, $\pos_i = (\pos_{x,i}, \pos_{y,i})$ is the position, $\theta_i$ is the heading, and $d = (d_{x,i}, d_{y,i})$ represents $\veh_i$'s disturbances, for example wind, that affect its position evolution. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. To make our simulations as close as possible to real scenarios, we choose velocity and turn-rate bounds as $\underline{v} = 0m/s, \bar{v} = 25m/s, \bar\omega = 2 rad/s$, aligned with the modern UAV specs \cite{UAVspecs1, UAVspecs2}. The disturbance bound is chosen as $d_{r} = 11 m/s$, which corresponds to \textit{strong winds} on Beaufort wind force scale \cite{Windscale}. Note that we have used same dynamics and input bounds across all vehicles for clarity of illustration; however, our method can easily handle more general systems of the form in which the vehicles have different control bounds and dynamics.
 
 The goal of the vehicles is to reach their destinations while avoiding a collision with the other vehicles or the static obstacles. The vehicles also need to account for the possibility of the presence of an intruder for a maximum duration of $\iat = 10s$, whose dynamics are given by \eqref{eq:dyn_i}. The joint state space of this fifty-vehicle system is 150-dimensional (150D), making the joint path planning and collision avoidance problem intractable for direct analysis using HJ reachability. Therefore, we assign a priority order to vehicles and solve the path planning problem sequentially. For this simulation, we assign a random priority order to fifty vehicles and use the algorithm proposed in Section \ref{sec:intruder} to compute a separation between SPP vehicles so that they do not collide with each other or the intruder. 
 
 \subsection{Results \label{sec:simResults}}
-\SBnote{Need to mention the sensing range $\dsen$ obtained. Again, explain what exactly does this mean. Also, mention that even if we are not accounting for $z$ co-ordinates, but they can be handled in a similar fashion.}  
+In this section, we present the simulation results for $\nva = 3$; occassionally, we also compare the results for different $\nva$s to highlight some key points about the proposed algorithm. As per Algorithm \ref{alg:intruder}, we begin with computing the avoid region $\brs^{\text{A}}_{i}(0, \iat)$. To compute the avoid region, relative dynamics between $\veh_i$ and $\veh_{\intr}$ are required. Given dynamics in \eqref{eq:dyn_i}, the relative dynamics are given by \cite{Mitchell05}:
+\begin{equation}
+\label{eq:reldyn_i}
+\begin{aligned}
+\dot{\pos}_{x, \intr, i} &= v_{\intr} \cos \theta_{\intr, i} - v_i + \omega_i {\pos}_{y, \intr, i} + d_{x,i} \\
+\dot{\pos}_{y, \intr, i} &= v_i \sin \theta_{\intr, i} - \omega_i {\pos}_{x, \intr, i} + d_{y,i}\\
+\dot{\theta}_{\intr, i} &= \omega_{\intr} - \omega_i,
+\end{aligned}
+\end{equation}
+\SBnote{Confirm disturbance in relative dynamics with Mo.}     
+where $\state_{\intr, i} = (\pos_{x, \intr, i}, \pos_{y, \intr, i}, \theta_{\intr, i})$ is the relative state between $\veh_{\intr}$ and $\veh_i$. Given relative dynamics, the avoid region can be computed using \eqref{eqn:avoidBRS}. For all the BRS and FRS computations in this simulation, we use Level Set Toolbox \cite{Mitchell07b}. Also, since the vehicle dynamics' are same across all vehicles, we will omit the vehicle index from sets wherever applicable. The avoid region $\brs^{\text{A}}(0, \iat)$ for SPP vehicles is shown in Figure \ref{fig:MaxMin}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/bufferRegion_steps"}
+  \caption{Base obstacle $\boset(t)$ , Avoid region $\brs^{\text{A}}(0, \iat)$, Separation region $\sep(t)$ and Relative buffer region $\brs^{\text{B}}(0, \brd)$ for vehicles. The three axes represent three states of the vehicles.}
+  \label{fig:MaxMin}
+\end{figure}
+As long as $\veh_{\intr}$ starts outside the avoid region, $\veh_i$ is guarnateed to avoid the intruder for a duration of $\iat$. Given $\brs^{\text{A}}(0, \iat)$, we can compute the minimum required detection range $\dsen$ given by \eqref{eqn:sen_distance}, which turns out to be XYm \SBnote{Confirm detection range with Mo} in this case. So as long as the vehicles can detect the intruder within XYm \SBnote{Confirm detection range with Mo}, the proposed algorithm guarantees collision avoidance with the intruder as well as a safe transit to their respective destinations.   
 
-In this section, we present the simulation results for different scenarios: $\nva = 2$ and $\nva = 3$. For the computation of base obsatcles, we use RTT method \cite{Bansal2017}. In RTT method, a nominal trajectory is declared by the higher priority vehicles, which is then guaranteed to be tracked with some  known error bound in the presence of disturbances. The base obstacles are thus given by a ``bubble" around the nominal trajectory. For further details of RTT method, we refer the interested readers to Section 4C in \cite{Bansal2017}. The tracking error bound obtained for the strong wind conditions is $35m$. Thus, the base obstacles induced by a higher priority vehicle are given by a circle of radius of $35m$ around the nominal trajectory, the trajectory that a vehicle will follow if the intruder never appears in the system. The base obstacle $\boset$ around the nominal tarjectory point $(0, 0, 0)$ is shown in Figure \ref{fig:baseObs}. 
+Next, we compute the separation and buffer regions between vehicles. For the computation of base obstacles, we use RTT method \cite{Bansal2017}. In RTT method, a nominal trajectory is declared by the higher priority vehicles, which is then guaranteed to be tracked with some known error bound in the presence of disturbances. The base obstacles are thus given by a ``bubble" around the nominal trajectory. For further details of RTT method, we refer the interested readers to Section 4C in \cite{Bansal2017}. The position tracking error bound obtained for the strong wind conditions is $35m$ \SBnote{Confirm the tracking radius with Mo and see if it is consistent with the figure}. The overall base obstacle $\boset$ around the nominal tarjectory point $(0, 0, 0)$ is shown in Figure \ref{fig:MaxMin}. Thus, the base obstacles induced by a higher priority vehicle are given by this set augmented on the nominal trajectory, the trajectory that a vehicle will follow if the intruder never appears in the system, and is obtained by executing the control policy ${\ctrl^{\text{PP}}_{i}}(\cdot)$ in \eqref{eqn:PPPolicy}.
 
-We next compute set $\brs^{\text{A}}(0, \iat)$ as defined in \eqref{eqn:avoidBRS}, which is shown in Figure \ref{fig:MaxMin}. Given $\boset$ and $\brs^{\text{A}}(0, \iat)$, we compute the separation region $\sep$ as defined in \eqref{eqn:sepRegion_case1}, shown in Figure \ref{fig:sepRegion}. Note that we dropped the vehicle subscript from the sets as vehicle dynamics and hence sets are same for all vehicles. $\brs^{\text{B}}(0, \brd)$, defined in \eqref{eqn:buffBRS_case1}, is computed next and shown in Figure \ref{fig:MinMin} for $\nva = 3$, e.g. $\brd = 10/3$. Finally, we compute the buffer region as defined in \eqref{eqn:buffRegion_case1}. Same process was repeated for $\nva = 2$ and $\nva = 4$. The results are shown in Figure \ref{fig:buffRegions}. As evident from Figure \ref{fig:buffRegions}, a bigger buffer region is required between vehicles when $\nva$ is smaller. Intuitively, when $\nva$ is smaller, a larger buffer is required to ensure that the intruder spends more time ``traveling" through this buffer region so that it can affect fewer vehicles.             
+Given $\boset$ and $\brs^{\text{A}}(0, \iat)$, we compute the separation region $\sep$ as defined in \eqref{eqn:sepRegion_case1}. Relative buffer region $\brs^{\text{B}}(0, \brd)$, defined in \eqref{eqn:buffBRS_case1}, is computed next. The results are shown in Figure \ref{fig:MaxMin}. Note that since $\nva = 3$, $\brd = 10/3$. Finally, we compute the buffer region as defined in \eqref{eqn:buffRegion_case1}. The resultant buffer region is shown in Blue in Figure \ref{fig:buffRegions}. Thus, if $\veh_j$ is inside the base obstacle set shown in Figure \ref{fig:MaxMin} and $\veh_i$ is outside the Blue region in Figure \ref{fig:buffRegions}, we can ensure that the intruder will have to spend a duration of atleast $\brd$ to go from the boundary of the avoid region of $\veh_j$ to the boundary of the avoid region of $\veh_i$. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/bufferRegions_3D"}
+  \caption{Buffer regions for different $\nva$ (best visualized with colors). As $\nva$ decreases, a larger buffer is required between vehicles to ensure that the intruder spends more time while traveling through this buffer region so that it forces fewer vehicles to apply an avoidnace maneuver.}
+  \label{fig:buffRegions}
+\end{figure}
+We also computed the buffer regions for $\nva = 2$ and $\nva = 4$. The results are shown in Figure \ref{fig:buffRegions}. Top-down views of these 3D sets are shown in Figure \ref{fig:buffRegions_td}. As evident from the figures, a bigger buffer region is required between vehicles when $\nva$ is smaller. Intuitively, when $\nva$ is smaller, a larger buffer is required to ensure that the intruder spends more time ``traveling" through this buffer region so that it can affect fewer vehicles.             
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/bufferRegions_topdown"}
+  \caption{Top-down view of the buffer regions for different $\nva$ shown in Figure {fig:buffRegions} (best visualized with colors). As $\nva$ decreases, $\brd$ increase and a larger buffer is required between vehicles.}
+  \label{fig:buffRegions_td}
+\end{figure}
 
 We similarly sequentially computed the obstacles induced by the higher priority vehicles for each vehicle, i.e. $\obsset(\cdot)$, and the corresponding nominal trajectories, obtained by executing the control policy $\ctrl^{\text{PP}}(\cdot)$ defined in \eqref{eqn:PPPolicy}. The nominal trajectory thus corresponds to the trajectory that a vehicle will follow if the intruder does not appear in the system. The nominal trajectories and the overall obstacles for different vehicles at time $t = XYZ$ are shown in Figure \ref{fig:trajObsSim} for the case $\nva = 3$. The nominal trajectories are well separated from each other to ensure safe transition even during a worst-case intruder ``attack". Accounting for this worst-case behavior makes our reachability analysis  conservative and this limitation is discussed more Section \ref{sec:discuss}. Note that in the absence of an intruder the vehicles transit successfully to their destinations with control policy $\ctrl^{\text{PP}}(\cdot)$.
 
@@ -52,6 +76,7 @@ In Case-1, the intruder forces all 3 vehicles to apply an avoidance maneuver so 
  
 Finally, in Figure \ref{fig:trajComparison}, we show that how the avoidance control can cause a deviation from the nominal trajectory. As evident from the figure, if vehicle doesn't apply the avoidnace maneuver and continue to track the nominal trajectory in the presence of an intruder, this might lead to a collision with the intruder. On the other hand, if the vehicle applies the avoidance policy $\ctrl^{\text{A}}(\cdot)$, it can successfully avoid a collision with the intruder.   
 
+\SBnote{Mention that even if we are not accounting for $z$ co-ordinates, but they can be handled in a similar fashion.}  
 
 \subsection{Discussion \label{sec:discuss}}
 \SBnote{Need to add following things:
