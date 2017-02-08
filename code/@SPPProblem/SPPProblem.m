@@ -6,6 +6,7 @@ classdef SPPProblem < handle
     
     targetR
     targetRsmall
+    targetCentersSet
     
     intrIS
     intrCtrl
@@ -140,7 +141,7 @@ classdef SPPProblem < handle
           extraArgs.wind_speed = 6;
           extraArgs.separation_time = 45;
           extraArgs.dstb_or_intr = 'intr';
-          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+%           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
           obj.loadSetup('SF', extraArgs);
           

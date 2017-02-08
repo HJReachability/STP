@@ -48,7 +48,7 @@ switch setup_name
       obj.initStates = IS;
       obj.targetCenters = TC;
     else
-      [obj.initStates, obj.targetCenters] = ...
+      [obj.initStates, obj.targetCenters, ~, obj.targetCentersSet] = ...
         gen_targets_initStates(setup_name, numVeh);
     end
 

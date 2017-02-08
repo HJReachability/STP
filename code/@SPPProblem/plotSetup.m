@@ -16,8 +16,9 @@ switch setup_name
     I = flip(I, 1);
     imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
     
+    colors = lines(length(obj.targetCentersSet));
     ArrowLength = 25;
-    MarkerSize = 15;
+    MarkerSize = 10;
     
   case 'Bay_Area'
     I = I(155:915, 1120:1770, :);
@@ -34,13 +35,16 @@ hold on
 
 for i = 1:length(obj.initStates)
   quiver(obj.initStates{i}(1), obj.initStates{i}(2), ...
-    ArrowLength*cos(obj.initStates{i}(3)), ArrowLength*sin(obj.initStates{i}(3)), '*', ...
-    'MarkerSize', MarkerSize);
+    ArrowLength*cos(obj.initStates{i}(3)), ...
+    ArrowLength*sin(obj.initStates{i}(3)), 's', ...
+    'MarkerSize', MarkerSize, 'MaxHeadSize', 10, 'MarkerFaceColor', 'b', ...
+    'MarkerEdgeColor', 'b');
 end
 
 %% Targets
-for i = 1:length(obj.targetCenters)
-  plotDisk(obj.targetCenters{i}, obj.targetR, 'linewidth', 3);
+for i = 1:length(obj.targetCentersSet)
+  plotDisk(obj.targetCentersSet{i}, obj.targetR, 'linewidth', 3, 'color', ...
+    colors(i,:));
 end
 
 %% Obstacles
