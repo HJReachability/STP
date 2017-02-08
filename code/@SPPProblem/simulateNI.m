@@ -169,8 +169,7 @@ for veh = 1:length(Q)
 end
 
 obj.NI_sim_filename = sprintf('%s/%s.mat', obj.folder, mfilename);
-[Q1, Q2, Q3, Q4] = Q{:};
-save(obj.NI_sim_filename, 'Q1', 'Q2', 'Q3', 'Q4', '-v7.3')
+save(obj.NI_sim_filename, 'Q', '-v7.3')
 
 SPPP = obj;
 save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')

@@ -176,7 +176,6 @@ classdef SPPProblem < handle
           extraArgs.number_of_vehicles = 200;
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 10;
-          extraArgs.ISTC_filename = 'BA_ISTC.mat';
           
           obj.loadSetup('Bay_Area', extraArgs);
           
