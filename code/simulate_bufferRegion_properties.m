@@ -233,7 +233,7 @@ end
 
 function [u, uI] = reach_intr_ctrl(evader, pursuer, RBR, minMinBRS)
 % [u, uI] = reach_intr_ctrl(evader, pursuer, RBR, minMinBRS)
-%     Computes worst-case controlt o reach intruder
+%     Computes worst-case control to reach intruder
 
 x_rel = PlaneDubins_relState(evader.x, pursuer.x);
 
@@ -250,7 +250,7 @@ uI = uI(1:2);
 end
 
 function u = reach_ctrl(vehicle, TRRS, target_pos)
-% u = reach_target_ctrl(vehicle, TRRS)
+% u = reach_target_ctrl(vehicle, TRRS, target_pos)
 %     Computes target reaching control
 
 x_rel = vehicle.x;
