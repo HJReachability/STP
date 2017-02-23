@@ -15,7 +15,7 @@ u_i &\in \cset_i, \quad i = 1,\ldots, N
 In order to make the $N$-vehicle path planning problem safe and tractable, a reasonable structure is imposed to the problem: the vehicles are assigned a strict priority ordering. When planning its trajectory to its target, a higher-priority vehicle can disregard the presence of a lower-priority vehicle. In contrast, a lower-priority vehicle must take into account the presence of all higher-priority vehicles, and plan its trajectory in a way that avoids the higher-priority vehicles' danger zones. For convenience and without lost of generality, let $\veh_i$ be the vehicle with the $i$th highest priority. 
 
 Under the above convention, each vehicle $\veh_i$ must take into account time-varying obstacles induced by vehicles $\veh_j, j<i$, denoted $\ioset_i^j(t)$ and represent the set of states that could possibly be in the danger zone of $\veh_j$. Optimal safe path planning of each lower-priority vehicle $\veh_i$ then consists of determining the optimal path that allows $\veh_i$ to reach its target $\targetset_i$ while avoiding the time-varying obstacles $\obsset_i(t)$, defined by
-\vspace{-1em}
+
 \begin{equation}
 \label{eq:ioset}
 \obsset_i(t) = \bigcup_{j=1}^{i-1}\ioset_i^j(t)
@@ -23,7 +23,7 @@ Under the above convention, each vehicle $\veh_i$ must take into account time-va
 
 Such an optimal path planning problem can be solved by computing a backward reachable set (BRS) $\brs_i(t)$ from a target set $\targetset_i$ using formulations of HJ variational inequalities (VI) such as \cite{Barron90, Bokanowski10, Bokanowski11, Fisac15}. For example, to compute BRSs under the presence of time-varying obstacles, the authors in \cite{Bokanowski11} augment system with the time variable, and then applied reachability theory for time-invariant systems. To avoid increasing the problem dimension and save computation time, for the simulations of this paper we utilize the formulation in \cite{Fisac15}, which does not require augmentation of the state space with the time variable.
 
-Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_1(t)$, from which the optimal control and optimal trajectory $x_1(\cdot)$ to the target $\targetset_1$ can be obtained. Under the absence of disturbances and perfect information, the obstacles induced by a higher-priority vehicle $\veh_j$, starting with $j=1$, for a lower-priority vehicle $\veh_i$ is simply the danger zone centered around the position $p_j(\cdot)$ of each point on the trajectory:
+Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_1(t)$, from which the optimal control and trajectory $x_1(\cdot)$ to $\targetset_1$ can be obtained. Under the absence of disturbances and perfect information, obstacles induced by a higher-priority vehicle $\veh_j$, starting with $j=1$, for a lower-priority vehicle $\veh_i$ is simply the danger zone centered around the position $p_j(\cdot)$ of each point on the trajectory:
 \vspace{-0.5em} 
 \begin{equation}
 \ioset_i^j(t) = \{x_i: \|p_i - p_j(t)\|\le\cradius\}
@@ -31,14 +31,13 @@ Starting from the highest-priority vehicle $\veh_1$, one computes the BRS $\brs_
 
 Given $\ioset_i^j(t), j<i$, and continuing with $i = 2$, the optimal safe trajectories for each vehicle $\veh_i$ can be computed. All of the trajectories are optimal in the sense that given the requirement that $\veh_i$ must arrive at $\targetset_i$ by time $\sta_i$, the latest departure time $\ldt_i$ and the optimal control $u^*_i(\cdot)$ that guarantees arrival by $\sta_i$ can be obtained.
 
-To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the following HJ VI:
+To compute $\brs_i(t)$ using the method in \cite{Fisac15}, we solve the following HJ VI for $t\le\sta_i$:
 \vspace{-0.5em} 
 \begin{equation}
 \label{eq:HJIVI}
 \begin{aligned}
 \max\Big\{&\min\big\{D_t V_i(t, x_i) + H_i\left(t, x_i, D_{x_i} V_i\right), \\
 &l_i(x_i) - V_i(t, x_i)\big\}, -g_i(t, x_i) - V_i(t, x_i)\Big\} = 0 \\
-&\quad t\le\sta_i\\
 &V_i(\sta_i, x_i) = \max\big\{l_i(x_i), -g_i(0, x_i)\big\}\\ 
 \end{aligned}
 \end{equation}

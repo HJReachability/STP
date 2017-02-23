@@ -43,17 +43,20 @@ The induced obstacles by each higher-priority vehicle $\veh_j$ can thus be obtai
 \pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \disckernel_j  + \state_{r,j}(t)\},
 \end{aligned}
 \end{equation}
-\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:ioset}. %Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}.
+\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum.%\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:ioset}. %Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}.
 
 Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\disckernel_j$, we must make sure during the path planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\disckernel_i$ and $\disckernel_j$, do not intersect. This can be done by augmenting the total obstacle set by $\disckernel_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 
+\vspace{-1em}
 \begin{equation} 
 \label{eqn:rttAugObs}
 \tilde{\obsset}_i(t) = \obsset_i(t) + \disckernel_i.
+\vspace{-1em}
 \end{equation}
 
 Finally, given $\disckernel_i$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\disckernel_i \subseteq \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\tilde{\targetset}_i := \{\state_i: \disckernel_i + \state_i \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^\pos_i$, that contains the initial state of the vehicle. Mathematically,
 
+\vspace{-1.25em}
 \begin{equation}
 \label{eq:rttBRS}
 \begin{aligned}

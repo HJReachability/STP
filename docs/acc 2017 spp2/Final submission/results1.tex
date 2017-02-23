@@ -2,14 +2,14 @@
 \section{Numerical Simulations \label{sec:sim}}
 We demonstrate our proposed methods using a four-vehicle example. Each vehicle has the following model:
 \vspace{-0.2em}
-\begin{equation}
+\begin{equation*}
 \label{eq:dyn_i}
 \begin{aligned}
 \dot{\pos}_{x,i} &= v_i \cos \theta_i + d_{x,i} &\\
 \dot{\pos}_{y,i} &= v_i \sin \theta_i + d_{y,i} & \underline{v} \le v_i \le \bar{v}, |\omega_i| \le \bar{\omega}\\
 \dot{\theta}_i &= \omega_i + d_{\theta,i} & \|(d_{x,i}, d_{y,i}) \|_2 \le d_{r}, |d_{\theta,i}| \le \bar{d_{\theta}}\\
 \end{aligned}
-\end{equation}
+\end{equation*}
 
 \noindent where $p_i = (p_{x,i}, p_{y,i}), \theta_i, d = (d_{x,i}, d_{y,i}, d_{\theta,i})$ respectively represent $\veh_i$'s position, heading, and disturbances in the three states. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. For illustration purposes, we choose $\underline{v} = 0.5, \bar{v} = 1, \bar\omega = 1$; however, our method can easily handle the case in which these inputs differ across vehicles and cases in which each vehicle has a different dynamic model. The disturbance bounds are chosen as $d_{r} = 0.1, \bar{d_{\theta}} = 0.2$, which correspond to a 10\% uncertainty in the dynamics. %The optimal control for vehicle $i$ can be obtained by optimizing the associated Hamiltonian, $H_i(t, D_{\bm{x}_i} V_i(\bm{x}_i,t), V_i(\bm{x}_i,t))$, and is given by:
 
@@ -43,20 +43,20 @@ x_3^0 &= \left(-0.6, 0.6, 7\pi/4\right), \quad &x_4^0 = \left(0.6, 0.6, 5\pi/4\r
 
 \noindent For the example shown, we chose $c_1 = (0.7, 0.2), c_2 = (-0.7, 0.2), c_3 = (0.7, -0.7), c_4 = (-0.7, -0.7)$ and $r = 0.1$. The setup of the example is shown in Fig. \ref{fig:allTrajs}.
 
-We solve the path planning problem using the SPP algorithms presented in this work and obtain $\ldt_i, i=1,2,3,4$ assuming $\sta_i=0$ without loss of generality. Note that even though $\sta_i$ is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which $\sta_i$ is different for each vehicle.
+Using the SPP algorithms presented, we obtain $\ldt_i, i=1,2,3,4$ assuming $\sta_i=0$. Note that even though $\sta_i$ is assumed to be same for all vehicles in this example for simplicity, our method can easily handle the case in which $\sta_i$ is different for each vehicle.
 
 For each proposed method of computing induced obstacles, we show the vehicles' entire trajectories (colored dotted lines), and overlay their positions (colored asterisks) and headings (arrows) at a point in time in which they are in relatively dense configuration. In all cases, the vehicles are able to avoid each other's danger zones (colored dashed circles) while getting to their target sets in minimum time. In addition, we show the evolution of the BRS over time for $\veh_3$ (green boundaries) as well as the obstacles induced by the higher-priority vehicles (black boundaries).
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.8\columnwidth]{"fig/allTrajs"}
+  \includegraphics[width=0.7\columnwidth]{"fig/allTrajs"}
   \caption{Initial configuration and simulated trajectories of the vehicles for the three proposed methods.}
   \label{fig:allTrajs}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.45\textwidth]{"fig/cc_rs3"}
+  \includegraphics[width=0.4\textwidth]{"fig/cc_rs3"}
   \caption{Evolution of the BRS and the obstacles induced by $\veh_1$ and $\veh_2$ for $\veh_3$ in the centralized control method.}
   \label{fig:cc_rs3}
 \end{figure}

@@ -9,7 +9,7 @@ u_j(t, x_j)\in \begin{cases} \{u_j^*(t, x_j) \text{ given by } \eqref{eq:opt_ctr
 \end{cases}
 \end{equation}
 
-Such a controller allows each higher priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j(t)$, in which case the optimal control $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower-priority vehicles given that the higher-priority vehicles will get to their targets on time.
+Such a controller allows each a vehicle to use any controller, except when it is on the boundary of the BRS, $\partial \brs_j(t)$, in which case $u_j^*(t, x_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest one that could be made by lower-priority vehicles given that the higher-priority vehicles will get to their targets on time.
 
 Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles $\veh_j, j < i$ use the least restrictive control strategy in \eqref{eq:lrctrl}. From the perspective of $\veh_i$, a higher-priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $x_j(\ldt_j) = x_{j0}$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of a FRS from the initial state $x_j(\ldt)=x_{j0}$ and the BRS defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\brs_j(t) \cap \frs_j(t)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j(t)$ is defined as
 \vspace{-0.4em}
