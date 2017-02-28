@@ -1,10 +1,10 @@
 % !TEX root = SPP2.tex
 \subsection{Least Restrictive Control}
-Fig. \ref{fig:allTrajs} shows the simulated trajectories in the situation where each vehicle assumes that higher-priority vehicles use the least restrictive control to reach their targets, as described in \ref{sec:lrc}. Fig. \ref{fig:lrc_rs3} shows the BRS and induced obstacles for $\veh_3$.
+Fig. \ref{fig:trajsLRC} shows the simulated trajectories in the situation where each vehicle assumes that higher-priority vehicles use the least restrictive control to reach their targets, as described in \ref{sec:lrc}. Fig. \ref{fig:lrc_rs3} shows the BRS and induced obstacles for $\veh_3$.
 
-$\veh_1$ (red) takes a relatively straight path to reach its target. From the perspective of all other vehicles, large obstacles are induced, since lower-priority vehicles make the weak assumption that higher-priority vehicles are using the least restrictive control. Because the obstacles induced are so large, it is optimal for lower-priority vehicles to wait until higher-priority vehicles pass. As a result, a dense configuration is never formed, and trajectories are relatively straight. The $\ldt_i$ values for vehicles are $-1.35, -1.97, -2.66$ and $-3.39$. Compared to the centralized control method, $\ldt_i$'s decrease significantly except for except $\veh_1$, which need not account for any moving obstacles. 
+$\veh_1$ (red) takes a relatively straight path to reach its target. From the perspective of all other vehicles, large obstacles are induced, since lower-priority vehicles make the weak assumption that higher-priority vehicles are using the least restrictive control. Because the obstacles induced are so large, it is optimal for lower-priority vehicles to wait until higher-priority vehicles pass. As a result, a dense configuration is never formed, and trajectories are relatively straight. The $\ldt_i$ values for vehicles are $-1.35, -1.97, -2.66$ and $-3.39$. Compared to the centralized control method, $\ldt_i$'s decrease significantly except for $\veh_1$, which need not account for any moving obstacles. 
 
-From $\veh_3$'s (green) perspective, the large obstacles induced by $\veh_1$ and $\veh_2$ are shown in Fig. \ref{fig:lrc_rs3} as the black boundary. As the BRS (green boundary) evolves over time, its growth gets inhibited by the large obstacles for a long time, as evident at $t=-0.89$. Eventually, the boundary of the BRS reaches the initial state of $\veh_3$ at $t = \ldt_3 = -2.66$.
+From $\veh_3$'s (green) perspective, the large obstacles induced by $\veh_1$ and $\veh_2$ are shown in Fig. \ref{fig:lrc_rs3} as the black boundaries. As the BRS (green boundary) evolves over time, its growth gets inhibited by the large obstacles for a long time, as evident at $t=-0.89$. Eventually, the boundary of the BRS reaches the initial state of $\veh_3$ at $t = \ldt_3 = -2.66$.
 %
 %\begin{figure}[H]
 %  \centering
@@ -18,4 +18,5 @@ From $\veh_3$'s (green) perspective, the large obstacles induced by $\veh_1$ and
   \includegraphics[width=0.4\textwidth]{"fig/lrc_rs3"}
   \caption{Evolution of the BRS for $\veh_3$ in the least restrictive control method. $\ldt_3$ is significantly lower than that in the centralized control method ($-1.94$ vs. $-2.66$).}
   \label{fig:lrc_rs3}
+    \vspace{-1em}
 \end{figure}

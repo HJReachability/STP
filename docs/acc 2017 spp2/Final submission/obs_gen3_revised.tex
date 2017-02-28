@@ -2,7 +2,7 @@
 \subsection{Method 3: Robust Trajectory Tracking\label{sec:rtt}}
 Although it is impossible to commit to and track an exact trajectory in the presence of disturbances, it may still be possible to \textit{robustly} track a \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the \textit{planning phase} and the \textit{disturbance rejection phase}. In the planning phase, we compute a nominal trajectory $\state_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
-In the planning phase, planning is done for a reduced control set $\cset^p\subset\cset$, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. In the disturbance rejection phase, we determine the error bound independently of the nominal trajectory. Let $\state_j$ and $\state_{r,j}$ denote the states of the actual vehicle $\veh_j$ and the virtual evader, respectively, and define the tracking error $e_j=\state_j-\state_{r,j}$. When the error dynamics are independent of the absolute state as in \eqref{eq:edyn} (and also (7) in \cite{Mitchell05}), we can obtain error dynamics of the form
+In the planning phase, planning is done for a reduced control set $\cset^p\subset\cset$, as some margin is needed to reject unexpected disturbances while tracking the nominal trajectory. In the disturbance rejection phase, we determine the error bound independently of the nominal trajectory. Let $\state_j$ and $\state_{r,j}$ denote the states of the actual vehicle $\veh_j$ and an arbitrary nominal trajectory, respectively, and define the tracking error $e_j=\state_j-\state_{r,j}$. When the error dynamics are independent of the absolute state as in \eqref{eq:edyn} (and also (7) in \cite{Mitchell05}), we can obtain error dynamics of the form
 \begin{equation}
 \label{eq:edyn} % Error dynamics
 \begin{aligned}
@@ -25,14 +25,14 @@ To obtain bounds on the tracking error, we first conservatively estimate the err
 where the Hamiltonian to compute the BRS is given by:
 \begin{equation}
 \begin{aligned}
-H^{\text{EB}}_{j}(e_j, \costate) &= \max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in \cset^\pos_j, \dstb_j \in \dset_j} \costate \cdot \fdyn_{e_j}(e_j, \ctrl_j, \ctrl_{r,j}, \dstb_j).
+H^{\text{EB}}_{j}(e_j, \costate) &= \max_{\ctrl_j \in \cset_j} \min_{\ctrl_{r, j} \in \cset^\pos_j, \dstb_j \in \dset_j} \costate \cdot \fdyn_{e_j}(e_j, \ctrl_j, \ctrl_{r,j}, \dstb_j).
 \end{aligned}
 \end{equation}
 
 Letting $t \to -\infty$, we obtain the infinite-horizon control-invariant set $\disckernel_j := \lim_{t \to -\infty} \left( \brs^{\text{EB}}_{j}(t, 0) \right)^c$. If $\disckernel_j$ is nonempty, then the tracking error $e_j$ at flight time is guaranteed to remain within $\disckernel_j \subseteq \errorbound_j$ provided that the vehicle starts inside $\disckernel_j$ and subsequently applies the feedback control law
 \begin{equation}
 \label{eq:robust_tracking_law}
-\tracklaw_j(e_j) = \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_r \in\cset^\pos_j, \dstb_j \in \dset_j} \costate \cdot \fdyn_{e_j}(e_j,\ctrl_j,\ctrl_{r, j},\dstb_j).
+\tracklaw_j(e_j) = \arg\max_{\ctrl_j \in \cset_j} \min_{\ctrl_{r, j} \in\cset^\pos_j, \dstb_j \in \dset_j} \costate \cdot \fdyn_{e_j}(e_j,\ctrl_j,\ctrl_{r, j},\dstb_j).
 \end{equation}
 
 The induced obstacles by each higher-priority vehicle $\veh_j$ can thus be obtained by: 
@@ -43,7 +43,7 @@ The induced obstacles by each higher-priority vehicle $\veh_j$ can thus be obtai
 \pfrs_j(t) &= \{\pos_j: \exists \npos_j, (\pos_j, \npos_j) \in \disckernel_j  + \state_{r,j}(t)\},
 \end{aligned}
 \end{equation}
-\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum.%\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:ioset}. %Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}.
+\noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum. %\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. %Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:ioset}. %Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}.
 
 Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\disckernel_j$, we must make sure during the path planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\disckernel_i$ and $\disckernel_j$, do not intersect. This can be done by augmenting the total obstacle set by $\disckernel_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 
@@ -61,7 +61,7 @@ Finally, given $\disckernel_i$, we can guarantee that $\veh_i$ will reach its ta
 \label{eq:rttBRS}
 \begin{aligned}
 \brs_i^\text{rtt}(t, \sta_i) = & \{y: \exists \ctrl_i(\cdot) \in \cfset^p_i, \state_i(\cdot) \text{ satisfies \eqref{eq:dyn_no_dstb}},\\
-&\forall s \in [t, \sta_i], \state_i(s) \notin \tilde{\obsset}_i(t), \\
+&\forall s \in [t, \sta_i], \state_i(s) \notin \tilde{\obsset}_i(s), \\
 & \exists s \in [t, \sta_i], \state_i(s) \in \tilde{\targetset}_i, \state_i(t) = y\}
 \end{aligned}
 \end{equation}

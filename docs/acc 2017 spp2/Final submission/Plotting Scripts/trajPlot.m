@@ -47,11 +47,18 @@ for i=1:4
   %copy children to new parent axes i.e. the subplot axes
   copyobj(child{i}.Children,s{i});
   if i==1
-    temp = findobj(gca, 'Type', 'Line', 'Linestyle', '-');
-    temp = flip(temp);
-    legend(temp, leg{i}.String{:});
+%     temp = findobj(gca, 'Type', 'Line', 'Linestyle', '-');
+%     temp = flip(temp);
+%     legend(temp, leg{i}.String{:});
+    obj1 = findobj(gca, 'Type', 'quiver');
+    obj1 = flip(obj1);
+    legend(obj1, leg{i}.String{:});
   else
-    legend(leg{i}.String{:});
+    obj1 = findobj(gca, 'Type', 'quiver');
+    obj2 = findobj(gca, 'Type', 'contour');
+    obj3 = findobj(gca, 'Type', 'Line', 'Linestyle', ':');
+    legend([obj1(1); obj2(1); obj2(2); obj3(1)], 'Positions, Headings', 'Danger Zones', 'Targets', 'Trajectories');
+    %legend(leg{i}.String{:});
   end
   % Set x and y ticks
   set(gca,'YTickMode','manual');
