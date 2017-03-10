@@ -23,7 +23,9 @@ MATIO_INC_DIR = $(MATIO_DIR)/include
 
 UNAME = $(shell uname)
 
-BEACLS_LIB_DIR = $(INSTALL_DIR)
+BEACLS_DIR = $(INSTALL_DIR)
+BEACLS_INC_DIR = $(BEACLS_DIR)/include
+BEACLS_LIB_DIR = $(BEACLS_DIR)/$(ARCH)/lib
 
 ifeq ($(GPU_ON), Y)
 	CPP = $(NVCC)
@@ -147,7 +149,7 @@ vpath %.cpp .:SPPProblem:SPPPlane
 vpath %.cu .:SPPProblem:SPPPlane
 
 LIBS     = 
-INCLUDE  = -I$(BEACLS_LIB_DIR)/includes -I$(INSTALL_DIR)/includes
+INCLUDE  = -I$(BEACLS_INC_DIR) -I$(INSTALL_DIR)/includes
 TARGET   = libSeqPP.so
 STATIC_TARGET = libSeqPP.a
 OBJDIR   = ./obj
