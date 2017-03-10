@@ -2,11 +2,10 @@
 
 .PHONY: all 3rdparty modules SeqPP time time_chunk_sizes \
 	iprofiler valgrind massif massif_chunk_sizes helgrind \
-	unittest sampletest test clean cleanall
+	sampletest test clean cleanall
 
 all: SeqPP
 	cd samples && make all
-	cd unittests && make all
 
 SeqPP:
 	cd SeqPP && make all
