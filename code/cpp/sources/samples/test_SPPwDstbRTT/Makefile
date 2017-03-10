@@ -34,6 +34,8 @@ HOSTCC = g++
 ARCH = $(shell uname -m)
 PWD = $(shell pwd)
 INSTALL_DIR = $(PWD)/../../../builds
+INSTALL_LIB_DIR = $(INSTALL_DIR)/$(ARCH)/lib
+
 MATIO_DIR = $(INSTALL_DIR)
 MATIO_LIB_DIR = $(MATIO_DIR)/$(ARCH)/lib
 MATIO_INC_DIR = $(MATIO_DIR)/include
@@ -43,7 +45,7 @@ UNAME = $(shell uname)
 BEACLS_DIR = $(INSTALL_DIR)
 BEACLS_INC_DIR = $(BEACLS_DIR)/include
 BEACLS_LIB_DIR = $(BEACLS_DIR)/$(ARCH)/lib
-MODULE_DIR = $(MATIO_LIB_DIR):$(BEACLS_LIB_DIR)
+MODULE_DIR = $(MATIO_LIB_DIR):$(BEACLS_LIB_DIR):$(INSTALL_LIB_DIR)
 
 ifeq ($(UNAME),Darwin)
 	TIME = /usr/bin/time
@@ -178,7 +180,7 @@ endif
 
 vpath %.cpp .
 
-INCLUDE  = -I$(INSTALL_DIR)/includes
+INCLUDE  = -I$(BEACLS_INC_DIR) -I$(INSTALL_DIR)/includes
 TARGET   = test_SPPwDstbRTT
 OBJDIR   = ./obj
 ifeq "$(strip $(OBJDIR))" ""
