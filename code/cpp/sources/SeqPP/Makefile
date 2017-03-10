@@ -23,7 +23,7 @@ MATIO_INC_DIR = $(MATIO_DIR)/include
 
 UNAME = $(shell uname)
 
-BEARS_LIB_DIR = $(INSTALL_DIR)
+BEACLS_LIB_DIR = $(INSTALL_DIR)
 
 ifeq ($(GPU_ON), Y)
 	CPP = $(NVCC)
@@ -63,7 +63,7 @@ ifeq ($(UNAME),Linux)
 	CFLAGS	+= -fPIC
 endif
 
-LDFLAGS  += -g -L$(BEARS_LIB_DIR) -llevelset -lhelperOC
+LDFLAGS  += -g -L$(BEACLS_LIB_DIR) -llevelset -lhelperOC
 
 ifeq ($(UNAME),Darwin)
 	LDFLAGS += -L$(MATIO_LIB_DIR) -lmatio -lz -lhdf5
