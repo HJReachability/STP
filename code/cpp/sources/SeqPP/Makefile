@@ -147,7 +147,7 @@ vpath %.cpp .:SPPProblem:SPPPlane
 vpath %.cu .:SPPProblem:SPPPlane
 
 LIBS     = 
-INCLUDE  = -I$(INSTALL_DIR)/includes
+INCLUDE  = -I$(BEACLS_LIB_DIR)/includes -I$(INSTALL_DIR)/includes
 TARGET   = libSeqPP.so
 STATIC_TARGET = libSeqPP.a
 OBJDIR   = ./obj
