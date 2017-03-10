@@ -193,7 +193,8 @@ $(STATIC_TARGET): $(OBJECTS) $(LIBS)
 all: $(TARGET) $(STATIC_TARGET) install
 
 install: $(TARGET) $(STATIC_TARGET)
-	cp -rp $^ $(INSTALL_DIR)/$(ARCH)/lib
+	mkdir -p $(INSTALL_LIB_DIR)
+	cp -rp $^ $(INSTALL_LIB_DIR)
 
 clean:
 	rm -rf $(OBJDIR)
