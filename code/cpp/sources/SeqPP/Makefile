@@ -16,7 +16,9 @@ ARCH = $(shell uname -m)
 PWD = $(shell pwd)
 NVCC = /usr/bin/nvcc
 HOSTCC = g++
-INSTALL_DIR = $(PWD)/../../builds
+INSTALL_DIR = $(PWD)/../../../builds
+INSTALL_LIB_DIR = $(INSTALL_DIR)/$(ARCH)/lib
+
 MATIO_DIR = $(INSTALL_DIR)
 MATIO_LIB_DIR = $(MATIO_DIR)/$(ARCH)/lib
 MATIO_INC_DIR = $(MATIO_DIR)/include
