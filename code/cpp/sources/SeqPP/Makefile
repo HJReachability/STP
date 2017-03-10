@@ -24,7 +24,7 @@ MATIO_INC_DIR = $(MATIO_DIR)/include
 UNAME = $(shell uname)
 
 BEACLS_DIR = $(INSTALL_DIR)
-BEACLS_INC_DIR = $(BEACLS_DIR)/include
+BEACLS_INC_DIR = $(BEACLS_DIR)/includes
 BEACLS_LIB_DIR = $(BEACLS_DIR)/$(ARCH)/lib
 
 ifeq ($(GPU_ON), Y)
