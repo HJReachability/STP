@@ -15,11 +15,13 @@ for veh = 1:length(Q)
     end
     
     % Plot induced obstacles
-    if isempty(ho{veh})
-      ho{veh} = visSetIm(g2D, Q{veh}.obs2D(:,:,tInds{veh}), colors(veh, :));
-      ho{veh}.LineStyle = '--';
-    else
-      ho{veh}.ZData = Q{veh}.obs2D(:,:,tInds{veh});
+    if ~isempty(Q{veh}.obs2D)
+        if isempty(ho{veh})
+          ho{veh} = visSetIm(g2D, Q{veh}.obs2D(:,:,tInds{veh}), colors(veh, :));
+          ho{veh}.LineStyle = '--';
+        else
+          ho{veh}.ZData = Q{veh}.obs2D(:,:,tInds{veh});
+        end
     end
     
     % Plot nominal trajectory
