@@ -96,15 +96,15 @@ endif
 LDFLAGS  += -g
 
 ifeq ($(STATIC_ON), Y)
-	LDFLAGS	+= $(BEACLS_LIB_DIR)/libSeqPP.a
+	LDFLAGS	+= $(INSTALL_LIB_DIR)/libSeqPP.a
 	LDFLAGS	+= $(BEACLS_LIB_DIR)/libhelperOC.a
 	LDFLAGS	+= $(BEACLS_LIB_DIR)/liblevelset.a
-	LIBS	+= $(BEACLS_LIB_DIR)/libSeqPP.a
+	LIBS	+= $(INSTALL_LIB_DIR)/libSeqPP.a
 	LIBS	+= $(BEACLS_LIB_DIR)/libhelperOC.a
 	LIBS	+= $(BEACLS_LIB_DIR)/liblevelset.a
 else
-	LDFLAGS	+= -L$(BEACLS_LIB_DIR) -lSeqPP -lhelperOC -llevelset
-	LIBS	+= $(BEACLS_LIB_DIR)/libSeqPP.so
+	LDFLAGS	+= -L$(BEACLS_LIB_DIR) -$(INSTALL_LIB_DIR) -lSeqPP -lhelperOC -llevelset
+	LIBS	+= $(INSTALL_LIB_DIR)/libSeqPP.so
 	LIBS	+= $(BEACLS_LIB_DIR)/libhelperOC.so
 	LIBS	+= $(BEACLS_LIB_DIR)/liblevelset.so
 endif
