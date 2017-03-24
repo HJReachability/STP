@@ -103,7 +103,7 @@ ifeq ($(STATIC_ON), Y)
 	LIBS	+= $(BEACLS_LIB_DIR)/libhelperOC.a
 	LIBS	+= $(BEACLS_LIB_DIR)/liblevelset.a
 else
-	LDFLAGS	+= -L$(BEACLS_LIB_DIR) -$(INSTALL_LIB_DIR) -lSeqPP -lhelperOC -llevelset
+	LDFLAGS	+= -L$(BEACLS_LIB_DIR) -L$(INSTALL_LIB_DIR) -lSeqPP -lhelperOC -llevelset
 	LIBS	+= $(INSTALL_LIB_DIR)/libSeqPP.so
 	LIBS	+= $(BEACLS_LIB_DIR)/libhelperOC.so
 	LIBS	+= $(BEACLS_LIB_DIR)/liblevelset.so
