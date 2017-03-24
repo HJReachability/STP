@@ -381,14 +381,14 @@ SeqPP::SPPProblem::SPPProblem(
 	result &= load_vector(gMin, std::string("gMin"), dummy, true, fs, variable_ptr);
 	result &= load_vector(gMax, std::string("gMax"), dummy, true, fs, variable_ptr);
 	result &= load_vector(gN, std::string("gN"), dummy, true, fs, variable_ptr);
-	if (!g) g = new HJI_Grid();
+	if (!g) g = new levelset::HJI_Grid();
 	if (!g->load_grid(std::string("g"), fs, variable_ptr)) {
 		result = false;
 	}
 	else {
 		g->processGrid();
 	}
-	if (!g2D) g2D = new HJI_Grid();
+	if (!g2D) g2D = new levelset::HJI_Grid();
 	if (!g2D->load_grid(std::string("g2D"), fs, variable_ptr)) {
 		result = false;
 	}
@@ -484,7 +484,7 @@ bool SeqPP::SPPProblem::gen_targets_initStates(
 	return true;
 }
 #if defined(DEBUG_GRID)
-static void plot(const HJI_Grid* g, beacls::FloatVec& v) {
+static void plot(const levelset::HJI_Grid* g, beacls::FloatVec& v) {
 	for (size_t j = 0; j < g->get_N(1); ++j) {
 		const size_t width = g->get_N(0);
 		for (size_t i = 0; i < width; ++i) {
@@ -564,33 +564,33 @@ bool SeqPP::SPPProblem::loadSetup(const Setup_Type setup_name, const SetupExtraA
 		}
 
 
-		g = createGrid(gMin, gMax, gN, beacls::IntegerVec{2});
-		g2D = createGrid(
+		g = helperOC::createGrid(gMin, gMax, gN, beacls::IntegerVec{2});
+		g2D = helperOC::createGrid(
 			beacls::FloatVec(gMin.cbegin(), gMin.cbegin() + 2),
 			beacls::FloatVec(gMax.cbegin(), gMax.cbegin() + 2),
 			beacls::IntegerVec(gN.cbegin(), gN.cbegin() + 2));
 
 		//!< Obstacles
-		HJI_Grid* temp_g2D = createGrid(
+		levelset::HJI_Grid* temp_g2D = helperOC::createGrid(
 			beacls::FloatVec{-35, -35},
 			beacls::FloatVec{35, 35},
 			beacls::IntegerVec{101, 101});
 
 
 		//!< Financial District
-		BasicShape* shapeObs1 = new ShapeRectangleByCorner(beacls::FloatVec{300, 250}, beacls::FloatVec{350, 300});
+		levelset::BasicShape* shapeObs1 = new levelset::ShapeRectangleByCorner(beacls::FloatVec{300, 250}, beacls::FloatVec{350, 300});
 		beacls::FloatVec obs1;
 		shapeObs1->execute(g2D, obs1);
 
 		//!< Union Square
-		BasicShape* shapeObs2 = new ShapeRectangleByCorner(beacls::FloatVec{-25, -30}, beacls::FloatVec{25, 30});
+		levelset::BasicShape* shapeObs2 = new levelset::ShapeRectangleByCorner(beacls::FloatVec{-25, -30}, beacls::FloatVec{25, 30});
 		beacls::FloatVec obs2;
 		shapeObs2->execute(temp_g2D, obs2);
 		beacls::FloatVec obs2_rot;
 		helperOC::rotateData(obs2_rot, temp_g2D, obs2, (FLOAT_TYPE)(7.5*M_PI / 180), beacls::IntegerVec{0, 1}, beacls::IntegerVec());
-		HJI_Grid* obs2_gShift = helperOC::shiftGrid(temp_g2D, beacls::FloatVec{325, 185});
+		levelset::HJI_Grid* obs2_gShift = helperOC::shiftGrid(temp_g2D, beacls::FloatVec{325, 185});
 		helperOC::migrateGrid(obs2, obs2_gShift, obs2_rot, g2D);
-		BasicShape* shapeObs2b = new ShapeHyperplaneByPoint(
+		levelset::BasicShape* shapeObs2b = new levelset::ShapeHyperplaneByPoint(
 			std::vector<beacls::FloatVec>{ {170, 0}, { 400, 230 }},
 			beacls::FloatVec{0, 500});
 		beacls::FloatVec obs2b;
@@ -599,12 +599,12 @@ bool SeqPP::SPPProblem::loadSetup(const Setup_Type setup_name, const SetupExtraA
 			return std::max<FLOAT_TYPE>(lhs, -rhs);
 		});
 		//!< City Hall
-		BasicShape* shapeObs3 = new ShapeRectangleByCorner(beacls::FloatVec{-25, -5}, beacls::FloatVec{25, 5});
+		levelset::BasicShape* shapeObs3 = new levelset::ShapeRectangleByCorner(beacls::FloatVec{-25, -5}, beacls::FloatVec{25, 5});
 		beacls::FloatVec obs3;
 		shapeObs3->execute(temp_g2D, obs3);
 		beacls::FloatVec obs3_rot;
 		helperOC::rotateData(obs3_rot, temp_g2D, obs3, (FLOAT_TYPE)(7.5*M_PI / 180), beacls::IntegerVec{0, 1}, beacls::IntegerVec());
-		HJI_Grid* obs3_gShift = helperOC::shiftGrid(temp_g2D, beacls::FloatVec{170, 65});
+		levelset::HJI_Grid* obs3_gShift = helperOC::shiftGrid(temp_g2D, beacls::FloatVec{170, 65});
 		helperOC::migrateGrid(obs3, obs3_gShift, obs3_rot, g2D);
 
 		staticObs.resize(obs1.size());
@@ -653,7 +653,7 @@ bool SeqPP::SPPProblem::loadSetup(const Setup_Type setup_name, const SetupExtraA
 			beacls::FloatVec maxs_minus_5(maxs.size());
 			std::transform(mins.cbegin(), mins.cend(), margin.cbegin(), mins_plus_5.begin(), [](const auto& lhs, const auto& rhs) { return lhs + rhs; });
 			std::transform(maxs.cbegin(), maxs.cend(), margin.cbegin(), maxs_minus_5.begin(), [](const auto& lhs, const auto& rhs) { return lhs - rhs; });
-			BasicShape* shapeObs4 = new ShapeRectangleByCorner(mins_plus_5, maxs_minus_5);
+			levelset::BasicShape* shapeObs4 = new levelset::ShapeRectangleByCorner(mins_plus_5, maxs_minus_5);
 			beacls::FloatVec obs_bdry;
 			shapeObs4->execute(g, obs_bdry);
 			std::transform(obs_bdry.cbegin(), obs_bdry.cend(), obs_bdry.begin(), std::negate<FLOAT_TYPE>());
@@ -807,8 +807,8 @@ bool SeqPP::SPPProblem::loadSetup(const Setup_Type setup_name, const SetupExtraA
 			gMax = beacls::FloatVec{ (FLOAT_TYPE)1290, (FLOAT_TYPE)1720, (FLOAT_TYPE)(2 * M_PI) };
 			gN = beacls::IntegerVec{ 209, 329, 15 };
 
-			g = createGrid(gMin, gMax, gN, beacls::IntegerVec{2});
-			g2D = createGrid(
+			g = helperOC::createGrid(gMin, gMax, gN, beacls::IntegerVec{2});
+			g2D = helperOC::createGrid(
 				beacls::FloatVec(gMin.cbegin(), gMin.cbegin() + 2),
 				beacls::FloatVec(gMax.cbegin(), gMax.cbegin() + 2),
 				beacls::IntegerVec(gN.cbegin(), gN.cbegin() + 2));
@@ -944,8 +944,8 @@ bool SeqPP::SPPProblem::computeRTTRS(
 	//const beacls::IntegerVec N{ 101, 101, 101 };	//!< for SPPwIntruderRTT method 1
 	//const beacls::IntegerVec N{ 51, 51, 101 };	//!< for SPPwIntruderRTT method 2
 	const beacls::IntegerVec N = rttrs_gN;	//!< for SPPwIntruderRTT method 2
-	HJI_Grid* grid = createGrid(grid_min, grid_max, N, beacls::IntegerVec{2});
-	DynSysSchemeData* schemeData = new DynSysSchemeData;
+	levelset::HJI_Grid* grid = helperOC::createGrid(grid_min, grid_max, N, beacls::IntegerVec{2});
+	helperOC::DynSysSchemeData* schemeData = new helperOC::DynSysSchemeData;
 	schemeData->set_grid(grid);
 
 	//!< Track trajectory for up to this time
@@ -961,21 +961,21 @@ bool SeqPP::SPPProblem::computeRTTRS(
 	std::transform(vRangeA.cbegin(), vRangeA.cend(), vReserved.cbegin(), vRangeB.begin(), [](const auto& lhs, const auto& rhs) {return lhs + rhs; });
 	const FLOAT_TYPE wMaxB = wMaxA + wReserved;
 	const beacls::FloatVec dMaxB{ 0,0 };
-	PlaneCAvoid* dynSys = new PlaneCAvoid(beacls::FloatVec{(FLOAT_TYPE)0, (FLOAT_TYPE)0, (FLOAT_TYPE)0}, wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
+	helperOC::PlaneCAvoid* dynSys = new helperOC::PlaneCAvoid(beacls::FloatVec{(FLOAT_TYPE)0, (FLOAT_TYPE)0, (FLOAT_TYPE)0}, wMaxA, vRangeA, wMaxB, vRangeB, dMaxA, dMaxB);
 	schemeData->dynSys = dynSys;
 
 	//!< Initial conditions
 	rttrs->set_trackingRadius(tR);
 	beacls::FloatVec data0;
-	BasicShape* shape = new ShapeCylinder(
+	levelset::BasicShape* shape = new levelset::ShapeCylinder(
 		beacls::IntegerVec{2}, 
 		beacls::FloatVec{0., 0., 0},
 		rttrs->get_trackingRadius());
 	shape->execute(schemeData->get_grid(), data0);
 	std::transform(data0.cbegin(), data0.cend(), data0.begin(), std::negate<FLOAT_TYPE>());
 	
-	schemeData->uMode = DynSys_UMode_Max;
-	schemeData->dMode = DynSys_DMode_Min;
+	schemeData->uMode = helperOC::DynSys_UMode_Max;
+	schemeData->dMode = helperOC::DynSys_DMode_Min;
 	helperOC::HJIPDE_extraArgs extraArgs;
 	helperOC::HJIPDE_extraOuts extraOuts;
 	extraArgs.visualize = false;
@@ -994,9 +994,9 @@ bool SeqPP::SPPProblem::computeRTTRS(
 		extraArgs.fig_filename = folder + std::string("_") + __func__;
 #endif
 	}
-	HJIPDE* hjipde = new HJIPDE();
+	helperOC::HJIPDE* hjipde = new helperOC::HJIPDE();
 	beacls::FloatVec stoptau;
-	hjipde->solve(stoptau, extraOuts, data0, rttrs_tau, schemeData, HJIPDE::MinWithType_Zero, extraArgs);
+	hjipde->solve(stoptau, extraOuts, data0, rttrs_tau, schemeData, helperOC::HJIPDE::MinWithType_Zero, extraArgs);
 
 	rttrs->set_g(schemeData->get_grid());
 	beacls::FloatVec last_data;
@@ -1040,7 +1040,7 @@ bool SeqPP::SPPProblem::computeRTTRS(
 }
 
 bool SeqPP::SPPProblem::computeCARS(
-	const Plane* qintr,
+	const helperOC::Plane* qintr,
 	const bool save_png,
 	const bool restart
 ) {
@@ -1054,17 +1054,17 @@ bool SeqPP::SPPProblem::computeCARS(
 			}
 		}
 	}
-	const Plane* modified_qintr = (qintr) ? qintr : new Plane(beacls::FloatVec{0, 0, 0}, wMaxA, vRangeA, dMaxA);
-	DynSysSchemeData* schemeData = new DynSysSchemeData;
-	PlaneCAvoid * dynSys = new PlaneCAvoid(
+	const helperOC::Plane* modified_qintr = (qintr) ? qintr : new helperOC::Plane(beacls::FloatVec{0, 0, 0}, wMaxA, vRangeA, dMaxA);
+	helperOC::DynSysSchemeData* schemeData = new helperOC::DynSysSchemeData;
+	helperOC::PlaneCAvoid * dynSys = new helperOC::PlaneCAvoid(
 		beacls::FloatVec{0, 0, 0},
 		wMaxA, vRangeA,
 		modified_qintr->get_wMax(), 
 		modified_qintr->get_vrange(), 
 		dMaxA, modified_qintr->get_dMax());
 	schemeData->dynSys = dynSys;
-	schemeData->uMode = DynSys_UMode_Max;
-	schemeData->dMode = DynSys_DMode_Min;
+	schemeData->uMode = helperOC::DynSys_UMode_Max;
+	schemeData->dMode = helperOC::DynSys_DMode_Min;
 
 	//!< Grid and target set
 	//!<for SPPwIntruderRTT method 1
@@ -1083,10 +1083,10 @@ bool SeqPP::SPPProblem::computeCARS(
 	beacls::IntegerVec Ns{ 41,41,41 };
 	
 	//!< 3rd dimension is periodic
-	HJI_Grid* grid = createGrid(grid_min, grid_max, Ns, beacls::IntegerVec{2});
+	levelset::HJI_Grid* grid = helperOC::createGrid(grid_min, grid_max, Ns, beacls::IntegerVec{2});
 	schemeData->set_grid(grid);
 
-	ShapeCylinder* shape = new ShapeCylinder(beacls::IntegerVec{2}, beacls::FloatVec{0, 0, 0}, Rc);
+	levelset::ShapeCylinder* shape = new levelset::ShapeCylinder(beacls::IntegerVec{2}, beacls::FloatVec{0, 0, 0}, Rc);
 	beacls::FloatVec data0;
 	shape->execute(grid, data0);
 
@@ -1110,10 +1110,10 @@ bool SeqPP::SPPProblem::computeCARS(
 	}
 	extraArgs.execParameters = execParameters;
 
-	HJIPDE* hjipde = new HJIPDE;
+	helperOC::HJIPDE* hjipde = new helperOC::HJIPDE;
 	beacls::FloatVec dst_tau;
 	helperOC::HJIPDE_extraOuts extraOuts;
-	hjipde->solve(dst_tau, extraOuts, data0, src_tau, schemeData, HJIPDE::MinWithType_Zero, extraArgs);
+	hjipde->solve(dst_tau, extraOuts, data0, src_tau, schemeData, helperOC::HJIPDE::MinWithType_Zero, extraArgs);
 
 	std::vector<beacls::FloatVec> datas;
 	hjipde->get_datas(datas, src_tau, schemeData);
@@ -1479,8 +1479,7 @@ bool SeqPP::SPPProblem::computeNIRS(
 	if (lowprecision_obstacles) {
 		augStaticObs_s8.resize(augStaticObs.size());
 		std::transform(augStaticObs.cbegin(), augStaticObs.cend(), augStaticObs_s8.begin(), [](const auto& rhs) {
-			return static_cast<int8_t>(std::floor(rhs * obstacles_fix_ratio));
-//			return static_cast<int8_t>(std::round(rhs * obstacles_fix_ratio));
+			return static_cast<int8_t>(std::floor(rhs * helperOC::fix_point_ratio));
 		});
 	}
 
@@ -1838,7 +1837,7 @@ bool SeqPP::SPPProblem::simulateNI(
 					}
 					std::vector<beacls::FloatVec> us(rttrs->get_dynSys()->get_nu());
 					std::for_each(us.begin(), us.end(), [](auto& rhs) { rhs.resize(1); });
-					rttrs->get_dynSys()->optCtrl(us, 0, rel_x_ites, deriv_ptrs, rel_x_sizes, deriv_sizes, DynSys_UMode_Max);
+					rttrs->get_dynSys()->optCtrl(us, 0, rel_x_ites, deriv_ptrs, rel_x_sizes, deriv_sizes, helperOC::DynSys_UMode_Max);
 
 					//!< Get disturbance
 					std::vector<beacls::FloatVec> ds;

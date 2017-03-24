@@ -3,8 +3,9 @@
 
 #include <typedef.hpp>
 #include <vector>
-class HJI_Grid;
-
+namespace levelset {
+	class HJI_Grid;
+}
 namespace helperOC {
 	class AddCRadius;
 };
@@ -19,7 +20,7 @@ namespace SeqPP {
 			const helperOC::ExecParameters& execParameters
 		);
 		~MigrateRTTRS_impl();
-		HJI_Grid* operator()(
+		levelset::HJI_Grid* operator()(
 			beacls::FloatVec& rttrs2d,
 			const RTTRS* rttrs,
 			const FLOAT_TYPE R_augment

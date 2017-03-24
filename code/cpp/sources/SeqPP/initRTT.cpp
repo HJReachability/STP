@@ -21,7 +21,7 @@ namespace SeqPP {
 		const beacls::FloatVec& vRangeA,
 		const beacls::FloatVec& vRangeB,
 		const beacls::FloatVec& dMax,
-		const HJI_Grid* g,
+		const levelset::HJI_Grid* g,
 		const helperOC::ExecParameters& execParameters = helperOC::ExecParameters()
 	);
 };
@@ -36,21 +36,21 @@ static SeqPP::SPPPlane* SeqPP::initOneRTT(
 	const beacls::FloatVec& vRangeA,
 	const beacls::FloatVec& vRangeB,
 	const beacls::FloatVec& dMax,
-	const HJI_Grid* g,
+	const levelset::HJI_Grid* g,
 	const helperOC::ExecParameters& execParameters
 ) {
 	SPPPlane* sPPPlane = new SPPPlane(initStates, wMaxA, vRangeA, dMax, execParameters);
 	beacls::FloatVec center;
 	center.insert(center.end(), targetCenters.cbegin(), targetCenters.cend());
 	center.push_back(0);
-	BasicShape* targetRShape = new ShapeCylinder(beacls::IntegerVec{2}, center, targetR);
+	levelset::BasicShape* targetRShape = new levelset::ShapeCylinder(beacls::IntegerVec{2}, center, targetR);
 
 	beacls::FloatVec target;
 	targetRShape->execute(g, target);
 	if (targetRShape) delete targetRShape;
 	sPPPlane->set_target(target);
 
-	BasicShape* targetRsmallShape = new ShapeCylinder(beacls::IntegerVec{2}, center, targetRsmall);
+	levelset::BasicShape* targetRsmallShape = new levelset::ShapeCylinder(beacls::IntegerVec{2}, center, targetRsmall);
 
 	beacls::FloatVec targetsm;
 	targetRsmallShape->execute(g, targetsm);
@@ -82,13 +82,13 @@ SeqPP::SPPPlane* SeqPP::initOneRTT(
 	const beacls::FloatVec& targetCenter = sppp->get_targetCenter(vehicle_index);
 	const FLOAT_TYPE targetR = sppp->get_targetR();
 	const FLOAT_TYPE targetRsmall = targetR - rttrs->get_trackingRadius();
-	const PlaneCAvoid* dynSys = rttrs->get_dynSys();
+	const helperOC::PlaneCAvoid* dynSys = rttrs->get_dynSys();
 	const FLOAT_TYPE wMaxA = dynSys->get_wMaxA();
 	const FLOAT_TYPE wMaxB = dynSys->get_wMaxB();
 	const beacls::FloatVec& vRangeA = dynSys->get_vRangeA();
 	const beacls::FloatVec& vRangeB = dynSys->get_vRangeB();
 	const beacls::FloatVec& dMax = dynSys->get_dMaxA();
-	const HJI_Grid* g = sppp->get_g();
+	const levelset::HJI_Grid* g = sppp->get_g();
 
 	return initOneRTT(initState, targetCenter, targetR, targetRsmall, wMaxA, wMaxB, vRangeA, vRangeB, dMax, g, execParameters);
 }
@@ -103,13 +103,13 @@ void SeqPP::initRTT(
 	const size_t numVeh = initStates.size();
 	const FLOAT_TYPE targetR = sppp->get_targetR();
 	const FLOAT_TYPE targetRsmall = targetR - rttrs->get_trackingRadius();
-	const PlaneCAvoid* dynSys = rttrs->get_dynSys();
+	const helperOC::PlaneCAvoid* dynSys = rttrs->get_dynSys();
 	const FLOAT_TYPE wMaxA = dynSys->get_wMaxA();
 	const FLOAT_TYPE wMaxB = dynSys->get_wMaxB();
 	const beacls::FloatVec& vRangeA = dynSys->get_vRangeA();
 	const beacls::FloatVec& vRangeB = dynSys->get_vRangeB();
 	const beacls::FloatVec& dMax = dynSys->get_dMaxA();
-	const HJI_Grid* g = sppp->get_g();
+	const levelset::HJI_Grid* g = sppp->get_g();
 	Q.resize(numVeh);
 	std::transform(initStates.cbegin(), initStates.cend(), targetCenters.cbegin(), Q.begin(), 
 		[&g, &wMaxA, &wMaxB, &vRangeA, &vRangeB, &dMax, &targetR, &targetRsmall, &execParameters](const auto& lhs, const auto& rhs) {

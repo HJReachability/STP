@@ -13,7 +13,9 @@
 #include <typedef.hpp>
 #include <vector>
 #include <helperOC/helperOC_type.hpp>
-class HJI_Grid;
+namespace levelset {
+	class HJI_Grid;
+}
 namespace SeqPP {
 	class MigrateRTTRS_impl;
 	class RTTRS;
@@ -35,7 +37,7 @@ namespace SeqPP {
 		PREFIX_VC_DLL
 			~MigrateRTTRS();
 		PREFIX_VC_DLL
-			HJI_Grid* operator()(
+			levelset::HJI_Grid* operator()(
 				beacls::FloatVec& rttrs2d,
 				const RTTRS* rttrs,
 				const FLOAT_TYPE R_augment

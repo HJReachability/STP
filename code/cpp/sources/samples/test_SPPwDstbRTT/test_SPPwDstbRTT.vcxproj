@@ -93,7 +93,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>FILESYSTEM;USER_DEFINED_GPU_DYNSYS_FUNC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BEACLS_DIR)\includes;$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/LD /D "_MAKE_VC_DLL" %(AdditionalOptions)</AdditionalOptions>
@@ -106,7 +106,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BEACLS_DIR)\$(Platform)\$(Configuration)\lib\;$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeqPPd.lib;helperOCd.lib;levelsetd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
@@ -124,7 +124,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>FILESYSTEM;USER_DEFINED_GPU_DYNSYS_FUNC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BEACLS_DIR)\includes;$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <AdditionalOptions>/LD /D "_MAKE_VC_DLL" %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
@@ -136,7 +136,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BEACLS_DIR)\$(Platform)\$(Configuration)\lib\;$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeqPPd.lib;helperOCd.lib;levelsetd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
@@ -156,7 +156,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>FILESYSTEM;USER_DEFINED_GPU_DYNSYS_FUNC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BEACLS_DIR)\includes;$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <AdditionalOptions>/LD /D "_MAKE_VC_DLL" %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
@@ -170,7 +170,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BEACLS_DIR)\$(Platform)\$(Configuration)\lib\;$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeqPP.lib;helperOC.lib;levelset.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>
@@ -191,7 +191,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>FILESYSTEM;USER_DEFINED_GPU_DYNSYS_FUNC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BEACLS_DIR)\includes;$(SolutionDir)..\builds\includes</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <AdditionalOptions>/LD /D "_MAKE_VC_DLL" %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
@@ -206,7 +206,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BEACLS_DIR)\$(Platform)\$(Configuration)\lib\;$(SolutionDir)..\builds\$(Platform)\$(Configuration)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeqPP.lib;helperOC.lib;levelset.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
     </Link>

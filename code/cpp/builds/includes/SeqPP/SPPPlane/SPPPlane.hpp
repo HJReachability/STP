@@ -28,9 +28,9 @@ namespace SeqPP {
 	class MigrateRTTRS;
 
 	/**
-		@brief Specialized Plane class with SPP-related properties for the SPP project
+		@brief Specialized helperOC::Plane class with SPP-related properties for the SPP project
 	*/
-	class SPPPlane : public Plane{
+	class SPPPlane : public helperOC::Plane{
 	public:
 	private:
 		//!< If tracking 3D trajectory
@@ -94,7 +94,7 @@ namespace SeqPP {
 		PREFIX_VC_DLL
 			virtual bool operator==(const SPPPlane& rhs) const;
 		PREFIX_VC_DLL
-			virtual bool operator==(const DynSys& rhs) const;
+			virtual bool operator==(const helperOC::DynSys& rhs) const;
 
 		SPPPlane* clone() const {
 			return new SPPPlane(*this);
@@ -120,7 +120,7 @@ namespace SeqPP {
 					*/
 		bool computeBRS1(
 			const beacls::FloatVec& tau,
-			const HJI_Grid* g,
+			const levelset::HJI_Grid* g,
 			const beacls::FloatVec& staticObs,
 			const Obstacles& obstacles,
 			const std::string& SPPP_folder,
@@ -140,7 +140,7 @@ namespace SeqPP {
 		*/
 		bool computeBRS1(
 			const beacls::FloatVec& tau,
-			const HJI_Grid* g,
+			const levelset::HJI_Grid* g,
 			const std::vector<int8_t>& staticObs,
 			const Obstacles& obstacles,
 			const std::string& SPPP_folder,
@@ -154,7 +154,7 @@ namespace SeqPP {
 		@param	[in]	vehicle		index of vehicle for which the nomTraj is computed
 		*/
 		bool computeNomTraj(
-			const HJI_Grid* g,
+			const levelset::HJI_Grid* g,
 			const std::string& SPPP_folder,
 			const size_t vehicle,
 			helperOC::ComputeOptTraj* computeOptTraj
@@ -341,12 +341,12 @@ namespace SeqPP {
 			/** @overload
 			Disable operator=
 			*/
-			Plane& operator=(const Plane& rhs);
+			SPPPlane& operator=(const SPPPlane& rhs);
 			/** @overload
 			Disable copy constructor
 			*/
 			SPPPlane(const SPPPlane& rhs) :
-				Plane(rhs),
+				helperOC::Plane(rhs),
 				vReserved(rhs.vReserved),
 				wReserved(rhs.wReserved),
 

@@ -19,7 +19,7 @@ namespace SeqPP {
 	class SPPPlane;
 
 	/**
-		@brief	Initializes Plane objects for the RTT method SPP problem
+		@brief	Initializes helperOC::Plane objects for the RTT method SPP problem
 		@param	[out]	Q			Plane dynamics
 		@param	[in]	SPPProblem
 		@param	[in]	RTRRS
@@ -31,7 +31,7 @@ namespace SeqPP {
 		const helperOC::ExecParameters& execParameters = helperOC::ExecParameters()
 	);
 	/**
-	@brief	Initializes One Plane object for the RTT method SPP problem
+	@brief	Initializes One helperOC::Plane object for the RTT method SPP problem
 	@param	[in]	SPPProblem
 	@param	[in]	RTRRS
 	@param	[in]	vehicle_index	Index of the vehicle

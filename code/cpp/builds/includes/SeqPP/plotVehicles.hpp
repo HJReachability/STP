@@ -14,7 +14,9 @@
 #include <cstddef>
 #include <helperOC/helperOC_type.hpp>
 
-class HJI_Grid;
+namespace levelset {
+	class HJI_Grid;
+}
 namespace SeqPP {
 	class SPPPlane;
 
@@ -30,7 +32,7 @@ namespace SeqPP {
 		beacls::FloatVec& dst_ht,
 		const std::vector<SPPPlane*>& Q,
 		const beacls::IntegerVec& tInds,
-		const HJI_Grid* g2D,
+		const levelset::HJI_Grid* g2D,
 		const beacls::FloatVec& src_hc,
 		const beacls::FloatVec& src_ho,
 		const beacls::FloatVec& src_hn,

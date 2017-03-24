@@ -23,14 +23,14 @@ bool SeqPP::CARS::load(
 	beacls::MatFStream* fs,
 	beacls::MatVariable* variable_ptr) {
 	if (g) delete g;
-	g = new HJI_Grid();
+	g = new levelset::HJI_Grid();
 	g->load_grid(std::string("g"), fs, variable_ptr);
 	beacls::IntegerVec dummy;
 	load_vector_of_vectors(datas, std::string("data"), dummy, true, fs, variable_ptr);
 	load_vector(tau, std::string("tau"), dummy, true, fs, variable_ptr);
 	if (dynSys) delete dynSys;
 	beacls::MatVariable* dynSys_var = beacls::getVariableFromStruct(variable_ptr, std::string("dynSys"));
-	dynSys = new PlaneCAvoid(fs, dynSys_var);
+	dynSys = new helperOC::PlaneCAvoid(fs, dynSys_var);
 	beacls::closeMatVariable(dynSys_var);
 	if (!dynSys) {
 		std::cerr << "Cannot load dynSys from:"  << std::endl;
@@ -54,7 +54,7 @@ bool SeqPP::CARS::save(
 	}
 	return result;
 }
-void SeqPP::CARS::set_g(const HJI_Grid* v) {
+void SeqPP::CARS::set_g(const levelset::HJI_Grid* v) {
 	g = v->clone();
 }
 void SeqPP::CARS::set_data(const std::vector<beacls::FloatVec>& v) {
@@ -63,10 +63,10 @@ void SeqPP::CARS::set_data(const std::vector<beacls::FloatVec>& v) {
 void SeqPP::CARS::set_tau(const beacls::FloatVec& v) {
 	tau = v;
 }
-void SeqPP::CARS::set_dynSys(PlaneCAvoid* v) {
+void SeqPP::CARS::set_dynSys(helperOC::PlaneCAvoid* v) {
 	dynSys = v->clone();
 }
-HJI_Grid* SeqPP::CARS::get_g() const {
+levelset::HJI_Grid* SeqPP::CARS::get_g() const {
 	return g;
 }
 const std::vector<beacls::FloatVec>& SeqPP::CARS::get_data() const {
@@ -75,6 +75,6 @@ const std::vector<beacls::FloatVec>& SeqPP::CARS::get_data() const {
 const beacls::FloatVec& SeqPP::CARS::get_tau() const {
 	return tau;
 }
-PlaneCAvoid* SeqPP::CARS::get_dynSys() const {
+helperOC::PlaneCAvoid* SeqPP::CARS::get_dynSys() const {
 	return dynSys;
 }

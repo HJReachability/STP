@@ -14,8 +14,12 @@
 #include <cstring>
 #include <iostream>
 #include <typedef.hpp>
-class PlaneCAvoid;
-class HJI_Grid;
+namespace helperOC {
+	class PlaneCAvoid;
+}
+namespace levelset {
+	class HJI_Grid;
+}
 namespace SeqPP {
 
 	class RTTRS
@@ -23,24 +27,24 @@ namespace SeqPP {
 	public:
 	private:
 		FLOAT_TYPE trackingRadius;
-		HJI_Grid* g;
+		levelset::HJI_Grid* g;
 		beacls::FloatVec data;
 		std::vector<beacls::FloatVec> Deriv;
-		PlaneCAvoid* dynSys;
+		helperOC::PlaneCAvoid* dynSys;
 	public:
 		RTTRS();
 		~RTTRS();
 		RTTRS* clone() const;
 		void set_trackingRadius(const FLOAT_TYPE v);
-		void set_g(const HJI_Grid* v);
+		void set_g(const levelset::HJI_Grid* v);
 		void set_data(const beacls::FloatVec& v);
 		void set_Deriv(const std::vector<beacls::FloatVec>& v);
-		void set_dynSys(PlaneCAvoid* v);
+		void set_dynSys(helperOC::PlaneCAvoid* v);
 		FLOAT_TYPE get_trackingRadius() const;
-		HJI_Grid* get_g() const;
+		levelset::HJI_Grid* get_g() const;
 		const beacls::FloatVec& get_data() const;
 		const std::vector<beacls::FloatVec>& get_Deriv() const;
-		PlaneCAvoid* get_dynSys() const;
+		helperOC::PlaneCAvoid* get_dynSys() const;
 
 		bool load(
 			beacls::MatVariable* variable_ptr

@@ -52,18 +52,18 @@ int main(int argc, char *argv[])
 	if (argc >= 12) {
 		low_memory = (atoi(argv[11]) == 0) ? false : true;
 	}
-	beacls::DelayedDerivMinMax_Type delayedDerivMinMax = beacls::DelayedDerivMinMax_Disable;
+	levelset::DelayedDerivMinMax_Type delayedDerivMinMax = levelset::DelayedDerivMinMax_Disable;
 	if (argc >= 13) {
 		switch (atoi(argv[12])) {
 		default:
 		case 0:
-			delayedDerivMinMax = beacls::DelayedDerivMinMax_Disable;
+			delayedDerivMinMax = levelset::DelayedDerivMinMax_Disable;
 			break;
 		case 1:
-			delayedDerivMinMax = beacls::DelayedDerivMinMax_Always;
+			delayedDerivMinMax = levelset::DelayedDerivMinMax_Always;
 			break;
 		case 2:
-			delayedDerivMinMax = beacls::DelayedDerivMinMax_Adaptive;
+			delayedDerivMinMax = levelset::DelayedDerivMinMax_Adaptive;
 			break;
 		}
 	}

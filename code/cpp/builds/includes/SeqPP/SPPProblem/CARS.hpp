@@ -14,30 +14,34 @@
 #include <cstring>
 #include <iostream>
 #include <typedef.hpp>
-class PlaneCAvoid;
-class HJI_Grid;
+namespace helperOC {
+	class PlaneCAvoid;
+}
+namespace levelset {
+	class HJI_Grid;
+}
 namespace SeqPP {
 
 	class CARS
 	{
 	public:
 	private:
-		HJI_Grid* g;
+		levelset::HJI_Grid* g;
 		std::vector<beacls::FloatVec> datas;
 		beacls::FloatVec tau;
-		PlaneCAvoid* dynSys;
+		helperOC::PlaneCAvoid* dynSys;
 	public:
 		CARS();
 		~CARS();
 		CARS* clone() const;
-		void set_g(const HJI_Grid* v);
+		void set_g(const levelset::HJI_Grid* v);
 		void set_data(const std::vector<beacls::FloatVec>& v);
 		void set_tau(const beacls::FloatVec& v);
-		void set_dynSys(PlaneCAvoid* v);
-		HJI_Grid* get_g() const;
+		void set_dynSys(helperOC::PlaneCAvoid* v);
+		levelset::HJI_Grid* get_g() const;
 		const std::vector<beacls::FloatVec>& get_data() const;
 		const beacls::FloatVec& get_tau() const;
-		PlaneCAvoid* get_dynSys() const;
+		helperOC::PlaneCAvoid* get_dynSys() const;
 
 		bool load(
 			beacls::MatFStream* fs,

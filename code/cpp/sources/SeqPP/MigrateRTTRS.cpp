@@ -27,13 +27,13 @@ SeqPP::MigrateRTTRS::~MigrateRTTRS() {
 	if (pimpl) delete pimpl;
 }
 
-HJI_Grid* SeqPP::MigrateRTTRS_impl::operator()(
+levelset::HJI_Grid* SeqPP::MigrateRTTRS_impl::operator()(
 	beacls::FloatVec& rttrs2d,
 	const RTTRS* rttrs,
 	const FLOAT_TYPE R_augment
 ) {
 	//!< Project RTTRS into 2D
-	HJI_Grid* rttrs_g2D;
+	levelset::HJI_Grid* rttrs_g2D;
 	const beacls::FloatVec& rttrs_data = rttrs->get_data();
 	beacls::FloatVec minus_rttrs_data(rttrs_data.size());
 	std::transform(rttrs_data.cbegin(), rttrs_data.cend(), minus_rttrs_data.begin(), std::negate<FLOAT_TYPE>());
@@ -55,7 +55,7 @@ HJI_Grid* SeqPP::MigrateRTTRS_impl::operator()(
 			(g2D_max[dimension] - g2D_min[dimension]) /
 			(rttrs_g2D_maxs[dimension] - rttrs_g2D_mins[dimension]) * Ns[dimension]));
 	}
-	HJI_Grid* g2D = createGrid(g2D_min, g2D_max, g2D_N);
+	levelset::HJI_Grid* g2D = helperOC::createGrid(g2D_min, g2D_max, g2D_N);
 
 	//!< Migrate RTTRS set
 	helperOC::migrateGrid(rttrs2d, rttrs_g2D, rttrs2d, g2D);
@@ -63,7 +63,7 @@ HJI_Grid* SeqPP::MigrateRTTRS_impl::operator()(
 	if (rttrs_g2D) delete rttrs_g2D;
 	return g2D;
 }
-HJI_Grid* SeqPP::MigrateRTTRS::operator()(
+levelset::HJI_Grid* SeqPP::MigrateRTTRS::operator()(
 	beacls::FloatVec& rttrs2d,
 	const RTTRS* rttrs,
 	const FLOAT_TYPE R_augment

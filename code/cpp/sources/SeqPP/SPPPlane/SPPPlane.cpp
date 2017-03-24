@@ -30,7 +30,7 @@ SeqPP::SPPPlane::SPPPlane(
 	const beacls::FloatVec& vrange,
 	const beacls::FloatVec& dMax,
 	const helperOC::ExecParameters& execParameters
-) : Plane(x, wMax, vrange, dMax), 
+) : helperOC::Plane(x, wMax, vrange, dMax), 
 	vReserved(0),
 	wReserved(0),
 	v(0),
@@ -67,7 +67,7 @@ SeqPP::SPPPlane::SPPPlane(
 	beacls::MatFStream* fs,
 	beacls::MatVariable* variable_ptr
 ) :
-	Plane(fs, variable_ptr),
+	helperOC::Plane(fs, variable_ptr),
 	vReserved(beacls::FloatVec()),
 	wReserved(0),
 	v(0),
@@ -143,7 +143,7 @@ SeqPP::SPPPlane::~SPPPlane() {
 }
 bool SeqPP::SPPPlane::operator==(const SPPPlane& rhs) const {
 	if (this == &rhs) return true;
-	else if (!DynSys::operator==(rhs)) return false;
+	else if (!helperOC::DynSys::operator==(rhs)) return false;
 	//!< If tracking 3D trajectory
 	else if (wReserved != rhs.wReserved) return false;
 
@@ -204,7 +204,7 @@ bool SeqPP::SPPPlane::operator==(const SPPPlane& rhs) const {
 
 	else return true;
 }
-bool SeqPP::SPPPlane::operator==(const DynSys& rhs) const {
+bool SeqPP::SPPPlane::operator==(const helperOC::DynSys& rhs) const {
 	if (this == &rhs) return true;
 	else if (typeid(*this) != typeid(rhs)) return false;
 	else return operator==(dynamic_cast<const SPPPlane&>(rhs));
@@ -222,7 +222,7 @@ bool SeqPP::SPPPlane::save(
 	beacls::MatFStream* fs,
 	beacls::MatVariable* variable_ptr
 ) {
-	bool result = Plane::save(fs, variable_ptr);
+	bool result = helperOC::Plane::save(fs, variable_ptr);
 	//!< If tracking 3D trajectory
 	if (!vReserved.empty()) result &= save_vector(vReserved, std::string("vReserved"), beacls::IntegerVec(), true, fs, variable_ptr);
 	result &= save_value(wReserved, std::string("wReserved"), true, fs, variable_ptr);;
@@ -269,7 +269,7 @@ bool SeqPP::SPPPlane::save(
 
 bool SeqPP::SPPPlane::computeBRS1(
 	const beacls::FloatVec& src_BRS1_tau,
-	const HJI_Grid* g,
+	const levelset::HJI_Grid* g,
 	const beacls::FloatVec& staticObs,
 	const Obstacles& obstacles,
 	const std::string& SPPP_folder,
@@ -279,15 +279,15 @@ bool SeqPP::SPPPlane::computeBRS1(
 	//!< using same tau as FRS is causing BRS to not include target
 
 	//!< Set schemeData
-	DynSysSchemeData* schemeData = new DynSysSchemeData();
+	helperOC::DynSysSchemeData* schemeData = new helperOC::DynSysSchemeData();
 	schemeData->set_grid(g);
-	schemeData->uMode = DynSys_UMode_Min;
+	schemeData->uMode = helperOC::DynSys_UMode_Min;
 
 	beacls::FloatVec nom_vrange(vrange.size());
 	std::transform(vrange.cbegin(), vrange.cend(), vReserved.cbegin(), nom_vrange.begin(), std::plus<FLOAT_TYPE>());
 	const FLOAT_TYPE nom_wMax = wMax + wReserved;
 	const beacls::FloatVec x = get_x();
-	Plane* dynSys = new Plane(x, nom_wMax, nom_vrange);
+	Plane* dynSys = new helperOC::Plane(x, nom_wMax, nom_vrange);
 	schemeData->dynSys = dynSys;
 
 	//!< Visualization
@@ -353,10 +353,10 @@ bool SeqPP::SPPPlane::computeBRS1(
 		auto minmax_BRS1_tau = beacls::minmax_value<FLOAT_TYPE>(src_BRS1_tau.cbegin(), src_BRS1_tau.cend());
 		const FLOAT_TYPE max_BRS1_tau = minmax_BRS1_tau.second;
 		const FLOAT_TYPE min_BRS1_tau = minmax_BRS1_tau.first;
-		extraArgs.obstacles.reserve(obstacles.tau.size());
+		extraArgs.obstacles_ptrs.reserve(obstacles.tau.size());
 		for (int64_t t = obstacles.tau.size() - 1; t >= 0; --t) {
 			if ((obstacles.tau[t] < max_BRS1_tau + small) && (obstacles.tau[t] > min_BRS1_tau - small)) {
-				extraArgs.obstacles.push_back(&obstacles.data[t]);
+				extraArgs.obstacles_ptrs.push_back(&obstacles.data[t]);
 			}
 		}
 	}
@@ -366,7 +366,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 	for (size_t t = 0; t < src_BRS1_tau.size(); ++t) {
 		//!< Concatenation is done "in reverse" to flip the obstacle order for BRS
 		if (src_BRS1_tau[t] < min_obstacles_tau - small) {
-			extraArgs.obstacles.push_back(&modified_staticObs);
+			extraArgs.obstacles_ptrs.push_back(&modified_staticObs);
 		}
 	}
 
@@ -380,10 +380,10 @@ bool SeqPP::SPPPlane::computeBRS1(
 	extraArgs.execParameters = execParameters;
 
 	helperOC::HJIPDE_extraOuts extraOuts;
-	HJIPDE* hjipde = new HJIPDE();
+	helperOC::HJIPDE* hjipde = new helperOC::HJIPDE();
 	beacls::FloatVec new_tau;
 	std::vector<std::vector<FLOAT_TYPE >> new_BRS1;
-	hjipde->solve(new_tau, extraOuts, extraArgs.targets[0], src_BRS1_tau, schemeData, HJIPDE::MinWithType_None, extraArgs);
+	hjipde->solve(new_tau, extraOuts, extraArgs.targets[0], src_BRS1_tau, schemeData, helperOC::HJIPDE::MinWithType_None, extraArgs);
 	hjipde->get_datas(new_BRS1, src_BRS1_tau, schemeData);
 
 	//!< Reverse the order of time elements
@@ -403,7 +403,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 }
 bool SeqPP::SPPPlane::computeBRS1(
 	const beacls::FloatVec& src_BRS1_tau,
-	const HJI_Grid* g,
+	const levelset::HJI_Grid* g,
 	const std::vector<int8_t>& staticObs,
 	const Obstacles& obstacles,
 	const std::string& SPPP_folder,
@@ -413,15 +413,15 @@ bool SeqPP::SPPPlane::computeBRS1(
 	//!< using same tau as FRS is causing BRS to not include target
 
 	//!< Set schemeData
-	DynSysSchemeData* schemeData = new DynSysSchemeData();
+	helperOC::DynSysSchemeData* schemeData = new helperOC::DynSysSchemeData();
 	schemeData->set_grid(g);
-	schemeData->uMode = DynSys_UMode_Min;
+	schemeData->uMode = helperOC::DynSys_UMode_Min;
 
 	beacls::FloatVec nom_vrange(vrange.size());
 	std::transform(vrange.cbegin(), vrange.cend(), vReserved.cbegin(), nom_vrange.begin(), std::plus<FLOAT_TYPE>());
 	const FLOAT_TYPE nom_wMax = wMax + wReserved;
 	const beacls::FloatVec x = get_x();
-	Plane* dynSys = new Plane(x, nom_wMax, nom_vrange);
+	Plane* dynSys = new helperOC::Plane(x, nom_wMax, nom_vrange);
 	schemeData->dynSys = dynSys;
 
 	//!< Visualization
@@ -486,10 +486,10 @@ bool SeqPP::SPPPlane::computeBRS1(
 		auto minmax_BRS1_tau = beacls::minmax_value<FLOAT_TYPE>(src_BRS1_tau.cbegin(), src_BRS1_tau.cend());
 		const FLOAT_TYPE max_BRS1_tau = minmax_BRS1_tau.second;
 		const FLOAT_TYPE min_BRS1_tau = minmax_BRS1_tau.first;
-		extraArgs.obstacles_s8.reserve(obstacles.tau.size());
+		extraArgs.obstacles_s8_ptrs.reserve(obstacles.tau.size());
 		for (int64_t t = obstacles.tau.size() - 1; t >= 0; --t) {
 			if ((obstacles.tau[t] < max_BRS1_tau + small) && (obstacles.tau[t] > min_BRS1_tau - small)) {
-				extraArgs.obstacles_s8.push_back(&obstacles.data_s8[t]);
+				extraArgs.obstacles_s8_ptrs.push_back(&obstacles.data_s8[t]);
 			}
 		}
 	}
@@ -499,7 +499,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 	for (size_t t = 0; t < src_BRS1_tau.size(); ++t) {
 		//!< Concatenation is done "in reverse" to flip the obstacle order for BRS
 		if (src_BRS1_tau[t] < min_obstacles_tau - small) {
-			extraArgs.obstacles_s8.push_back(&modified_staticObs);
+			extraArgs.obstacles_s8_ptrs.push_back(&modified_staticObs);
 		}
 	}
 
@@ -513,10 +513,10 @@ bool SeqPP::SPPPlane::computeBRS1(
 	extraArgs.execParameters = execParameters;
 
 	helperOC::HJIPDE_extraOuts extraOuts;
-	HJIPDE* hjipde = new HJIPDE();
+	helperOC::HJIPDE* hjipde = new helperOC::HJIPDE();
 	beacls::FloatVec new_tau;
 	std::vector<std::vector<FLOAT_TYPE >> new_BRS1;
-	hjipde->solve(new_tau, extraOuts, extraArgs.targets[0], src_BRS1_tau, schemeData, HJIPDE::MinWithType_None, extraArgs);
+	hjipde->solve(new_tau, extraOuts, extraArgs.targets[0], src_BRS1_tau, schemeData, helperOC::HJIPDE::MinWithType_None, extraArgs);
 	hjipde->get_datas(new_BRS1, src_BRS1_tau, schemeData);
 
 	//!< Reverse the order of time elements
@@ -535,7 +535,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 	return false;
 }
 bool SeqPP::SPPPlane::computeNomTraj(
-	const HJI_Grid* g,
+	const levelset::HJI_Grid* g,
 	const std::string& SPPP_folder,
 	const size_t vehicle,
 	helperOC::ComputeOptTraj* computeOptTraj
@@ -547,11 +547,11 @@ bool SeqPP::SPPPlane::computeNomTraj(
 	std::transform(vrange.cbegin(), vrange.cend(), vReserved.cbegin(), nom_vrange.begin(), std::plus<FLOAT_TYPE>());
 	const FLOAT_TYPE nom_wMax = wMax + wReserved;
 	const beacls::FloatVec x = get_x();
-	Plane* dynSys = new Plane(x, nom_wMax, nom_vrange);
+	Plane* dynSys = new helperOC::Plane(x, nom_wMax, nom_vrange);
 
 	//!< Set extraArgs
 	helperOC::HJIPDE_extraArgs extraArgs;
-	const DynSys_UMode_Type uMode = DynSys_UMode_Min;
+	const helperOC::DynSys_UMode_Type uMode = helperOC::DynSys_UMode_Min;
 	extraArgs.visualize = true;
 	extraArgs.projDim = beacls::IntegerVec{ 1, 1, 0 };
 	static const size_t subSamples = 32;
@@ -617,7 +617,7 @@ bool SeqPP::SPPPlane::computeObsForRTT(
 	beacls::FloatVec rttrs2d;
 
 	MigrateRTTRS* migrateRTTRS = sppp->get_MigrateRTTRS();
-	HJI_Grid* g2D = migrateRTTRS->operator()(rttrs2d, rttrs, R_augment);
+	levelset::HJI_Grid* g2D = migrateRTTRS->operator()(rttrs2d, rttrs, R_augment);
 
 	//!< Initialize 2D obstacles
 	obs2D_tau = target_nomTraj_tau;
@@ -647,7 +647,7 @@ bool SeqPP::SPPPlane::computeObsForRTT(
 		const FLOAT_TYPE angle = x[2];
 		obsi_rot.clear();
 		helperOC::rotateData(obsi_rot, g2D, rttrs2d, angle, beacls::IntegerVec{0, 1}, beacls::IntegerVec());
-		HJI_Grid* obsi_gShift = helperOC::shiftGrid(g2D, p);
+		levelset::HJI_Grid* obsi_gShift = helperOC::shiftGrid(g2D, p);
 		obsi.clear();
 		helperOC::migrateGrid(obsi, obsi_gShift, obsi_rot, sppp->get_g2D());
 		obs2D[t] = obsi;
@@ -662,7 +662,7 @@ bool SeqPP::SPPPlane::computeObsForRTT(
 			for (size_t n = 0; n < N2; ++n) {
 				const size_t offset_3d = obsi_size * n;
 				std::transform(obsi.cbegin(), obsi.cend(), neg_target.cbegin() + offset_3d, obsForRTT_t.begin() + offset_3d, [](const auto& lhs, const auto& rhs) {
-					return static_cast<int8_t>(std::floor(std::max<FLOAT_TYPE>(lhs, rhs) * obstacles_fix_ratio));
+					return static_cast<int8_t>(std::floor(std::max<FLOAT_TYPE>(lhs, rhs) * helperOC::fix_point_ratio));
 				});
 			}
 
@@ -682,10 +682,10 @@ bool SeqPP::SPPPlane::computeObsForRTT(
 
 class SeqPP::RawAugObs {
 private:
-	HJI_Grid* g2D;
+	levelset::HJI_Grid* g2D;
 	std::vector<beacls::FloatVec> FRS2D;
 public:
-	HJI_Grid* get_g2D() const { return g2D; }
+	levelset::HJI_Grid* get_g2D() const { return g2D; }
 	const std::vector<beacls::FloatVec>& get_FRS2D() const { return FRS2D; };
 };
 
@@ -718,7 +718,7 @@ bool SeqPP::SPPPlane::addObs2D(
 		nomTraj = tmp_nomTraj;
 		nomTraj_tau = tmp_nomTraj_tau;
 	}
-	HJI_Grid* g2D = sppp->get_g2D();
+	levelset::HJI_Grid* g2D = sppp->get_g2D();
 
 	//!< If there's a replan time, then migrate flattened augmented obstacles
 	replan = false;
@@ -733,7 +733,7 @@ bool SeqPP::SPPPlane::addObs2D(
 	const FLOAT_TYPE R_augment = (FLOAT_TYPE)(1.1*(sppp->get_Rc() + rttrs->get_trackingRadius())); //!< Amount to augment RTTRS by
 	beacls::FloatVec rawObs2D;
 	MigrateRTTRS* migrateRTTRS = sppp->get_MigrateRTTRS();
-	HJI_Grid* tmp_g = migrateRTTRS->operator()(rawObs2D, rttrs, R_augment);
+	levelset::HJI_Grid* tmp_g = migrateRTTRS->operator()(rawObs2D, rttrs, R_augment);
 	if (tmp_g) delete tmp_g;
 
 	//!< Initialize 2D obstacles

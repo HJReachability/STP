@@ -16,8 +16,12 @@
 #include <typedef.hpp>
 #include <SeqPP/SPPProblem/SPPProblemTypedef.hpp>
 #include <helperOC/helperOC_type.hpp>
-class HJI_Grid;
-class Plane;
+namespace helperOC {
+	class Plane;
+}
+namespace levelset {
+	class HJI_Grid;
+}
 namespace SeqPP {
 	class RTTRS;
 	class NIRS;
@@ -79,8 +83,8 @@ namespace SeqPP {
 		beacls::FloatVec gMin;
 		beacls::FloatVec gMax;
 		beacls::IntegerVec gN;
-		HJI_Grid* g;
-		HJI_Grid* g2D;
+		levelset::HJI_Grid* g;
+		levelset::HJI_Grid* g2D;
 		
 		beacls::FloatVec tauBR;		//!< Time vector before replanning
 		beacls::FloatVec tauAR;		//!< Time vector after replanning
@@ -170,8 +174,8 @@ namespace SeqPP {
 		FLOAT_TYPE get_dt() const { return dt; }
 		const beacls::FloatVec& get_tTarget() const { return tTarget; }
 		const beacls::FloatVec& get_tReplan() const { return tReplan; }
-		HJI_Grid* get_g() const { return g; }
-		HJI_Grid* get_g2D() const { return g2D; }
+		levelset::HJI_Grid* get_g() const { return g; }
+		levelset::HJI_Grid* get_g2D() const { return g2D; }
 		MigrateRTTRS* get_MigrateRTTRS() const { return migrateRTTRS; }
 		bool get_s8ary_obstacles() const { return lowprecision_obstacles; }
 		/**
@@ -191,7 +195,7 @@ namespace SeqPP {
 		@param	[in]	save_png	set to true to save computation figures
 		*/
 		bool computeCARS(
-			const Plane* qintr = NULL,
+			const helperOC::Plane* qintr = NULL,
 			const bool save_png = true,
 			const bool restart = false
 		);
