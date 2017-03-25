@@ -125,7 +125,8 @@ namespace SeqPP {
 			const Obstacles& obstacles,
 			const std::string& SPPP_folder,
 			const size_t vehicle,
-			const bool low_memory
+			const bool low_memory,
+			const bool visualize
 		);
 		/**
 		@brief	Computes the first BRS for a vehicle, and updates its data with
@@ -145,7 +146,8 @@ namespace SeqPP {
 			const Obstacles& obstacles,
 			const std::string& SPPP_folder,
 			const size_t vehicle,
-			const bool low_memory
+			const bool low_memory,
+			const bool visualize
 		);
 		/**
 		@brief	Computes nominal trajectory of to be robustly tracked
@@ -157,7 +159,8 @@ namespace SeqPP {
 			const levelset::HJI_Grid* g,
 			const std::string& SPPP_folder,
 			const size_t vehicle,
-			helperOC::ComputeOptTraj* computeOptTraj
+			helperOC::ComputeOptTraj* computeOptTraj,
+			const bool visualize
 		);
 		/**
 		@brief	Computes cylindrical obstacles assuming the RTT method for SPP with

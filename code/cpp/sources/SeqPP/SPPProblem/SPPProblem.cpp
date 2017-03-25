@@ -1323,7 +1323,8 @@ bool SeqPP::SPPProblem::computeNIRS(
 	const bool low_memory,
 	const CheckPointType checkPointType,
 	const bool save_brs1_file,
-	const size_t num_of_vehicles_to_computeNIRS
+	const size_t num_of_vehicles_to_computeNIRS,
+	const bool visualize
 ) {
 	//!< Check to see if 
 	if (!NI_RS_filename.empty()) {
@@ -1548,13 +1549,13 @@ bool SeqPP::SPPProblem::computeNIRS(
 			//!< Compute the BRS(BRS1) of the vehicle with the above obstacles
 			std::cout << "Computing BRS1 for vehicle " << vehicle << std::endl;
 			if (lowprecision_obstacles)
-				thisVehicle->computeBRS1(thisTau, g, augStaticObs_s8, obstacles, folder, vehicle, low_memory);
+				thisVehicle->computeBRS1(thisTau, g, augStaticObs_s8, obstacles, folder, vehicle, low_memory, visualize);
 			else
-				thisVehicle->computeBRS1(thisTau, g, augStaticObs, obstacles, folder, vehicle, low_memory);
+				thisVehicle->computeBRS1(thisTau, g, augStaticObs, obstacles, folder, vehicle, low_memory, visualize);
 			std::cout << "Computed BRS1 for vehicle " << vehicle << std::endl;
 			//!< Compute the nominal trajectories based on BRS1
 			std::cout << "Computing nominal trajectory for vehicle " << vehicle << std::endl;
-			thisVehicle->computeNomTraj(g, folder, vehicle, computeOptTraj);
+			thisVehicle->computeNomTraj(g, folder, vehicle, computeOptTraj, visualize);
 			std::cout << "Computed nominal trajectory for vehicle " << vehicle << std::endl;
 			while (nirs->get_to_save()) {
 				std::this_thread::yield();

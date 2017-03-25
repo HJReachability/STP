@@ -18,6 +18,7 @@ void SeqPP::SPPwDisturbanceRTT(
 	const CheckPointType checkPointType,
 	const bool save_brs1_file,
 	const size_t num_of_vehicles_to_computeNIRS,
+	const bool visualize,
 	const beacls::IntegerVec& rttrs_gN
 ) {
 	SeqPP::SPPProblem* newSeqPPP = NULL;
@@ -28,7 +29,7 @@ void SeqPP::SPPwDisturbanceRTT(
 	}
 
 	SeqPPP->computeRTTRS();
-	bool finishAll = SeqPPP->computeNIRS(restart, low_memory, checkPointType, save_brs1_file, num_of_vehicles_to_computeNIRS);
+	bool finishAll = SeqPPP->computeNIRS(restart, low_memory, checkPointType, save_brs1_file, num_of_vehicles_to_computeNIRS, visualize);
 	if (finishAll) {
 		SeqPPP->simulateNI();
 	}

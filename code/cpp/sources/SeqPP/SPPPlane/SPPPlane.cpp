@@ -274,7 +274,8 @@ bool SeqPP::SPPPlane::computeBRS1(
 	const Obstacles& obstacles,
 	const std::string& SPPP_folder,
 	const size_t vehicle,
-	const bool low_memory
+	const bool low_memory,
+	const bool visualize
 ) {
 	//!< using same tau as FRS is causing BRS to not include target
 
@@ -292,7 +293,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 
 	//!< Visualization
 	helperOC::HJIPDE_extraArgs extraArgs;
-	extraArgs.visualize = true;
+	extraArgs.visualize = visualize;
 	extraArgs.deleteLastPlot = true;
 	extraArgs.plotData.plotDims = beacls::IntegerVec{ 1, 1, 0 };
 	extraArgs.plotData.projpt = beacls::FloatVec{ x[2] };
@@ -408,7 +409,8 @@ bool SeqPP::SPPPlane::computeBRS1(
 	const Obstacles& obstacles,
 	const std::string& SPPP_folder,
 	const size_t vehicle,
-	const bool low_memory
+	const bool low_memory,
+	const bool visualize
 ) {
 	//!< using same tau as FRS is causing BRS to not include target
 
@@ -426,7 +428,7 @@ bool SeqPP::SPPPlane::computeBRS1(
 
 	//!< Visualization
 	helperOC::HJIPDE_extraArgs extraArgs;
-	extraArgs.visualize = true;
+	extraArgs.visualize = visualize;
 	extraArgs.deleteLastPlot = true;
 	extraArgs.plotData.plotDims = beacls::IntegerVec{ 1, 1, 0 };
 	extraArgs.plotData.projpt = beacls::FloatVec{ x[2] };
@@ -538,7 +540,8 @@ bool SeqPP::SPPPlane::computeNomTraj(
 	const levelset::HJI_Grid* g,
 	const std::string& SPPP_folder,
 	const size_t vehicle,
-	helperOC::ComputeOptTraj* computeOptTraj
+	helperOC::ComputeOptTraj* computeOptTraj,
+	const bool visualize
 ) {
 	static const FLOAT_TYPE small = (FLOAT_TYPE)1e-4;
 
@@ -552,7 +555,7 @@ bool SeqPP::SPPPlane::computeNomTraj(
 	//!< Set extraArgs
 	helperOC::HJIPDE_extraArgs extraArgs;
 	const helperOC::DynSys_UMode_Type uMode = helperOC::DynSys_UMode_Min;
-	extraArgs.visualize = true;
+	extraArgs.visualize = visualize;
 	extraArgs.projDim = beacls::IntegerVec{ 1, 1, 0 };
 	static const size_t subSamples = 32;
 

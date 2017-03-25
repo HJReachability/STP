@@ -18,8 +18,15 @@ namespace SeqPP {
 	class SPPProblem;
 	/**
 		@brief	Solves the entire SPP with disturbances problem using the RTT method
-		@param	[in]	keepLast							//!< retain all time dependent values
-	*/
+		@param	[in]	restart		set to true to restart and overwrite computation
+		@param	[in]	checkPointType	Checkpoint type.
+		@arg	CheckPointType_None	:			Don't save checkpoint files
+		@arg	CheckPointType_Merged	:		Save checkpoint into a single file
+		@arg	CheckPointType_Separated	:	Save checkpoint into vehicle separated files
+		@param	[in]	save_brs1_file	Save BRS1 into files.
+		@param	[in]	num_of_vehicles_to_computeNIRS	Number of vehicles to compute NIRS on this execution.
+		@param	[in]	visualize	Visualize BRS1 and OptTraj mode.
+		*/
 	PREFIX_VC_DLL
 		void SPPwDisturbanceRTT(
 			const SeqPP::ProblemType problem_name,
@@ -32,6 +39,7 @@ namespace SeqPP {
 			const CheckPointType checkPointType = CheckPointType_Merged,
 			const bool save_brs1_file = false,
 			const size_t num_of_vehicles_to_computeNIRS = 0,
+			const bool visualize = false,
 			const beacls::IntegerVec& rttrs_gN = beacls::IntegerVec()
 		);
 };

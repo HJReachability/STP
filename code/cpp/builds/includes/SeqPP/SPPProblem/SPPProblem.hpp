@@ -120,7 +120,7 @@ namespace SeqPP {
 		std::string full_sim_filename; //!< full simulation file (simulation results)
 
 		bool keepLast;	//!< retain all time dependent values
-		bool lowprecision_obstacles;
+		bool lowprecision_obstacles;	//!< Enable low precision obstacles mode.
 		helperOC::ExecParameters execParameters;
 		MigrateRTTRS* migrateRTTRS;
 		MatWriter* matWriter;
@@ -202,13 +202,22 @@ namespace SeqPP {
 		/**
 			@brief	Computes the before-replanning reachable sets for the SPP problem
 			@param	[in]	restart		set to true to restart and overwrite computation
+			@param	[in]	low_memory	Low memory mode
+			@param	[in]	checkPointType	Checkpoint type.
+			@arg	CheckPointType_None	:			Don't save checkpoint files
+			@arg	CheckPointType_Merged	:		Save checkpoint into a single file
+			@arg	CheckPointType_Separated	:	Save checkpoint into vehicle separated files
+			@param	[in]	save_brs1_file	Save BRS1 into files.
+			@param	[in]	num_of_vehicles_to_computeNIRS	Number of vehicles to compute NIRS on this execution.
+			@param	[in]	visualize	Visualize BRS1 and OptTraj mode.
 		*/
 		bool computeNIRS(
 			const bool restart = false,
 			const bool low_memory = false,
-			const CheckPointType checkPointType = CheckPointType_Merged,
+			const CheckPointType checkPointType = CheckPointType_Separated,
 			const bool save_brs1_file = false,
-			const size_t num_of_vehicles_to_computeNIRS = 0
+			const size_t num_of_vehicles_to_computeNIRS = 0,
+			const bool visualize = true
 		);
 		/**
 		@brief	Simulates SPP with disturbances with the RTT method

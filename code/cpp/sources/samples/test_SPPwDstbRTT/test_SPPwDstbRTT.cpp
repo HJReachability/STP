@@ -52,20 +52,9 @@ int main(int argc, char *argv[])
 	if (argc >= 12) {
 		low_memory = (atoi(argv[11]) == 0) ? false : true;
 	}
-	levelset::DelayedDerivMinMax_Type delayedDerivMinMax = levelset::DelayedDerivMinMax_Disable;
+	bool visualize = false;
 	if (argc >= 13) {
-		switch (atoi(argv[12])) {
-		default:
-		case 0:
-			delayedDerivMinMax = levelset::DelayedDerivMinMax_Disable;
-			break;
-		case 1:
-			delayedDerivMinMax = levelset::DelayedDerivMinMax_Always;
-			break;
-		case 2:
-			delayedDerivMinMax = levelset::DelayedDerivMinMax_Adaptive;
-			break;
-		}
+		visualize = (atoi(argv[12]) == 0) ? false : true;
 	}
 	bool useCuda = false;
 	if (argc >= 14) {
@@ -91,6 +80,7 @@ int main(int argc, char *argv[])
 	if (argc >= 19) {
 		filenames_prefix = std::string(argv[18]);
 	}
+	const levelset::DelayedDerivMinMax_Type delayedDerivMinMax = levelset::DelayedDerivMinMax_Disable;
 
 	SeqPP::SetupExtraArgs setupExtraArgs;
 	setupExtraArgs.wind_speed = wind_speed;
@@ -189,7 +179,8 @@ int main(int argc, char *argv[])
 		restart,
 		checkPointType,
 		save_brs1_file,
-		num_of_vehicles_to_computeNIRS
+		num_of_vehicles_to_computeNIRS,
+		visualize
 	);
 	if (seqPPP) delete seqPPP;
 	return 0;
