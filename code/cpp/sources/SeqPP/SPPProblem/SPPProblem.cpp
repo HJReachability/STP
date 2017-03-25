@@ -1671,9 +1671,8 @@ bool SeqPP::SPPProblem::computeNIRS(
 	//!< Save last 2 vehicles without obsForRTT.
 	if (checkPointType == CheckPointType_Separated) {
 		if (!save_brs1_file) {
-			Obstacles* dummy_obstacles_ptr = new SeqPP::Obstacles();
-			SeqPP::saveNI_RS_chkpt_and_clear(matWriter, NI_RS_chkpt_filename, nirs, dummy_obstacles_ptr, num_of_vehicles - 2, checkPointType, 0, save_brs1_file, false);
-			SeqPP::saveNI_RS_chkpt_and_clear(matWriter, NI_RS_chkpt_filename, nirs, dummy_obstacles_ptr, num_of_vehicles - 1, checkPointType, 0, save_brs1_file, false);
+			SeqPP::saveNI_RS_chkpt_and_clear(matWriter, NI_RS_chkpt_filename, nirs, NULL, num_of_vehicles - 2, checkPointType, 0, save_brs1_file, false);
+			SeqPP::saveNI_RS_chkpt_and_clear(matWriter, NI_RS_chkpt_filename, nirs, NULL, num_of_vehicles - 1, checkPointType, 0, save_brs1_file, false);
 		}
 	}
 	if (computeOptTraj) delete computeOptTraj;
