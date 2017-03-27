@@ -40,14 +40,7 @@ end
 
 if CPP_file
     if separatedNIRS
-        if isempty(project_name)
-            if low_memory
-                project_name = 'SPPProblem_17190.285834';
-            else
-                project_name = 'SPPProblem_17179.936194';
-            end
-        end
-        folder = sprintf('./data/%s/%s', project_name, project_name);
+        folder = sprintf('./%s/%s', project_name, project_name);
         SPPP_filename = sprintf('%s_SPPP.mat', folder);
         RTTRS_filename = sprintf('%s_RTTRS.mat', folder);
         NI_RS_filename = sprintf('%s_computeNIRS.mat', folder);
@@ -56,16 +49,7 @@ if CPP_file
 %        NI_RS_chkpt_filename = [];
         NI_RS_chkpt_filename = sprintf('%s_computeNIRS_chkpt_Plane', folder)
     else
-        if isempty(project_name)
-            if low_memory
-                project_name = 'SF_dstb_11_4sSep_tMaxOrg_wLowMem';
-            else
-                project_name = 'SF_dstb_11_4sSep_tMaxOrg_woLowMem';
-            end
-            folder = sprintf('./inputs/%s', project_name);
-        else
-            folder = sprintf('./data/%s/%s', project_name, project_name);
-        end
+        folder = sprintf('./%s/%s', project_name, project_name);
         SPPP_filename = sprintf('%s_SPPP.mat', folder);
         RTTRS_filename = sprintf('%s_RTTRS.mat', folder);
         NI_RS_filename = sprintf('%s_computeNIRS.mat', folder);
@@ -83,7 +67,6 @@ if CPP_file
         CPP_NIRS_file = true;
     end
 else
-        project_name = 'SPPProblem_736692.356442';
         folder = sprintf('./%s', project_name);
         SPPP_filename = sprintf('%s/SPPP.mat', folder);
         RTTRS_filename = sprintf('%s/RTTRS.mat', folder);
