@@ -1,12 +1,9 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Time-Varying Reachability Background \label{sec:HJIVI}}
-We will be using reachability analysis to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ in a time interval $[t, t_f]$ or FRS $\frs$ in a time interval $[t_0, t]$ will be denoted by
+We will be using reachability analysis to compute a backward reachable set (BRS) $\brs$ given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ in a time interval $[t, t_f]$ will be denoted by
 
 \begin{equation}
-\begin{aligned}
-\brs(t, t_f) &\quad \text{ (backward reachable set)}\\
-\frs(t_0, t) &\quad \text{ (forward reachable set)}
-\end{aligned}
+\brs(t, t_f) \quad \text{ (backward reachable set)}
 \end{equation}
 
 %In the SPP scheme, a lower-priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal path planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. 
@@ -21,27 +18,31 @@ Several formulations of reachability are able to account for time-varying obstac
 \end{aligned}
 \end{equation}
 
-In a similar fashion, the FRS is computed by solving the following \textit{initial value} HJ PDE:
+%In a similar fashion, the FRS is computed by solving the following \textit{initial value} HJ PDE:
+%
+%\begin{equation}
+%\label{eq:HJIVI_FRS}
+%\begin{aligned}
+%D_t \valfuncfwd(t, \state) + &\ham(t, \state, \nabla \valfuncfwd(t, \state)) = 0 , \quad t \ge t_0  \\
+%&\valfuncfwd(t_0, \state) = \max\{\fc(\state), -\obsfunc(t_0, \state)\}
+%\end{aligned}
+%\end{equation}
+%
+In \eqref{eq:HJIVI_BRS}, the function $\ic(\state)$ is the implicit surface function representing the target set $\targetset = \{\state: \ic(\state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state: \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t, t_f)$ is given by
 
-\begin{equation}
-\label{eq:HJIVI_FRS}
-\begin{aligned}
-D_t \valfuncfwd(t, \state) + &\ham(t, \state, \nabla \valfuncfwd(t, \state)) = 0 , \quad t \ge t_0  \\
-&\valfuncfwd(t_0, \state) = \max\{\fc(\state), -\obsfunc(t_0, \state)\}
-\end{aligned}
-\end{equation}
-
-In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)$ is the implicit surface function representing the target set $\targetset = \{\state: \ic(\state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state: \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t, t_f)$ and FRS $\frs(t_0, t)$ are given by
-
+%\begin{equation}
+%\label{eq:implicitValfuncs}
+%\begin{aligned}
+%\brs(t, t_f) &= \{\state: \valfunc(t, \state) \le 0\} \\
+%\frs(t_0, t) &= \{\state: \valfuncfwd(t, \state) \le 0 \}
+%\end{aligned}
+%\end{equation}
 \begin{equation}
 \label{eq:implicitValfuncs}
-\begin{aligned}
-\brs(t, t_f) &= \{\state: \valfunc(t, \state) \le 0\} \\
-\frs(t_0, t) &= \{\state: \valfuncfwd(t, \state) \le 0 \}
-\end{aligned}
+\brs(t, t_f) = \{\state: \valfunc(t, \state) \le 0\}
 \end{equation}
 
-Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$ which effectively means that the outside maximum is ignored in \eqref{eq:HJIVI_BRS}. Also, note that unlike in \eqref{eq:HJIVI_BRS}, there is no inner minimization in \eqref{eq:HJIVI_FRS}. As we will see later, we will be using the BRS to determine all states that can reach some target set \textit{within the time horizon} $[t,t_f]$, whereas we will be using the FRS to determine where a vehicle could be \textit{at some particular time} $t$. In addition, \eqref{eq:HJIVI_FRS} has no outer maximum, since the FRSs that we will compute will not involve any obstacles.
+Some of the reachability computations will not involve an obstacle set $\obsset(t)$, in which case we can simply set $\obsfunc(t, \state) \equiv \infty$ which effectively means that the outside maximum is ignored in \eqref{eq:HJIVI_BRS}. %Also, note that unlike in \eqref{eq:HJIVI_BRS}, there is no inner minimization in \eqref{eq:HJIVI_FRS}. As we will see later, we will be using the BRS to determine all states that can reach some target set \textit{within the time horizon} $[t,t_f]$, whereas we will be using the FRS to determine where a vehicle could be \textit{at some particular time} $t$. In addition, \eqref{eq:HJIVI_FRS} has no outer maximum, since the FRSs that we will compute will not involve any obstacles.
 
 %\MCnote{Not sure if this is needed, but putting it here for now} For clarity, sometimes we will denote value functions computed using the target set $\targetset$, obstacle $\obsset(t)$, and Hamiltonian $\ham$ as 
 %

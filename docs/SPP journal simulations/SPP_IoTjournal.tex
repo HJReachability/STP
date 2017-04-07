@@ -102,9 +102,9 @@
 
 \title{\LARGE \bf Large-Scale Robust Sequential Path Planning}
 
-\author{Somil Bansal*, Mo Chen*, Ken Tanabe, and Claire J. Tomlin
+\author{Mo Chen*, Somil Bansal*, Ken Tanabe, and Claire J. Tomlin
 \thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen has received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
-\thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{somil, mochen72, k-tanabe, tomlin\}@eecs.berkeley.edu}
+\thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{mochen72, somil, k-tanabe, tomlin\}@eecs.berkeley.edu}
 }
 
 \begin{document}
@@ -114,7 +114,7 @@
 
 %%%
 \begin{abstract}
-To be written.
+Provably safe and scalable multi-vehicle path planning is an important and urgent problem due to the expected increase of automation in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to large scale systems is often intractable because of its exponentially-scaling computation complexity with respect to system dimension, also known as the `curse of dimensionality.' To overcome this problem, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. In this work, we demonstrate the potential of SPP algorithm as a trajectory planning algorithm for large-scale systems. In particular, we simulate large-scale multi-vehicle systems in two different urban environments, a city environment and a multi-city environment, and use SPP algorithm for trajectory planning. SPP algorithm is able to efficiently design collision-free trajectories in both environements despite the presence of disturbances in vehicles' dynamics. To ensure a safe transition of vehicles to their destinations, it automatically allocates a space-time reservation to vehicles based on the magnitude of disturbance. This leads to a multi-lane division of airspace, where the number of lanes depends on the disturbance and other problem parameters.      
 \end{abstract}
 
 % Introduction
@@ -126,28 +126,13 @@ To be written.
 % Background material
 \input{./background/background}
 \input{./background/HJIVI}
-%\input{./background/basic}
+\input{./background/basic}
 \input{./background/obs_gen3_revised}
 
-% Intruder files
-\input{./intruder/intro}
-\input{./intruder/avoid_control}
-%% Case 1
-\input{./intruder/Case1/case1}
-\input{./intruder/Case1/sepRegion}
-\input{./intruder/Case1/buffRegion}
-\input{./intruder/Case1/obstacles}
-%% Case 2
-\input{./intruder/Case2/case2}
-\input{./intruder/Case2/sepRegion}
-\input{./intruder/Case2/buffRegion}
-\input{./intruder/Case2/obstacles}
-
-\input{./intruder/plan}
-\input{./intruder/replan}
-
-% Simulations
-\input{simulations}
+% City-level Simulations
+\input{./simulations/city/simulations}
+\input{./simulations/city/setup}
+\input{./simulations/city/results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\addtolength{\textheight}{1cm}   % This command serves to balance the column lengths

@@ -1,0 +1,29 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{Setup \label{sec:city_simSetup}}
+We grid San Francisco (SF) city in California, US and use it as our state space, as shown in Figure \ref{fig:sf_setup}. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/sf_setup"}
+  \caption{Simulation setup. A $25 km^2$ area of San Francisco city is used as the state-space for vehicles. SPP vehicles originate from the Blue star and go to one of the four destinations, denoted by circles. Tall buildings in the downtown area are used as static obstacles, represented by the black contours.}
+  \label{fig:sf_setup}
+\end{figure}
+Each box in Figure \ref{fig:sf_setup} represents a $500m \times 500m$ area of SF. The origin point for the vehicles is denoted by the Blue star. Four different areas in the city are chosen as the destinations for the vehicles. Mathematically, the target sets $\targetset_i$ of the vehicles are circles of radius $r$ in the position space, i.e. each vehicle is trying to reach some desired set of positions. In terms of the state space $\state_i$, the target sets are defined as
+\begin{equation}
+\label{eq:target_sim}
+\targetset_i = \{\state_i: \|\pos_i - c_i\|_2 \le r\}
+\end{equation}
+\noindent where $c_i$ are centers of the target circles. In this simulation, we use $r = 100m$. The four targets are represented by four circles in Figure \ref{fig:sf_setup}. The destination of each vehicle is chosen randomly from these four destinations. Finally, tall buildings in downtown San Francisco are used as static obstacles for the SPP vehicles, denoted by black contours in Figure \ref{fig:sf_setup}.
+
+For this simulation, we use the following dynamics for each vehicle:
+\begin{equation}
+\label{eq:dyn_i}
+\begin{aligned}
+\dot{\pos}_{x,i} &= v_i \cos \theta_i + d_{x,i} \\
+\dot{\pos}_{y,i} &= v_i \sin \theta_i + d_{y,i}\\
+\dot{\theta}_i &= \omega_i, \\
+\underline{v} \le v_i \le \bar{v}, & ~|\omega_i| \le \bar{\omega}, ~\|(d_{x,i}, d_{y,i}) \|_2 \le d_{r},
+\end{aligned}
+\end{equation}
+\noindent where $\state_i = (\pos_{x,i}, \pos_{y,i}, \theta_i)$ is the state of vehicle $\veh_i$, $\pos_i = (\pos_{x,i}, \pos_{y,i})$ is the position, $\theta_i$ is the heading, and $d = (d_{x,i}, d_{y,i})$ represents $\veh_i$'s disturbances, for example wind, that affect its position evolution. The control of $\veh_i$ is $u_i = (v_i, \omega_i)$, where $v_i$ is the speed of $\veh_i$ and $\omega_i$ is the turn rate; both controls have a lower and upper bound. To make our simulations as close as possible to real scenarios, we choose velocity and turn-rate bounds as $\underline{v} = 0m/s, \bar{v} = 25m/s, \bar\omega = 2 rad/s$, aligned with the modern UAV specs \cite{UAVspecs1, UAVspecs2}. The disturbance bound is chosen as $d_{r} = 6 m/s$, which corresponds to \textit{moderate winds} on Beaufort wind force scale \cite{Windscale}. Note that we have used same dynamics and input bounds across all vehicles for clarity of illustration; however, SPP can easily handle more general systems of the form in which the vehicles have different control bounds and dynamics.
+
+The goal of the vehicles is to reach their destinations while avoiding a collision with the other vehicles or the static obstacles. The joint state space of this fifty-vehicle system is 150-dimensional (150D), making the joint path planning and collision avoidance problem intractable for direct analysis using HJ reachability. Therefore, we assign a priority order to vehicles and solve the path planning problem sequentially. For this simulation, we assign a random priority order to fifty vehicles and use RTT algorithm to compute the trajectories of the vehicles. 
