@@ -1,0 +1,109 @@
+diff --git a/code/@SPPProblem/computeNIRS.m b/code/@SPPProblem/computeNIRS.m
+index b55a3d5..db4f903 100644
+--- a/code/@SPPProblem/computeNIRS.m
++++ b/code/@SPPProblem/computeNIRS.m
+@@ -1,4 +1,4 @@
+-function computeNIRS(obj, restart, low_memory)
++function computeNIRS(obj, restart, low_memory, CPP_RTTRS_file, separatedNIRS)
+ % computeNIRS(obj, restart)
+ %     Computes the before-replanning reachable sets for the SPP problem
+ %
+@@ -14,6 +14,14 @@ if nargin < 3
+   low_memory = false;
+ end
+ 
++if nargin < 4
++    CPP_RTTRS_file = false;
++end
++
++if nargin < 5
++    separatedNIRS = false;
++end
++
+ %% Check to see if 
+ if ~restart && exist(obj.NI_RS_filename, 'file')
+   fprintf('The NI RS file %s already exists. Skipping NI RS computation.\n', ...
+@@ -25,26 +33,69 @@ end
+ % RTTRS
+ if exist(obj.RTTRS_filename, 'file')
+   fprintf('Loading RTTRS...\n')
+-  load(obj.RTTRS_filename)
++  if (CPP_RTTRS_file == 1)
++    RTTRS = loadRTTRS(obj.RTTRS_filename);
++  else
++    load(obj.RTTRS_filename);
++  end
+ else
+   error('RTTRS file not found!')
+ end
+ 
+ % Checkpoint
+-if restart || ~exist(obj.NI_RS_chkpt_filename, 'file')
+-  fprintf('Initializing vehicles and restarting BR RS computation...\n')
+-  Q = initRTT(obj, RTTRS);
+-  
+-  % File name to save RS data
+-  obj.NI_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
+-  vehStart = 1;
+-  
+-  SPPP = obj;
+-  save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')  
++if separatedNIRS
++    first_NI_RS_chkpt_filename = sprintf('%s0.mat', obj.NI_RS_chkpt_filename);
++else
++    first_NI_RS_chkpt_filename = obj.NI_RS_chkpt_filename;
++end
++if restart || ~exist(first_NI_RS_chkpt_filename, 'file')
++    fprintf('Initializing vehicles and restarting BR RS computation...\n')
++    Q = initRTT(obj, RTTRS);
++      % File name to save RS data
++      obj.NI_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
++      vehStart = 1;
++
++      SPPP = obj;
++      save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')  
+ else
+-  fprintf('Loading NI RS checkpoint...\n')
+-  load(obj.NI_RS_chkpt_filename)
+-  vehStart = veh;
++    if CPP_RTTRS_file
++        if separatedNIRS
++            Q = initRTT(obj, RTTRS);
++            numVeh = length(obj.tTarget);
++            for veh=1:numVeh
++                Plane_filename = sprintf('%s%d.mat', obj.NI_RS_chkpt_filename, veh-1);
++                if exist(Plane_filename, 'file')
++                    % last file may not be completed file.
++                    vehStart = veh;
++%                    break;
++                end
++            end
++            for vehicle=1:vehStart
++                Plane_filename = sprintf('%s%d.mat', obj.NI_RS_chkpt_filename, vehicle-1);
++                if exist(Plane_filename, 'file')
++                   fprintf('Loading %dth vehicle...\n', vehicle-1)
++                   load(Plane_filename);
++                   Q{vehicle} = cpp2matSPPPlane(Qthis, obj.gN);
++                else
++ %                   break;
++                end
++            end
++            if exist('obstacles', 'var')
++                obstacles.tau = double(obstacles.tau);
++                for t=1:length(obstacles.data)
++                    tmpObs(:,:,:,t) = double(reshape(obstacles.data{t},obj.gN));
++                end
++                obstacles.data = tmpObs;
++            end
++    
++        else
++           Q = loadNIRS(obj.NI_RS_filename, obj.gN);
++        end
++    else
++      fprintf('Loading NI RS checkpoint...\n')
++      load(obj.NI_RS_chkpt_filename)
++      vehStart = veh;
++    end
+ end
+ 
+ if ispc
