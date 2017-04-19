@@ -14,8 +14,40 @@ Intuitively, as $d_r$ increases, it is harder for a vehicle to closely track a p
 
 We next compare Case-0 and Case-2. The difference between these two cases is that vehicles have different $\sta$s in Case-2. When vehicles $\veh_i$ and $\veh_{j}$ ($j>i$) have same scheduled time of arrival and are going to the same destination, they are constrained to travel at the same time to make sure they reach the destination by the designtaed $\sta$. However, since $\veh_i$ is high-priority, it gets access to the optimal trajectory (in terms of the total time of tarvel to destination) and $\veh_{j}$ has to settle for a relatively sub-optimal trajectory. Thus, all vehicles going to a particular destination take different trajectories creating a ``band" of trajectories between the origin and the destination, as shown in Figure \ref{fig:sf_d6sep0}; the high-priority vehicles take a relatively straight path between the origin and the destination whereas the low-priority vehicles take a (relatively sub-optimal) curved path. If we think of an air highway between the origin and the destination, then vehicles take different lanes of that highway to reach the destination in Case-0. Thus, the trajectories of vehicles in this case are \textit{state-separated}. However, when $\sta_j > \sta_i$, then $\veh_j$ is not bound to travel at the same time as $\veh_i$; it can wait for $\veh_i$ to depart and take a shorter path later on. Thus, vehicles travel in a single (optimal) lane in this case, as shown in Figure \ref{fig:sf_d6sep5}. In other words, they take the same trajectory to the destination, but at different times. Thus, the trajectories of vehicles in this case are \textit{time-separated}. 
 
-Note that the exact number of lanes depends on both the disturbance and relative $\sta$s. As disturbance increases, the vehicles need to be separated more from each other to ensure safety. The relative difference in $\sta$s should be able to ensure this separation if they were to take the same lane. As shown in Figure \ref{fig:sf_d11sep5}, a difference of 5s in $\sta$s is not sufficient to achieve a single lane behavior for strong winds. However, the number of lanes are significantly less than that in Case-1 (Fig. \ref{fig:sf_d11sep0}). Finally, a difference of 10s in $\sta$s ensure that we get the single lane behavior even in the presence of strong winds, leading to \textit{time-separated} trajectories.
+Note that the exact number of lanes depends on both the disturbance and relative $\sta$s. As disturbance increases, the vehicles need to be separated more from each other to ensure safety. The relative difference in $\sta$s should be able to ensure this separation if they were to take the same lane. As shown in Figure \ref{fig:sf_d11sep5}, a difference of 5s in $\sta$s is not sufficient to achieve a single lane behavior for strong winds. However, the number of lanes are significantly less than that in Case-1 (Fig. \ref{fig:sf_d11sep0}). Finally, a difference of 10s in $\sta$s ensure that we get the single lane behavior even in the presence of strong winds, leading to \textit{time-separated} trajectories. \SBnote{Add link to the simulation videos for each result.}
 
-In summary, the relative separation in the scheduled times of arrival of vehicles determines the number of lanes between a pair of origin and destination, and more and more tarjectories become time-separated as this relative separation increases. The disturbnace magnitude, on the other hand, determines the relative separation between different lanes, and more and more tarjectories become state-separated as the disturbance increases. This behavior is also summarized in Figure \ref{fig:traj_behavior} (draw a graph with separation between TSAs on x-axis and disturbance magnitude on y-axis, and divide it into 4 regions and comment on the number and the typr of trajectories.)
+Overall, the relative magnitude of disturbance and scheduled times of arrival separation determines the number of lanes and type of trajectories that emerge out of the SPP algorithm. For a fixed disturbance magnitude, as the relative separation in the scheduled times of arrival of vehicles increases, the number of lanes between a pair of origin and destination decreases, and more and more tarjectories become time-separated. On the other hand, for a fixed relative separation in the scheduled times of arrival of vehicles, as the disturbnace magnitude increases, the number of lanes between a pair of origin and destination increases, and more and more tarjectories become state-separated.
+%
+\begin{figure*}[!htb]
+ \centering
+\begin{subfigure}{\columnwidth}
+  \includegraphics[width=\columnwidth]{figs/sf_d6sep0}
+  \subcaption{Case-0: $d_r = 6m/s$, $\sta_i = 0$}
+  \label{fig:sf_d6sep0}
+\end{subfigure}%
+\begin{subfigure}{\columnwidth}
+  \includegraphics[width=\columnwidth]{figs/sf_d11sep0}
+  \subcaption{Case-1: $d_r = 11m/s$, $\sta_i = 0$}
+  \label{fig:sf_d11sep0}
+\end{subfigure}%
 
-\SBnote{Make sure whether the shown trajectories are nominal trajectories or if they contain disturbance. Clarify this accordingly in all the results; otherwise, it could be confusing for the readers to see the vehicles following an exact trajectory in the presence of disturbances. If these are nominal tarjectories, motivate why we are looking at nominal trajectories.}
+\begin{subfigure}{\columnwidth}
+  \includegraphics[width=\columnwidth]{figs/sf_d6sep5}
+  \subcaption{Case-2: $d_r = 6m/s$, $\sta_i = 5(i-1)$}
+  \label{fig:sf_d6sep5}
+\end{subfigure}%
+\begin{subfigure}{\columnwidth}
+  \includegraphics[width=\columnwidth]{figs/sf_d11sep5}
+  \subcaption{Case-3: $d_r = 11m/s$, $\sta_i = 5(i-1)$}
+  \label{fig:sf_d11sep5}
+\end{subfigure}%
+\caption{Effect of the disturbance magnitude and the scheduled times of arrival on vehicle trajectories. All trajectories are simulated under uniformly random disturbance. The relative separation in the scheduled times of arrival of vehicles determines the number of lanes between a pair of origin and destination, and more and more tarjectories become time-separated as this relative separation increases. The disturbnace magnitude determines the relative separation between different lanes, and more and more tarjectories become state-separated as the disturbance increases. }
+\label{fig:trajectories_sf}
+\end{figure*}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{"figs/sf_d11sep10"}
+  \caption{Vehicle trajectories for Case-4: $d_r = 11m/s$, $\sta_i = 10(i-1)$. Since different vehicles have different scheduled times of arrival, there is a single lane between every origin-destination pair.} 
+  \label{fig:sf_d11sep10}
+\end{figure}
