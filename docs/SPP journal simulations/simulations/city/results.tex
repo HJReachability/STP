@@ -1,12 +1,24 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Results \label{sec:city_simResults}}
+As per Algorithm \ref{alg:rtt}, we start with $veh_1$ and sequentially compute the optimal control policy $\tracklaw_j$ and the latest departure time $\ldt_j$ for each vehicle. To compute the error bound $\errorbound_j$ on the tracking error of vehicle $j$, we choose $R_{\text{EB}} = XYZm$ and use the reduced control authority $\cset^p_j = \{(v_{r,j}, \omega_{r,j}): ???????\}$. Given dynamics in \eqref{eq:dyn_i}, the error dynamics between $\veh_j$ and the virtual evader are given by \cite{Mitchell05}:
+\begin{equation}
+\label{eq:reldyn}
+\begin{aligned}
+\dot{e}_{x,j} &= v_{j} \cos(e_{\theta,j}) - v_{r,j} + \omega_{r,j}{e}_{y,j} + d_{x,j}\\
+\dot{e}_{y,j} &= v_{r,j}\sin(e_{\theta,j}) - \omega_{r,j}{e}_{x,j} + d_{y,j}\\
+\dot{e}_{\theta,j} &= \omega_{j} - \omega_{r,j},
+\end{aligned}
+\end{equation}    
+where $e_j = ({e}_{x,j}, {e}_{y,j}, {e}_{\theta,j})$ is the tracking error in the three states of $\veh_j$. Given relative dynamics, we compute the BRS $\brs^{\text{EB}}$ using \eqref{eqn:errBound} and evaluate the infinite-horizon control invariant set $\disckernel_j$. For all the BRS computations in this simulation, we use Level Set Toolbox \cite{Mitchell07b}. In presence of moderate winds, the obtained tracking error bound is $XYZ$m. This means that given any trajectory of vehicle, winds can at most cause a deviation of $XYZ$m from this trajectory. Subsequently, the vehicle will be within a distance of $XYZ$m from the trajectory. Note that since all SPP vehicles have same dynamics, the error bound is also same for all vehicles. 
 
-Focus on the following aspects:
-\begin{itemize}
-\item The technical details for the simulations, like RTT parameters, relative co-ordinate dynamics, rotation and translation of obstacles, union for obstacles, etc. 
-\item Demonstration of theory (the vehicles avoid collision w/ other vehicles and reach their destinations).
-\item Scaling of SPP.
-\item Provide some more intuition about the solution that emerge out of theory-- Space-time separation, type of space-time trajectories (Almost straight line path w/ different starting times?), etc.
-\item Reactivity of controller to the actual disturbance (Claire: be very detailed about explaining the setup of simulation)
-\item Illustrate how the type of space-time trajectories change with change in disturbance bounds and STA
-\end{itemize}
+The optimal control policy for $\veh_j$ is thus given by $\tracklaw_j(e_j)$ in \eqref{eq:robust_tracking_law}. However, to compute the relative state $e_j$, the nominal trajectory $\state_{r,j}$ for $\veh_j$ is required. Using $\disckernel_j$, we compute the obstacles induced by the higher priority vehicles for $\veh_j$ and the obstacle induced by $\veh_j$ for the lower priority vehicles. These obstacles are given by \eqref{eqn:rttAugObs} and \eqref{eqn:rttObs} respectively. Note that since disturbance directly impacts the computation of tracking error bound, these obstacles also grow as disturbance magnitude increases. We will illustrate the effect of disturbance magnitude on the trajectories of vehicles in \ref{sec:city_distbEffect}.
+
+The nominal trajectory can now be obtained by computing $\brs_j^\text{rtt}$ in \eqref{eq:rttBRS} and executing the corresponding control policy $\ctrl_j^\text{rtt}$ in \eqref{eq:RTTOptCtrl}, starting from the initial state $\state^0_j$. Finally, the latest departure time $\ldt_j$ is given by $\arg \sup_t \state^0_j \in \brs_j^\text{rtt}(t, \sta_j)$. It is important to note that since the BRS $\brs_j^\text{rtt}$ is computed backwards starting from the scheduled time of arrival $\sta_j$, (a) the latest departure time $\ldt_j$ directly depends on and varies with $\sta_j$ and (b) it directly impacts the obstacles that $\veh_j$ needs to avoid in its path towards its destination. We will illustrate the effect of the scheduled time of arrival on the trajectories of vehicles in \ref{sec:city_distbEffect}.
+
+The resulting trajectories of vehicles for $d_{r} = 6 m/s$ and $\sta_j = 0 \forall \veh_j$ are shown in Figure \ref{fig:sf_d6sep0}. As evident from the figure, the vehicles remain clear of all the static obstacles (the black contours) and reach their respective destinations. A zoomed-in version of Fig. \ref{fig:sf_d6sep0} near the red-target (Figure    \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
+
+Vehicles going to the same destination take different trajectories. This is because all vehicles have same $\sta$ and hence the lower priority vehicles don't have the flexibility to wait for the higher priority vehicles. In order to ensure that they reach their destinations by the designated $\sta$, they take alternative tarjectories to their destinations. Thus, the vehicles' trajectories obtained in this case are predominately \textit{state-separated} trajectories, i.e., they follow different state trajectories but at the same time. 
+
+Although the plotted trajectories are for a particular realization of the disturbances, the SPP algorithm guarantees obstacle avoidance regardless of the realized disturbance. To illustrate this, we plot the trajectories of a particular vehicle for three different disturbance relaizations in Figure \ref{fig:sf_distb}. 
+
+The average trajectory computation time per vehicle is $XYZ$s per vehicle on a $Blah Blah$ computing machine. Note that all this computation is done offline and the resulting optimal policy $\tracklaw_j(e_j)$ is obtained as a lookup table. In real time, neither any computation nor any communication between vehicles is required. Only a lookup table query is required, which can be performed very efficiently in real time. This illustrates the capability of SPP as a provably safe path planning algorithm for large multi-vehicle systems.     
