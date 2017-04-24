@@ -19,6 +19,8 @@ for i = 1:length(SPPPs)
   plot(Q{veh_num}.xhist(1,:), Q{veh_num}.xhist(2,:))
   if i == 1
     hold on
+    
+    plot(Q{veh_num}.nomTraj(1,:), Q{veh_num}.nomTraj(2,:));
   end
   
   %% Distances
@@ -38,16 +40,27 @@ for i = 1:length(SPPPs)
       (Qother.xhist(2,other_tau_inds) - Qref.xhist(2,ref_tau_inds)).^2);
   end
   
-  min_dist = min(dists, [], 1);
-  
   figure(dist_fig)
-  plot(tau, min_dist)
+  plot(tau, min(dists, [], 1))
+  
   if i == 1
     hold on
     plot([min(tau) max(tau)], [1 1], 'r:')
-  end  
+    
+    nom_dists = inf(length(vehicles), length(tau));
+    for j = 1:length(vehicles)
+      Qother = Q{vehicles(j)};
+      other_tau_inds = Qother.tau > min(tau)-small & Qother.tau < max(tau)+small;
+      ref_tau_inds = tau > min(Qother.tau)-small & tau < max(Qother.tau)+small;      
+      nom_dists(j, ref_tau_inds) = sqrt( ...
+        (Qother.nomTraj(1,other_tau_inds)-Qref.nomTraj(1,ref_tau_inds)).^2 + ...
+        (Qother.nomTraj(2,other_tau_inds)-Qref.nomTraj(2,ref_tau_inds)).^2);
+    end
+    
+    plot(tau, min(nom_dists, [], 1))
+  end
+  
+  clear Q
 end
-
-
 
 end
