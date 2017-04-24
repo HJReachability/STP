@@ -193,8 +193,11 @@ for i = 1:length(tau)
         u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
 
         %% Get disturbance
-        d = Q{veh}.uniformDstb();
-
+%       d = Q{veh}.uniformDstb();
+%       d = [RTTRS.dynSys.dMaxA(1); 0; 0];
+        d = RTTRS.dynSys.optDstb([], rel_x, deriv, 'min');
+        d = d(3:5);
+        
         % Update state
         Q{veh}.updateState(u, obj.dt/subSamples, Q{veh}.x, d);
       end

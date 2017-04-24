@@ -1,4 +1,4 @@
-function plotSetup(obj, setup_name, save_png)
+function f = plotSetup(obj, setup_name, save_png)
 % plotSetup(obj)
 %   Plots the problem setup
 
@@ -6,7 +6,11 @@ if nargin < 3
   save_png = true;
 end
 
-figure
+if nargout > 0
+  f = figure;
+else
+  figure;
+end
 
 %% Map
 I = imread(obj.mapFile);
@@ -49,7 +53,13 @@ end
 
 %% Obstacles
 if ~isempty(obj.staticObs)
-  h = visSetIm(obj.g2D, obj.staticObs, 'k');
+  % Remove border obstacle
+  obs_no_border = obj.staticObs;
+  obs_no_border(1:5, :) = 10;
+  obs_no_border(end-4:end, :) = 10;
+  obs_no_border(:,end-4:end) = 10;
+  obs_no_border(:,1:5) = 10;
+  h = visSetIm(obj.g2D, obs_no_border, 'k');
   h.LineWidth = 3;
 end
 

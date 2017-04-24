@@ -2,12 +2,9 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-\documentclass[journal]{IEEEtran}  
-%\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
+%\documentclass[journal]{aiaa-pretty}
+\documentclass[submit]{aiaa-pretty}  
 
-\IEEEoverridecommandlockouts                              % This command is only
-                                                          % needed if you want to
-                                                          % use the \thanks command
 %\overrideIEEEmargins
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
@@ -107,15 +104,13 @@
 \thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{mochen72, somil, k-tanabe, tomlin\}@eecs.berkeley.edu}
 }
 
-\begin{document}
-\maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
+
 
 %%%
-\begin{abstract}
-Provably safe and scalable multi-vehicle path planning is an important and urgent problem due to the expected increase of automation in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to large scale systems is often intractable because of its exponentially-scaling computation complexity with respect to system dimension, also known as the `curse of dimensionality.' To overcome this problem, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. In this work, we demonstrate the potential of SPP algorithm as a trajectory planning algorithm for large-scale systems. In particular, we simulate large-scale multi-vehicle systems in two different urban environments, a city environment and a multi-city environment, and use SPP algorithm for trajectory planning. SPP algorithm is able to efficiently design collision-free trajectories in both environements despite the presence of disturbances in vehicles' dynamics. To ensure a safe transition of vehicles to their destinations, it automatically allocates a space-time reservation to vehicles based on the magnitude of disturbance. This leads to a multi-lane division of airspace, where the number of lanes depends on the disturbance and other problem parameters.      
-\end{abstract}
+\AIAAabstract{Provably safe and scalable multi-vehicle path planning is an important and urgent problem due to the expected increase of automation in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to large scale systems is often intractable because of its exponentially-scaling computation complexity with respect to system dimension, also known as the `curse of dimensionality.' To overcome this problem, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. In this work, we demonstrate the potential of SPP algorithm as a trajectory planning algorithm for large-scale systems. In particular, we simulate large-scale multi-vehicle systems in two different urban environments, a city environment and a multi-city environment, and use SPP algorithm for trajectory planning. SPP algorithm is able to efficiently design collision-free trajectories in both environments despite the presence of disturbances in vehicles' dynamics. To ensure a safe transition of vehicles to their destinations, it automatically allocates a space-time reservation to vehicles based on the magnitude of disturbance. This leads to a multi-lane division of airspace, where the number of lanes depends on the disturbance and other problem parameters.}
+
+\begin{document}
+\maketitle
 
 % Introduction
 \input{introduction}
@@ -151,6 +146,6 @@ Provably safe and scalable multi-vehicle path planning is an important and urgen
                                   % so it should come on the page before the last. Make
                                   % sure that you do not shorten the textheight too much.
 
-\bibliographystyle{IEEEtran}
-\bibliography{IEEEabrv,references}
+\bibliographystyle{aiaa}
+\bibliography{references}
 \end{document}
