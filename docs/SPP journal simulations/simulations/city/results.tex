@@ -1,4 +1,4 @@
-% !TEX root = ../SPP_IoTjournal.tex
+% !TEX root = ../../SPP_IoTjournal.tex
 \subsection{Results \label{sec:city_simResults}}
 As per Algorithm \ref{alg:rtt}, we start with $veh_1$ and sequentially compute the optimal control policy $\tracklaw_j$ and the latest departure time $\ldt_j$ for each vehicle. To compute the error bound $\errorbound_j$ on the tracking error of vehicle $j$, we choose $R_{\text{EB}} = 5m$ and use the reduced control authority $\cset^p_j = \{(v_{r,j}, \omega_{r,j}): 11m/s \leq v_{r,j} \leq 13m/s, |\omega_{r,j}| \leq 1.2rad/s\}$. Given dynamics in \eqref{eq:dyn_i}, the error dynamics between $\veh_j$ and the virtual evader are given by \cite{Mitchell05}:
 \begin{equation}
@@ -19,23 +19,23 @@ The resulting trajectories of vehicles for $d_{r} = 6 m/s$ and $\sta_j = 0 \fora
 %
 \begin{figure*}[!htb]
  \centering
-\begin{subfigure}{\columnwidth}
+\begin{subfigure}{0.5\columnwidth}
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_s1}
   \subcaption{}
   \label{fig:sf_d6sep0_s1}
 \end{subfigure}%
-\begin{subfigure}{\columnwidth}
+\begin{subfigure}{0.5\columnwidth}
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_s2}
   \subcaption{}
   \label{fig:sf_d6sep0_s2}
 \end{subfigure}%
 
-\begin{subfigure}{\columnwidth}
+\begin{subfigure}{0.5\columnwidth}
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_s3}
   \subcaption{}
   \label{fig:sf_d6sep0_s3}
 \end{subfigure}%
-\begin{subfigure}{\columnwidth}
+\begin{subfigure}{0.5\columnwidth}
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_s4}
   \subcaption{}
   \label{fig:sf_d6sep0_s4}
@@ -46,7 +46,7 @@ The resulting trajectories of vehicles for $d_{r} = 6 m/s$ and $\sta_j = 0 \fora
 
 The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All vehicles reach their respective destinations. A zoomed-in version of Fig. \ref{fig:sf_d6sep0} near the red-target (Figure \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
 %
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{"figs/sf_d6sep0_zoomed"}
   \caption{Zoomed-in version of vehicle trajectories near the red target in Figure \ref{fig:sf_d6sep0}. The SPP algorithm ensures that the vehicles are outside each other's danger zones (circles around the vehicles).} 
