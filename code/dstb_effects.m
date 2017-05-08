@@ -1,4 +1,4 @@
-function dstb_effects_obstacles(SPPPs, veh_num)
+function dstb_effects(SPPPs, veh_num)
 % dstb_effects_obstacles(SPPPs)
 % SPPPs - cell vector of SPPProblem objects
 
