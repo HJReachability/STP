@@ -38,26 +38,45 @@ Note that in order to re-plan using a SPP method, we need to determine feasible 
 \end{equation} 
 
 \noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta_i$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience.
+\SBnote{Mention that replanning can be done in real time using methods like Fastrack.}
 
 \begin{remark}
 Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time} by designing buffer regions during replanning as well.
 \end{remark}
 
 We conclude this section by summarizing the overall SPP algorithm: 
-\begin{alg}
-\label{alg:intruder}
-\textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
-\begin{enumerate}
-\item compute the avoid region of $\veh_i$ using \eqref{eqn:avoidBRS}. The optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl}.
-\item determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}.
-\item compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, \eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. 
-\item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$;
-\item given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy};
-\end{enumerate}
-
-\textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $\veh_i \in \rvs$ which performed avoidance in response to the intruder,
-\begin{enumerate}
-\item compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$;
-\item given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and obstacles $\obsset_i^{\text{RP}}$, use any of the three SPP methods discussed in \cite{chen2016robust} for re-planning. 
-\end{enumerate}
-\end{alg}
+%
+\begin{algorithm}[tb]
+	%\RestyleAlgo{boxed}
+	\DontPrintSemicolon
+	%\AlgoDisplayBlockMarkers\SetAlgoBlockMarkers{}{end}%
+	%\SetAlgoNoEnd
+	\caption{Intruder avoidance algorithm (offline planning)}
+	\label{alg:intruder_plan}
+	Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, 		    \N$\;
+	\For{\text{$i=1:N$}}{
+			compute the avoid region of $\veh_i$ using \eqref{eqn:avoidBRS}. The optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl}.\;
+			determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}. \;
+			compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, 	\eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. \;
+			compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$ \;
+			given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy}\;
+		}
+\end{algorithm}
+%
+%\begin{alg}
+%\label{alg:intruder}
+%\textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
+%\begin{enumerate}
+%\item compute the avoid region of $\veh_i$ using \eqref{eqn:avoidBRS}. The optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl}.
+%\item determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}.
+%\item compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, \eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. 
+%\item compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$;
+%\item given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy};
+%\end{enumerate}
+%
+%\textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $\veh_i \in \rvs$ which performed avoidance in response to the intruder,
+%\begin{enumerate}
+%\item compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$;
+%\item given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and obstacles $\obsset_i^{\text{RP}}$, use any of the three SPP methods discussed in \cite{chen2016robust} for re-planning. 
+%\end{enumerate}
+%\end{alg}
