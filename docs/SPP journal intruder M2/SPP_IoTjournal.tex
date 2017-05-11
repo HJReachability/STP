@@ -21,12 +21,15 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{bm}
-\usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
 \usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
 \usepackage{float}
 \usepackage{cite}
 \usepackage{enumitem}
 \usepackage{subcaption}
+\usepackage{siunitx}
+\sisetup{load-configurations = abbreviations}
+\usepackage[ruled,vlined,titlenotnumbered,linesnumbered]{algorithm2e} 
+\usepackage{array}
 
 \newcommand{\MCnote}{\textcolor{red}}
 \newcommand{\SBnote}{\textcolor{blue}}
@@ -100,11 +103,14 @@
 \newtheorem{alg}{Algorithm}
 \newtheorem{remark}{Remark}
 \newtheorem{observation}{Observation}
+\newtheorem{defn}{Definition}
 
-\title{\LARGE \bf Robust and Efficient Sequential Path Planning Under Adversarial Intruder}
-
+%\title{\LARGE \bf Robust and Efficient Sequential Path Planning Under Adversarial Intruder}
+%\title{\LARGE \bf Accounting for Intruder Vehicle in Multi-vehicle Path Planning}
+\title{\LARGE \bf Safe and Resilient Multi-vehicle Path Planning Under Adversarial Intruder}
+%\title{\LARGE \bf \SBnote{A nice title}}
 \author{Somil Bansal*, Mo Chen*, and Claire J. Tomlin
-\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen has received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
+\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609.}
 \thanks{* Both authors contributed equally to this work. All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{somil, mochen72, tomlin\}@eecs.berkeley.edu}
 }
 
@@ -115,7 +121,7 @@
 
 %%%
 \begin{abstract}
-Provably safe and scalable multi-vehicle path planning is an important and urgent problem due to the expected increase of automation in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to large scale systems is often intractable because of its exponentially-scaling computation complexity with respect to system dimension, also known as the `curse of dimensionality.' To overcome this problem, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. However, if a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the previous formulation requires the path planning problem to be re-solved in real time for guaranteeing goal satisfaction and safety, which is intractable for large-scale systems. In this paper, we make SPP more practical by providing a new algorithm where one need to replan trajectories only for a fixed number of vehicles, irrespective of the total number of SPP vehicles. Moreover, this number is a design parameter, which can be chosen based on the computational resources available during the run time. We demonstrate this algorithm in a representative simulation of the urban environment.    
+Provably safe and scalable multi-vehicle path planning is an important and urgent problem due to the expected use of UAVs in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to multi-vehicle path planning is often intractable because of its exponentially-scaling computational complexity with respect to system dimension, also known as the ``curse of dimensionality." To overcome this problem, the sequential path planning (SPP) method, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle path planning to be done with a linearly-scaling computation complexity. However, if a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the previous formulation requires the path planning problem to be re-solved in real time for guaranteeing goal satisfaction and safety. This is intractable for large-scale systems. In this paper, we make SPP more practical by providing a new algorithm where one needs to replan trajectories only for a fixed number of vehicles, irrespective of the total number of SPP vehicles. Moreover, this number is a design parameter, which can be chosen based on the computational resources available during run time. We demonstrate this algorithm in a representative simulation of an urban airspace environment.    
 \end{abstract}
 
 % Introduction

@@ -49,7 +49,7 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic SPP algorithm is given as follows:
 \begin{alg}
 \label{alg:basic}
-\textbf{Basic SPP algorithm}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
+\textbf{Basic SPP algorithm \cite{Chen15c}}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
 \begin{enumerate}
 \item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
