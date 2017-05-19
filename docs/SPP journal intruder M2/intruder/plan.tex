@@ -41,7 +41,7 @@ Note that $\brs^{\text{PP}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ i
 {\ctrl^{\text{PP}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 When intruder is not present in the system, $\veh_i$ applies the control ${\ctrl^{\text{PP}}_{i}}$ and we get the ``nominal trajectory" of $\veh_i$. Once intruder appears in the system, $\veh_i$ applies the avoidance control ${\ctrl^{\text{A}}}$ and hence might deviate from its nominal trajectory. The overall control policy for avoiding the intruder and collision with other vehicles is thus given by:
-\begin{equation*}
+\begin{equation} \label{eqn:final_nominalcontroller}
 {\ctrl^*_{i}}(t) = 
 \left \{ 
 \begin{array}{ll}
@@ -49,13 +49,10 @@ When intruder is not present in the system, $\veh_i$ applies the control ${\ctrl
 {\ctrl^{\text{A}}_{i}}(t) & \tsa\leq t \leq \tea
 \end{array}
 \right.
-\end{equation*}
+\end{equation}
 
 Note that if $\veh_i$ starts within $\brs^{\text{PP}}_{i}$ and use avoidance control strategy in \eqref{eqn:optAvoidCtrl}, it is guaranteed to avoid collision with the intruder and other SPP vehicles, regardless of the control strategy of $\veh_{\intr}$. Finally, since we use separation and buffer regions as obstacles during the path planning of $\veh_i$, it is guaranteed that $|\tsa_i - \tsa_j| \geq \brd$ for all $j < i$. 
-\SBnote{Explain the computation of base obstacle a bit more here. Maybe try to relate back to the mentioned equations and say something about the computation.}
 
 \begin{remark}
-Note that if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$ (for details, see Section 4C in \cite{Bansal2017}). Also, the BRS in \eqref{eqn:intrBRS1} in this case is computed assuming no disturbance in $\veh_i$'s dynamics.
+Note that given $\brs^{\text{PP}}_{i}$ and ${\ctrl^{\text{PP}}_{i}}$, the base obstacles required for the computation of the separation region in Section \ref{sec:sepRegion_case1} can be computed using equations (25), (31) and (37) in \cite{chen2016robust}. Also, if we use the robust trajectory tracking method to compute the base obstacles, we would need to augment the obstacles in \eqref{eq:obsseti_intr} by the error bound of $\veh_i$, $\disckernel_i$ (for details, see Section 5A-3 in \cite{chen2016robust}). Also, the BRS in \eqref{eqn:intrBRS1} in this case is computed assuming no disturbance in $\veh_i$'s dynamics.
 \end{remark}
-
-\SBnote{After the details of the method describe the built-in conservatism and how to overcome that. Or refer to the discussion section.}

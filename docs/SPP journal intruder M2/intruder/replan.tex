@@ -5,11 +5,11 @@ As discussed in Section \ref{sec:path_planning}, the intruder can force some SPP
 \rvs = \{\veh_i: \tsa_i < \infty, i \in \{1, \ldots, \N \} \}. 
 \end{equation}  
 
-Note that due to the presence of separation and buffer regions, at most $\nva$ vehicles can be affected by $\veh_{\intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Note that we can pick $\nva$ beforehand and design buffer regions accordingly. Thus, by picking compatible $\nva$ based on the available computation resources during run-time, we can ensure that this replanning can be done in real time. 
+Note that due to the presence of separation and buffer regions, at most $\nva$ vehicles can be affected by $\veh_{\intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new SPP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Note that we can pick $\nva$ beforehand and design buffer regions accordingly. Thus, by picking compatible $\nva$ based on the available computation resources during run-time, we can ensure that this replanning can be done in real time. Moreover, flexible path-planning algorithms such as FaSTrack \cite{herbert2017fastrack} can be used that can perform planning in real-time.   
 
 Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles in $\rvs$ is given by:
 
-\begin{equation*}
+\begin{equation} \label{eqn:full_controller}
 \ctrl_i^{\text{RP}}(t) = 
 \left \{ 
 \begin{array}{ll}
@@ -17,7 +17,7 @@ Let the optimal control policy corresponding to this liveness controller be deno
 {\ctrl^{\text{L}}_{i}}(t, \state_i) & t > \tea
 \end{array}
 \right.
-\end{equation*}
+\end{equation}
 
 Note that in order to re-plan using a SPP method, we need to determine feasible $\sta_i$ for all vehicles. This can be done by computing an FRS:
 \begin{equation} \label{eq:re-planFRS}
@@ -38,7 +38,6 @@ Note that in order to re-plan using a SPP method, we need to determine feasible 
 \end{equation} 
 
 \noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta_i$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience.
-\SBnote{Mention that replanning can be done in real time using methods like Fastrack.}
 
 \begin{remark}
 Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time} by designing buffer regions during replanning as well.
@@ -47,21 +46,63 @@ Note that even though we have presented the analysis for one intruder, the propo
 We conclude this section by summarizing the overall SPP algorithm: 
 %
 \begin{algorithm}[tb]
-	%\RestyleAlgo{boxed}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
 	\DontPrintSemicolon
-	%\AlgoDisplayBlockMarkers\SetAlgoBlockMarkers{}{end}%
-	%\SetAlgoNoEnd
-	\caption{Intruder avoidance algorithm (offline planning)}
+	\caption{The intruder avoidance algorithm: Planning-phase (offline planning)}
 	\label{alg:intruder_plan}
-	Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, 		    \N$\;
+	\Input{Set of vehicles $\veh_i, i = 1, \ldots, \N$ in the descending priority order;\newline
+	Vehicle dynamics \eqref{eq:dyn} and initial states $\state_i^0$;\newline
+	Vehicle destinations $\targetset_i$ and static obstacles $\soset_i$;\newline
+	Intruder dynamics $f_{\intr}$ and the maximum avoidance time $\iat$ ;\newline
+	Maximum number of vehicles allowed to re-plan their trajectories $\nva$.}
+    \Output{The nominal trajectories for all vehicles;\newline 
+    The nominal controller $\ctrl^{\text{PP}}$ and the avoidance controller $\ctrl^{\text{A}}$ for all vehicles.}
 	\For{\text{$i=1:N$}}{
-			compute the avoid region of $\veh_i$ using \eqref{eqn:avoidBRS}. The optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl}.\;
-			determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}. \;
-			compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, 	\eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. \;
-			compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$ \;
-			given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy}\;
+			%
+			\textbf{Avoid region and avoidance control for $\veh_{i}$} \;	
+			compute the avoid region $\brs^{\text{A}}_{i}$ using \eqref{eqn:avoidBRS}; \;
+			compute the optimal avoidnace controller $\ctrl^{\text{A}}_i$ using \eqref{eqn:optAvoidCtrl}; \;
+			output the optimal avoidance controller for $\veh_i$. \;
+			%
+			\If{\text{$i \neq 1$}}{
+			    \textbf{Computation of separation region for $\veh_{i}$} \;	
+				\For{\text{$j=1:i-1$}}{
+					given the base obstacles $\boset_j(\cdot)$ and the avoid region $\brs^{\text{A}}_{j}$, compute the separation regions in \eqref{eqn:sepRegion_case1} and \eqref{eqn:sepRegion_case2}; 					\;}
+				\textbf{Computation of buffer region for $\veh_{i}$} \;	
+				\SBnote{Start from here} \;
+				\For{\text{$j=1:i-1$}}{
+					given the separation regions, compute the relative buffer regions in \eqref{eqn:sepRegion_case1} and \eqref{eqn:sepRegion_case2}; \;}
+			}			
+			\textbf{Path planning for $\veh_{i}$} \;
+			compute the total obstacle set $\obsset_i(t)$ given by \eqref{eq:obsseti}. If $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;\;
+			compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}.;\;
+			\textbf{Trajectory and controller of $\veh_{i}$} \;
+			compute the optimal controller $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};\;
+			determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb} and the control $\ctrl_i^\text{basic}(\cdot)$; \;
+			output the trajectory and optimal controller for $\veh_i$.\;
+			\textbf{Induced obstacles by $\veh_{i}$} \;
+			given the trajectory $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ given by \eqref{eq:ioset_basic} for all $k>i$.
 		}
 \end{algorithm}
+%
+%
+%\begin{algorithm}[tb]
+%	%\RestyleAlgo{boxed}
+%	\DontPrintSemicolon
+%	%\AlgoDisplayBlockMarkers\SetAlgoBlockMarkers{}{end}%
+%	%\SetAlgoNoEnd
+%	\caption{Intruder avoidance algorithm (offline planning)}
+%	\label{alg:intruder_plan}
+%	Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, 		    \N$\;
+%	\For{\text{$i=1:N$}}{
+%			compute the avoid region of $\veh_i$ using \eqref{eqn:avoidBRS}. The optimal control to avoid the intruder can be obtained by using \eqref{eqn:optAvoidCtrl}.\;
+%			determine the separation region and buffer regions given by \eqref{eqn:sepRegion_case1}, \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}. \;
+%			compute the induced obstacles for $\veh_i$ by $\veh_j$, given by \eqref{eq:intruderObs_case1_caseA}, \eqref{eq:intruderObs_case1_caseB}, \eqref{eq:intruderObs_case2_caseA}, 	\eqref{eq:intruderObs_case2_caseB} and \eqref{eq:ObsBRS_static}. \;
+%			compute the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti_intr}. In the case $i=1$, $\obsset_i(t) = \brs^{\text{S}}_{i}(t, t+\iat) ~ \forall t$ \;
+%			given $\obsset_i(t)$, compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1}; the nominal control strategy is given by \eqref{eqn:PPPolicy}\;
+%		}
+%\end{algorithm}
 %
 %\begin{alg}
 %\label{alg:intruder}

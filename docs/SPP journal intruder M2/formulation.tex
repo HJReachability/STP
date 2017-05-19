@@ -39,7 +39,7 @@ On its way to $\targetset_i$, $\veh_i$ must avoid a set of static obstacles $\so
 
 In addition to the obstacles and danger zones, an intruder vehicle can also appear in the system. An intruder vehicle may have malicious intent or it can be a non-participating vehicle, which does not have malicious intent, but can accidentally cause a collision with other vehicles since it may not follow the SPP structure. This general definition of intruder allows us to develop algorithms that can also account for vehicles who are not communicating with the SPP vehicles or do not know about the SPP structure. \SBnote{Mo, could you please read this paragraph again? Also, do you think we should expand on this idea of ``non-participating" vehicles in the introduction?}
 
-In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. In particular, if the number of intruders in the system is arbitrary, a collision avoidance problem must to be solved for each SPP vehicle in the joint state-space of all intruders and the vehicle, even with the SPP structure. Therefore, to make our analysis intractable, we make the following two assumptions: \SBnote{Mo, could you please read this paragraph again?}
+In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. In particular, if the number of intruders in the system is arbitrary, a collision avoidance problem must be solved for each SPP vehicle in the joint state-space of all intruders and the vehicle, even with the SPP structure. Therefore, to make our analysis intractable, we make the following two assumptions: \SBnote{Mo, could you please read this paragraph again?}
 \begin{assumption}
 \label{as:avoidOnce}
 At most one intruder (denoted as $\veh_I$ here on) affects the SPP vehicles at any given time. The intruder is removed after a duration of $\iat$. 
@@ -73,6 +73,10 @@ However, when an intruder appears in the system, depending on the initial state 
  %   \begin{tabular}{ | l | l | p{11cm} |}
     \hline
     \textbf{Notation} & \textbf{Description} & \textbf{Location} & \textbf{Interpretation} \\ \hline
+    
+    %%% Letter B %%%
+    % Buffer region
+    $\buff_{ij}(t)$ & Buffer region between vehicle $j$ and vehicle $i$ & Beginning of Section \ref{sec:buffRegion_case1} & The set of all possible states for which the separation requirement may be violated between vehicle $j$ and vehicle $i$ for some intruder strategy. If vehicle $i$ is outside this set, then the intruder will need atleast a duration of $\brd$ to go from the avoid region of vehicle $j$ to the avoid region of vehicle $i$.  \\ \hline    
     
     %%% Letter D %%% 
     % Disturbance
@@ -108,6 +112,8 @@ However, when an intruder appears in the system, depending on the initial state 
     %%% Letter N %%%
     % Number of vehicles
     $\N$ & Number of SPP vehicles & Beginning of Section \ref{sec:formulation} & -    \\ \hline
+    $\rvs$ & - & Equation \eqref{eq:RVS} & The set of vehicles that need to replan their path after the intruder disappears. These are also the set of vehicles that were forced to apply an avoidance maneuver. \\ \hline
+    
     
     %%% Letter O %%%
     % Obstacles
@@ -149,17 +155,30 @@ However, when an intruder appears in the system, depending on the initial state 
     % Scheduled time of arrival
     $\sta_i$ & Scheduled time of arrival (STA) of vehicle $i$ & Beginning of Section \ref{sec:formulation} & The time by which vehicle $i$ is required to reach its destination.    \\ \hline
     
- 
 	%%% Letter U %%% 
     % control
     $\ctrl_i$ & Control of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline   
     $\ctrl_{\intr}$ & Control of the intruder & Assumption \ref{as:dynKnown} & -    \\ \hline    
-    ${\ctrl^{\text{A}}_{i}}$ & Optimal avoidance control of vehicle $i$ & Equation \eqref{eqn:optAvoidCtrl} & The control that vehicle $i$ need to apply to successfully avoid the intruder once the relative state between vehicle $i$ and the intruder reaches the boundary of the avoid region of vehicle $i$.  \\ \hline    
+    % Avoidnace control
+    ${\ctrl^{\text{A}}_{i}}$ & Optimal avoidance control of vehicle $i$ & Equation \eqref{eqn:optAvoidCtrl} & The control that vehicle $i$ need to apply to successfully avoid the intruder once the relative state between vehicle $i$ and the intruder reaches the boundary of the avoid region of vehicle $i$.  \\ \hline 
+    % Nominal control    
+    ${\ctrl^{\text{PP}}_{i}}$ & Nominal control & Equation \eqref{eqn:PPPolicy} & The nominal control for vehicle $i$ that will ensure its scuccessful transition to its destination if the intruder does not force it to apply an avoidance maneuver. This control law corresponds to the nominal trajectory of vehicle $i$. \\ \hline
+	% Full control
+	$\ctrl_i^{\text{RP}}$ & The overall controller for vehicle $i$ & Equation \eqref{eqn:full_controller} & The overall controller for vehicle $i$ that will ensure a successful and safe transit to its destination despite the worst-case intruder strategy. \\ \hline
 
     %%% Letter V %%%
     % Avoid region
     $\brs^{\text{A}}_{i}(\tau, \iat)$ & Avoid region of vehicle $i$ & Equation \eqref{eqn:avoidBRS} & The set of relative states $\state_{\intr i}$ for which the intruder can force vehicle $i$ to enter in the danger zone $\dz_{i \intr}$ within a duration of $(\iat-\tau)$. \\ \hline
 
+    % Relative buffer region
+    $\brs^{\text{B}}_{i}(0, \brd)$ & Relative buffer region & Beginning of Section \ref{sec:buffRegion_case1} & The set of all states from which it is possible to reach the boundary of the avoid region of vehicle $i$ within a duration of $\brd$. \\ \hline 
+    
+   % Path Planning
+   $\brs^{\text{PP}}_{i}$ & - & Equation \eqref{eqn:intrBRS1} & The set of all states that vehicle $i$ needs to avoid in order to avoid a collision with the static obstacles while applying an avoidance maneuver. \\ \hline      
+    
+    % Static Obstacle
+   $\brs^{\text{S}}_{i}$ & - & Equation \eqref{eq:ObsBRS_static} & The set of all initial states of vehicle $i$ from which it is guaranteed to safely reach its destination if the intruder does not force it to apply an avoidance maneuver and successfully and safely avoid the intruder in case needs it does. \\ \hline  
+   
  	%%% Letter X %%%    
     % State of the vehicle
     $\state_i$ & State of vehicle $i$ & Beginning of Section \ref{sec:formulation} & - \\ \hline
@@ -172,13 +191,10 @@ However, when an intruder appears in the system, depending on the initial state 
     % Relative State
     $\state_{\intr i}$ & Relative state between the intruder and vehicle $i$ & Equation \eqref{eq:reldyn} & - \\ \hline
     
-   
     %%% Letter Z %%%    
     % Danger Zone
     $\dz_{ij}$ & Danger zone between vehicle $i$ and vehicle $j$ & Equation \eqref{eqn:danger_zone_defn} & Set of all states of vehicle $i$ and vehicle $j$ which are within unsafe distance of each other. The vehicles are said to have collided if their states belong to $\dz_{ij}$. \\ \hline
-    
-    \end{tabular}
-    }
+    \end{tabular} }
     \label{table:notation}
 \end{table*}
 

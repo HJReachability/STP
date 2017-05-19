@@ -47,13 +47,38 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
 \noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic SPP algorithm is given as follows:
-\begin{alg}
-\label{alg:basic}
-\textbf{Basic SPP algorithm \cite{Chen15c}}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
-\begin{enumerate}
-\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
-\item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
-\item determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};
-\item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset_basic}.
-\end{enumerate}
-\end{alg}
+%
+\begin{algorithm}[tb]
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+	\DontPrintSemicolon
+	\caption{SPP algorithm in the absence of disturbance and intruders}
+	\label{alg:basic}
+	\Input{Set of vehicles $\veh_i, i = 1, \ldots, \N$ in the descending priority order;\newline
+	Vehicle dynamics \eqref{eq:dyn_no_dstb} and initial states $\state_i^0$;\newline
+	Vehicle destinations $\targetset_i$ and static obstacles $\soset_i$.}
+    \Output{Provably safe vehicle trajectories to respective destinations for all vehicles;\newline 
+    Goal-satisfaction controller $\ctrl^\text{basic}(\cdot)$ for all vehicles.}
+	\For{\text{$i=1:N$}}{
+			\textbf{Path planning for $\veh_{i}$} \;
+			compute the total obstacle set $\obsset_i(t)$ given by \eqref{eq:obsseti}. If $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;\;
+			compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}.;\;
+			\textbf{Trajectory and controller of $\veh_{i}$} \;
+			compute the optimal controller $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};\;
+			determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb} and the control $\ctrl_i^\text{basic}(\cdot)$; \;
+			output the trajectory and optimal controller for $\veh_i$.\;
+			\textbf{Induced obstacles by $\veh_{i}$} \;
+			given the trajectory $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ given by \eqref{eq:ioset_basic} for all $k>i$.
+		}
+\end{algorithm}
+%
+%\begin{alg}
+%\label{alg:basic}
+%\textbf{Basic SPP algorithm \cite{Chen15c}}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
+%\begin{enumerate}
+%\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+%\item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
+%\item determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};
+%\item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset_basic}.
+%\end{enumerate}
+%\end{alg}
