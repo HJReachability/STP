@@ -11,9 +11,9 @@ Recall that the SPP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict 
 \end{aligned}
 \end{equation}
 
-In SPP, each vehicle $\veh_i$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. During its path planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
+In SPP, each vehicle $\veh_i$ plans the trajectory to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Trajectory planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the trajectory planning problems can be done in the state space of only one vehicle. During its trajectory planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
 
-From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid. Therefore, each vehicle $\veh_i$ must plan its path to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
+From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid. Therefore, each vehicle $\veh_i$ must plan its trajectory to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
 \begin{equation}
 \label{eq:obsseti}
 \obsset_i(t)  = \soset_i \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
@@ -25,7 +25,7 @@ With full position information of higher priority vehicles, the obstacle induced
 \ioset_i^j(t) = \{\state_i: \|\pos_i - \pos_j(t)\|_2 \le \rc \}
 \end{equation}
 
-Each higher priority vehicle $\veh_j$ plans its path while ignoring $\veh_i$. Since path planning is done sequentially in descending order or priority, the vehicles $\veh_j, j<i$ would have planned their paths before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the path planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
+Each higher priority vehicle $\veh_j$ plans its trajectory while ignoring $\veh_i$. Since trajectory planning is done sequentially in descending order or priority, the vehicles $\veh_j, j<i$ would have planned their trajectories before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the trajectory planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
 \begin{equation}
 \label{eq:BRS_basic}
 \begin{aligned}
@@ -60,7 +60,7 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
     \Output{Provably safe vehicle trajectories to respective destinations for all vehicles;\newline 
     Goal-satisfaction controller $\ctrl^\text{basic}(\cdot)$ for all vehicles.}
 	\For{\text{$i=1:N$}}{
-			\textbf{Path planning for $\veh_{i}$} \;
+			\textbf{Trajectory planning for $\veh_{i}$} \;
 			compute the total obstacle set $\obsset_i(t)$ given by \eqref{eq:obsseti}. If $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;\;
 			compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}.;\;
 			\textbf{Trajectory and controller of $\veh_{i}$} \;
