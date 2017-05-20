@@ -2,8 +2,8 @@
 \subsubsection{Obstacle Computation} \label{sec:intruderObs_case2}
 In this section, we want to find the set of states that $\veh_i$ needs to avoid in order to avoid entering in the danger zone of $\veh_j$. We consider the following two mutually exclusive and exhaustive cases:
 \begin{enumerate}
-\item Case A: intruder affects $\veh_i$, but not $\veh_j$.
-\item Case B: intruder first affects $\veh_i$ and then $\veh_j$.
+\item Case A: intruder affects $\veh_i$, but not $\veh_j$, i.e., $\tsa_i < \infty$ and $\tsa_j = \infty$.
+\item Case B: intruder first affects $\veh_i$ and then $\veh_j$, i.e., $\tsa_i < \tsa_j < \infty$.
 \end{enumerate}
 For each case, we compute the set of states that $\veh_i$ needs to avoid at time $t$ to avoid entering in $\dz_{ij}$. We also let $_2^A\ioset_i^j(\cdot)$ and $_2^B\ioset_i^j(\cdot)$ denote the set of obstacles corresponding to Case A and Case B respectively. 
 \begin{itemize}[leftmargin=*] 
