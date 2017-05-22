@@ -111,7 +111,7 @@ We conclude this section by summarizing the overall SPP algorithm:
 			given the obstacle set $\obsset_i^{\text{RP}}(\cdot)$, compute the FRS $\frs_i^{\text{RP}}(\tea, t)$ in \eqref{eq:re-planFRS}; \;
 			the updated $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. \;
 			\textbf{Trajectory and controller of $\veh_{i}$} \;
-			given the updated STA $\sta_i$, the initial state $\tilde{\state}_i^0$, the total obstacle set $\obsset_i^{\text{RP}}(\cdot)$, the vehicle dynamics \eqref{eq:dyn} and the target set $\targetset_i$, use any of the three sequential path planning methods discussed in \cite{chen2016robust} for re-planning.
+			given the updated STA $\sta_i$, the initial state $\tilde{\state}_i^0$, the total obstacle set $\obsset_i^{\text{RP}}(\cdot)$, the vehicle dynamics \eqref{eq:dyn} and the target set $\targetset_i$, use any of the three sequential path planning methods discussed in \cite{chen2016robust} for re-planning. \MCnote{Do replanning using Algorithm in this paper.}
 		}
 \end{algorithm}
 %
