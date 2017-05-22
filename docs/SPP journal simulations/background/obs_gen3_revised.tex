@@ -93,9 +93,9 @@ The corresponding optimal control for reaching $\tilde{\targetset}_i$ is given b
 \ctrl_i^\text{rtt}(t) = \arg \min_{\ctrl_i \in \cset^\pos_i } \costate \cdot \fdyn_i(\state_i, \ctrl_i).
 \end{equation}
 
-The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics in the absence of disturbances (given by \eqref{eq:dyn_no_dstb}) with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}. The robust trajectory tracking method can be summarized as follows:
+The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics in the absence of disturbances (given by \eqref{eq:dyn_no_dstb}) with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}. The robust trajectory tracking method can be summarized in Algorithm \ref{alg:rtt}.
 
-\begin{algorithm}[tb!]
+\begin{algorithm}
 \SetKwInOut{Input}{input}
 \SetKwInOut{Output}{output}
 	\DontPrintSemicolon

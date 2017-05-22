@@ -44,8 +44,35 @@ The resulting trajectories of vehicles for $d_{r} = 6$ m/s and $\sta_j = 0 ~ \fo
 \label{fig:trajectories_sf_snapshots}
 \end{figure*}
 
-The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All vehicles reach their respective destinations. A zoomed-in version of Figure \ref{fig:sf_d6sep0} near the red-target (Figure \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
-%
+The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All vehicles reach their respective destinations. A zoomed-in version of Figure \ref{fig:sf_d6sep0} near the red target (Figure \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
+
+\begin{figure*}
+  \centering
+  \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\columnwidth]{figs/sf_d6sep0}
+    \subcaption{Case-0: $d_r = 6m/s$, $\sta_i = 0$}
+    \label{fig:sf_d6sep0}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\columnwidth]{figs/sf_d11sep0}
+    \subcaption{Case-1: $d_r = 11m/s$, $\sta_i = 0$}
+    \label{fig:sf_d11sep0}
+  \end{subfigure}
+  
+  \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\columnwidth]{figs/sf_d6sep5}
+    \subcaption{Case-2: $d_r = 6m/s$, $\sta_i = 5(i-1)$}
+    \label{fig:sf_d6sep5}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
+    \includegraphics[width=\columnwidth]{figs/sf_d11sep5}
+    \subcaption{Case-3: $d_r = 11m/s$, $\sta_i = 5(i-1)$}
+    \label{fig:sf_d11sep5}
+  \end{subfigure}
+  \caption{Effect of the disturbance magnitude and the scheduled times of arrival on vehicle trajectories. All trajectories are simulated under uniformly random disturbance. The relative separation in the scheduled times of arrival of vehicles determines the number of lanes between a pair of origin and destination, and more and more tarjectories become time-separated as this relative separation increases. The disturbance magnitude determines the relative separation between different lanes, and more and more tarjectories become state-separated as the disturbance increases. }
+  \label{fig:trajectories_sf}
+\end{figure*}
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_zoomed}
@@ -54,7 +81,7 @@ The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All v
 \end{figure}
 It is interesting to note that the vehicles going to the same destination take different trajectories. This is because all vehicles have same scheduled time of arrival, and hence the lower-priority vehicles do not have the flexibility to wait for the higher-priority vehicles. In order to ensure that they reach their destinations on time, they take alternative trajectories to their destinations, forming different ``traffic lanes''. Thus, the vehicles' trajectories obtained in this case are predominately \textit{state-separated} trajectories, i.e., they follow different state trajectories but at the same time. 
 
-Although the plotted trajectories in Figure \ref{fig:sf_d6sep0} are for a particular realization of the (uniformly random) disturbances, the STP algorithm guarantees obstacle avoidance regardless of the realized disturbance. To illustrate this, we plot the trajectories of a particular vehicle ($\veh_17$) for three different disturbance realizations -- uniform, worst-case, and constant wind from the west direction -- in Figure \ref{fig:dstb_trajs}. One can see that the trajectories are nearly indistinguishable even in the zoomed-in plot on the right. 
+Although the plotted trajectories in Figure \ref{fig:sf_d6sep0} are for a particular realization of the (uniformly random) disturbances, the STP algorithm guarantees obstacle avoidance regardless of the realized disturbance. To illustrate this, we plot the trajectories of a particular vehicle ($\veh_{17}$) for three different disturbance realizations -- uniform, worst-case, and constant wind from the west direction -- in Figure \ref{fig:dstb_trajs}. One can see that the trajectories are nearly indistinguishable even in the zoomed-in plot on the right. 
 
 \begin{figure*}[!htb]
   \centering
@@ -73,7 +100,7 @@ Although the plotted trajectories in Figure \ref{fig:sf_d6sep0} are for a partic
   \label{fig:dstb_trajs}
 \end{figure*}
 
-Figure \ref{fig:min_dists} shows the minimum distance between $\veh_{17}$ and other vehicles. One can see that this distance is never below $10$ m, which is minimum required separation between the vehicles. The separation distance is small in the beginning because the vehicles need to depart as soon as possible while maintaining this minimum required separation. 
+Figure \ref{fig:min_dists} shows the minimum distance between $\veh_{17}$ and other vehicles. One can see that this distance is never below $10$ m, which is the minimum required separation between the vehicles. The separation distance is small in the beginning because the vehicles need to depart as soon as possible while maintaining this minimum required separation. 
 
 \begin{figure*}[!htb]
   \centering

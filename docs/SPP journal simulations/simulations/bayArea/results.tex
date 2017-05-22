@@ -2,7 +2,7 @@
 \subsection{Results \label{sec:bayArea_simResults}}
 The trajectory planning for the vehicles is done using RTT algorithm, similar to that in Section \ref{sec:city_sim}-\ref{sec:city_simResults}. The resulting trajectories of vehicles are shown in Figure \ref{fig:bayArea_d11sep5}. Once again, the vehicles remain clear of all other vehicles and reach their respective destinations. Given the separation between the scheduled times of arrival, the trajectories are predominately \textit{time-separated}, with roughly two lanes for each pair of cities (one for going from city A to city B and another for from city B to city A). A high-density of vehicles is achieved in the center since the 4 trajectories are intersecting in the center (Richmond-Oakland, Oakland-Richmond, Berkeley-San Francisco, San Francisco-Berkeley), but the STP algorithm ensures safety despite this high-density, as shown in the zoomed-in version of center at an intermediate time when a large number of vehicles are passing through the central region (Figure \ref{fig:bayArea_d11sep5_zoomed}).  
 %
-\begin{figure*}[!htb]
+\begin{figure*}[H]
  \centering
 \begin{subfigure}{0.5\textwidth}
   \includegraphics[width=\columnwidth]{figs/bayArea_d11sep5}
@@ -19,7 +19,7 @@ The trajectory planning for the vehicles is done using RTT algorithm, similar to
 \end{figure*}
 
 Finally, we simulate the system for the case where $\sta_i = 0 ~\forall i$. As evident from Figure \ref{fig:bayArea_d11sep0}, we get multiple lanes between each pair of cities in this case and trajectories become predominately state-separated, as we expect based on the discussion in Section \ref{sec:city_sim}-\ref{sec:city_distbEffect}.
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{figs/bayArea_d11sep0}
   \caption{Vehicle trajectories for $d_r = 11m/s$, $\sta_i = 0$. Since different vehicles have same scheduled times of arrival, a multiple-lane behavior is observed between every pair of cities.} 
