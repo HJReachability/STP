@@ -1,8 +1,8 @@
-% !TEX root = ../SPP_IoTjournal.tex
-\subsection{SPP Without Disturbances \label{sec:basic}}
-In this section, we give an overview of the basic SPP algorithm assuming that there is no disturbance and intruder affecting the vehicles. Although in practice, such assumptions do not hold, the description of the basic SPP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of SPP. The majority of the content in this section is taken from \cite{Chen15c}.
+% !TEX root = ../STP_IoTjournal.tex
+\subsection{STP Without Disturbances \label{sec:basic}}
+In this section, we give an overview of the basic STP algorithm assuming that there is no disturbance and intruder affecting the vehicles. Although in practice, such assumptions do not hold, the description of the basic STP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of STP. The majority of the content in this section is taken from \cite{Chen15c}.
 
-Recall that the SPP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict priority, with $\veh_j$ having a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the SPP vehicles as
+Recall that the STP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict priority, with $\veh_j$ having a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the STP vehicles as
 \begin{equation}
 \label{eq:dyn_no_dstb}
 \begin{aligned}
@@ -11,9 +11,9 @@ Recall that the SPP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict 
 \end{aligned}
 \end{equation}
 
-In SPP, each vehicle $\veh_i$ plans the path to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the path planning problems can be done in the state space of only one vehicle. During its path planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
+In STP, each vehicle $\veh_i$ plans the trajectory to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Trajectory planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the trajectory planning problems can be done in the state space of only one vehicle. During its trajectory planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
 
-From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid. Therefore, each vehicle $\veh_i$ must plan its path to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
+From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid. Therefore, each vehicle $\veh_i$ must plan its trajectory to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
 \begin{equation}
 \label{eq:obsseti}
 \obsset_i(t)  = \soset_i \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
@@ -25,7 +25,7 @@ With full position information of higher priority vehicles, the obstacle induced
 \ioset_i^j(t) = \{\state_i: \|\pos_i - \pos_j(t)\|_2 \le \rc \}
 \end{equation}
 
-Each higher priority vehicle $\veh_j$ plans its path while ignoring $\veh_i$. Since path planning is done sequentially in descending order or priority, the vehicles $\veh_j, j<i$ would have planned their paths before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the path planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
+Each higher priority vehicle $\veh_j$ plans its trajectory while ignoring $\veh_i$. Since trajectory planning is done sequentially in descending order or priority, the vehicles $\veh_j, j<i$ would have planned their trajectories before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the trajectory planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
 \begin{equation}
 \label{eq:BRS_basic}
 \begin{aligned}
@@ -46,13 +46,13 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \label{eq:basicOptCtrl}
 \ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
-\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic SPP algorithm is given as follows:
+\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic STP algorithm is given as follows:
 %
 \begin{algorithm}[tb]
 \SetKwInOut{Input}{input}
 \SetKwInOut{Output}{output}
 	\DontPrintSemicolon
-	\caption{SPP algorithm in the absence of disturbances}
+	\caption{STP algorithm in the absence of disturbances}
 	\label{alg:basic}
 	\Input{Set of vehicles $\veh_i, i = 1, \ldots, \N$ in the descending priority order;\newline
 	Vehicle dynamics \eqref{eq:dyn_no_dstb} and initial states $\state_i^0$;\newline
@@ -71,14 +71,3 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 			given the trajectory $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ given by \eqref{eq:ioset_basic} for all $k>i$.
 		}
 \end{algorithm}
-%
-%\begin{alg}
-%\label{alg:basic}
-%\textbf{Basic SPP algorithm}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
-%\begin{enumerate}
-%\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
-%\item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
-%\item determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};
-%\item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset_basic}.
-%\end{enumerate}
-%\end{alg}
