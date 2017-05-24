@@ -15,7 +15,7 @@ The optimal control policy for $\veh_j$ is thus given by $\tracklaw_j(e_j)$ in \
 
 The nominal trajectory can now be obtained by computing $\brs_j^\text{rtt}$ in \eqref{eq:rttBRS} and executing the corresponding control policy $\ctrl_j^\text{rtt}$ in \eqref{eq:RTTOptCtrl}, starting from the initial state $\state^0_j$. Finally, the latest departure time $\ldt_j$ is given by $\arg \sup_t \state^0_j \in \brs_j^\text{rtt}(t, \sta_j)$. It is important to note that since the BRS $\brs_j^\text{rtt}$ is computed backwards starting from the scheduled time of arrival $\sta_j$, (a) the latest departure time $\ldt_j$ directly depends on and varies with $\sta_j$ and (b) it directly impacts the obstacles that $\veh_j$ needs to avoid in its trajectory towards its destination. We will illustrate the effect of the scheduled time of arrival on the trajectories of vehicles also in \ref{sec:city_sim}-\ref{sec:city_distbEffect}.
 
-The resulting trajectories of vehicles for $d_{r} = 6$ m/s and $\sta_j = 0 ~ \forall j$ at different times are shown in Figure \ref{fig:trajectories_sf_snapshots}. As evident from the figures, the vehicles remain clear of all the static obstacles (the black contours) and make steady progress towards reaching their destinations. The vehicles whose destinations are relatively closer need less time to travel to their destinations and depart later. Note that the shown trajectories are simulated under uniformly random disturbance (i.e., for every vehicle, the disturbance is uniformly sampled from a circle of radius $d_{r} = 6$ m/s at each time step), but the STP algorithm guarantees safety and reactivity despite the worst case disturbance, as we show later in this section.
+The resulting trajectories of vehicles for $d_{r} = 6$ m/s and $\sta_j = 0 ~ \forall j$ at different times are shown in Fig. \ref{fig:trajectories_sf_snapshots}. As evident from the figures, the vehicles remain clear of all the static obstacles (the black contours) and make steady progress towards reaching their destinations. The vehicles whose destinations are relatively closer need less time to travel to their destinations and depart later. Note that the shown trajectories are simulated under uniformly random disturbance (i.e., for every vehicle, the disturbance is uniformly sampled from a circle of radius $d_{r} = 6$ m/s at each time step), but the STP algorithm guarantees safety and reactivity despite the worst case disturbance, as we show later in this section.
 %
 \begin{figure*}[!htb]
  \centering
@@ -44,7 +44,7 @@ The resulting trajectories of vehicles for $d_{r} = 6$ m/s and $\sta_j = 0 ~ \fo
 \label{fig:trajectories_sf_snapshots}
 \end{figure*}
 
-The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All vehicles reach their respective destinations. A zoomed-in version of Figure \ref{fig:sf_d6sep0} near the red target (Figure \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
+The full trajectories of vehicles are shown in Fig. \ref{fig:sf_d6sep0}. All vehicles reach their respective destinations. A zoomed-in version of Fig. \ref{fig:sf_d6sep0} near the red target (Fig. \ref{fig:sf_d6sep0_zoomed}) illustrates that vehicles are also outside each other's danger zones (circles around the vehicles) as required. 
 
 \begin{figure*}
   \centering
@@ -76,12 +76,12 @@ The full trajectories of vehicles are shown in Figure \ref{fig:sf_d6sep0}. All v
 \begin{figure}[h]
   \centering
   \includegraphics[width=\columnwidth]{figs/sf_d6sep0_zoomed}
-  \caption{Zoomed-in version of vehicle trajectories near the red target in Figure \ref{fig:sf_d6sep0}. The STP algorithm ensures that the vehicles are outside each other's danger zones (circles around the vehicles).} 
+  \caption{Zoomed-in version of vehicle trajectories near the red target in Fig. \ref{fig:sf_d6sep0}. The STP algorithm ensures that the vehicles are outside each other's danger zones (circles around the vehicles).} 
   \label{fig:sf_d6sep0_zoomed}
 \end{figure}
 It is interesting to note that the vehicles going to the same destination take different trajectories. This is because all vehicles have same scheduled time of arrival, and hence the lower-priority vehicles do not have the flexibility to wait for the higher-priority vehicles. In order to ensure that they reach their destinations on time, they take alternative trajectories to their destinations, forming different ``traffic lanes''. Thus, the vehicles' trajectories obtained in this case are predominately \textit{state-separated} trajectories, i.e., they follow different state trajectories but at the same time. 
 
-Although the plotted trajectories in Figure \ref{fig:sf_d6sep0} are for a particular realization of the (uniformly random) disturbances, the STP algorithm guarantees obstacle avoidance regardless of the realized disturbance. To illustrate this, we plot the trajectories of a particular vehicle ($\veh_{17}$) for three different disturbance realizations -- uniform, worst-case, and constant wind from the west direction -- in Figure \ref{fig:dstb_trajs}. One can see that the trajectories are nearly indistinguishable even in the zoomed-in plot on the right. 
+Although the plotted trajectories in Fig. \ref{fig:sf_d6sep0} are for a particular realization of the (uniformly random) disturbances, the STP algorithm guarantees obstacle avoidance regardless of the realized disturbance. To illustrate this, we plot the trajectories of a particular vehicle ($\veh_{17}$) for three different disturbance realizations -- uniform, worst-case, and constant wind from the west direction -- in Fig. \ref{fig:dstb_trajs}. One can see that the trajectories are nearly indistinguishable even in the zoomed-in plot on the right. 
 
 \begin{figure*}[!htb]
   \centering
@@ -100,7 +100,7 @@ Although the plotted trajectories in Figure \ref{fig:sf_d6sep0} are for a partic
   \label{fig:dstb_trajs}
 \end{figure*}
 
-Figure \ref{fig:min_dists} shows the minimum distance between $\veh_{17}$ and other vehicles. One can see that this distance is never below $10$ m, which is the minimum required separation between the vehicles. The separation distance is small in the beginning because the vehicles need to depart as soon as possible while maintaining this minimum required separation. 
+Fig. \ref{fig:min_dists} shows the minimum distance between $\veh_{17}$ and other vehicles. One can see that this distance is never below $10$ m, which is the minimum required separation between the vehicles. The separation distance is small in the beginning because the vehicles need to depart as soon as possible while maintaining this minimum required separation. 
 
 \begin{figure*}[!htb]
   \centering
@@ -119,7 +119,7 @@ Figure \ref{fig:min_dists} shows the minimum distance between $\veh_{17}$ and ot
   \label{fig:min_dists}
 \end{figure*}
 
-Figure \ref{fig:reactivity} shows the optimal control action in terms of the turn rate and the linear speed of each vehicle, demonstrating that the tracking control law reacts to tracking error due to disturbances in an intuitive way. Both subplots show the control law when the vehicle is facing east. Figure \ref{fig:Wcontrol} indicates, for example, that generally when the tracking error is such that the vehicle is too far to the right compared to the nominal position, the optimal tracking control is to turn left. Figure \ref{fig:Vcontrol} indicates, for example, that when the vehicle is too far ahead of the nominal position, it should slow down. The optimal turn rate and linear speed controls ensure that the vehicle never deviates from the nominal trajectory for more than $5$ m.
+Fig. \ref{fig:reactivity} shows the optimal control action in terms of the turn rate and the linear speed of each vehicle, demonstrating that the tracking control law reacts to tracking error due to disturbances in an intuitive way. Both subplots show the control law when the vehicle is facing east. Fig. \ref{fig:Wcontrol} indicates, for example, that generally when the tracking error is such that the vehicle is too far to the right compared to the nominal position, the optimal tracking control is to turn left. Fig. \ref{fig:Vcontrol} indicates, for example, that when the vehicle is too far ahead of the nominal position, it should slow down. The optimal turn rate and linear speed controls ensure that the vehicle never deviates from the nominal trajectory for more than $5$ m.
 
 \begin{figure*}[!htb]
   \centering
