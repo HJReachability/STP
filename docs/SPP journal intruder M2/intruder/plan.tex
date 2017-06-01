@@ -1,5 +1,6 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Trajectory Planning} \label{sec:path_planning}
+\MCnote{The control equation is not correct. You don't want to apply the avoidance controller before the intruder affects you.}
 In sections \ref{sec:intruderObs_case1} and \ref{sec:intruderObs_case2}, we computed obstacles for $\veh_i$ such that $\veh_i$ and $\veh_j$ do not collide with each other while avoiding the intruder. We next compute the states that $\veh_i$ needs to avoid in order to avoid a collision with static obstacles while it is applying an avoidance maneuver. Since $\veh_i$ applies avoidance maneuver for a maximum duration of $\iat$ this set is given by the following BRS:
 \begin{equation} \label{eq:ObsBRS_static}
 \begin{aligned}
