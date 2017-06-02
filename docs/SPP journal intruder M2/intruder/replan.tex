@@ -1,11 +1,11 @@
 % !TEX root = ../SPP_IoTjournal.tex
 \subsection{Replanning after intruder avoidance} \label{sec:replan}
-As discussed in Section \ref{sec:path_planning}, the intruder can force some STP vehicles to deviate from their planned nominal trajectory; therefore, goal satisfaction is no longer guaranteed once a vehicle is forced to apply an avoidance maneuver. Therefore, we have to replan the trajectories of these vehicles once $\veh_{\intr}$ disappears. The set of all vehicles $\veh_i$ for whom we need to replan the trajectories, $\rvs$, can be obtained by checking if a vehicle $\veh_i$ applied any avoidance control during $[\tsa, \tea]$, e.g.,
+As discussed in Section \ref{sec:path_planning}, the intruder can force some STP vehicles to deviate from their planned nominal trajectory; therefore, goal satisfaction is no longer guaranteed once a vehicle is forced to apply an avoidance maneuver. Therefore, we have to replan the trajectories of these vehicles once $\veh_{\intr}$ disappears. The set of all vehicles $\veh_i$ for whom replanning is required, $\rvs$, can be obtained by checking if a vehicle $\veh_i$ applied any avoidance control during $[\tsa, \tsa+\iat]$, i.e.,
 \begin{equation} \label{eq:RVS}
 \rvs = \{\veh_i: \tsa_i < \infty, i \in \{1, \ldots, \N \} \}. 
 \end{equation}  
 
-Note that due to the presence of separation and buffer regions, at most $\nva$ vehicles can be affected by $\veh_{\intr}$, e.g. $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new STP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Note that we can pick $\nva$ beforehand and design buffer regions accordingly. Thus, by picking compatible $\nva$ based on the available computation resources during run-time, we can ensure that this replanning can be done in real time. Moreover, flexible trajectory-planning algorithms such as FaSTrack \cite{herbert2017fastrack} can be used that can perform planning in real-time.   
+Note that due to the presence of separation and buffer regions, at most $\nva$ vehicles can be affected by $\veh_{\intr}$, i.e., $|\rvs| \leq \nva$. Goal satisfaction controllers which ensure that these vehicles reach their destinations can be obtained by solving a new STP problem, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_i^0$, after avoiding the intruder. Note that we can pick $\nva$ beforehand and design buffer regions accordingly. Thus, by picking compatible $\nva$ based on the available computation resources during run-time, we can ensure that this replanning can be done in real time. Moreover, flexible trajectory-planning algorithms such as FaSTrack \cite{herbert2017fastrack} can be used that can perform planning efficiently in real-time.   
 
 Let the optimal control policy corresponding to this liveness controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination for vehicles in $\rvs$ is given by:
 
@@ -13,8 +13,8 @@ Let the optimal control policy corresponding to this liveness controller be deno
 \ctrl_i^{\text{RP}}(t) = 
 \left \{ 
 \begin{array}{ll}
-{\ctrl^*_{i}}(t, \state_i) & t \leq \tea\\
-{\ctrl^{\text{L}}_{i}}(t, \state_i) & t > \tea
+{\ctrl^*_{i}}(t, \state_i) & t \leq \tsa + \iat\\
+{\ctrl^{\text{L}}_{i}}(t, \state_i) & t > \tsa + \iat
 \end{array}
 \right.
 \end{equation}
@@ -27,7 +27,7 @@ Note that in order to re-plan using a STP method, we need to determine feasible 
 & \state_i(t) = y, \forall s \in [\tea, t], \state_i(s) \notin \obsset_i^{\text{RP}}(s) \},
 \end{aligned}
 \end{equation}
-\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tea$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ now needs to avoid all other vehicles in $(\rvs)^C$ and is defined in a way analogous to \eqref{eq:obsseti}. The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+\noindent where $\tilde{\state}_i^0$ represents the state of $\veh_i$ at $t = \tsa+\iat$; $\obsset_i^{\text{RP}}(\cdot)$ takes into account the fact that $\veh_i$ now needs to avoid all other vehicles in $(\rvs)^C$ and is defined in a way analogous to \eqref{eq:obsseti}. The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
 \begin{equation}
 \begin{aligned}
 \max \Big\{&D_t \valfuncfwd_i^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd_i^{\text{RP}}(t, \state_i)), \\
@@ -37,74 +37,22 @@ Note that in order to re-plan using a STP method, we need to determine feasible 
 \end{aligned}
 \end{equation} 
 
-\noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta_i$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience.
-
+\noindent where $\valfuncfwd_i^{\text{RP}}, \obsfunc_i^{\text{RP}}, \fc_i^{\text{RP}}$ represent the FRS, obstacles during re-planning, and the initial state of $\veh_i$, respectively. The new $\sta_i$ of $\veh_i$ is now given by the earliest time at which $\frs_i^{\text{RP}}(\tea, t)$ intersects the target set $\targetset_i$, $\sta_i := \arg \inf_t \{ \frs_i^{\text{RP}}(\tea, t) \cap \targetset_i \neq \emptyset \}$. Intuitively, this means that there exists a control policy which will steer the vehicle $\veh_i$ to its destination by that time, despite the worst case disturbance it might experience. The replanning phase is summarized in Algorithm \ref{alg:intruder_replan}.
 \begin{remark}
-Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time} by designing buffer regions during replanning as well.
+Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}.
 \end{remark}
-
-We conclude this section by summarizing the overall STP algorithm: 
 %
-\begin{algorithm}[tb!]
-\SetKwInOut{Input}{input}
-\SetKwInOut{Output}{output}
-	\DontPrintSemicolon
-	\caption{The intruder avoidance algorithm: Planning-phase (offline planning)}
-	\label{alg:intruder_plan}
-	\Input{Set of vehicles $\veh_i, i = 1, \ldots, \N$ in the descending priority order;\newline
-	Vehicle dynamics \eqref{eq:dyn} and initial states $\state_i^0$;\newline
-	Vehicle destinations $\targetset_i$ and static obstacles $\soset_i$;\newline
-	Intruder dynamics $f_{\intr}$ and the maximum avoidance time $\iat$ ;\newline
-	Maximum number of vehicles allowed to re-plan their trajectories $\nva$.}
-    \Output{The nominal trajectories for all vehicles;\newline 
-    The nominal controller $\ctrl^{\text{PP}}$ and the avoidance controller $\ctrl^{\text{A}}$ for all vehicles.}
-	\For{\text{$i=1:N$}}{
-			%
-			\textbf{Avoid region and avoidance control for $\veh_{i}$} \;	
-			compute the avoid region $\brs^{\text{A}}_{i}$ using \eqref{eqn:avoidBRS}; \;
-			compute the optimal avoidnace controller $\ctrl^{\text{A}}_i$ using \eqref{eqn:optAvoidCtrl}; \;
-			output the optimal avoidance controller $\ctrl_i^{\text{A}}$ for $\veh_i$. \;
-			%
-			\If{\text{$i \neq 1$}}{
-			    \textbf{Computation of separation region for $\veh_{i}$} \;	
-				\For{\text{$j=1:i-1$}}{
-					given the base obstacles $\boset_j(\cdot)$ and the avoid region $\brs^{\text{A}}_{j}$, compute the separation regions in \eqref{eqn:sepRegion_case1} and \eqref{eqn:sepRegion_case2}; 					\;}
-				\textbf{Computation of buffer region for $\veh_{i}$} \;	
-				\For{\text{$j=1:i-1$}}{
-					given the separation regions, compute the relative buffer regions $\brs^{\text{B}}$ in \eqref{eqn:buffBRS_case1} and \eqref{eqn:buffBRS_case2}; \;
-					given the relative buffer regions, compute the buffer regions in \eqref{eqn:buffRegion_case1} and \eqref{eqn:buffRegion_case2}; \;}
-			}
-			\textbf{Computation of obstacles for $\veh_{i}$} \;
-			\If{\text{$i \neq 1$}}{
-				\For{\text{$j=1:i-1$}}{
-					given the base obstacles $\boset_j(\cdot)$, compute the obstacles $_1^A\ioset_i^j(t)$ in \eqref{eq:intruderObs_case1_caseA}, $_1^B\ioset_i^j(t)$ in \eqref{eq:intruderObs_case1_caseB}, $_2^A\ioset_i^j(t)$ in \eqref{eq:intruderObs_case2_caseA}, and $_2^B\ioset_i^j(t)$ in \eqref{eq:intruderObs_case2_caseB}; \;}
-			}
-			compute the static obstacle to avoid $\brs^{\text{S}}_{i}$ using \eqref{eq:ObsBRS_static}; \;
-			\textbf{Trajectory planning for $\veh_{i}$} \;
-			compute the total obstacle set $\obsset_i(t)$ given by \eqref{eq:obsseti_intr};\;
-			compute the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};\;
-			\textbf{Trajectory and controller of $\veh_{i}$} \;
-			compute the optimal controller ${\ctrl^{\text{PP}}_{i}}(\cdot)$ given by \eqref{eqn:PPPolicy};\;
-			determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn} and the control ${\ctrl^{\text{PP}}_{i}}(\cdot)$; \;
-			output the trajectory and optimal controller for $\veh_i$.\;
-			\textbf{Base obstacle induced by $\veh_{i}$} \;
-			given the trajectory $\state_i(\cdot)$, the nominal controller ${\ctrl^{\text{PP}}_{i}}(\cdot)$ and the BRS $\brs^{\text{PP}}_{i}(t, \sta_i)$, compute the base obstacles $\boset_i(\cdot)$ using equations (25), (31) or (37) in \cite{chen2016robust}, depedning on the information assumed to be known about the higher-priority vehicles.
-		}
-\end{algorithm}
-%
-%
-\begin{algorithm}[tb]
+\begin{algorithm}
 \SetKwInOut{Input}{input}
 \SetKwInOut{Output}{output}
 	\DontPrintSemicolon
 	\caption{The intruder avoidance algorithm: Replanning-phase (real-time planning)}
 	\label{alg:intruder_replan}
-	\Input{Set of vehicles $\veh_i \in \rvs$ that require trajectory replanning;\newline
+	\Input{Set of vehicles $\veh_i \in \rvs$ that require replanning;\newline
 	Vehicle dynamics \eqref{eq:dyn} and new initial states $\tilde{\state}_i^0$;\newline
 	Vehicle destinations $\targetset_i$ and static obstacles $\soset_i$;\newline
 	Total base obstacle set $\obsset_i^{\text{RP}}(\cdot)$ induced by all other vehicles in $(\rvs)^C$.}
-    \Output{The updated nominal trajectories for all vehicles in $\rvs$;\newline 
-    The updated nominal controller ${\ctrl^{\text{L}}_{i}}$.}
+    \Output{The updated nominal controller ${\ctrl^{\text{L}}_{i}}$ for all vehicles in $\rvs$.}
 	\For{\text{$\veh_i \in \rvs$}}{
 			%
 			\textbf{Computation of the updated $\sta_i$ for $\veh_{i}$} \;	

@@ -1,7 +1,7 @@
 % !TEX root = ../../SPP_IoTjournal.tex
 \subsubsection{Buffer Region} \label{sec:buffRegion_case2}
 The idea behind the design of buffer region is same as that in Case 1: we want to make sure that $\veh_{\intr}$ spends at least a duration of $\brd$ to go from the boundary of the avoid region of one STP vehicle to the boundary of the avoid region of some other STP vehicle. Mathematically, we want to compute the set of all states $\state_{\intr}$ such that if $\veh_{\intr}$ starts in this set at time $t$, it cannot reach $\sep_j(\cdot)$ before $t_1 = t + \brd$, regardless of the control applied by $\veh_j$ and $\veh_{\intr}$ during interval $[t, t_1]$. Similar to Section \ref{sec:buffRegion_case1}, this set is given by $\brs^{\text{B}}_{j}(0, \brd)$: 
-\begin{equation} \label{eqn:buffBRS_case1}
+\begin{equation} \label{eqn:buffBRS_case2}
 \begin{aligned}
 \brs^{\text{B}}_{j}(0, \brd) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \ctrl_\intr(\cdot) \in \cfset_\intr, \exists \dstb_j(\cdot) \in \dfset_j, \\
 & \exists \dstb_\intr(\cdot) \in \dfset_\intr, \state_{\intr, j}(\cdot) \text{ satisfies \eqref{eq:reldyn}},\\
