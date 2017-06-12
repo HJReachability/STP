@@ -2,8 +2,8 @@
 \subsubsection{Obstacle Computation} \label{sec:intruderObs_case2}
 In this section, we want to find the set of states that $\veh_i$ needs to avoid in order to avoid entering in the danger zone of $\veh_j$. We consider the following two mutually exclusive and exhaustive cases:
 \begin{enumerate}
-\item Case A: intruder affects $\veh_i$, but not $\veh_j$, i.e., $\tsa_i < \infty$ and $\tsa_j = \infty$.
-\item Case B: intruder first affects $\veh_i$ and then $\veh_j$, i.e., $\tsa_i < \tsa_j < \infty$.
+\item Case A: The intruder affects $\veh_i$, but not $\veh_j$, i.e., $\tsa_i < \infty$ and $\tsa_j = \infty$.
+\item Case B: The intruder first affects $\veh_i$ and then $\veh_j$, i.e., $\tsa_i < \tsa_j < \infty$.
 \end{enumerate}
 For each case, we compute the set of states that $\veh_i$ needs to avoid at time $t$ to avoid entering in $\dz_{ij}$. We also let $_2^A\ioset_i^j(\cdot)$ and $_2^B\ioset_i^j(\cdot)$ denote the set of obstacles corresponding to Case A and Case B respectively. 
 \begin{itemize}[leftmargin=*] 
@@ -38,7 +38,7 @@ $\brs^{\text{A2}}_{i}(t, t+\iat)$ represents the set of all states of $\veh_i$ a
 _2^A\ioset_i^j(t) = \brs^{\text{A2}}_{i}(t, t+\iat).
 \end{equation}
 
-\item \label{sec:intruderObs_case2_caseB} Case B: In this case, the intruder first affects $\veh_i$ and then $\veh_j$. $\veh_i$ and $\veh_j$ apply their first avoidance maneuver at $\tsa_i$ and $\tsa_j$ respectively. Since the intruder appears for a maximum duration of $\iat$ and $\tsa_i = \tsa$, $\tea \leq \tsa_i + \iat$. Thus, from the perspective  of $\veh_i$, $\veh_j$ can apply any control during the duration $[\tsa_j, \tsa_i + \iat]$ and hence can be anywhere in the set $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau)$ at $\tau \in [\tsa_j, \tsa_i + \iat]$, where $\frs_{j}^{\mathcal{O}}$ denotes the FRS of base obstacle $\boset_j(\tsa_j)$ computed forward for a duration of $(\tsa_i + \iat - \tsa_j)$. $\veh_i$ thus needs to make sure that it avoids all states at time $t$ that can reach $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau)$, regardless of the control applied by $\veh_i$ during $[t, \tau]$. We now make the following key observation:
+\item \label{sec:intruderObs_case2_caseB} Case B: In this case, the intruder first affects $\veh_i$ and then $\veh_j$. $\veh_i$ and $\veh_j$ apply their first avoidance maneuver at $\tsa_i$ and $\tsa_j$ respectively. Since the intruder appears for a maximum duration of $\iat$ and $\tsa_i = \tsa$, from the perspective  of $\veh_i$, $\veh_j$ can apply any control during the duration $[\tsa_j, \tsa_i + \iat]$ and hence can be anywhere in the set $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau)$ at $\tau \in [\tsa_j, \tsa_i + \iat]$, where $\frs_{j}^{\mathcal{O}}$ denotes the FRS of base obstacle $\boset_j(\tsa_j)$ computed forward for a duration of $(\tsa_i + \iat - \tsa_j)$. $\veh_i$ thus needs to make sure that it avoids all states at time $t$ that can reach $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau)$, regardless of the control applied by $\veh_i$ during $[t, \tau]$. We now make the following key observation:
 \begin{observation} \label{obs1_case2_caseB}
 Observation \ref{obs1_case1_caseA} implies that $\frs_{j}^{\mathcal{O}}(\tau_2, \tau) \subseteq \frs_{j}^{\mathcal{O}}(\tau_1, \tau)$ if $\tau > \tau_2 > \tau_1$. Therefore, the biggest obstacle, $\frs_{j}^{\mathcal{O}}(\tsa_j, \tau)$, is induced by $\veh_j$ at $\tau$ if $\tsa_j$ is as early as possible. Hence, it is sufficient for $\veh_i$ to avoid this obstacle to ensure collision avoidance with $\veh_j$ at time $\tau$. Given the separation and buffer regions between $\veh_i$ and $\veh_j$, we must have $\tsa_j - \tsa_i \geq \brd$. Hence, the biggest obstacle is induced by $\veh_j$ when $\tsa_j = \tsa_i + \brd$. 
 \end{observation}

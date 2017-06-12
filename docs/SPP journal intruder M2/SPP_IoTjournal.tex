@@ -31,6 +31,9 @@
 \usepackage[ruled,vlined,titlenotnumbered,linesnumbered]{algorithm2e} 
 \usepackage{array}
 
+% Set Float separation after algorithms
+\setlength{\textfloatsep}{1pt}
+
 \newcommand{\MCnote}{\textcolor{red}}
 \newcommand{\SBnote}{\textcolor{blue}}
 
@@ -121,7 +124,7 @@
 
 %%%
 \begin{abstract}
-Provably safe and scalable multi-vehicle trajectory planning is an important and urgent problem due to the expected use of UAVs in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to multi-vehicle trajectory planning is often intractable because of its exponentially-scaling computational complexity with respect to system dimension, also known as the ``curse of dimensionality." To overcome this problem, the sequential path planning (SPP) method \MCnote{Confirm if Mo has given SPP name to his method. If so, change everything to STP and make sure to add a footnote to describe this.}, which assigns strict priorities to vehicles, was proposed; SPP allows multi-vehicle trajectory planning to be done with a linearly-scaling computation complexity. However, if a vehicle not in the set of SPP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the previous formulation requires the trajectory planning problem to be re-solved in real time for guaranteeing goal satisfaction and safety. This is intractable for large-scale systems. In this paper, we make SPP more practical by providing a new algorithm where one needs to replan trajectories only for a fixed number of vehicles, irrespective of the total number of SPP vehicles. Moreover, this number is a design parameter, which can be chosen based on the computational resources available during run time. We demonstrate this algorithm in a representative simulation of an urban airspace environment.    
+Provably safe and scalable multi-vehicle trajectory planning is an important and urgent problem due to the expected use of UAVs in civilian airspace in the near future. Hamilton-Jacobi (HJ) reachability is an ideal tool for analyzing such safety-critical systems and has been successfully applied to several small-scale problems. However, a direct application of HJ reachability to multi-vehicle trajectory planning is often intractable because of its exponentially-scaling computational complexity with respect to system dimension, also known as the ``curse of dimensionality." To overcome this problem, the sequential trajectory planning (STP) method, which assigns strict priorities to vehicles, was proposed; STP allows multi-vehicle trajectory planning to be done with a linearly-scaling computation complexity. However, if a vehicle not in the set of STP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the previous formulation requires the trajectory planning problem to be re-solved in real time for guaranteeing goal satisfaction and safety. This is intractable for large-scale systems. In this paper, we make STP more practical by providing a new algorithm where one needs to replan trajectories only for a fixed number of vehicles, irrespective of the total number of STP vehicles. Moreover, this number is a design parameter, which can be chosen based on the computational resources available during run time. We demonstrate this algorithm in a representative simulation of an urban airspace environment.    
 \end{abstract}
 
 % Introduction
