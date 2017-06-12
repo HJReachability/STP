@@ -54,7 +54,7 @@ Next, we compute the separation and buffer regions between vehicles. For the com
 Given $\boset$ of the higher-priority vehicles and $\brs^{\text{A}}(0, \iat)$, we compute the separation region $\sep$ as defined in \eqref{eqn:sepRegion_case1}. Relative buffer region $\brs^{\text{B}}(0, \brd)$, defined in \eqref{eqn:buffBRS_case1}, is similarly computed. The results are shown in the bottom plots of Figure \ref{fig:MaxMin}. Finally, we compute the buffer region as defined in \eqref{eqn:buffRegion_case1}. The resultant buffer region is shown in Blue in Figure \ref{fig:buffRegions}. If $\veh_j$ is inside the base obstacle set and $\veh_i$ is outside the buffer region, we can ensure that the intruder will have to spend a duration of at least $\brd = $\SI{10/3}{\s} to go from the boundary of the avoid region of $\veh_j$ to the boundary of the avoid region of $\veh_i$. 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\columnwidth]{"figs/bufferRegions_3D"}
+  \includegraphics[width=0.6\columnwidth]{figs/bufferRegions_3D}
   \caption{Buffer regions for different $\nva$ (best visualized with colors). As $\nva$ decreases, a larger buffer is required between vehicles to ensure that the intruder spends more time while traveling through this buffer region so that it forces fewer vehicles to apply an avoidance maneuver.}
   \label{fig:buffRegions}
 \end{figure}
@@ -82,7 +82,7 @@ The nominal trajectories and the overall obstacles for different vehicles are sh
 In the absence of an intruder the vehicles transit successfully to their destinations with control policy $\ctrl^{\text{PP}}(\cdot)$, but they can deviate from the shown nominal trajectories if an intruder appears in the system. In Figure \ref{fig:trajComparison}, we plot the distance between an STP vehicle and the intruder when the vehicle applies the control policy $\ctrl^{\text{PP}}(\cdot)$ (Red line) vs when it applies ${\ctrl^{\text{A}}}$ (Blue line). Black dashed line represents the collision radius $r=$\SI{100}{\m} between the vehicle and the intruder. As evident from the figure, if the vehicle continues to apply the control policy $\ctrl^{\text{PP}}(\cdot)$ in the presence of an intruder, the intruder enters in its danger zone. Thus, it is forced to apply the avoidance control, which can cause a deviation from the nominal trajectory, but will successfully avoid the intruder.
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\columnwidth]{"figs/simulateIntruder"}
+  \includegraphics[width=0.7\columnwidth]{"figs/simulateIntruder"}
   \caption{The trajectory of a STP vehicle when it applies the nominal controller vs when it applies the avoidance control. The vehicle is forced to apply the avoidance maneuver in the presence of an intruder, which can cause vehicle's deviation from its nominal trajectory.}
   \label{fig:trajComparison}
 \end{figure}
