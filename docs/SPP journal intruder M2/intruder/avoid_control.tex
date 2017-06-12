@@ -6,8 +6,7 @@ We define relative dynamics of the intruder $\veh_{\intr}$ with state $\state_\i
 \begin{equation}
 \label{eq:reldyn}
 \begin{aligned}
-\state_{\intr i} &= \state_\intr - \state_i \\
-\dot \state_{\intr i} &= f_r(\state_{\intr i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
+\state_{\intr i} = \state_\intr - \state_i, \qquad \dot \state_{\intr i} = f_r(\state_{\intr i}, \ctrl_i, \ctrl_\intr, \dstb_i, \dstb_\intr)
 \end{aligned}
 \end{equation}
 Given the relative dynamics, the set of states from which the joint states of $\veh_{\intr}$ and $\veh_{i}$ can enter danger zone $\dz_{i\intr}$ in a duration of $\iat$ despite the best efforts of $\veh_i$ to avoid $\veh_{\intr}$ is given by the backward reachable set $\brs^{\text{A}}_i(\tau, \iat),~ \tau \in [0, \iat]$:

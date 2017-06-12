@@ -14,9 +14,8 @@ To compute obstacles at time $t$, it is sufficient to consider the scenarios whe
 \item \label{sec:intruderObs_case1_caseA} Case A: In this case, only $\veh_j$ applies an avoidance maneuver. Therefore, $\veh_i$ should avoid the set of states, $_1^A\ioset_i^j(t)$, that can lead to a collision with $\veh_j$ at time $t$ while $\veh_j$ is applying an avoidance maneuver. Note that since $\tsa_j = \tsa$ (by Observation \ref{obs1_case1}), $_1^A\ioset_i^j(t)$ is given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing a FRS from the base obstacles.
 \begin{equation} \label{eq:ObsFRS_case1_caseA}
 \begin{aligned}
-\frs_{j}^{\mathcal{O}}(\tsa, t) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tsa) \in \boset_j(\tsa), \\
-& \state_j(t) = y\}.
+& \frs_{j}^{\mathcal{O}}(\tsa, t) = \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \quad \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\tsa) \in \boset_j(\tsa), \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
 $\frs_{j}^{\mathcal{O}}(\tsa, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $(t-\tsa)$ starting from inside $\boset_j(\tsa)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
@@ -67,11 +66,11 @@ where
 \begin{equation*}
 \tilde{\mathcal{K}}^{\text{B1}}(s) = \{\state_j: \exists (y, h) \in \mathcal{K}^{\text{B1}}(s), \|\pos_j - y\|_2 \le \rc \}.
 \end{equation*} 
-The Hamiltonian $\ham^{\text{B1}}_{i}$ to compute $\brs^{\text{B1}}_{i}(\cdot)$ is given by:
+The Hamiltonian $\ham^{\text{B1}}_{i}$ to compute $\brs^{\text{B1}}_{i}(\cdot)$ is given by
 \begin{equation} \label{eqn:BRS_obsham_case1_caseB}
 \ham^{\text{B1}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i, \dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i).
 \end{equation}
-Finally, the induced obstacle in this case can be obtained as:
+Finally, the induced obstacle in this case is given by
 \begin{equation} \label{eq:intruderObs_case1_caseB} 
 _1^B\ioset_i^j(t) = \brs^{\text{B1}}_{i}(t, t-\brd+\iat).
 \end{equation}
