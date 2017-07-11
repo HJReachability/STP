@@ -1,6 +1,6 @@
 % !TEX root = SPP_IoTjournal.tex
 \section{Sequential Trajectory Planning Problem \label{sec:formulation}}
-Consider $\N$ vehicles $\veh_i, i = 1, \ldots, \N$ (also denoted as \textit{STP vehicles}) which participate in the STP process. We assume their dynamics are given by \MCnote{Mention something about the region in which SPP vehicles are operating, what it will look like at any given time, what will roughly the size of thsi region be. Comment on it in the introduction as well, as well as provide some practical examples.}
+Consider $\N$ vehicles $\veh_i, i = 1, \ldots, \N$ (also denoted as \textit{STP vehicles}) which participate in the STP process. We assume their dynamics are given by %\MCnote{Mention something about the region in which SPP vehicles are operating, what it will look like at any given time, what will roughly the size of thsi region be. Comment on it in the introduction as well, as well as provide some practical examples.}
 
 \begin{equation}
 \label{eq:dyn}
@@ -45,7 +45,7 @@ In addition to the obstacles and danger zones, an intruder vehicle $\veh_{\intr}
 At most one intruder affects the STP vehicles at any given time. The intruder is removed after a duration of $\iat$. 
 \end{assumption}
 
-This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the planning space. For example, when STP vehicles are flying at a particular altitude level, the removal of the intruder can be achieved by forcing the intruder to exit the altitude level. \MCnote{Practically, over a large region of the unmanned airspace, this assumption implies that there would be one intruder vehicle per ``planning region'', which perform STP independently from each other. In our simulations, we use the City of San Francisco as an example of a planning region.}
+This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the planning space. For example, when STP vehicles are flying at a particular altitude level, the removal of the intruder can be achieved by forcing the intruder to exit the altitude level. Practically, over a large region of the unmanned airspace, this assumption implies that there would be one intruder vehicle per ``planning region''. Each planning region would perform STP independently from the others. One would design planning regions to be an appropriate size such that it is reasonable to assume at most one intruder would appear. The entire large region would be composed of several planning regions.
  
 Let the time at which intruder appears in the system be $\tsa$. Assumption \ref{as:avoidOnce} implies that any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$.
 %After a duration of $\iat$, the intruder is no longer present in the system. 
