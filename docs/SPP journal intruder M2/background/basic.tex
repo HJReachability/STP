@@ -46,7 +46,7 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \label{eq:basicOptCtrl}
 \ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
-\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. The basic STP algorithm is summarized in Algorithm \ref{alg:basic}:
+\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. The basic STP algorithm is summarized in Algorithm \ref{alg:basic}.
 %
 \begin{algorithm}[tb]
 \SetKwInOut{Input}{input}
