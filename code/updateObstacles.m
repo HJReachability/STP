@@ -16,9 +16,12 @@ small = 1e-4;
 % Update obstacle data for overlapping time indices
 overlap_inds_newObs = newObs_tau > min(obstacles.tau)-small & ...
   newObs_tau < max(obstacles.tau)+small;
+
 if any(overlap_inds_newObs)
-  overlap_inds_oldObs = obstacles.tau > min(newObs_tau)-small & ...
+  overlap_inds_oldObs = obstacles.tau > min(newObs_tau)-small & ...  
     obstacles.tau < max(newObs_tau)+small;  
+  
+  %combine old and new obstacles in the overlapping time indices
   obstacles.data(:,:,:,overlap_inds_oldObs) = ...
     min(obstacles.data(:,:,:,overlap_inds_oldObs), ...
     newObs(:,:,:,overlap_inds_newObs));
@@ -27,15 +30,16 @@ else
 end
 
 % Update obstacle data for smaller time indices
-smaller_inds = newObs_tau < min(obstacles.tau)-small;
+smaller_inds = newObs_tau < min(obstacles.tau)-small;  
 if any(smaller_inds)
   obstacles.tau = [newObs_tau(smaller_inds) obstacles.tau];
 
-  staticObsSmaller = repmat(staticObs, [1 1 1 nnz(smaller_inds)]);
-  newObsSmaller = min(newObs(:,:,:,smaller_inds), staticObsSmaller);
-
+  staticObsSmaller = repmat(staticObs, [1 1 1 nnz(smaller_inds)]);   
+  newObsSmaller = min(newObs(:,:,:,smaller_inds), staticObsSmaller); %all obstacles in the smaller time indices
+ 
+  %combine obstacles by concatenating newObsSmaller with current obstacles
   obstacles.data = cat(4, newObsSmaller, obstacles.data);
 end
 
-% No need to update obstacle data for larger time indices
+% No need to update obstacle data for larger time indices    
 end

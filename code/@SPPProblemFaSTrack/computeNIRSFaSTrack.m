@@ -1,5 +1,5 @@
-function computeNIRS(obj, restart, low_memory, CPP_RTTRS_file, separatedNIRS)
-% computeNIRS(obj, restart)
+function computeNIRSFaSTrack(obj, restart, low_memory, CPP_RTTRS_file, separatedNIRS)
+% computeNIRSFaSTrack(obj, restart)
 %     Computes the before-replanning reachable sets for the SPP problem
 %
 % Inputs:
@@ -50,7 +50,7 @@ else
 end
 if restart || ~exist(first_NI_RS_chkpt_filename, 'file')
     fprintf('Initializing vehicles and restarting BR RS computation...\n')
-    Q = initRTT(obj, RTTRS);
+    Q = initRTTFaSTrack(obj, RTTRS);
       % File name to save RS data
       obj.NI_RS_chkpt_filename = sprintf('%s/%s_chkpt.mat', obj.folder, mfilename);
       vehStart = 1;
@@ -60,7 +60,7 @@ if restart || ~exist(first_NI_RS_chkpt_filename, 'file')
 else %%%%%%%%%%%%%%%%%%%%%%%%%%%%% all this block
     if CPP_RTTRS_file
         if separatedNIRS
-            Q = initRTT(obj, RTTRS);
+            Q = initRTTFaSTrack(obj, RTTRS);
             numVeh = length(obj.tTarget);
             for veh=1:numVeh
                 Plane_filename = sprintf('%s%d.mat', obj.NI_RS_chkpt_filename, veh-1);

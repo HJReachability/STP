@@ -1,12 +1,7 @@
-function loadSetup(obj, setup_name, extraArgs)
+function loadSetupFaSTrack(obj, setup_name, extraArgs)
 
 switch setup_name
   case 'buffer_illustration'
-    %% Vehicle
-    obj.vRangeA = [0 2.5];
-    obj.wMaxA = 2;
-    obj.dMaxA = [0 0];
-    
     obj.dt = 0.1;
     obj.Rc = 1;
     
@@ -18,14 +13,6 @@ switch setup_name
     if nargin < 3
       error('Must specify extraArgs for ''SF'' setup!')
     end
-    
-    %% Vehicle
-    obj.vRangeA = [0 2.5];  
-    obj.wMaxA = 2;  
-    
-    %% RTT
-    obj.vReserved = [1 -1.2];  
-    obj.wReserved = -0.8;   
     
     %% Initial states
     if isfield(extraArgs, 'number_of_vehicles')
@@ -107,13 +94,10 @@ switch setup_name
     %% Wind speed
     switch wind_speed
       case 6
-        obj.dMaxA = [0.6 0];   
-        obj.RTT_tR = 0.5;   %set tracking error bound
+        obj.dMax = [0.6 0];   
       case 11
-        obj.dMaxA = [1.1 0];
-        obj.RTT_tR = 3.5;   %set tracking error bound
+        obj.dMax = [1.1 0];
     end
-    
     
     %% Separation time between arrivals to target
     separation_time = input('Please enter separation time in seconds: ');
@@ -155,14 +139,6 @@ switch setup_name
     obj.plotSetup(setup_name);
     
   case 'Bay_Area'
-    %% Vehicle
-    obj.vRangeA = [0 2.5];
-    obj.wMaxA = 2;
-    
-    %% RTT
-    obj.vReserved = [1 -1.2];
-    obj.wReserved = -0.8;
-    
     %% Initial states and targets
     if isfield(extraArgs, 'number_of_vehicles')
       numVeh = extraArgs.number_of_vehicles;
@@ -220,9 +196,8 @@ switch setup_name
     obj.mapFile = 'bay_area_streets.png';
     
     %% Wind speed
-    obj.dMaxA = [1.1 0];
-    obj.RTT_tR = 3.5;
-    
+    obj.dMax = [1.1 0];
+  
     %% Target separation time
     % Scheduled times of arrival
     separation_time = 45;

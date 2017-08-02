@@ -1,5 +1,8 @@
-classdef SPPProblem < handle
-  properties
+classdef SPPProblemFaSTrack < handle
+    %UNTITLED5 Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
     % Problem parameters
     initStates
     targetCenters
@@ -24,16 +27,6 @@ classdef SPPProblem < handle
     mapFile
     staticObs
     augStaticObs
-    
-    % Parameters for SPP "vehicle A"
-    vRangeA;    
-    wMaxA;      
-    dMaxA;      
-    
-    % Parameters for Robust trajectory tracking: "vehicle B"
-    vReserved   %range to be added to vRangeA to give vehicle B speed range
-    wReserved   %number to be added to wMaxA to give vehicle B max turning rate
-    RTT_tR      %pre-decided tracking error bound
     
     % Time
     tMin = -5    % Minimum time for the entire problem
@@ -79,10 +72,11 @@ classdef SPPProblem < handle
     
     BR_sim_filename % before replanning simulation file (simulation results)
     full_sim_filename % full simulation file (simulation results)
-  end
-  
-  methods
-    %% Contructor
+    end
+    
+    
+    methods
+        %% Contructor
     function obj = SPPProblem(problem_name, extraArgs)
       if nargin < 2
         extraArgs = [];
@@ -93,21 +87,21 @@ classdef SPPProblem < handle
       
       switch problem_name
         case 'buffer_illustration'
-          obj.loadSetup(problem_name);
+          obj.loadSetupFaSTrack(problem_name);
           
         case 'SF_dstb'
           extraArgs.number_of_vehicles = 50;
           extraArgs.dstb_or_intr = 'dstb';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
         case 'SF_dstb3'
           extraArgs.number_of_vehicles = 3;
           extraArgs.dstb_or_intr = 'dstb';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
@@ -116,7 +110,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 2;
@@ -134,7 +128,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
@@ -150,7 +144,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
 %           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
@@ -168,7 +162,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 4;
@@ -184,7 +178,7 @@ classdef SPPProblem < handle
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 10;
           
-          obj.loadSetup('Bay_Area', extraArgs);
+          obj.loadSetupFaSTrack('Bay_Area', extraArgs);
           
         case 'TCST_dstb'
         case 'TCST_intr'
@@ -192,59 +186,9 @@ classdef SPPProblem < handle
           error('Unknown simulation name!')
       end
       
-      %       if nargin < 1
-      %         initStates = { ...
-      %           [-0.6; 0.2;  0]; ...
-      %           [ 0.6; 0.2; -pi]; ...
-      %           [-0.5; 0.9; -pi/4]; ...
-      %           [ 0.5; 0.9; -3*pi/4]};
-      %       end
-      %
-      %       if nargin < 2
-      %         targetCenters = { ...
-      %           [ 0.7;  0.7; 0]; ...
-      %           [-0.7;  0.7; 0]; ...
-      %           [ 0.7; -0.7; 0]; ...
-      %           [-0.7; -0.7; 0]};
-      %       end
-      %
-      %       if nargin < 3
-      %         %         targetR = 0.15;
-      %         targetR = 0.1;
-      %       end
-      %
-      %       if nargin < 4
-      %         vehParams.vRangeA = [0.5 1];
-      %         vehParams.wMaxA = 1;
-      %         vehParams.dMaxA = [0.1 0.2];
-      %       end
-      %
-      %       if nargin < 5
-      %         grid_params.min = [-1; -1; -3*pi/2];
-      %         grid_params.max = [1; 1; pi/2];
-      %         grid_params.N = [95; 95; 95];
-      %       end
-      %
-      %       obj.initStates = initStates;
-      %       obj.targetCenters = targetCenters;
-      %       obj.targetR = targetR;
-      %
-      %       obj.vRangeA = vehParams.vRangeA;
-      %       obj.wMaxA = vehParams.wMaxA;
-      %       obj.dMaxA = vehParams.dMaxA;
-      %
-      %       obj.gMin = grid_params.min;
-      %       obj.gMax = grid_params.max;
-      %       obj.gN = grid_params.N;
-      %
-      %       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
-      %       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
-      %
-      %       obj.tau = obj.tMin:obj.dt:obj.tTarget;
-      %       obj.staticObs = inf(obj.gN');
-      
       SPPP = obj;  
       save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
     end
-  end
+  end  
 end
+

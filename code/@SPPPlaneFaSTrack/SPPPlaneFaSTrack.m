@@ -1,12 +1,8 @@
-classdef SPPPlane < Plane
-  % Specialized Plane class with SPP-related properties for the SPP project 
-  
-  properties
-    % If tracking 3D trajectory
-    vReserved
-    wReserved
+classdef SPPPlaneFaSTrack < Plane
+    %UNTITLED8 Summary of this class goes here
+    %   Detailed explanation goes here
     
-    v % If tracking 2D trajectory
+    properties
     
     BRS1
     BRS1_tau    
@@ -50,6 +46,6 @@ classdef SPPPlane < Plane
       obj@Plane(varargin{:});
     end
   end
-  
+    
 end
 

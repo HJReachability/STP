@@ -41,7 +41,7 @@ end
 
 % Load path planning reachable set
 fprintf('Loading RS data...\n')
-if (CPP_NIRS_file == 1)
+if (CPP_NIRS_file == 1)    %%%%%%%%%%%%%%%%%all this block
     if separatedNIRS
         numVeh = length(obj.tTarget);
         for vehicle=1:numVeh
@@ -75,21 +75,22 @@ if (CPP_NIRS_file == 1)
             else
                 break;
             end
-        end
+        end %end for
     else
       Q = loadNIRS(obj.NI_RS_filename, obj.gN, false);
     end
-  else
-    load(obj.NI_RS_filename)
+else
+   load(obj.NI_RS_filename)
+end
+
+if exist('obstacles', 'var')
+  figure;
+  for t=1:length(obstacles.data)
+      obs = reshape(obstacles.data{t}, obj.gN);   
+      surf(obs(:,:,1)) 
+      drawnow
   end
-  if exist('obstacles', 'var')
-    figure;
-    for t=1:length(obstacles.data)
-        obs = reshape(obstacles.data{t}, obj.gN);
-        surf(obs(:,:,1))
-        drawnow
-    end
-  end
+end
 
 %% Post process loaded data
 % Compute gradients used for optimal control
@@ -100,11 +101,11 @@ RTTRS.Deriv = computeGradients(RTTRS.g, RTTRS.data);
 tStart = inf;
 tEnd = -inf;
 for veh = 1:length(Q)
-  Q{veh}.x = Q{veh}.xhist(:,1);
-  Q{veh}.xhist = Q{veh}.x;
-  Q{veh}.u = [];
-  Q{veh}.uhist = [];
-  tStart = min(tStart, min(Q{veh}.nomTraj_tau));
+  Q{veh}.x = Q{veh}.xhist(:,1);   %%%%%%%%%%%%%%%%
+  Q{veh}.xhist = Q{veh}.x;      %%%%%%%%%%%%%%%%%%
+  Q{veh}.u = [];            
+  Q{veh}.uhist = [];         
+  tStart = min(tStart, min(Q{veh}.nomTraj_tau)); %find min/max times over all trajectories
   tEnd = max(tEnd, max(Q{veh}.nomTraj_tau));
 end
 tau = tStart:obj.dt:tEnd;
@@ -125,7 +126,7 @@ if save_png || save_fig
   I = imread(obj.mapFile);
   if strcmp(obj.mapFile, 'map_streets.png')
     I = I(1:800, 701:1500, :);
-    I = flip(I, 1);
+    I = flip(I, 1);   %%%%%%%%%%%%%%%%%%%%%%
     imshow(I, 'InitialMagnification', 75, 'XData', [0 500], 'YData', [0 500]);
   elseif strcmp(obj.mapFile, 'bay_area_streets.png')
     I = I(155:915, 1120:1770, :);
@@ -160,13 +161,13 @@ tInds = cell(length(Q), 1);
 taumin = inf(length(Q), 1);
 taumax = -inf(length(Q), 1);
 
-subSamples = 32;
+subSamples = 32;  
 
 for i = 1:length(tau)
   fprintf('t = %f\n', tau(i))
   for veh = 1:length(Q)
     % Check if nominal trajectory has this t
-    tInds{veh} = find(Q{veh}.nomTraj_tau > tau(i) - small & ...
+    tInds{veh} = find(Q{veh}.nomTraj_tau > tau(i) - small & ...    %%%%%%%%%%%%%%%%%%
       Q{veh}.nomTraj_tau < tau(i) + small, 1);
     
     if ~isempty(tInds{veh})
@@ -178,16 +179,16 @@ for i = 1:length(tau)
       % reference virtual plane is vehicle B, trying to get into reachable set
       for s = 1:subSamples;
         % Obtain intermediate nominal trajectory points
-        this_tInd = tInds{veh};
+        this_tInd = tInds{veh};         %%%%%%%%%%%%%%%%%%%%%
         prev_tInd = max(1, tInds{veh}-1);
 %         nomTraj_pt = zeros(3,1);
-        w = s/subSamples; % weight that goes from 0 to 1
+        w = s/subSamples; % weight that goes from 0 to 1   %%%%%%%%%%%%%%%%%%
         nomTraj_pt = (1-w)*Q{veh}.nomTraj(:,prev_tInd) + ...
           w*Q{veh}.nomTraj(:,this_tInd);
-        rel_x = nomTraj_pt - Q{veh}.x;
+        rel_x = nomTraj_pt - Q{veh}.x;   
         
 %         rel_x = Q{veh}.nomTraj(:,tInds{veh}) - Q{veh}.x;
-        rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));
+        rel_x(1:2) = rotate2D(rel_x(1:2), -Q{veh}.x(3));   %%%%%%%%%%%%%%%%%%%
 
         deriv = eval_u(RTTRS.g, RTTRS.Deriv, rel_x);
         u = RTTRS.dynSys.optCtrl([], rel_x, deriv, 'max');
@@ -202,7 +203,7 @@ for i = 1:length(tau)
         Q{veh}.updateState(u, obj.dt/subSamples, Q{veh}.x, d);
       end
       % Remove sub-samples
-      Q{veh}.uhist(:, end-subSamples+1:end-1) = [];
+      Q{veh}.uhist(:, end-subSamples+1:end-1) = [];   %%%%%%%%%%%%%%%%
       Q{veh}.xhist(:, end-subSamples+1:end-1) = [];
     end
   end
