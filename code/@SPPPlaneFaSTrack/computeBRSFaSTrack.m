@@ -1,4 +1,4 @@
-function computeBRS1(obj, BRS1_tau, g, staticObs, obstacles, SPPP_folder, ...
+function computeBRSFaSTrack(obj, BRS1_tau, g, staticObs, obstacles, SPPP_folder, ...
   veh, low_memory)
 % vehicle = computeBRS1(vehicle, tau, schemeData, obstacles)
 %     Computes the first BRS for a vehicle, and updates its data with
@@ -28,9 +28,8 @@ schemeData.grid = g;
 schemeData.uMode = 'min';
 
 % Modify control bounds
-nom_vrange = obj.vrange + obj.vReserved;
-nom_wMax = obj.wMax + obj.wReserved;
-schemeData.dynSys = Plane(obj.x, nom_wMax, nom_vrange);
+pMax = obj.pMax;
+schemeData.dynSys = Plane(obj.x, pMax(1), pMax(2));
 
 %% Visualization
 extraArgs.visualize = true;

@@ -136,7 +136,7 @@ for veh = vehStart:length(Q)
         Q{veh-1}.obsForRTT, obj.augStaticObs);  
       
       fprintf('Trimming obstacle data and saving checkpoint...\n')
-      Q{veh-1}.trimData({'obsForRTT'});
+      Q{veh-1}.trimDataFaSTrack({'obsForRTT'});
       save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
       
       close all
@@ -146,25 +146,25 @@ for veh = vehStart:length(Q)
   if isempty(Q{veh}.nomTraj)
     %% Compute the BRS (BRS1) of the vehicle with the above obstacles
     fprintf('Computing BRS1 for vehicle %d\n', veh)
-    Q{veh}.computeBRS1(thisTau, obj.g, obj.augStaticObs, obstacles, ...
+    Q{veh}.computeBRSFaSTrack(thisTau, obj.g, obj.augStaticObs, obstacles, ...
       obj.folder, veh, low_memory);   
     
     %% Compute the nominal trajectories based on BRS1
     fprintf('Computing nominal trajectory for vehicle %d\n', veh)
-    Q{veh}.computeNomTraj(obj.g, obj.folder, veh);
+    Q{veh}.computeNomTrajFaSTrack(obj.g, obj.folder, veh);
     
     %% Compute induced obstacles
     fprintf('Computing obstacles for vehicle %d\n', veh)
     
-    Q{veh}.computeObsForRTT(obj, RTTRS);
+    Q{veh}.computeObsForRTTFaSTrack(obj, RTTRS);
     if veh == length(Q)
-      Q{veh}.trimData({'obsForRTT'});
+      Q{veh}.trimDataFaSTrack({'obsForRTT'});
       save(obj.NI_RS_chkpt_filename, 'Q', 'obstacles', 'veh', '-v7.3');
     end
     
     Qthis = Q{veh};
     save(sprintf('%s/Plane%d.mat', data_folder, veh), 'Qthis', '-v7.3')
-    Q{veh}.trimData({'BRS1'});
+    Q{veh}.trimDataFaSTrack({'BRS1'});
   end
 end
 

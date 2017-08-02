@@ -1,4 +1,4 @@
-function computeObsForRTT(obj, SPPP, RTTRS, nomTraj, nomTraj_tau)
+function computeObsForRTTFaSTrack(obj, SPPP, RTTRS, nomTraj, nomTraj_tau)
 % vehicle = computeCylObs(vehicle, schemeData, rawCylObs, debug)
 %     Computes cylindrical obstacles assuming the RTT method for SPP with
 %     disturbances or SPP with intruders

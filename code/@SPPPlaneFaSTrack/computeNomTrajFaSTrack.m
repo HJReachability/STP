@@ -1,13 +1,12 @@
-function computeNomTraj(obj, g, SPPP_folder, veh)
+function computeNomTrajFaSTrack(obj, g, SPPP_folder, veh)
 % SPPPlane.computeNomTraj(g)
 %     Computes nominal trajectory of to be robustly tracked
 
 small = 1e-4;
 
 % Modify control bounds
-nom_vrange = obj.vrange + obj.vReserved;
-nom_wMax = obj.wMax + obj.wReserved;
-dynSys = Plane(obj.x, nom_wMax, nom_vrange);
+pMax = obj.pMax;
+dynSys = Plane(obj.x, pMax(1), pMax(2));
 
 % Set extraArgs
 extraArgs.uMode = 'min';

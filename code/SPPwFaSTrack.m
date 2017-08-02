@@ -15,6 +15,6 @@ end
 
 
 SPPP.computeTEB();
-SPPP.computeNIRS();
+SPPP.computeNIRSFaSTrack();
 SPPP.simulateNI();
 end

@@ -1,4 +1,4 @@
-function trimData(obj, fieldsToRemove)
+function trimDataFaSTrack(obj, fieldsToRemove)
 % trimData(obj, fieldsToRemove)
 %     Trims large data files so that a smaller file is saved to run simulations
 
