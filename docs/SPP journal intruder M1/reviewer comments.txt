@@ -1,0 +1,93 @@
+Associate Editor Comments:
+
+The authors present a methodology for multi-vehicle path planning within the framework of Hamilton-Jacobi (HJ) reachability, the approach they have developed in the past. To avoid the computational complexity associated with the HJ reachability computations, they simplify the problem by introducing a total order on the vehicles. In the planning process, each vehicle then only considers higher-ranked vehicles. The authors carefully build on this basic idea to consider disturbances and the case of a single adversarial intruder with known dynamics. To deal with disturbances, three control schemes are proposed that provide various levels of performance. In each case, simulations are used to illustrate the approach.
+
+Based on the recommendations of the reviewers I'm glad to inform you that your paper may be accepted for publication as a regular paper provided you can satisfactorily address the shortcomings of the paper described below and in the reviewer's comments.
+
+- The authors should probably reference the work of LaValle and that of Pallottino as they seem to be related to the subject of the paper. I would suggest:
+
+LaValle, S. M., & Hutchinson, S. A. (1998). Optimal motion planning for multiple robots having independent goals. IEEE Transactions on Robotics and Automation, 14(6), 912-925.
+
+Pallottino, L., Scordio, V. G., Bicchi, A., & Frazzoli, E. (2007). Decentralized cooperative policy for conflict resolution in multivehicle systems. IEEE Transactions on Robotics, 23(6), 1170-1183.
+
+But there are several other papers by the authors that may be relevant.
+
+- By imposing a total order on the vehicles, the authors give up completeness. They should be clear about this in the paper and they should discuss why such a trade-ff is worthwhile. Note that saying that the problem is too difficult to solve otherwise is not a good reason. The authors should convince the reader that there are realistic scenarios where such an approach is well justified. Further, as Reviewer 1 observes, there should be some discussion on how the ordering can be chosen.
+
+- The authors should report the computational times for the simulations. Are the authors claiming that their approach can be used online? If yes, the simulations should convince the reader that is feasible. If not, the authors should explain how exactly will their approach benefit applications. In fact, the paper would be much stronger if the approach was demonstrated on real UAVs.
+
+- The authors claim that the algorithm scales linearly with the number of vehicles (with no intruder). However, it would appear that the number of obstacles is also important. As the complexity of obstacles (constraints) is on average n/2 for each vehicle, the computational complexity may actually grow quadratically. A discussion in the paper may be in order.
+
+In addition, Reviewer 1 proposes several clarifications that would make the paper easier to understand.
+
+Reviewer 2 suggests that it may be worthwhile directly comparing the approach with a more recent work in the literature on multi-agent systems.
+
+Finally, Reviewer 3 suggests how to improve the literature review and the bibliography. The reviewer also asks for a more extensive simulation and challenges the second assumption in Section VI.
+
+Reviewer(s)' Comments to Author:
+
+Reviewer: 1
+
+Comments to the Author
+The paper introduces scalable path planning for multi-vehicle systems based on Hamilton-Jacobi reachability computation. The goal of each vehicle is to reach its target location on time while avoiding collisions. The main idea of the proposed solution is to linearly order the vehicles and perform the planning sequentially, always considering the plans of the previous vehicles as time-varying obstacles. Several cases are discussed: First, it is planning without disturbances and with perfect information. Second, it is planning with disturbances and three different control methods that are associated with different information sharing among the vehicles: centralized control, where a certain control strategy is enforced; least restrictive control, where the control strategy is only assumed to ensure arriving to the target location on time; and robust trajectory tracking, where a nominal trajectory is tracked with an error bound. Third, planning in presence of disturbances and an intruder is discussed with the assumptions that the intruder leaves the system after a certain duration and that the intruder’s dynamics is known.
+
+The considered problem is timely and strongly motivated, especially in the context of recent advances in the use of UAVs. The main idea is in fact very simple, but that is in my opinion what makes it elegant and applicable. It might be interesting though to include a discussion on how the ordering of the vehicles is determined and how it influences the outcome, i.e. the latest departure times of the vehicles. For instance, in the numerical simulations, the chosen ordering is in accordance with the growing scheduled time of arrival. Is it a coincidence or is there a particular reason for that?
+
+The paper is extremely clearly written and organized, allowing readers to first grasp the concept on the most simple setup and guiding them towards solutions for more and more interesting cases. Appropriate numerical simulations supporting the developed theory are included. As far as I am concerned, the presented technical material is correct.
+
+Minor comments:
+-       I would appreciate a little bit more details and intuitive explanations on time-varying reachability background.
+-       Beginning of Sec. IV: “… SPP algorithm can still serve as a useful approximation in certain situations”: It might be helpful to give a concrete example here.
+-       Caption of Fig. 3: “… unobstructed by obstacles”: Is it meant time-varying obstacles here?
+-       “This is precisely the set P_i(t).”: Please clarify.
+-       It might be helpful to add a discussion on how the reduced control set and the parameter R_EB should be chosen in Sec. V.A.3.
+-       It may be interesting to add a clarification of the following questions: In general, avoiding the intruder may cause a vehicle not being able to reach a target region any more, correct? Does the optimal avoidance control from Eq. (55) ensures the target region remains reachable?
+
+Typos:
+-       “are drawn the set”
+-       “that the Q_i could be in”
+
+
+Reviewer: 2
+
+Comments to the Author
+This paper presents a robust sequential path planning framework to deal with a multi-agent system path planning problem. It considers the disturbances and adversarial intruder which makes the path planning problem more complex. Hamilton-Jacobi is utilized to provide a base of the framework due to the effectiveness facing trajectory planning and avoidance under disturbances. To overcome the computing intractability, sequential method is introduced. Moreover, three methodologies are designed for the disturbances and adversarial intruder. Both simulations and analysis are provided to verify the theory. Some minor comments should be addressed in the revised version.
+
+
+1. In section 3, the backward and forward reachable set are introduced and computed by solving the partially differential equations, i.e., Eq.~(5) and Eq.~(6), in which $D_t$ is not formally given.
+
+2. In this paper, authors define the danger zone $Z_{i,j}=\{(x_i,x_j):||p_i-p_j||_2\leq R_c\}$ only based on the position information. In reality applications, there exists a kind of inevitable danger zone, where the robot or UAV will be in danger zone with a hundred percent. It is suggested to provide more details about such inevitable danger zones.
+
+3. Authors proposed a sequential planning method in order to make the reachable set method computing trackable with different priority when facing high dimensional problems. It makes sense in real applications that each agent has different priority. However, it may return failure when priority is not crucial or even can be ignored and the inappropriate priority is given. If the priority issue has been considered by authors, please give more details and explanation.
+
+4. Comparative studies are suggested to show the advantages of the proposed algorithm. In addition, more recent work of multi-agent (AGV, UAV, AUV, etc) is suggested to be mentioned in the introduction.
+
+Reviewer: 3
+
+Comments to the Author
+The paper presents a theorical multirobots path planning study.
+Robustness, disturbance and adversarial are considered.
+Study is leaded in theory with different information control policy, from centralized, vehicules' time arrival and trajectories' robustness.
+Numerical simulations are presented with four robots in a 2D maps with two obstacles.
+
+in section I :
+The references are presented succinctly. Make one sentence per reference should help the reader to understand issues and contributions.
+Some references should probably be removed. (see "1-5", "6:7", "8-11", "17-19", ...)
+Some references are cited as other contributions, called "and many others" by Authors (see "23-25", "37-38", ...)
+
+in section II, III, IV, V :
+Vehicules seems to be particules ?
+Configuration spaces is then simplified and robustness is delegated to surrounding distance of other things.
+time-varying reachability is formalized
+perfect and imperfect information cases are presented with numerical simulations for four vehicules.
+comparisons to previous works are missing
+simulations should involve more vehicules and more obstacles
+
+in section VI :
+The case of an environment with a single moving obstacle is presented as intruder or adversarial vehicules.
+The second assumption is an unrealistic condition.
+
+in bibliography :
+page number is sometimes missing
+reference title is sometimes written with capitals (see 12, 29)
+Out of fourty-three references, only fourteen have been published after 2010. It confirms that some references are not needed.
