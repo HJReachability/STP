@@ -1,4 +1,4 @@
-% !TEX root = ../SPP_journal.tex
+% !TEX root = ../STP_journal.tex
 \subsubsection{Robust Trajectory Tracking\label{sec:rtt}}
 Even though it is impossible to commit to and track an exact trajectory in the presence of disturbances, it may still be possible to instead \textit{robustly} track a feasible \textit{nominal} trajectory with a bounded error at all times. If this can be done, then the tracking error bound can be used to determine the induced obstacles. Here, computation is done in two phases: the \textit{planning phase} and the \textit{disturbance rejection phase}. In the planning phase, we compute a nominal trajectory $\state_{r,j}(\cdot)$ that is feasible in the absence of disturbances. In the disturbance rejection phase, we compute a bound on the tracking error.%\MCnote{don't need to explain where error comes bound, imo}%, caused by a vehicle's inability to exactly track the nominal trajectory in the presence of disturbances. 
 
@@ -87,14 +87,14 @@ The induced obstacles by each higher-priority vehicle $\veh_j$ can thus be obtai
 
 \noindent where the ``$+$'' in \eqref{eqn:rttObs} denotes the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.}. Intuitively, if $\veh_j$ is tracking $\state_{r,j}(t)$, then it will remain within the error bound $\disckernel_j$ around $\state_{r,j}(t) ~\forall t$. This is precisely the set $\pfrs_j(t)$. The induced obstacles can then be obtained by augmenting a danger zone around this set. Finally, we can obtain the total obstacle set $\obsset_i(t)$ using \eqref{eq:obsseti}. 
 
-Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\disckernel_j$, we must make sure during the path planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\disckernel_i$ and $\disckernel_j$, do not intersect. This can be done by augmenting the total obstacle set by $\disckernel_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
+Since each vehicle $\veh_j$, $j<i$, can only be guaranteed to stay within $\disckernel_j$, we must make sure during the trajectory planning of $\veh_i$ that at any given time, the error bounds of $\veh_i$ and $\veh_j$, $\disckernel_i$ and $\disckernel_j$, do not intersect. This can be done by augmenting the total obstacle set by $\disckernel_i$:%This can be done by choosing the induced obstacle to be the Minkowski sum\footnote{The Minkowski sum of sets $A$ and $B$ is the set of all points that are the sum of any point in $A$ and $B$.} of the error bounds. Thus,
 
 \begin{equation} 
 \label{eqn:rttAugObs}
 \tilde{\obsset}_i(t) = \obsset_i(t) + \disckernel_i.
 \end{equation}
 
-Finally, given $\disckernel_i$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\disckernel_i \subseteq \targetset_i$; thus, in the path planning phase, we modify $\targetset_i$ to be $\tilde{\targetset}_i := \{\state_i: \disckernel_i + \state_i \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^\pos_i$, that contains the initial state of the vehicle. Mathematically,
+Finally, given $\disckernel_i$, we can guarantee that $\veh_i$ will reach its target $\targetset_i$ if $\disckernel_i \subseteq \targetset_i$; thus, in the trajectory planning phase, we modify $\targetset_i$ to be $\tilde{\targetset}_i := \{\state_i: \disckernel_i + \state_i \subseteq \targetset_i\}$, and compute a BRS, with the control authority $\cset^\pos_i$, that contains the initial state of the vehicle. Mathematically,
 
 \begin{equation}
 \label{eq:rttBRS}
@@ -132,12 +132,3 @@ The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehic
 \item the induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using $\disckernel_i$ and $\state_{r,i}(\cdot)$ via \eqref{eqn:rttObs}.
 \end{enumerate}
 \end{alg}
-
-%\begin{equation}
-%\ioset_i^j(t) = \errorbound(0) + \errorbound(\state_{r,j}(t))
-%\end{equation}
-%now requiring the state (error) to remain in $\errorbound$, so that the target simply becomes $\targetset = \mathbb{R}^n \setminus \errorbound$. In these cases, \eqref{eq:HJIVI_track} is defined on the lower-dimensional state space of relative (error) dynamics (i.e. over $e$ instead of $z$), and the resulting $\disckernel\subset \mathbb{R}^n$ is the discriminating kernel of $\errorbound$. The flight-time tracking error $e$ is then guaranteed to remain within $\errorbound$ provided that the initial error is contained in $\disckernel$ and the vehicle controller applies the optimally robust tracking feedback law \eqref{eq:robust_tracking_law}, which is now of the form $\tracklaw(e)$.
-
-%A price to be paid for using this method is that it imposes more stringent restrictions on the planning. At flight time, the vehicle will apply this robust tracking law around the nominal trajectory instead of the optimal control policy prescribed by the path planner; while constraint satisfaction is guaranteed for the nominal trajectory, this guarantee does not immediately extend to trajectories within the tracking error bound. The natural solution is to ``robustify" the planning by augmenting all obstacles as $\obsset^\errorbound(t) := \obsset(t) - \errorbound$ (with $-$ denoting the Minkowski difference). It then follows directly that if $x_r(t)$ remains clear of $\obsset^\errorbound(t)$ for all $t$, then $x(t)$ remains clear of the original obstacle $\obsset(t)$.
-
-%Based on this, it will be desirable to choose the tracking error bound $\errorbound$ to be as small as possible. The concrete choice of $\errorbound$ will generally correspond to the system designer, since it is specific to the vehicle dynamics, and should always ensure that the resulting discriminating kernel $\disckernel$ (a) is nonempty and (b) contains all expected errors in the initial configuration.

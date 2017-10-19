@@ -1,4 +1,4 @@
-% !TEX root = ../SPP_Journal.tex
+% !TEX root = ../STP_Journal.tex
 \subsubsection{Robust Trajectory Tracking}
 In the planning phase, we reduced the maximum turn rate of the vehicles from $1$ to $0.6$, and the speed range from $[0.5, 1]$ to exactly $0.75$ (constant speed). With these reduced control authorities, we determined from the disturbance rejection phase that a nominal trajectory from the planning phase can be robustly tracked within a distance of $R_{\text{EB}} = 0.075$.
 
@@ -18,4 +18,4 @@ Fig. \ref{fig:rtt_traj} shows the vehicle trajectories in the situation where ea
   \label{fig:rtt_rs3}
 \end{figure}
 
-In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57$ and $-2.47$ respectively. In this method, vehicles use reduced control authority for path planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have earlier $\ldt_i$'s compared to the other two methods, as evident from $\ldt_1$. Because of this ``sacrifice" made by the higher-priority vehicles during the path planning phase, the $\ldt$'s of lower-priority vehicles may be later compared to those in the other methods, as evident from $\ldt_4$. Overall, it is unclear how $\ldt_i$ will change for a vehicle compared to the other methods, as the conservative path planning leads to earlier $\ldt_i$'s for higher-priority vehicles and later $\ldt_i$'s for lower-priority vehicles.
+In this case, the $\ldt_i$ values for the four vehicles are $-1.61, -3.16, -3.57$ and $-2.47$ respectively. In this method, vehicles use reduced control authority for trajectory planning towards a reduced-size effective target set. As a result, higher-priority vehicles tend to have earlier $\ldt_i$'s compared to the other two methods, as evident from $\ldt_1$. Because of this ``sacrifice" made by the higher-priority vehicles during the trajectory planning phase, the $\ldt$'s of lower-priority vehicles may be later compared to those in the other methods, as evident from $\ldt_4$. Overall, it is unclear how $\ldt_i$ will change for a vehicle compared to the other methods, as the conservative trajectory planning leads to earlier $\ldt_i$'s for higher-priority vehicles and later $\ldt_i$'s for lower-priority vehicles.
