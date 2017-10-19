@@ -1,7 +1,7 @@
 % !TEX root = STP_journal.tex
 \section{Introduction}
 Recently, there has been an immense surge of interest in the use of unmanned aerial systems (UASs) in urban environments. 
-UASs have great potential in civil applications such as package delivery, aerial surveillance, disaster response, among many others \MCnote{(Removed 5 references)}.%\cite{Tice91, Debusk10, Amazon16, AUVSI16, BBC16}. 
+UASs have great potential in civil applications such as package delivery, aerial surveillance, disaster response, among many others \MCnote{(Removed 5 references)}. %\cite{Tice91, Debusk10, Amazon16, AUVSI16, BBC16}. 
 Unlike previous uses of UASs for military purposes, civil applications will involve unmanned aerial vehicles (UAVs) flying in urban environments, potentially in close proximity of humans, other UAVs, and other important assets. 
 As a result, government agencies such as the Federal Aviation Administration (FAA) and National Aeronautics and Space Administration (NASA) of the United States are urgently trying to develop new scalable ways to organize an airspace in which potentially thousands of UAVs can fly simultaneously in the same region \cite{FAA13, Kopardekar16}.
 
@@ -14,10 +14,19 @@ The problem of trajectory planning and collision avoidance under disturbances in
 One of the main challenges of managing the next generation of airspace is the density of vehicles that needs to be accommodated \cite{Kopardekar16}. Such a large-scale system has a high-dimensional joint state space, making a direct application of dynamic programming-based approaches such as reachability analysis intractable. In particular, reachable set computations involve solving a HJ partial differential equation (PDE) or variational inequality (VI) on a grid representing a discretization of the state space, causing computational complexity to scale \textit{exponentially} with system dimension.
 
 \subsection{Contributions and Outline}
-
-In this paper, we propose the sequential trajectory planning (STP) method to tackle the multi-vehicle trajectory planning problem. Our approach is similar to the approaches of \cite{Erdmann1987, VandenBerg2005}, but provides hard guarantees on both the goal satisfaction and safety of all vehicles even in the presence of disturbances and a single intruder vehicle that could potentially be adversarial. In addition, our method scales only \textit{linearly} with the number of vehicles when there is no intruder, and \textit{quadratically} with the number of vehicles when there is a single intruder. On a high level, the STP method assigns a strict priority ordering to the vehicles under consideration. Higher-priority vehicles plan their trajectories without taking into account the lower-priority vehicles. Lower-priority vehicles treat higher-priority vehicles as moving obstacles. Under this assumption, time-varying formulations of reachability \cite{Bokanowski11, Fisac15} can be used to obtain the optimal and provably safe trajectories for each vehicle, starting from the highest-priority vehicle. Thus, the curse of dimensionality is overcome for the multi-vehicle trajectory planning problem at the cost of a mild structural assumption. 
+In this paper, we propose the sequential trajectory planning (STP) method to tackle the multi-vehicle trajectory planning problem. 
+Our approach is similar to the approaches of \cite{Erdmann1987, VandenBerg2005}, but provides hard guarantees on both the goal satisfaction and safety of all vehicles even in the presence of disturbances and a single intruder vehicle that could potentially be adversarial. 
+In addition, our method scales only \textit{linearly} with the number of vehicles when there is no intruder, and \textit{quadratically} with the number of vehicles when there is a single intruder.
+On a high level, the STP method assigns a strict priority ordering to the vehicles under consideration. Higher-priority vehicles plan their trajectories without taking into account the lower-priority vehicles. 
+Lower-priority vehicles treat higher-priority vehicles as moving obstacles. 
+Under this assumption, time-varying formulations of reachability \cite{Bokanowski11, Fisac15} can be used to obtain the optimal and provably safe trajectories for each vehicle, starting from the highest-priority vehicle. 
+Thus, the curse of dimensionality is overcome for the multi-vehicle trajectory planning problem at the cost of a mild structural assumption. 
 
 In a sense, the STP method reserves a portion of ``space-time'' in the airspace for each vehicle. The reserved space-time portion is recorded so that lower-priority vehicles can take it into account. Besides planning around the reserved space-time portions of higher-priority vehicles, no other communication between the vehicles is needed at execution time, even when disturbances and an intruder are present.
+
+\MCnote{Almost all computation is done \textit{offline} to produce a value function, corresponding to an appropriate optimal control problem or differential game, for each vehicle. 
+The gradient of the value function can be stored in a look-up table, which is used \textit{online} to synthesize the optimal controller.
+Controller synthesis amounts to evaluating an analytic expression, is the only online computation, and therefore can be done in real-time.}
 
 In the absence of disturbances and intruders, and assuming each vehicle has perfect information about other vehicles' positions, each vehicle may plan and commit to an exact trajectory, with the reserved space-time being the collision set around the trajectory at every point in time. This basic concept of STP is formally presented in Section \ref{sec:basic}.
 

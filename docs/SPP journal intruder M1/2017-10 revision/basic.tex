@@ -68,3 +68,5 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset}.
 \end{enumerate}
 \end{alg}
+
+\MCnote{As previously mentioned, the basic STP algorithm, as well as all subsequent variants of STP algorithms, will \textit{always} return a feasible trajectory that arrives at the target on time, as long as a feasible trajectory exists in the \textit{absence} of other vehicles. This is because a vehicle can simply depart early enough to avoid being blocked by higher-priority vehicles. In fact, the latest departure time $\ldt_i$ quantifies exactly when each vehicle needs to depart to arrive on time.}

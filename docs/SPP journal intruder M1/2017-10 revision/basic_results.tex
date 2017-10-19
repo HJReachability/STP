@@ -64,7 +64,9 @@ The actual arrival times of vehicles $\veh_i,i=1,2,3,4$ are $0, 0.19, 0.34, 0.31
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\columnwidth]{"fig/dubins_result"}
+	\includegraphics[width=\columnwidth]{fig/dubins_result}
 	\caption{The planned trajectories of the four vehicles. Top left: only vehicles $\veh_3$ (green) and $\veh_4$ (purple) have started moving, showing $\ldt_i$ is not common across the vehicles. Top right: all vehicles have come within very close proximity, but none is in the danger zone of another. Bottom left: vehicle $\veh_1$ (blue) arrives at $\targetset_1$ at $t=0$. Bottom right: all vehicles have reached their destination, some ahead of $\sta_i$.}
 	\label{fig:dubins_result}
 \end{figure}
+
+\MCnote{Computations were done on a desktop computer with a Core i7 5820K processor and two GeForce GTX Titan X graphics processing units. The average computation time per vehicle is approximately 2 seconds using CUDA and GPU parallelization, 30 seconds using C++ without CUDA, and 200 seconds using MATLAB. Note that for the simulations in this and subsequent sections, almost all of the computation is done offline. Only a look-up table query to obtain the gradient of the value function corresponding to a BRS, and evaluation of the optimal control in, for example \eqref{eq:basicOptCtrl}, is needed online. For control affine systems, controller synthesis amounts to  evaluation of an analytic expression.}
