@@ -17,8 +17,7 @@ Let the time at which intruder appears in the system be $\tsa$ and the time at w
 \label{as:dynKnown}
 The dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\state_\intr, \ctrl_\intr, \dstb_\intr)$.
 \end{assumption}
-
-Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead.
+Assumption \ref{as:dynKnown} is required for HJ reachability analysis. \SBnote{Even though assumption \ref{as:dynKnown} often does not hold for practical systems, a conservative model of the intruder may be used in situations where the dynamics of the intruder are not known exactly. Note that we only assume that the dynamics of the intruder are known, but its initial state $\state_{\intr}^{0}$, control $\ctrl_\intr$ and disturbance $\dstb_\intr$ it experiences are unknown.}
 
 Based on the above assumptions, we aim to design a control policy that ensures for each STP vehicle separation with the intruder and with other STP vehicles, and successful transit to the destination. However, depending on the initial state of the intruder, its control policy, and the disturbances in the dynamics of a vehicle and the intruder, a vehicle may arrive at different states after avoiding the intruder. Therefore, a control policy that ensures a successful transit to the destination needs to account for all such possible states, which is a trajectory planning problem with multiple (infinite, to be precise) initial states and a single destination, and is hard to solve in general. 
 

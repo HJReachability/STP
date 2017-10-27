@@ -1,7 +1,7 @@
 % !TEX root = STP_journal.tex
 \section{Time-Varying Reachability Background \label{sec:HJIVI}}
-We will be using reachability analysis to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. The BRS $\brs$ in a time interval $[t, t_f]$ or FRS $\frs$ in a time interval $[t_0, t]$ will be denoted by
-
+\SBnote{For the safe trajectory planning, we will use reachability theory.} In particular, we will be using reachability analysis to compute either a backward reachable set (BRS) $\brs$, a forward reachable set (FRS) $\frs$, or a sequence of BRSs and FRSs, given some target set $\targetset$, time-varying obstacle $\obsset(t)$, and the Hamiltonian function $\ham$ which captures the system dynamics as well as the roles of the control and disturbance. \SBnote{Intuitively, BRS is the set of states such that the system trajectories that start from this set can reach some given target set without colliding with obstacles, despite the worst-case disturbance. Similarly, FRS is the set of states that can be reached by a system starting from a target set.} The BRS $\brs$ in a time interval $[t, t_f]$ or FRS $\frs$ in a time interval $[t_0, t]$ will be denoted by
+%
 \begin{equation}
 \begin{aligned}
 \brs(t, t_f) &\quad \text{ (backward reachable set)}\\
@@ -9,8 +9,9 @@ We will be using reachability analysis to compute either a backward reachable se
 \end{aligned}
 \end{equation}
 
-In the STP scheme, a lower-priority vehicle must avoid a set of moving obstacles on its way to the target. Several formulations of reachability are able to perform optimal trajectory planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. For our application in STP, we utilize the time-varying formulation in \cite{Fisac15}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{Fisac15}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
-
+\SBnote{The computation of BRS (or FRS) can be formulated as a differential game between the control and disturbance (or as an optimal control problem when no disturbance is not involved), which can be solved using the principle of dynamic programming. Ultimately, this results in solving a HJ PDE. For further details on this formulation, we refer the interested readers to \cite{bansal2017hamilton}. Traditionally, only static obstacles had been considered in the reachability formulation.}
+However, in the STP scheme, a lower-priority vehicle must avoid a set of moving obstacles \SBnote{(i.e., time-varying obstacles)} on its way to the target. Several formulations of reachability are able to perform optimal trajectory planning with hard guarantees on safety and performance under disturbances in such a scenario \cite{Bokanowski11, Fisac15}. For our application in STP, we utilize the time-varying formulation in \cite{Fisac15}, which accounts for the time-varying nature of systems without requiring augmentation of the state space with the time variable. In the formulation in \cite{Fisac15}, a BRS is computed by solving the following \textit{final value} double-obstacle HJ VI:
+%
 \begin{equation}
 \label{eq:HJIVI_BRS}
 \begin{aligned}
@@ -20,8 +21,8 @@ In the STP scheme, a lower-priority vehicle must avoid a set of moving obstacles
 \end{aligned}
 \end{equation}
 
-In a similar fashion, the FRS is computed by solving the following \textit{initial value} HJ PDE:
-
+\SBnote{Here, $D_t \valfunc(t, \state)$ and $\nabla \valfunc(t, \state)$ denote the time and space derivative of the value function $\valfunc$ respectively.} In a similar fashion, the FRS is computed by solving the following \textit{initial value} HJ PDE:
+%
 \begin{equation}
 \label{eq:HJIVI_FRS}
 \begin{aligned}
@@ -31,7 +32,7 @@ D_t \valfuncfwd(t, \state) + &\ham(t, \state, \nabla \valfuncfwd(t, \state)) = 0
 \end{equation}
 
 In both \eqref{eq:HJIVI_BRS} and \eqref{eq:HJIVI_FRS}, the function $\ic(\state)$ is the implicit surface function representing the target set $\targetset = \{\state: \ic(\state) \le 0\}$. Similarly, the function $\obsfunc(t, \state)$ is the implicit surface function representing the time-varying obstacles $\obsset(t) = \{\state: \obsfunc(t,\state)\le 0\}$. The BRS $\brs(t, t_f)$ and FRS $\frs(t_0, t)$ are given by
-
+%
 \begin{equation}
 \label{eq:implicitValfuncs}
 \begin{aligned}

@@ -1,6 +1,6 @@
 % !TEX root = STP_journal.tex
 \section{STP Without Disturbances and With Perfect Information\label{sec:basic}}
-In this section, we introduce the basic STP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle knows the exact position of higher-priority vehicles. Although in practice, such assumptions do not hold, the basic STP algorithm can still serve as a useful approximation in certain situations. In addition, the description of the basic STP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of STP. We also show simulation results for the basic STP algorithm. The majority of the content in this section is taken from \cite{Chen15c}.
+In this section, we introduce the basic STP algorithm assuming that there is no disturbance affecting the vehicles, and that each vehicle knows the exact position of higher-priority vehicles. \SBnote{Although in practice, such assumptions do not hold, the description of the basic STP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of STP.} We also show simulation results for the basic STP algorithm. The majority of the content in this section is taken from \cite{Chen15c}.
 
 \subsection{Theory}
 Recall that the STP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict priority, with $\veh_j$ having a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the STP vehicles as
@@ -32,7 +32,7 @@ With full position information of higher priority vehicles, the obstacle induced
 \end{equation}
 
 Each higher priority vehicle $\veh_j$ plans its trajectory while ignoring $\veh_i$. Since trajectory planning is done sequentially in descending order or priority, the vehicles $\veh_j, j<i$ would have planned their trajectories before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the trajectory planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
-
+%
 \begin{equation}
 \label{eq:BRS_basic}
 \begin{aligned}
@@ -41,21 +41,21 @@ Each higher priority vehicle $\veh_j$ plans its trajectory while ignoring $\veh_
 & \exists s \in [t, \sta_i], \state_i(s) \in \targetset_i, \state_i(t) = y\}
 \end{aligned}
 \end{equation}
-
+%
 The BRS $\brs(t, \sta_i)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targetset = \targetset_i$, $\obsset(t) = \obsset_i(t)$, and the Hamiltonian 
-
+%
 \begin{equation}
 \label{eq:basicham}
 \ham_i^\text{basic}(\state_i, \costate) = \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
-
-The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by
-
+%
+\SBnote{Note that $\brs(t, \sta_i)$, by definition, does not contain any states from which it is inevitable to avoid the danger zone $\dz_{ij}$ (and $\obsset_i$ in general).} Given $\brs(t, \sta_i)$, the optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by
+%
 \begin{equation}
 \label{eq:basicOptCtrl}
 \ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
 \end{equation}
-
+%
 \noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. In summary, the basic STP algorithm is given as follows:
 
 \begin{alg}
