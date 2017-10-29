@@ -2,7 +2,9 @@
 \subsection{STP Without Disturbances and Intruder\label{sec:basic}}
 In this section, we give an overview of the basic STP algorithm assuming that there is no disturbance and no intruder affecting the vehicles. 
 %Although in practice, such assumptions do not hold, the description of the basic STP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of STP. 
-The majority of the content in this section is taken from \cite{Chen15c}. Recall that among the STP vehicles $\veh_i, i=1,\ldots,N$, $\veh_j$ has a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the STP vehicles as
+The majority of the content in this section is taken from \cite{Chen15c}. 
+
+Recall that among the STP vehicles $\veh_i, i=1,\ldots,N$, $\veh_j$ has a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the STP vehicles as
 \begin{equation}
 \label{eq:dyn_no_dstb}
 \begin{aligned}
@@ -52,7 +54,7 @@ The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is
 \SetKwInOut{Input}{input}
 \SetKwInOut{Output}{output}
 	\DontPrintSemicolon
-	\caption{STP algorithm in the absence of disturbance and intruders}
+	\caption{STP algorithm in the absence of disturbances and intruders}
 	\label{alg:basic}
 	\Input{STP vehicles $\veh_i$, their dynamics \eqref{eq:dyn_no_dstb}, initial states $\state_i^0$,	destinations $\targetset_i$, static obstacles $\soset_i$}
     \Output{Provably safe trajectories to destinations and goal-satisfaction controllers $\ctrl^\text{basic}(\cdot)$}
