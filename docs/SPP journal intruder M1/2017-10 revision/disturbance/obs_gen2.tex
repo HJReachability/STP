@@ -1,39 +1,41 @@
 % !TEX root = ../STP_journal.tex
 \subsubsection{Least Restrictive Control\label{sec:lrc}}
 Here, we again begin with the highest-priority vehicle $\veh_1$ planning its trajectory by computing the BRS $\brs_i^\text{dstb}(t, \sta_i)$ in \eqref{eq:BRS}. However, if there is no centralized controller to enforce the control policy for higher-priority vehicles, weaker assumptions must be made by the lower-priority vehicles to ensure collision avoidance. One reasonable assumption is that all higher-priority vehicles follow the least restrictive control that would take them to their targets. This control would be given by 
-
+\vspace{-0.2cm}
 \begin{equation}
 \label{eq:lrctrl} % least restrictive control
 \ctrl_j^\text{lrc}(t, \state_j)\in \begin{cases} \{\ctrl_j^\text{dstb}(t, \state_j) \text{ in } \eqref{eq:opt_ctrl_i}\} \text{ if } \state_j(t)\in \partial \brs_j^\text{dstb}(t, \sta_j), \\
 \cset_j  \text{ otherwise}
 \end{cases}
+\vspace{-0.1cm}
 \end{equation}
 
 Such a controller allows each higher-priority vehicle to use any controller it desires, except when it is on the boundary of the BRS, $\partial \brs_j^\text{dstb}(t, \sta_j)$, in which case the optimal control $\ctrl_j^\text{dstb}(t, \state_j)$ given by \eqref{eq:opt_ctrl_i} must be used to get to the target safely and on time. This assumption is the weakest assumption that could be made by lower-priority vehicles given that the higher-priority vehicles will get to their targets on time.
 
 Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles $\veh_j, j < i$ use the least restrictive control strategy $\ctrl_j^\text{lrc}(t, \state_j)$ in \eqref{eq:lrctrl}. From the perspective of the lower-priority vehicle $\veh_i$, a higher-priority vehicle $\veh_j$ could be in any state that is reachable from $\veh_j$'s initial state $\state_j(\ldt_j) = \state_{j}^0$ and from which the target $\targetset_j$ can be reached. Mathematically, this is defined by the intersection of an FRS $\frs_j^\text{lrc}(\ldt_j, t)$ from the initial state $\state_j(\ldt_j)=\state_{j}^0$ and the BRS $\brs_j^\text{dstb}(t, \sta_j)$ defined in \eqref{eq:BRS} from the target set $\targetset_j$, $\frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j)$. In this situation, since $\veh_j$ cannot be assumed to be using any particular feedback control, $\frs_j^\text{lrc}(\ldt_j, t)$ is defined as
-
+\vspace{-0.1cm}
 \begin{equation}
 \label{eq:FRS2}
 \begin{aligned}
 &\frs_j^\text{lrc}(\ldt_j, t) = \{y: \exists \ctrl_j(\cdot)\in\cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
 & \qquad\state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\ldt_j) = \state_{j}^0, \state_j(t) = y\}.
 \end{aligned}
+\vspace{-0.1cm}
 \end{equation}
 
 This FRS can be computed using \eqref{eq:HJIVI_FRS} with the Hamiltonian
-
+\vspace{-0.1cm}
 \begin{equation}
 \ham_j^\text{lrc}\left(\state_j, \lambda\right) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \lambda \cdot \fdyn_j(\state_j, \ctrl_j, \dstb_j)
 \end{equation}
 
 In turn, the obstacle induced by a higher-priority $\veh_j$ for a lower-priority vehicle $\veh_i$ is as follows:
-
+\vspace{-0.1cm}
 \begin{equation}
 \label{eqn:lrcObs1}
 \ioset_i^j(t) = \{\state_i: \exists y \in \pfrs_j(t), \|\pos_i - y\|_2 \le \rc \}, \text{ where}
 \end{equation}
-
+\vspace{-0.1cm}
 \begin{align}
 \pfrs_j(t) & = \{p_j: \exists \npos_j, (p_j, \npos_j) \in \boset_j(t) \}, \label{eqn:lrcObs2}\\
 \boset_j(t) & = \frs_j^\text{lrc}(\ldt_j, t) \cap \brs_j^\text{dstb}(t, \sta_j). \label{eqn:lrcObs3}

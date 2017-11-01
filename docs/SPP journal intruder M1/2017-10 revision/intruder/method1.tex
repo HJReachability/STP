@@ -12,13 +12,16 @@ The goal of this section is to compute, for each lower-priority vehicle $\veh_i$
 Depending on the information known to a lower-priority vehicle $\veh_i$ about $\veh_j$'s control strategy, we can use one of the three methods described in Section \ref{sec:incomp} to compute the ``base" obstacles $\boset_j(t)$; these are the obstacles that would have been induced by $\veh_j$ in the absence of an intruder. The base obstacles are respectively given by \eqref{eqn:ccObs_help2}, \eqref{eqn:lrcObs3} and \eqref{eqn:rttObs} for the centralized control, least restrictive control and robust trajectory tracking methods.
 
 The induced obstacles, $\ioset_i^j(t)$, are then given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing an FRS from the base obstacles.
+\vspace{-0.1cm}
 \begin{equation} \label{eq:FRS_intObs1}
 \begin{aligned}
 &\frs_{j}^{\mathcal{O}}(t-\tau, t) = \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \state_j(\cdot) \\
 &\quad \text{ satisfies \eqref{eq:dyn}}, \state_j(t-\tau) \in \boset_j(t-\tau), \state_j(t) = y\}.
 \end{aligned}
+\vspace{-0.1cm}
 \end{equation}
 $\frs_{j}^{\mathcal{O}}(t-\tau, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
+\vspace{-0.15cm}
 \begin{equation}
 \ham_{j}^{\mathcal{O}}(\state_j, \costate) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \costate \cdot f_j (\state_j, \ctrl_j, \dstb_j) \label{intobs2}.
 \end{equation} 
@@ -44,7 +47,7 @@ Note that by the definition of base obstacles, $\boset_j(t+\tau_2) \subseteq \fr
 We next need to ensure that $\veh_i$ does not collide with the obstacles $\obsset_i(\cdot)$ computed in Section \ref{sec:intruder_iocomp} even when it is avoiding the intruder. In particular, we can compute a region around the obstacles $\obsset_i(\cdot)$ such that for all disturbances, $\veh_i$ can avoid colliding with obstacles for $\iat$ seconds regardless of its avoidance control, if $\veh_i$ starts outside this region. Augmenting $\obsset_i(\cdot)$ with this region gives us the augmented obstacles, $\tilde\obsset_i(\cdot)$, that can then be used during the trajectory planning of $\veh_i$ to ensure collision avoidance with $\obsset_i(\cdot)$.  
 
 Suppose that the intruder appears in the system at some time time $\tsa = t - \iat + \tau, \tau \in [0, \iat]$. In this case, we need to ensure that $\veh_i$ does not collide with the obstacle $\obsset_i(t + \tau)$ at time $t + \tau$, regardless of its control $\ctrl_i(s)$ and disturbance $\dstb_i(s)$ for the time interval $s \in [\tsa, t + \tau]$. It is, therefore, sufficient to avoid the $\tau$-horizon BRS of $\obsset_i(t + \tau)$ at time $t$. This argument applies for all $\tau \in [0, \iat]$. Mathematically,
-
+\vspace{-0.15cm}
 %\begin{equation} \label{eqn:inducedobs}
 %\tilde\obsset_i(t) = \bigcup_{\tau \in [0, \iat]} \brs_{\mathcal{G}}(\tau, \obsset_i(t+\tau), \emptyset, \ham_{\mathcal{G}})
 %\end{equation}
@@ -54,6 +57,7 @@ Suppose that the intruder appears in the system at some time time $\tsa = t - \i
 \tilde\obsset_i(t) = \bigcup_{\tau \in [0, \iat]} \brs^{\mathcal{G}}_{i}(t, t+\tau)
 \end{equation}
 where $\brs^{\mathcal{G}}_{i}(t, t+\tau)$ represents BRS of $\obsset_i(t+\tau)$ computed backwards for $\tau$ seconds. Formally, 
+\vspace{-0.1cm}
 \begin{equation} \label{eqn:inducedobs_help1}
 \begin{aligned}
 \brs^{\mathcal{G}}_{i}(t, t+\tau) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \exists \dstb_i(\cdot) \in \dfset_i, \\
@@ -111,7 +115,7 @@ Given the relative dynamics, we compute the set of states from which the joint s
 \end{aligned}
 \end{equation}
 where $\targetset^{\text{CA}}_{i} = \{\state_{\intr, i}: \|\pos_{\intr, i}\|_2 \le \rc\}$, and the Hamiltonian for computing this BRS is given by
-
+\vspace{-0.1cm}
 \begin{equation*}
 \begin{aligned}
 &H^{\text{CA}}_{i}(\state_{\intr, i}, \costate) = \max_{\ctrl_i \in \cset_i} \Big( \\
@@ -143,7 +147,7 @@ The overall control policy for avoiding the intruder and collision with other ve
 
 \subsubsection{Replanning after intruder avoidance\label{sec:re-plan_method1}} 
 After the intruder disappears, goal satisfaction controllers which ensure that the vehicles reach their destinations can be obtained by solving an STP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. Let the optimal control policy corresponding to this goal satisfaction controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination is given by
-
+\vspace{-0.1cm}
 \begin{equation*}
 \ctrl_i^*(t) = 
 \left \{ 
@@ -168,7 +172,7 @@ Note that in order to re-plan using a STP method, we need to determine feasible 
 %\end{equation}
 
 The FRS in \eqref{eq:re-planFRS} can be obtained by solving %the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
-
+\vspace{-0.15cm}
 \begin{equation}
 \begin{aligned}
 \max \Big\{&D_t \valfuncfwd^{\text{RP}}(t, \state_i) + \ham_i^{\text{RP}}(t, \state_i, \nabla \valfuncfwd^{\text{RP}}(t, \state_i)), \\

@@ -33,28 +33,28 @@ The actual arrival times of vehicles $\veh_i,i=1,2,3,4$ are $0, 0.19, 0.34, 0.31
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\columnwidth]{fig/dubins_ic}
+	\includegraphics[width=0.6\columnwidth]{fig/dubins_ic}
 	\caption{Initial configuration of the four-vehicle example.}
 	\label{fig:dubins_ic}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\columnwidth]{fig/dubins_reach_all}
+	\includegraphics[width=0.8\columnwidth]{fig/dubins_reach_all}
 	\caption{BRSs at $t=\ldt_i$ for vehicles $1,2,3,4$, sliced at initial headings $\theta_i^0$. Black arrows indicate direction of obstacle motion. Due to the turn rate constraint, the presence of static obstacles $\soset_i$ and time-varying obstacles induced by higher-priority vehicles $\ioset_i^j(t)$ carve ``channels" in the BRS, dividing it up into multiple ``islands".}
 	\label{fig:dubins_reach_all}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\columnwidth]{fig/dubins_reach_3}
+	\includegraphics[width=0.8\columnwidth]{fig/dubins_reach_3}
 	\caption{Time evolution of the BRS for vehicle $\veh_3$, sliced at its initial heading $\theta_3^0=\frac{7\pi}{4}$. Black arrows indicate direction of obstacle motion. Top row: the BRS grows unobstructed by obstacles (time-varying and static). Bottom row: the static obstacles $\soset_i$ and the induced obstacles $\ioset_3^1,\ioset_3^2$, carve out ``channels" in the BRS.}
 	\label{fig:dubins_reach_3}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\columnwidth]{fig/dubins_result}
+	\includegraphics[width=0.8\columnwidth]{fig/dubins_result}
 	\caption{The planned trajectories of the four vehicles. Top left: only vehicles $\veh_3$ (green) and $\veh_4$ (purple) have started moving, showing $\ldt_i$ is not common across the vehicles. Top right: all vehicles have come within very close proximity, but none is in the danger zone of another. Bottom left: vehicle $\veh_1$ (blue) arrives at $\targetset_1$ at $t=0$. Bottom right: all vehicles have reached their destination, some ahead of $\sta_i$.}
 	\label{fig:dubins_result}
 \end{figure}
