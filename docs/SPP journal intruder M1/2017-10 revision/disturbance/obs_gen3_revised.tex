@@ -117,8 +117,11 @@ The corresponding optimal control for reaching $\tilde{\targetset}_i$ is given b
 \ctrl_i^\text{rtt}(t) = \arg \min_{\ctrl_i \in \cset^\pos_i } \costate \cdot \fdyn_i(\state_i, \ctrl_i).
 \end{equation}
 
-The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}. The robust trajectory tracking method can be summarized as follows:
+The nominal trajectory $\state_{r,i}(\cdot)$ can thus be obtained by using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{rtt}(\cdot)$ given by \eqref{eq:RTTOptCtrl}. From the resulting nominal trajectory $\state_{r,i}(\cdot)$, the overall control policy to reach $\targetset_i$ can be obtained via \eqref{eq:robust_tracking_law}. 
 
+\SBnote{Note that in this work, the reduced control authority $\cset^p\subset\cset$ and the parameter $R_{\text{EB}}$ are selected by trial and error such that the the tracking error bound $\disckernel_j$ is nonempty. Nevertheless, selecting these parameters in a principled way is an interesting future direction.} 
+
+The robust trajectory tracking method can be summarized as follows:
 \begin{alg}
 \label{alg:rtt}
 \textbf{Robust trajectory tracking algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
