@@ -1,12 +1,12 @@
 % !TEX root = ../STP_journal.tex
 \section{STP With Disturbances and Incomplete Information \label{sec:incomp}}
-Disturbances and incomplete information significantly complicate the STP scheme. The main difference is that the vehicle dynamics satisfy \eqref{eq:dyn} as opposed to \eqref{eq:dyn_no_dstb}. Committing to exact trajectories is therefore no longer possible, since the disturbance $\dstb_i(\cdot)$ is \textit{a priori} unknown. Thus, the induced obstacles $\ioset_i^j(t)$ are no longer just the danger zones centered around positions. 
+Disturbances and incomplete information significantly complicate STP. The main difference is that the vehicle dynamics satisfy \eqref{eq:dyn} as opposed to \eqref{eq:dyn_no_dstb}. Committing to exact trajectories is therefore no longer possible, since the disturbance $\dstb_i(\cdot)$ is \textit{a priori} unknown. Thus, the induced obstacles $\ioset_i^j(t)$ are no longer just the danger zones centered around positions. 
 
 \subsection{Theory}
 We present three methods to address the above issues. The methods differ in terms of control policy information that is known to a lower-priority vehicle, and have their relative advantages and disadvantages depending on the situation. The three methods are as follows:
-\begin{itemize}
+\begin{itemize}[leftmargin = 0.4cm]
 \item \textbf{Centralized control}: A specific control strategy is enforced upon a vehicle; this can be achieved, for example, by some central agent such as an air traffic controller.
-\item \textbf{Least restrictive control}: A vehicle is required to arrive at its target on time, but has no other restrictions on its control policy. When the control policy of a vehicle is unknown, but its timely arrive at its target can be assumed, the least restrictive control can be safely assumed by lower-priority vehicles.
+\item \textbf{Least restrictive control}: A vehicle is required to arrive at target on time, but has no other control policy restrictions. In this case, the least restrictive control can be safely assumed by lower-priority vehicles.
 \item \textbf{Robust trajectory tracking}: A vehicle declares a nominal trajectory which can be robustly tracked under disturbances.
 \end{itemize}
 
@@ -85,7 +85,7 @@ Finally, taking the union of the induced obstacles $\ioset_i^j(t)$ as in \eqref{
 \begin{alg}
 \label{alg:cc}
 \textbf{Centralized control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
-\begin{enumerate}
+\begin{enumerate}[leftmargin = 0.5cm]
 \item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state^0_i \in \brs_i^\text{dstb}(t, \sta_i)$;
 \item compute the optimal control $\ctrl_i^\text{dstb}(t,\state_i)$ corresponding to $\brs_i^\text{dstb}(t, \sta_i)$ given by \eqref{eq:opt_ctrl_i}. Given $\ctrl_i^\text{dstb}(t,\state_i)$, compute the FRS $\frs_i^\text{cc}(\ldt_i, t)$ in \eqref{eq:FRS1};

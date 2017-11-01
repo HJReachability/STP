@@ -16,13 +16,12 @@ Suppose a lower-priority vehicle $\veh_i$ assumes that higher-priority vehicles 
 \begin{equation}
 \label{eq:FRS2}
 \begin{aligned}
-\frs_j^\text{lrc}(\ldt_j, t) = & \{y: \exists \ctrl_j(\cdot)\in\cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\ldt_j) = \state_{j}^0,\\
-& \state_j(t) = y\}.
+&\frs_j^\text{lrc}(\ldt_j, t) = \{y: \exists \ctrl_j(\cdot)\in\cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
+& \qquad\state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(\ldt_j) = \state_{j}^0, \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
 
-This FRS can be computed by solving \eqref{eq:HJIVI_FRS} with the Hamiltonian
+This FRS can be computed using \eqref{eq:HJIVI_FRS} with the Hamiltonian
 
 \begin{equation}
 \ham_j^\text{lrc}\left(\state_j, \lambda\right) = \max_{\ctrl_j \in \cset_j} \max_{\dstb_j \in \dset_j} \lambda \cdot \fdyn_j(\state_j, \ctrl_j, \dstb_j)
@@ -44,7 +43,7 @@ The least restrictive control method can be summarized as follows:
 \begin{alg}
 \label{alg:lrc}
 \textbf{Least restrictive control algorithm}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
-\begin{enumerate}
+\begin{enumerate}[leftmargin = 0.5cm]
 \item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item compute the BRS $\brs_i^\text{dstb}(t, \sta_i)$ defined in \eqref{eq:BRS}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \state_{i}^0 \in \brs_i^\text{dstb}(t, \sta_i)$;
 \item compute the FRS $\frs_i^\text{lrc}(t)$ in \eqref{eq:FRS2}. Given $\frs_i^\text{lrc}(\ldt_i, t)$ and $\brs_i^\text{dstb}(t, \sta_i)$, compute the positions that $\veh_i$ could be in. The set of these positions is given by \eqref{eqn:lrcObs2};
@@ -53,5 +52,5 @@ The least restrictive control method can be summarized as follows:
 \end{alg}
 
 \begin{remark}
-The centralized control method described in the previous section can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes, and for example use a control within some range around the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the corresponding control strategy.
+The centralized control method can be thought of as the ``most restrictive control'' method, in which all vehicles must use the optimal controller at all times, while the least restrictive control method allows vehicles to use any suboptimal controller that allows them to arrive at the target on time. These two methods can be considered two extremes of a spectrum in which varying degrees of optimality is assumed for higher-priority vehicles. Vehicles can also choose a control strategy in the middle of the two extremes, and for example use a control within some range around the optimal control, or use the optimal control unless some condition is met. The induced obstacles and the BRS can then be similarly computed using the corresponding control strategy.
 \end{remark}

@@ -4,9 +4,7 @@ Suppose some vehicle $\veh_i$ starts avoiding the intruder $\veh_{\intr}$ at som
 
 We must also ensure that while avoiding the intruder, $\veh_i$ does not collide with the total obstacle set $\obsset_i(t)$. This requires computing the augmented total obstacle $\tilde\obsset_i(t)$; the computation of $\tilde\obsset_i(t)$ and the controller that guarantees the avoidance of the augmented obstacles are discussed in Section \ref{sec:intruder_aocomp}.
 
-In Section \ref{sec:intruder_avoid}, we describe how $\veh_i$ can guarantee collision avoidance with the intruder. A pairwise collision avoidance problem such as this has been solved in isolation in \cite{Mitchell05}.
-
-Finally, when $t > \tea$, $\veh_i$ has already successfully avoided the intruder, but depending on the state it happens to arrive at after avoiding the intruder, it may need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:re-plan_method1}.
+In Section \ref{sec:intruder_avoid}, we describe how $\veh_i$ can guarantee collision avoidance with the intruder. A pairwise collision avoidance problem such as this has been solved in isolation in \cite{Mitchell05}. Finally, when $t > \tea$, $\veh_i$ has already successfully avoided the intruder, but depending on the state it happens to arrive at after avoiding the intruder, it may need to re-plan its trajectory to reach the target safely. The re-planning process is discussed in Section \ref{sec:re-plan_method1}.
 
 \subsubsection{Induced Obstacle Computation} \label{sec:intruder_iocomp}
 The goal of this section is to compute, for each lower-priority vehicle $\veh_i$, the time-varying obstacles induced by each higher-priority vehicle $\veh_j, j < i$, denoted by $\ioset_i^j(t)$. As before, the total obstacle set $\obsset_i(t)$ can then be obtained using \eqref{eq:obsseti}. To compute the obstacle that $\veh_i$ needs to avoid at time $t$, it is sufficient to consider the scenarios where $\tsa \in [t-\iat, t]$. This is because if $\tsa < t - \iat$, then the STP vehicles would already be in the re-planning phase at time $t$ and hence cannot be in conflict. 
@@ -16,9 +14,8 @@ Depending on the information known to a lower-priority vehicle $\veh_i$ about $\
 The induced obstacles, $\ioset_i^j(t)$, are then given by the states that $\veh_j$ can reach while avoiding the intruder, starting from some state in $\boset_j(\tsa), \tsa \in [t-\iat, t]$. These states can be obtained by computing an FRS from the base obstacles.
 \begin{equation} \label{eq:FRS_intObs1}
 \begin{aligned}
-\frs_{j}^{\mathcal{O}}(t-\tau, t) = & \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \\
-& \state_j(\cdot) \text{ satisfies \eqref{eq:dyn}}, \state_j(t-\tau) \in \boset_j(t-\tau), \\
-& \state_j(t) = y\}.
+&\frs_{j}^{\mathcal{O}}(t-\tau, t) = \{y: \exists \ctrl_j(\cdot) \in \cfset_j, \exists \dstb_j(\cdot) \in \dfset_j, \state_j(\cdot) \\
+&\quad \text{ satisfies \eqref{eq:dyn}}, \state_j(t-\tau) \in \boset_j(t-\tau), \state_j(t) = y\}.
 \end{aligned}
 \end{equation}
 $\frs_{j}^{\mathcal{O}}(t-\tau, t)$ represents the set of all possible states that $\veh_j$ can reach after a duration of $\tau$ starting from inside $\boset_j(t-\tau)$. This FRS can be obtained by solving the HJ VI in \eqref{eq:HJIVI_FRS} with the following Hamiltonian:
@@ -87,7 +84,7 @@ The Hamiltonian $\ham^{\text{AO}}_{i}$ to compute BRS in \eqref{eqn:intrBRS1} is
 \ham^{\text{AO}}_{i}(\state_i, \costate) = \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
 
-Note that $\brs^{\text{AO}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ in the absence of intruder. The goal satisfaction controller is given by:
+Note that $\brs^{\text{AO}}_{i}(\cdot)$ ensures goal satisfaction for $\veh_i$ in the absence of intruder. The goal satisfaction controller is given by
 \begin{equation}
 {\ctrl^{\text{AO}}_{i}}(t, \state_i) = \arg \min_{\ctrl_i \in \cset_i} \max_{\dstb_i \in \dset_i} \costate \cdot f_i (\state_i, \ctrl_i, \dstb_i)
 \end{equation}
@@ -145,7 +142,7 @@ The overall control policy for avoiding the intruder and collision with other ve
 \end{equation*}
 
 \subsubsection{Replanning after intruder avoidance\label{sec:re-plan_method1}} 
-After the intruder disappears, goal satisfaction controllers which ensure that the vehicles reach their destinations can be obtained by solving an STP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. Let the optimal control policy corresponding to this goal satisfaction controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination is given by:
+After the intruder disappears, goal satisfaction controllers which ensure that the vehicles reach their destinations can be obtained by solving an STP problem as described in Section \ref{sec:incomp}, where the starting states of the vehicles are now given by the states they end up in, denoted $\tilde{\state}_j^0$, after avoiding the intruder. Let the optimal control policy corresponding to this goal satisfaction controller be denoted ${\ctrl^{\text{L}}_{i}}(t, \state_i)$. The overall control policy that ensures intruder avoidance, collision avoidance with other vehicles, and successful transition to the destination is given by
 
 \begin{equation*}
 \ctrl_i^*(t) = 
@@ -195,11 +192,11 @@ In general, an intruder can be present in the system for much longer than $\iat$
 Note that even though we have presented the analysis for one intruder, the proposed method can handle multiple intruders as long as only one intruder is present \textit{at any given time}. 
 \end{remark}
 
-We conclude this section with the overall STP algorithm that takes into account an intruder that may appear for a duration of $\iat$: 
+We conclude this section with the STP algorithm that takes into account an intruder that may appear for a duration of $\iat$: 
 \begin{alg}
 \label{alg:intruder}
 \textbf{Intruder Avoidance algorithm (offline planning)}: Given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn}, intruder dynamics in Assumption \ref{as:dynKnown}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, for each $i$,
-\begin{enumerate}
+\begin{enumerate}[leftmargin = 0.5cm]
 \item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item compute the augmented obstacle set $\tilde\obsset_i(t)$ given by \eqref{eqn:inducedobs}, where $\brs^{\mathcal{G}}_{i}(0, \tau)$ is given by \eqref{eqn:inducedobs_help1};
 \item given $\tilde\obsset_i(t)$, compute the BRS $\brs^{\text{AO}}_{i}(t, \sta_i)$ defined in \eqref{eqn:intrBRS1};
@@ -207,8 +204,8 @@ We conclude this section with the overall STP algorithm that takes into account 
 \item the induced obstacles $\ioset_k^i(t)$ for each $k>i$ can be computed using \eqref{eq:intObs}.
 \end{enumerate}
 
-\textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $i$ which performed avoidance in response to the intruder,
-\begin{enumerate}
+\textbf{Intruder Avoidance algorithm (online re-planning)}: For each vehicle $i$ that performed avoidance,
+\begin{enumerate}[leftmargin = 0.5cm]
 \item compute $\frs_i^{\text{RP}}(\tea, t)$ using $\eqref{eq:re-planFRS}$. The new $\sta_i$ for $\veh_i$ is given by $\arg \inf_t \{ \frs_j^{\text{RP}}(\tea, t) \cap \targetset_j \neq \emptyset \}$;
 \item given $\sta_i$, $\tilde{\state}_i^0$, vehicle dynamics \eqref{eq:dyn}, target set $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$, use any of the three STP methods discussed in Section \ref{sec:incomp} for re-planning. 
 \end{enumerate}
