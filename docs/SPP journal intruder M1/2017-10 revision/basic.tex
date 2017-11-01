@@ -7,17 +7,14 @@ Recall that the STP vehicles $\veh_i, i=1,\ldots,N$, are each assigned a strict 
 
 \begin{equation}
 \label{eq:dyn_no_dstb}
-\begin{aligned}
-\dot\state_i &= \fdyn_i(\state_i, \ctrl_i), t \le \sta_i \\
-\ctrl_i &\in \cset_i, \qquad i = 1 \ldots, \N
-\end{aligned}
+\dot\state_i = \fdyn_i(\state_i, \ctrl_i), t \le \sta_i, \quad \ctrl_i \in \cset_i, \quad i = 1 \ldots, \N
 \end{equation}
 
 %\noindent with trajectories denoted by $\traj_i(s; \state^0_i, \ldt, \ctrl_(\cdot))$.
 
 In STP, each vehicle $\veh_i$ plans the trajectory to its target set $\targetset_i$ while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Path planning is done sequentially starting from the first vehicle and proceeding in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$ so that each of the trajectory planning problems can be done in the state space of only one vehicle. During its trajectory planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
 
-From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid\footnote{Note that the index $k$ in $\ioset_k^i$ denotes vehicles with lower priority than $\veh_i$, and the index $j$ in $\ioset_i^j(t)$ denotes vehicles with higher priority than $\veh_i$.}. Therefore, each vehicle $\veh_i$ must plan its trajectory to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
+From the perspective of $\veh_i$, each higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid\footnote{Note that the index $k$ in $\ioset_k^i$ denotes vehicles with lower priority than $\veh_i$, and the index $j$ in $\ioset_i^j(t)$ denotes vehicles with higher priority than $\veh_i$.}. Therefore, each vehicle $\veh_i$ must plan its trajectory to $\targetset_i$ while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
 
 \begin{equation}
 \label{eq:obsseti}
@@ -60,7 +57,7 @@ The BRS $\brs(t, \sta_i)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $
 
 \begin{alg}
 \label{alg:basic}
-\textbf{Basic STP algorithm}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
+\textbf{Basic STP algorithm}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (descending order of priority),
 \begin{enumerate}
 \item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
 \item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
@@ -69,6 +66,6 @@ The BRS $\brs(t, \sta_i)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $
 \end{enumerate}
 \end{alg}
 
-\MCnote{Note that Step 1, which determines the total obstacle set, can be updated in a recursive manner by adding a new set of induced obstacles for each next vehicle: $\obsset_{i+1}(t) = \obsset_i(t) \cup \ioset_{i+1}^i(t)$. In addition, in implementation, Step 4 can be simplified by storing $\obsset_i(t)$ as a look-up table with the maximum dimensionality across all vehicle state spaces. When a vehicle plans its trajectory, irrelevant dimensions of $\obsset_i(t)$ can be ignored. This observation keeps the computational complexity of our algorithm linear with respect to the number of vehicles.}
+\MCnote{Note that Step 1, which determines the total obstacle set, can be updated recursively by adding a new set of induced obstacles for each next vehicle: $\obsset_{i+1}(t) = \obsset_i(t) \cup \ioset_{i+1}^i(t)$. In addition, in implementation, Step 4 can be simplified by storing $\obsset_i(t)$ as a look-up table with the maximum dimensionality across all vehicle state spaces. When a vehicle plans its trajectory, irrelevant dimensions of $\obsset_i(t)$ can be ignored. This observation keeps the computational complexity of our algorithm linear with respect to the number of vehicles.}
 
 \MCnote{As previously mentioned, the basic STP algorithm, as well as all subsequent variants of STP algorithms, will \textit{always} return a feasible trajectory that arrives at the target on time, as long as a feasible trajectory exists in the \textit{absence} of other vehicles. This is because a vehicle can simply depart early enough to avoid being blocked by higher-priority vehicles. In fact, the latest departure time $\ldt_i$ quantifies exactly when each vehicle needs to depart to arrive on time.}
