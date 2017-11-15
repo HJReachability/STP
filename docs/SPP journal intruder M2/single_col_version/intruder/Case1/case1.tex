@@ -1,0 +1,85 @@
+% !TEX root = ../../SPP_IoTjournal.tex
+\subsection{Separation and Buffer Regions - Case 1} \label{sec:case1}
+In the next two sections, our goal is to compute separation and buffer regions for STP vehicles so that %only one of the vehicles is \textit{forced} to apply the intruder avoidance maneuver at any given time. Moreover, 
+at most $\nva$ vehicles are \textit{forced} to apply an avoidance maneuver during the duration $[\tsa, \tsa+\iat]$. 
+
+Intuitively, we divide the duration of $\iat$ into $\nva$ intervals and ensure that atmost one vehicle can be forced to apply the avoidance maneuver during each interval. Thus, by construction, it is guaranteed that at most $\nva$ vehicles apply the avoidance maneuver during the time interval $[\tsa, \tsa+\iat]$. We refer to this structure as the \textit{separation requirement} from here on. To ensure this requirement, we use the reachability theory to find the set of all states of $\veh_i$ such that the separation requirement can be violated between the vehicle pair $(\veh_i, \veh_j)$, $j<i$, at time $t$. During the trajectory planning of $\veh_i$, we then ensure that the vehicle is not in one of these states at time $t$ by using this set of states as ``obstacle". The sequential trajectory planning will therefore guarantee that the separation requirement holds for every STP vehicle pair.
+
+Mathematically, we define
+\begin{equation} \label{eqn:avoidStartTime}
+\avoidt_{i} := \{t: \state_{\intr i}(t) \in \partial\brs^{\text{A}}_{i}(t-\tsa, \iat), t \in [\tsa, \tsa+\iat]\},
+\end{equation}
+and the \textit{avoid start time} $\tsa_i$
+\begin{equation} \label{eqn:avoidStartTime2}
+\tsa_i  = 
+\left \{ 
+\begin{array}{ll}
+\min_{t \in  \avoidt_{i}} t & \mbox{if~} \avoidt_{i} \neq \emptyset\\
+\infty & \mbox{otherwise}
+\end{array}
+\right.
+\end{equation}  
+By definition of $\brs^{\text{A}}_{i}(\cdot, \iat)$, $\avoidt_{i}$ is the set of all times at which $\veh_i$ must apply an avoidance maneuver and $\tsa_i$ denotes the \textit{first} such time. The separation requirement can thus be written as
+\begin{equation} \label{eqn:sep_cond}
+\forall i \neq j, \min(\tsa_i, \tsa_j)< \infty \implies |\tsa_i - \tsa_j| \geq \brd := \frac{\iat}{\nva}.
+\end{equation}
+The separation requirement essentially implies that the intruder requires a time duration of atleast $\brd$ before it can force any additional vehicle to apply an avoidance maneuver. Thus, any two STP vehicles should be ``separated" enough from each other at any given time for such a requirement to hold. 
+%
+%We also define \textit{avoid start time} $\tsa_i$
+%\begin{equation} \label{eqn:avoidStartTime2}
+%\tsa_i  = 
+%\left \{ 
+%\begin{array}{ll}
+%\min_{t \in  \avoidt_{i}} t & \mbox{if~} \avoidt_{i} \neq \emptyset\\
+%\infty & \mbox{otherwise}
+%\end{array}
+%\right.
+%\end{equation}  
+%Therefore, $\tsa_i$ denotes the first time at which $\veh_i$ applies an avoidance maneuver and defined to be $\infty$ if it never applies one.
+%
+%Mathematically, if we ensure that 
+%\begin{equation} \label{eqn:sep_cond}
+%\forall i \neq j, \min(\tsa_i, \tsa_j)< \infty \implies |\tsa_i - \tsa_j| \geq \brd,
+%\end{equation}
+%then at most $\nva$ vehicles can be forced to apply the avoidance maneuver by the intruder. We refer to the condition in \eqref{eqn:sep_cond} as \textit{separation requirement} from here on. 
+%
+%In sections \ref{sec:case1} and \ref{sec:case2}, our aim is to design buffer regions such that the separation requirement is satisfied.   
+%To capture this mathematically, we define 
+%\begin{equation} \label{eqn:avoidStartTime}
+%\avoidt_{i} := \{t: \state_{\intr i}(t) \in \partial\brs^{\text{A}}_{i}(t-\tsa, \iat), t \in [\tsa, \tsa+\iat]\}
+%\end{equation} 
+%$\avoidt_{i}$ is the set of all times at which $\veh_i$ must apply an avoidance maneuver. We also define \textit{avoid start time} $\tsa_i$
+%\begin{equation} \label{eqn:avoidStartTime2}
+%\tsa_i  = 
+%\left \{ 
+%\begin{array}{ll}
+%\min_{t \in  \avoidt_{i}} t & \mbox{if~} \avoidt_{i} \neq \emptyset\\
+%\infty & \mbox{otherwise}
+%\end{array}
+%\right.
+%\end{equation}  
+%Therefore, $\tsa_i$ denotes the first time at which $\veh_i$ applies an avoidance maneuver and defined to be $\infty$ if it never applies one. From \eqref{eqn:avoidStartTime} it follows that at the avoid start time, $\state_{\intr i}(\tsa_i) \in  \partial\brs^{\text{A}}_{i}(\tsa_i-\tsa, \iat)$. %Only one vehicle applying the avoidance maneuver at a time is thus equivalent to $\forall i \neq j \tsa_i \neq \tsa_j$ whenever . Similarly,
+% 
+%If we divide the duration of $\iat$ into $\nva$ intervals and ensure that atmost one vehicle can be forced to apply the avoidance maneuver during that entire interval, then, by construction, it is guaranteed that at most $\nva$ vehicles apply the avoidance maneuver during the time interval $[\tsa, \tsa+\iat]$. Mathematically, if we ensure that 
+%\begin{equation} \label{eqn:sep_cond}
+%\forall i \neq j, \min(\tsa_i, \tsa_j)< \infty \implies |\tsa_i - \tsa_j| \geq \brd,
+%\end{equation}
+%then at most $\nva$ vehicles can be forced to apply the avoidance maneuver by the intruder. We refer to the condition in \eqref{eqn:sep_cond} as \textit{separation requirement} from here on. In sections \ref{sec:case1} and \ref{sec:case2}, our aim is to design buffer regions such that the separation requirement is satisfied.   
+%
+%For any given time $t$, if we could find the set of all states of $\veh_i$ such that the separation requirement could be violated between $\veh_i$ and $\veh_j$ for some $j<i$ and for some intruder strategy, then during the trajectory planning of $\veh_i$, it can be ensured that $\veh_i$ is not in one of these states at time $t$ by using this set of states as ``obstacles". The sequential trajectory planning will therefore guarantee that the separation requirement holds for every STP vehicle pair. 
+
+We now focus on finding what that ``separation set" (also referred to as the buffer region) between $(\veh_i, \veh_j)$. Since the path planning is done in a sequential order, we assume that we have already planned a path for $\veh_j$ and compute the buffer region that $\veh_i$ needs to maintain to ensure that the separation requirement is satisfied.
+%set of all states $\state_i(t)$ such that the separation requirements could be violated between vehicles $(\veh_i, \veh_j), j <i$ at time $t$ for some possible intruder strategy (meaning some possible $\tsa, \state_{\intr}^0$ and $\ctrl_{\intr}(\cdot))$. 
+For this computation, it is sufficient to consider the following two mutually exclusive and exhaustive cases: 
+\begin{enumerate}
+\item Case 1: $\tsa_j \leq \tsa_i, \tsa_j < \infty$
+\item Case 2: $\tsa_i < \tsa_j, \tsa_i <\infty$
+\end{enumerate}
+In this section, we consider Case 1. Case 2 is discussed in the next section.  
+
+In Case 1, the intruder forces $\veh_j$, the higher-priority vehicle, to apply avoidance control before or at the same time as $\veh_i$, the lower-priority vehicle. %If $\tsa_i = \tsa_j = \infty$, then none of $\veh_i$ and $\veh_j$ need to apply avoidance control and hence trivially won't be involved in re-planning. 
+To ensure the separation requirement in this case, we begin with the following observation which narrows down the intruder scenarios that we need to consider:
+\begin{observation} \label{obs1_case1}
+Without loss of generality, we can assume that the intruder \textit{appears} in the system at the boundary of the avoid region of $\veh_j$, i.e., $\state_{\intr j}(\tsa) \in \partial \brs^{\text{A}}_{j}(0, \iat)$. Equivalently, we can assume that $\tsa_j = \tsa$.
+\end{observation}
+Since $\tsa_j \leq \tsa_i$, $\veh_{\intr}$ reaches the boundary of the avoid region of $\veh_j$ before it reaches the boundary of the avoid region of $\veh_i$. Furthermore, by the definition of the avoid region, vehicles $\veh_j$ and $\veh_i$ need not account for the intruder until it reaches the boundary of the avoid region of $\veh_j$. Thus, it is sufficient to consider the worst case $\tsa_j = \tsa$. 

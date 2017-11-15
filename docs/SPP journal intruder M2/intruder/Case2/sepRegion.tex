@@ -1,7 +1,0 @@
-% !TEX root = ../../SPP_IoTjournal.tex
-\subsubsection{Separation region} \label{sec:sepRegion_case2}
-Similar to Section \ref{sec:sepRegion_case2}, we want to compute the set of all states $\state_{\intr}(\tsa_j)$ for which $\veh_j$ is forced to apply an avoidance maneuver. Since, $\veh_j$ applies the avoidance maneuver after $\veh_i$ in this case, $\veh_j$ will need to avoid the intruder for a maximum duration of $\trd := \iat - \brd$. This is due to the fact that our design of the buffer region in Section \ref{sec:buffRegion_case2} ensures that it takes $\veh_{\intr}$ at least a duration of $\brd$ to go from the boundary of the avoid region of $\veh_i$ to that of $\veh_j$. $\sep_j(\tsa_j)$ can thus be obtained as:
-\begin{equation} \label{eqn:sepRegion_case2}
-\sep_j(\tsa_j) = \boset_j(\tsa_j) + \partial \brs^{\text{A}}_{j}(0, \trd).
-\end{equation}
-

@@ -1,0 +1,204 @@
+% !TEX root = SPP_IoTjournal.tex
+\section{Sequential Trajectory Planning Problem \label{sec:formulation}}
+Consider $\N$ vehicles $\veh_i, i = 1, \ldots, \N$ (also denoted as \textit{STP vehicles}) which participate in the STP process. We assume their dynamics are given by %\MCnote{Mention something about the region in which SPP vehicles are operating, what it will look like at any given time, what will roughly the size of this region be. Comment on it in the introduction as well, as well as provide some practical examples.}
+
+\begin{equation}
+\label{eq:dyn}
+\begin{aligned}
+\dot\state_i &= \fdyn_i(\state_i, \ctrl_i, \dstb_i), t \le \sta_i \\
+\ctrl_i &\in \cset_i, \dstb_i \in \dset_i, i = 1 \ldots, \N
+\end{aligned}
+\end{equation}
+
+\noindent where $\state_i \in \R^{n_i}$, $\ctrl_i \in \cset_i$ and $\dstb_i \in \dset_i$, respectively, represent the state, control and disturbance experienced by vehicle $\veh_i$. We partition the state $\state_i$ into the position component $\pos_i \in \R^{n_\pos}$ and the non-position component $\npos_i \in \R^{n_i - n_\pos}$: $\state_i = (\pos_i, \npos_i)$. %We assume that the control functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ are drawn from the set of measurable functions\footnote{A function $f:X\to Y$ between two measurable spaces $(X,\Sigma_X)$ and $(Y,\Sigma_Y)$ is said to be measurable if the preimage of a measurable set in $Y$ is a measurable set in $X$, that is: $\forall V\in\Sigma_Y, f^{-1}(V)\in\Sigma_X$, with $\Sigma_X,\Sigma_Y$ $\sigma$-algebras on $X$,$Y$.}. For convenience, 
+We will use the sets $\cfset_i, \dfset_i$ to respectively denote the set of functions from which the control and disturbance functions $\ctrl_i(\cdot), \dstb_i(\cdot)$ are drawn.
+
+% We further assume that the flow field $\fdyn_i: \R^{n_i}\times\cset_i\times\dset_i \rightarrow \R^{n_i}$ is uniformly continuous, bounded, and Lipschitz continuous in $\state_i$ for fixed $\ctrl_i$ and $\dstb_i$. With this assumption, given $\ctrl_i(\cdot) \in \cfset_i, \dstb_i(\cdot) \in \dfset_i$, there exists a unique trajectory solving \eqref{eq:dyn} \cite{EarlA.Coddington1955}. %We will denote trajectories of \eqref{eq:dyn} starting from state $\state^0_i$ at time $t_0$ under control $\ctrl_i(\cdot)$ and disturbance $\dstb_i(\cdot)$ as $\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot))$. Trajectories satisfy an initial condition and the differential equation \eqref{eq:dyn} almost everywhere:
+
+%\begin{equation}
+%\begin{aligned}
+%\frac{d}{dt}\traj_i(t; \state^0_i, t_0, \ctrl_i(\cdot)) &= \fdyn(\state^0_i, \ctrl_i, \dstb_i) \\
+%\traj_i(t_0; \state^0_i, t_0, \ctrl_i(\cdot)) &= \state^0_i
+%\end{aligned}
+%\end{equation}
+
+%In addition, we assume that the disturbances $\dstb_i(\cdot)$ are drawn the set of non-anticipative strategies \cite{Mitchell05} $\Gamma$, defined as follows:
+%\begin{equation}
+%\begin{aligned}
+%& \Gamma := \{\mathcal{N}: \cfset_i \rightarrow \dfset_i:  \ctrl_i(r) = \hat{\ctrl}_i(r) \text{ a. e. } r\in[t,s] \\
+%& \Rightarrow \mathcal{N}[\ctrl_i](r) = \mathcal{N}[\hat{\ctrl}_i](r) \text{ a. e. } r\in[t,s]\}
+%\end{aligned}
+%\end{equation}
+
+Each vehicle $\veh_i$ has initial state $\state^0_i$, and aims to reach its target $\targetset_i$ by some scheduled time of arrival $\sta_i$. The target in general represents some set of desirable states, for example the destination of $\veh_i$. %For most of the paper we will make the assumption that $\edt_i$ is early enough for $\veh_i$ to feasibly get to $\targetset_i$ on time; this can be done by letting $\edt_i \rightarrow -\infty$. The assumption on $\edt_i$ is merely for convenience: in situations where $\edt_i$ is $-\infty$. In some situations, we may find that it is infeasible for $\veh_i$ to get to $\targetset_i$ at or before $\sta_i$. Whenever unsure, we may first determine the earliest feasible $\sta_i$ as described in Section \ref{sec:intruder}.
+On its way to $\targetset_i$, $\veh_i$ must avoid a set of static obstacles $\soset_i \subset \R^{n_i}$, which could represent any set of states, such as positions of tall buildings, that are forbidden. Each vehicle $\veh_i$ must also avoid the danger zones with respect to every other vehicle $\veh_j, j\neq i$. For simplicity, we define the danger zone of $\veh_i$ with respect to $\veh_j$ to be
+\begin{equation} \label{eqn:danger_zone_defn}
+\dz_{ij} = \{(\state_i, \state_j): \|\pos_i - \pos_j\|_2 \le \rc\}
+\end{equation}
+
+The danger zones in general can represent any joint configurations between $\veh_i$ and $\veh_j$ that are considered to be unsafe. In particular, $\veh_i$ and $\veh_j$ are said to have collided if $(\state_i, \state_j) \in \dz_{ij}$.
+
+In addition to the obstacles and danger zones, an intruder vehicle $\veh_{\intr}$ may also appear in the system. An intruder vehicle may have malicious intent or simply be a non-participating vehicle that could accidentally collide with other vehicles. This general definition of intruder allows us to develop algorithms that can also account for vehicles who are not communicating with the STP vehicles or do not know about the STP structure. In general, the effect of intruders on vehicles in structured flight can be unpredictable, since the intruders in principle could be adversarial in nature, and the number of intruders could be arbitrary, in which case a collision avoidance problem must be solved for each STP vehicle in the joint state-space of all intruders and the STP vehicle. Therefore, to make our analysis tractable, we make the following two assumptions.
+
+\begin{assumption}
+\label{as:avoidOnce}
+At most one intruder affects the STP vehicles at any given time. The intruder is removed after a duration of $\iat$. 
+\end{assumption}
+
+This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the planning space. For example, when STP vehicles are flying at a particular altitude level, the removal of the intruder can be achieved by forcing the intruder to exit the altitude level. Practically, over a large region of the unmanned airspace, this assumption implies that there would be one intruder vehicle per ``planning region''. Each planning region would perform STP independently from the others. One would design planning regions to be an appropriate size such that it is reasonable to assume at most one intruder would appear. The entire large region would be composed of several planning regions.
+ 
+Let the time at which intruder appears in the system be $\tsa$. Assumption \ref{as:avoidOnce} implies that any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$.
+%After a duration of $\iat$, the intruder is no longer present in the system. 
+Note that we do not pose any restriction on $\tsa$; we only assume that once the intruder appears, it stays for a maximum duration of $\iat$.
+\begin{assumption}
+\label{as:dynKnown}
+The dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\state_\intr, \ctrl_\intr, \dstb_\intr)$.
+\end{assumption}
+Assumption \ref{as:dynKnown} is required for HJ reachability analysis. In situations where the dynamics of the intruder are not known exactly, a conservative model of the intruder may be used instead. We also denote the initial state of the intruder as $\state_{\intr}^0.$ Note that we only assume that the dynamics of the intruder are known, but its initial state $\state_{\intr}^0$, control $\ctrl_\intr$ and disturbance $\dstb_\intr$ it experiences are unknown.
+
+Given the set of STP vehicles, their targets $\targetset_i$, the static obstacles $\soset_i$, the vehicles' danger zones with respect to each other $\dz_{ij}$, and the intruder dynamics $f_\intr(\cdot)$, our goal is as follows. For each vehicle $\veh_i$, synthesize a controller which guarantees that $\veh_i$ reaches its target $\targetset_i$ at or before the scheduled time of arrival $\sta_i$, while avoiding the static obstacles $\soset_i$, the danger zones with respect to all other vehicles $\dz_{ij}, j\neq i$, and the intruder vehicle $\veh_{\intr}$, irrespective of the control strategy of the intruder. In addition, we would like to obtain the latest departure time $\ldt_i$ such that $\veh_i$ can still arrive at $\targetset_i$ on time.
+
+Due to the high dimensionality of the joint state-space, a direct dynamic programming-based solution is intractable. Therefore, the authors in \cite{Chen15c} proposed to assign a priority to each vehicle, and perform STP given the assigned priorities. Without loss of generality, let $\veh_j$ have a higher-priority than $\veh_i$ if $j<i$. Under the STP scheme, higher-priority vehicles can ignore the presence of lower-priority vehicles, and perform trajectory planning without taking into account the lower-priority vehicles' danger zones. A lower-priority vehicle $\veh_i$, on the other hand, must ensure that it does not enter the danger zones of the higher-priority vehicles $\veh_j, j<i$ or the intruder vehicle $\veh_{\intr}$; each higher-priority vehicle $\veh_j$ induces a set of time-varying obstacles $\ioset_i^j(t)$, which represents the possible states of $\veh_i$ such that a collision between $\veh_i$ and $\veh_j$ or $\veh_i$ and $\veh_{\intr}$ could occur.
+
+It is straightforward to see that if each vehicle $\veh_i$ is able to plan a trajectory that takes it to $\targetset_i$ while avoiding the static obstacles $\soset_i$, the danger zones of \textit{higher-priority vehicles} $\veh_j, j<i$, and the danger zone of the \textit{intruder} $\veh_{\intr}$, then the set of STP vehicles $\veh_i, i=1,\ldots,\N$ would all be able to reach their targets safely. Under the STP scheme, trajectory planning can be done sequentially in descending order of vehicle priority in the state space of only a single vehicle. Thus, STP provides a solution whose complexity scales linearly with the number of vehicles. It is important to note that the trajectory planning is always feasible for the lower-priority vehicle under STP because a lower-priority vehicle can always depart early to avoid the higher-priority vehicle on its way to its destination.
+
+When an intruder appears in the system, STP vehicles may need to avoid the intruder to ensure safety. Depending on the initial state of the intruder and its control policy, a vehicle will potentially need to apply different avoidance controls leading to different final states after avoiding the intruder. Therefore, a vehicle's control policy that ensures its successful transit to its destination needs to account for all such possible final states, which is a trajectory planning problem with multiple initial states and a single destination, and is hard to solve in general. Thus, we divide the intruder avoidance problem into two sub-problems: (i) we first design a control policy that ensures a successful transit to the destination if no intruder appears and that successfully avoids the intruder otherwise (Algorithm \ref{alg:basic_idea}). (ii) After the intruder disappears from the system, we replan the trajectories of the affected vehicles. Following the same theme and assumptions, the authors in \cite{Chen2016d} present an algorithm to avoid an intruder in STP formulation; however, in the worst-case, the algorithm might need to replan the trajectories for \textit{all} STP vehicles. Our goal in this work is to present an algorithm that ensures that only a \textit{small and fixed} number of vehicles needs to replan their trajectories, regardless of the total number of vehicles, resulting in a constant replanning time. In particular, we answer the following inter-dependent questions:
+\begin{enumerate}
+\item How can each vehicle guarantee that it will reach its target set without getting into any danger zones, despite no knowledge of the intruder initial state, the time at which it appears, its control strategy, and disturbances it experiences?
+\item How can we ensure that replanning only needs to be done for at most a chosen fixed maximum number of vehicles after the intruder disappears from the system? \label{question2}
+\end{enumerate}
+
+%\begin{table*}
+\begin{longtable}{ |>{\centering\arraybackslash}m{1.2cm}| m{3.2cm} | m{2.8cm} | m{7.8cm } |}
+%    \caption{Mathematical notation and their interpretation (in the alphabetical order of symbols).}    
+%    \resizebox{\hsize}{!}{
+%    \begin{tabular}{ |>{\centering\arraybackslash}m{1.2cm}| m{5.2cm} | m{2.8cm} | m{0.3cm + \columnwidth} |}
+ %   \begin{tabular}{ | l | l | p{11cm} |}
+    \hline
+    \textbf{Notation} & \textbf{Description} & \textbf{Location} & \textbf{Interpretation} \\ \hline
+    
+    %%% Letter B %%%
+    % Buffer region
+    $\buff_{ij}(t)$ & Buffer region between vehicle $j$ and vehicle $i$ & Beginning of Section \ref{sec:buffRegion_case1} & The set of all possible states for which the separation requirement may be violated between vehicle $j$ and vehicle $i$ for some intruder strategy. If vehicle $i$ is outside this set, then the intruder will need atleast a duration of $\brd$ to go from the avoid region of vehicle $j$ to the avoid region of vehicle $i$.  \\ \hline    
+    
+    %%% Letter D %%% 
+    % Disturbance
+    $\dstb_i$ & Disturbance in the dynamics of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline   
+    $\dstb_{\intr}$ & Disturbance in the dynamics of the intruder & Assumption \ref{as:dynKnown} & -    \\ \hline   
+    
+    %%% Letter F %%%
+    % Dynamics
+    $\fdyn_i$ & Dynamics of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline
+    $f_\intr$ & Dynamics of the intruder & Assumption \ref{as:dynKnown} & -    \\ \hline
+    $f_r$ & Relative dynamics between two vehicles & Equation \eqref{eq:reldyn} & - \\ \hline
+    
+    %%% Letter G %%%
+    % Obstacle
+    $\obsset_i(t)$ & The overall obstacle for vehicle $i$ & Equation \eqref{eq:obsseti} & The set of states that vehicle $i$ must avoid on its way to the destination. \\ \hline
+    
+    %%% Letter H %%%
+    % Non-position state components of the vehicle
+    $\npos_i$ & Non-position state component of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline
+    
+    %%% Letter K %%%
+    % Number of vehicles to avoid
+    $\nva$ & - & Beginning of Section \ref{sec:intruder} & The maximum number of vehicles that should apply the avoidance maneuver or the maximum number of vehicles that we can replan trajectories for in real-time.    \\ \hline    
+    
+    %%% Letter L %%%
+    % Target set
+    $\targetset_i$ & Target set of vehicle $i$ & Beginning of Section \ref{sec:formulation} & The destination of vehicle $i$.    \\ \hline
+    
+    %%% Letter M %%%    
+    % Base obstacles
+    $\boset_j(t)$ & Base obstacle induced by vehicle $j$ at time $t$ & Equations (25), (31) and (37) in \cite{Chen2016d} & The set of all possible states that vehicle $j$ can be in at time $t$ if the intruder does not appear in the system till time $t$. \\ \hline    
+    
+    %%% Letter N %%%
+    % Number of vehicles
+    $\N$ & Number of STP vehicles & Beginning of Section \ref{sec:formulation} & -    \\ \hline
+    $\rvs$ & - & Equation \eqref{eq:RVS} & The set of vehicles that need to replan their trajectories after the intruder disappears. These are also the set of vehicles that were forced to apply an avoidance maneuver. \\ \hline
+    
+    
+    %%% Letter O %%%
+    % Obstacles
+	$\ioset_i^j(t)$ & Induced obstacle by vehicle $j$ for vehicle $i$ & After Assumption \ref{as:dynKnown} in Section \ref{sec:formulation} & The possible states of vehicle $i$ such that a collision between vehicle $i$ and vehicle $j$ or vehicle $i$ and the intruder vehicle (if present) could occur.    \\ \hline 
+	% Static Obstacles   
+    $\soset_i$ & Static obstacle for vehicle $i$ & Beginning of Section \ref{sec:formulation} & Obstacles that vehicle $i$ needs to avoid on its way to destination, e.g, tall buildings. \\ \hline    
+    
+    %%% Letter P %%%
+    % Position state components of the vehicle
+    $\pos_i$ & Position of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline
+     
+    %%% Letter Q %%%
+    % STP vehicle
+    $\veh_{i}$ & $i$th STP vehicle & Beginning of Section \ref{sec:formulation} & -  \\ \hline
+    % Intruder vehicle
+    $\veh_{\intr}$ & The intruder vehicle & Assumption \ref{as:avoidOnce} & -  \\ \hline
+    
+    %%% Letter R %%%
+    % Unsafe distance
+    $\rc$ & Danger zone radius & Equation \eqref{eqn:danger_zone_defn} & The closest distance between vehicle $i$ and vehicle $j$ that is considered to be safe. \\ \hline  
+    
+    %%% Letter S %%%
+    % Separation Region
+    $\sep_j(t)$ & Separation region of vehicle $j$ at time $t$ & Beginning of Section \ref{sec:sepRegion_case1} & The set of all states of intruder at time $t$ for which vehicle $j$ is forced to apply an avoidance maneuver. \\ \hline        
+    
+    %%% Letter T %%%
+    % Avoid start time
+    $\tsa_i$ & Avoid start time of vehicle $i$ & Equation \eqref{eqn:avoidStartTime2} & The first time at which vehicle $i$ is forced to apply an avoidance maneuver by the intruder vehicle. Defined to be $\infty$ if vehicle $i$ never applies an avoidance maneuver.\\ \hline    
+    % Buffer region duration
+    $\brd$ & Buffer region travel duration & Beginning of Section \ref{sec:intruder} & The minimum time required for the intruder to travel through the buffer region between any pair of vehicles. \\ \hline
+    % Intruder avoidance time
+    $\iat$ & Intruder avoidance time & Assumption \ref{as:avoidOnce} & The maximum duration for which the intruder is present in the system. \\ \hline
+    % Intruder appearance time
+    $\tsa$ & Intruder appearance time & After Assumption \ref{as:avoidOnce} & The time at which the intruder appears in the system. \\ \hline
+%    % Intruder avoidance time
+%    $\tea$ & Intruder disappearance time & After Assumption \ref{as:avoidOnce} & The time at which the intruder disappears from the system. \\ \hline
+    % Latest Departure Time
+    $\ldt_i$ & Latest departure time of vehicle $i$ & End of Section \ref{sec:formulation} & The latest departure time for vehicle $i$ such that it safely reaches its destination by the scheduled time of arrival. \\ \hline
+    % Scheduled time of arrival
+    $\sta_i$ & Scheduled time of arrival (STA) of vehicle $i$ & Beginning of Section \ref{sec:formulation} & The time by which vehicle $i$ is required to reach its destination.    \\ \hline
+    
+	%%% Letter U %%% 
+    % control
+    $\ctrl_i$ & Control of vehicle $i$ & Beginning of Section \ref{sec:formulation} & -    \\ \hline   
+    $\ctrl_{\intr}$ & Control of the intruder & Assumption \ref{as:dynKnown} & -    \\ \hline    
+    % Avoidance control
+    ${\ctrl^{\text{A}}_{i}}$ & Optimal avoidance control of vehicle $i$ & Equation \eqref{eqn:optAvoidCtrl} & The control that vehicle $i$ need to apply to successfully avoid the intruder once the relative state between vehicle $i$ and the intruder reaches the boundary of the avoid region of vehicle $i$.  \\ \hline 
+    % Nominal control    
+    ${\ctrl^{\text{PP}}_{i}}$ & Nominal control & Equation \eqref{eqn:PPPolicy} & The nominal control for vehicle $i$ that will ensure its successful transition to its destination if the intruder does not force it to apply an avoidance maneuver. This control law corresponds to the nominal trajectory of vehicle $i$. \\ \hline
+	% Full control
+	$\ctrl_i^{\text{RP}}$ & The overall controller for vehicle $i$ & Equation \eqref{eqn:full_controller} & The overall controller for vehicle $i$ that will ensure a successful and safe transit to its destination despite the worst-case intruder strategy. \\ \hline
+
+    %%% Letter V %%%
+    % Avoid region
+    $\brs^{\text{A}}_{i}(\tau, \iat)$ & Avoid region of vehicle $i$ & Equation \eqref{eqn:avoidBRS} & The set of relative states $\state_{\intr i}$ for which the intruder can force vehicle $i$ to enter in the danger zone $\dz_{i \intr}$ within a duration of $(\iat-\tau)$. \\ \hline
+
+    % Relative buffer region
+    $\brs^{\text{B}}_{i}(0, \brd)$ & Relative buffer region & Beginning of Section \ref{sec:buffRegion_case1} & The set of all states from which it is possible to reach the boundary of the avoid region of vehicle $i$ within a duration of $\brd$. \\ \hline 
+    
+   % Trajectory Planning
+   $\brs^{\text{PP}}_{i}$ & - & Equation \eqref{eqn:intrBRS1} & The set of all states that vehicle $i$ needs to avoid in order to avoid a collision with the static obstacles while applying an avoidance maneuver. \\ \hline      
+    
+    % Static Obstacle
+   $\brs^{\text{S}}_{i}$ & - & Equation \eqref{eq:ObsBRS_static} & The set of all initial states of vehicle $i$ from which it is guaranteed to safely reach its destination if the intruder does not force it to apply an avoidance maneuver and successfully and safely avoid the intruder in case needs it does. \\ \hline  
+   
+ 	%%% Letter X %%%    
+    % State of the vehicle
+    $\state_i$ & State of vehicle $i$ & Beginning of Section \ref{sec:formulation} & - \\ \hline
+    % State of the intruder
+    $\state_{\intr}$ & State of the intruder vehicle & Assumption \ref{as:dynKnown} & - \\ \hline
+    % State of the vehicle
+    $\state_i^0$ & Initial state of vehicle $i$ & Beginning of Section \ref{sec:formulation} & - \\ \hline
+    % State of the intruder
+    $\state_{\intr}^0$ & Initial state of the intruder vehicle & Assumption \ref{as:dynKnown} & - \\ \hline
+    % Relative State
+    $\state_{\intr i}$ & Relative state between the intruder and vehicle $i$ & Equation \eqref{eq:reldyn} & - \\ \hline
+    
+    %%% Letter Z %%%    
+    % Danger Zone
+    $\dz_{ij}$ & Danger zone between vehicle $i$ and vehicle $j$ & Equation \eqref{eqn:danger_zone_defn} & Set of all states of vehicle $i$ and vehicle $j$ which are within unsafe distance of each other. The vehicles are said to have collided if their states belong to $\dz_{ij}$. \\ \hline
+ %   \end{tabular} }
+  \caption{Mathematical notation and their interpretation (in the alphabetical order of symbols).}
+    \label{table:notation}
+\end{longtable}
+%\end{table*}

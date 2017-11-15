@@ -1,0 +1,83 @@
+% !TEX root = ../SPP_IoTjournal.tex
+\subsection{STP Without Disturbances and Intruder\label{sec:basic}}
+In this section, we give an overview of the basic STP algorithm assuming that there is no disturbance and no intruder affecting the vehicles. 
+%Although in practice, such assumptions do not hold, the description of the basic STP algorithm will introduce the notation needed for describing the subsequent, more realistic versions of STP. 
+The majority of the content in this section is taken from \cite{Chen15c}. 
+
+Recall that among the STP vehicles $\veh_i, i=1,\ldots,N$, $\veh_j$ has a higher priority than $\veh_i$ if $j<i$. In the absence of disturbances, we can write the dynamics of the STP vehicles as
+\begin{equation}
+\label{eq:dyn_no_dstb}
+\begin{aligned}
+\dot\state_i = \fdyn_i(\state_i, \ctrl_i), t \le \sta_i,\quad \ctrl_i &\in \cset_i, 
+%\qquad i = 1 \ldots, \N
+\end{aligned}
+\end{equation}
+
+In STP, each vehicle $\veh_i$ plans its trajectory while avoiding static obstacles $\soset_i$ and the obstacles $\ioset_i^j(t)$ induced by higher-priority vehicles $\veh_j, j<i$. Trajectory planning is done sequentially in descending priority, $\veh_1, \veh_2, \ldots, \veh_{\N}$. During its trajectory planning process, $\veh_i$ ignores the presence of lower-priority vehicles $\veh_k, k>i$.
+%, and induces the obstacles $\ioset_k^i(t)$ for $\veh_k, k>i$.
+From the perspective of $\veh_i$, each of the higher-priority vehicles $\veh_j, j<i$ induces a time-varying obstacle denoted $\ioset_i^j(t)$ that $\veh_i$ needs to avoid. Therefore, each vehicle $\veh_i$ must plan its trajectory while avoiding the union of all the induced obstacles as well as the static obstacles. Let $\obsset_i(t)$ be the union of all the obstacles that $\veh_i$ must avoid on its way to $\targetset_i$:
+\begin{equation}
+\label{eq:obsseti}
+\obsset_i(t)  = \soset_i \cup \bigcup_{j=1}^{i-1} \ioset_i^j(t)
+\end{equation}
+
+With full position information of higher-priority vehicles, the obstacle induced for $\veh_i$ by $\veh_j$ is simply
+\begin{equation}
+\label{eq:ioset_basic}
+\ioset_i^j(t) = \{\state_i: \|\pos_i - \pos_j(t)\|_2 \le \rc \}
+\end{equation}
+
+Each higher-priority vehicle $\veh_j$ ignores $\veh_i$. Since trajectory planning is done sequentially in descending order of priority, the vehicles $\veh_j, j<i$ would have planned their trajectories before $\veh_i$ does. Thus, in the absence of disturbances, $\pos_j(t)$ is \textit{a priori} known, and therefore $\ioset_i^j(t), j<i$ are known, deterministic moving obstacles, which means that $\obsset_i(t)$ is also known and deterministic. Therefore, the trajectory planning problem for $\veh_i$ can be solved by first computing the BRS $\brs_i^\text{basic}(t, \sta_i)$, defined as follows:
+\begin{equation}
+\label{eq:BRS_basic}
+\begin{aligned}
+\brs_i^\text{basic}(t, \sta_i) = & \{y: \exists \ctrl_i(\cdot) \in \cfset_i, \state_i(\cdot) \text{ satisfies \eqref{eq:dyn_no_dstb}}, \\
+& \forall s \in [t, \sta_i],\state_i(s) \notin \obsset_i(s), \\
+& \exists s \in [t, \sta_i], \state_i(s) \in \targetset_i, \state_i(t) = y\}
+\end{aligned}
+\end{equation}
+
+The BRS $\brs(t, \sta_i)$ can be obtained by solving \eqref{eq:HJIVI_BRS} with $\targetset = \targetset_i$, $\obsset(t) = \obsset_i(t)$, and the Hamiltonian 
+\begin{equation}
+\label{eq:basicham}
+\ham_i^\text{basic}(\state_i, \costate) = \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
+\end{equation}
+
+The optimal control for reaching $\targetset_i$ while avoiding $\obsset_i(t)$ is then given by
+\begin{equation}
+\label{eq:basicOptCtrl}
+\ctrl_i^\text{basic}(t, \state_i) = \arg \min_{\ctrl_i\in\cset_i} \costate \cdot \fdyn_i(\state_i, \ctrl_i)
+\end{equation}
+\noindent from which the trajectory $\state_i(\cdot)$ can be computed by integrating the system dynamics, which in this case are given by \eqref{eq:dyn_no_dstb}. In addition, the latest departure time $\ldt_i$ can be obtained from the BRS $\brs(t, \sta_i)$ as $\ldt_i = \arg \sup_t \{\state_i^0 \in \brs(t, \sta_i)\}$. The basic STP algorithm is summarized in Algorithm \ref{alg:basic}.
+%
+\begin{algorithm}[tb]
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+	\DontPrintSemicolon
+	\caption{STP algorithm in the absence of disturbances and intruders}
+	\label{alg:basic}
+	\Input{STP vehicles $\veh_i$, their dynamics \eqref{eq:dyn_no_dstb}, initial states $\state_i^0$,	destinations $\targetset_i$, static obstacles $\soset_i$}
+    \Output{Provably safe trajectories to destinations and goal-satisfaction controllers $\ctrl^\text{basic}(\cdot)$}
+	\For{\text{$i=1:N$}}{
+			\textbf{Trajectory planning for $\veh_{i}$} \;
+			compute the total obstacle set $\obsset_i(t)$ given by \eqref{eq:obsseti}. If $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;\;
+			compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic};\;
+			\textbf{Trajectory and controller of $\veh_{i}$} \;
+			compute the optimal controller $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};\;
+			determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb} and the control $\ctrl_i^\text{basic}(\cdot)$; \;
+			output the trajectory and optimal controller for $\veh_i$.\;
+			\textbf{Obstacles induced by $\veh_{i}$} \;
+			given the trajectory $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ given by \eqref{eq:ioset_basic} for all $k>i$.
+		}
+\end{algorithm}
+%
+%\begin{alg}
+%\label{alg:basic}
+%\textbf{Basic STP algorithm \cite{Chen15c}}: Suppose we are given initial conditions $\state_i^0$, vehicle dynamics \eqref{eq:dyn_no_dstb}, target sets $\targetset_i$, and static obstacles $\soset_i, i = 1\ldots, \N$. For each $i$ in ascending order starting from $i=1$ (which corresponds to descending order of priority),
+%\begin{enumerate}
+%\item determine the total obstacle set $\obsset_i(t)$, given in \eqref{eq:obsseti}. In the case $i=1$, $\obsset_i(t) = \soset_i ~ \forall t$;
+%\item compute the BRS $\brs_i^\text{basic}(t, \sta_i)$ defined in \eqref{eq:BRS_basic}. The latest departure time $\ldt_i$ is then given by $\arg \sup_t \{\state^0_i \in \brs_i^\text{basic}(t, \sta_i)\}$;
+%\item determine the trajectory $\state_i(\cdot)$ using vehicle dynamics \eqref{eq:dyn_no_dstb}, with the optimal control  $\ctrl_i^\text{basic}(\cdot)$ given by \eqref{eq:basicOptCtrl};
+%\item given $\state_i(\cdot)$, compute the induced obstacles $\ioset_k^i(t)$ for each $k>i$. In the absence of disturbances, $\ioset_k^i(t)$ is given by \eqref{eq:ioset_basic}.
+%\end{enumerate}
+%\end{alg}
