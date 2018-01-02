@@ -1,7 +1,7 @@
-function [g2D, RTTRS2D] = migrateRTTRS(RTTRS, R_augment)
+function [g2D, RTTRS2D] = migrateRTTRSFaSTrack(RTTRS, R_augment)
 
 % Project RTTRS into 2D
-[RTTRS_g2D, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1]);   
+[RTTRS_g2D, RTTRS2D] = proj(RTTRS.g, -RTTRS.data, [0 0 1 1]);   
 
 % Create slightly bigger grid to augment the RTTRS
 g2D_min = RTTRS_g2D.min - 2*R_augment;

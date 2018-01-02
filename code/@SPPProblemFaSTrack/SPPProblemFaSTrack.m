@@ -1,6 +1,7 @@
-classdef SPPProblem < handle
+classdef SPPProblemFaSTrack < handle
   properties
     % Problem parameters
+    setupName
     initStates
     targetCenters
     
@@ -12,6 +13,20 @@ classdef SPPProblem < handle
     intrCtrl
     tIAT
     
+    % Dynamics
+    uMin
+    uMax
+    aMin
+    aMax
+    dMin
+    dMax
+    pMin
+    pMax
+    
+    % Planner and Tracker
+    P
+    Q
+    
     % Intruder method 2
     max_num_affected_vehicles
     buffer_duration
@@ -19,21 +34,13 @@ classdef SPPProblem < handle
     remaining_duration_ind
     
     Rc = 0.1 % collision radius
+    trackingRadius
+    extraArgs
     
     % static obstacles
     mapFile
     staticObs
     augStaticObs
-    
-    % Parameters for SPP "vehicle A"
-    vRangeA;    
-    wMaxA;      
-    dMaxA;      
-    
-    % Parameters for Robust trajectory tracking: "vehicle B"
-    vReserved   %range to be added to vRangeA to give vehicle B speed range
-    wReserved   %number to be added to wMaxA to give vehicle B max turning rate
-    RTT_tR      %pre-decided tracking error bound
     
     % Time
     tMin = -5    % Minimum time for the entire problem
@@ -79,35 +86,45 @@ classdef SPPProblem < handle
     
     BR_sim_filename % before replanning simulation file (simulation results)
     full_sim_filename % full simulation file (simulation results)
-  end
-  
+    end
+    
+    
   methods
-    %% Contructor
-    function obj = SPPProblem(problem_name, extraArgs)
+        %% Contructor
+    function obj = SPPProblemFaSTrack(problem_name, extraArgs)
       if nargin < 2
         extraArgs = [];
       end
+      
+      setupName = problem_name;
       
       obj.folder = sprintf('%s_%f', mfilename, now);
       system(sprintf('mkdir %s', obj.folder));
       
       switch problem_name
         case 'buffer_illustration'
-          obj.loadSetup(problem_name);
+          obj.loadSetupFaSTrack(problem_name);
           
         case 'SF_dstb'
           extraArgs.number_of_vehicles = 50;
           extraArgs.dstb_or_intr = 'dstb';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
         case 'SF_dstb3'
-          extraArgs.number_of_vehicles = 3;
+          extraArgs.number_of_vehicles = 2;
           extraArgs.dstb_or_intr = 'dstb';
-          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          %extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
+          
+        case 'room_dstb'
+          extraArgs.number_of_vehicles = 1;
+          extraArgs.dstb_or_intr = 'dstb';
+          %extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
+          obj.loadSetupFaSTrack('room', extraArgs);  
           
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
@@ -116,7 +133,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 2;
@@ -125,7 +142,8 @@ classdef SPPProblem < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion2_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;          
+          obj.augment_staticObs_intr2;     %%%%%%%%%%%%%%%%%%%%Problem: this uses obj.RTT_tR, which 
+                                           %is not defined anymore
 
         case 'buffer_region_steps'
           extraArgs.number_of_vehicles = 1;
@@ -134,7 +152,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
@@ -150,7 +168,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
 %           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 3;
@@ -159,7 +177,7 @@ classdef SPPProblem < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;
+          obj.augment_staticObs_intr2;  %%%%%%%%%%%%%%%%%%%%%
           
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
@@ -168,7 +186,7 @@ classdef SPPProblem < handle
           extraArgs.dstb_or_intr = 'intr';
           extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
-          obj.loadSetup('SF', extraArgs);
+          obj.loadSetupFaSTrack('SF', extraArgs);
           
           %% Intruder-related
           obj.max_num_affected_vehicles = 4;
@@ -177,14 +195,14 @@ classdef SPPProblem < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion4_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;          
+          obj.augment_staticObs_intr2;       %%%%%%%%%%%%%%%%%%%  
           
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 200;
           extraArgs.wind_speed = 11;
           extraArgs.separation_time = 10;
           
-          obj.loadSetup('Bay_Area', extraArgs);
+          obj.loadSetupFaSTrack('Bay_Area', extraArgs);
           
         case 'TCST_dstb'
         case 'TCST_intr'
@@ -192,59 +210,9 @@ classdef SPPProblem < handle
           error('Unknown simulation name!')
       end
       
-      %       if nargin < 1
-      %         initStates = { ...
-      %           [-0.6; 0.2;  0]; ...
-      %           [ 0.6; 0.2; -pi]; ...
-      %           [-0.5; 0.9; -pi/4]; ...
-      %           [ 0.5; 0.9; -3*pi/4]};
-      %       end
-      %
-      %       if nargin < 2
-      %         targetCenters = { ...
-      %           [ 0.7;  0.7; 0]; ...
-      %           [-0.7;  0.7; 0]; ...
-      %           [ 0.7; -0.7; 0]; ...
-      %           [-0.7; -0.7; 0]};
-      %       end
-      %
-      %       if nargin < 3
-      %         %         targetR = 0.15;
-      %         targetR = 0.1;
-      %       end
-      %
-      %       if nargin < 4
-      %         vehParams.vRangeA = [0.5 1];
-      %         vehParams.wMaxA = 1;
-      %         vehParams.dMaxA = [0.1 0.2];
-      %       end
-      %
-      %       if nargin < 5
-      %         grid_params.min = [-1; -1; -3*pi/2];
-      %         grid_params.max = [1; 1; pi/2];
-      %         grid_params.N = [95; 95; 95];
-      %       end
-      %
-      %       obj.initStates = initStates;
-      %       obj.targetCenters = targetCenters;
-      %       obj.targetR = targetR;
-      %
-      %       obj.vRangeA = vehParams.vRangeA;
-      %       obj.wMaxA = vehParams.wMaxA;
-      %       obj.dMaxA = vehParams.dMaxA;
-      %
-      %       obj.gMin = grid_params.min;
-      %       obj.gMax = grid_params.max;
-      %       obj.gN = grid_params.N;
-      %
-      %       obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
-      %       obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2));
-      %
-      %       obj.tau = obj.tMin:obj.dt:obj.tTarget;
-      %       obj.staticObs = inf(obj.gN');
-      
       SPPP = obj;  
       save(sprintf('%s/SPPP.mat', obj.folder), 'SPPP', '-v7.3')
     end
-  end
+  end  
 end
+

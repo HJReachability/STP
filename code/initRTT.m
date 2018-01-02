@@ -3,10 +3,14 @@ function Q = initRTT(SPPP, RTTRS)
 %     Initializes Plane objects for the RTT method SPP problem
 
 numVeh = length(SPPP.initStates);
-targetRsmall = SPPP.targetR - RTTRS.trackingRadius;
-wMax = RTTRS.dynSys.wMaxA;
-vrange = RTTRS.dynSys.vRangeA;
-dMax = RTTRS.dynSys.dMaxA;
+
+%decrease target radius by tracking error bound
+targetRsmall = SPPP.targetR - RTTRS.trackingRadius;   
+
+%initializing dynamics for vehicle A
+wMax = RTTRS.dynSys.wMaxA;  
+vrange = RTTRS.dynSys.vRangeA;  
+dMax = RTTRS.dynSys.dMaxA;  
 
 Q = cell(numVeh, 1);
 for i = 1:numVeh
@@ -23,7 +27,7 @@ for i = 1:numVeh
   Q{i}.targetRsmall = targetRsmall;
   
   % Reserved control authorities
-  Q{i}.vReserved = RTTRS.dynSys.vRangeB - vrange;
-  Q{i}.wReserved = RTTRS.dynSys.wMaxB - wMax;
+  Q{i}.vReserved = RTTRS.dynSys.vRangeB - vrange;  
+  Q{i}.wReserved = RTTRS.dynSys.wMaxB - wMax;  
 end
 end

@@ -1,13 +1,8 @@
-classdef SPPPlane < Plane
-  % Specialized Plane class with SPP-related properties for the SPP project 
-  
-  properties
-    % If tracking 3D trajectory
-    vReserved
-    wReserved
+classdef SPPPlaneTracker < P4D_Q2D_Rel
+    %UNTITLED8 Summary of this class goes here
+    %   Detailed explanation goes here
     
-    v % If tracking 2D trajectory
-    
+    properties
     BRS1
     BRS1_tau    
     
@@ -44,12 +39,12 @@ classdef SPPPlane < Plane
   end
   
   methods
-    function obj = SPPPlane(varargin)
+    function obj = SPPPlaneTracker(varargin)
       % obj = SPPPlane(x, wMax, vrange, dMax)
       %   Simply call Plane constructor
-      obj@Plane(varargin{:});
+      obj@P4D_Q2D_Rel(varargin{:});
     end
   end
-  
+    
 end
 

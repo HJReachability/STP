@@ -1,4 +1,4 @@
-function obstacles = updateObstacles(obstacles, newObs_tau, newObs, staticObs)
+function obstacles = updateObstaclesFaSTrack(obstacles, newObs_tau, newObs, staticObs)
 % obstacles = gatherObstacles(vehicles, schemeData, tau, obs_type)
 %     Gathers obstacles by combining obstacles in the field obs_type of each
 %     vehicle in the vehicles list
@@ -22,9 +22,9 @@ if any(overlap_inds_newObs)
     obstacles.tau < max(newObs_tau)+small;  
   
   %combine old and new obstacles in the overlapping time indices
-  obstacles.data(:,:,:,overlap_inds_oldObs) = ...
-    min(obstacles.data(:,:,:,overlap_inds_oldObs), ...
-    newObs(:,:,:,overlap_inds_newObs));
+  obstacles.data(:,:,overlap_inds_oldObs) = ...
+    min(obstacles.data(:,:,overlap_inds_oldObs), ...
+    newObs(:,:,overlap_inds_newObs));
 else
   error('There must be overlap between the time stamps!')
 end
