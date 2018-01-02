@@ -1,9 +1,7 @@
 classdef SPPProblemFaSTrack < handle
-    %UNTITLED5 Summary of this class goes here
-    %   Detailed explanation goes here
-    
-    properties
+  properties
     % Problem parameters
+    setupName
     initStates
     targetCenters
     
@@ -15,6 +13,20 @@ classdef SPPProblemFaSTrack < handle
     intrCtrl
     tIAT
     
+    % Dynamics
+    uMin
+    uMax
+    aMin
+    aMax
+    dMin
+    dMax
+    pMin
+    pMax
+    
+    % Planner and Tracker
+    P
+    Q
+    
     % Intruder method 2
     max_num_affected_vehicles
     buffer_duration
@@ -22,6 +34,8 @@ classdef SPPProblemFaSTrack < handle
     remaining_duration_ind
     
     Rc = 0.1 % collision radius
+    trackingRadius
+    extraArgs
     
     % static obstacles
     mapFile
@@ -75,12 +89,14 @@ classdef SPPProblemFaSTrack < handle
     end
     
     
-    methods
+  methods
         %% Contructor
-    function obj = SPPProblem(problem_name, extraArgs)
+    function obj = SPPProblemFaSTrack(problem_name, extraArgs)
       if nargin < 2
         extraArgs = [];
       end
+      
+      setupName = problem_name;
       
       obj.folder = sprintf('%s_%f', mfilename, now);
       system(sprintf('mkdir %s', obj.folder));
@@ -97,11 +113,18 @@ classdef SPPProblemFaSTrack < handle
           obj.loadSetupFaSTrack('SF', extraArgs);
           
         case 'SF_dstb3'
-          extraArgs.number_of_vehicles = 3;
+          extraArgs.number_of_vehicles = 2;
           extraArgs.dstb_or_intr = 'dstb';
-          extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          %extraArgs.ISTC_filename = 'SF_ISTC.mat';
           
           obj.loadSetupFaSTrack('SF', extraArgs);
+          
+        case 'room_dstb'
+          extraArgs.number_of_vehicles = 1;
+          extraArgs.dstb_or_intr = 'dstb';
+          %extraArgs.ISTC_filename = 'SF_ISTC.mat';
+          
+          obj.loadSetupFaSTrack('room', extraArgs);  
           
         case 'SF_intr_2'
           extraArgs.number_of_vehicles = 50;
@@ -119,7 +142,8 @@ classdef SPPProblemFaSTrack < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion2_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;          
+          obj.augment_staticObs_intr2;     %%%%%%%%%%%%%%%%%%%%Problem: this uses obj.RTT_tR, which 
+                                           %is not defined anymore
 
         case 'buffer_region_steps'
           extraArgs.number_of_vehicles = 1;
@@ -153,7 +177,7 @@ classdef SPPProblemFaSTrack < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion3_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;
+          obj.augment_staticObs_intr2;  %%%%%%%%%%%%%%%%%%%%%
           
         case 'SF_intr_4'
           extraArgs.number_of_vehicles = 50;
@@ -171,7 +195,7 @@ classdef SPPProblemFaSTrack < handle
           obj.add_data_file('CARS', 'CARS6.mat');
           obj.add_data_file('bufferRegion', 'bufferRegion4_6.mat')
           obj.add_data_file('FRSBRS', 'FRSBRS6.mat')
-          obj.augment_staticObs_intr2;          
+          obj.augment_staticObs_intr2;       %%%%%%%%%%%%%%%%%%%  
           
         case 'Bay_Area'
           extraArgs.number_of_vehicles = 200;

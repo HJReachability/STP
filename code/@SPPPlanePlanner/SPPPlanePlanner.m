@@ -1,8 +1,10 @@
-classdef SPPPlaneFaSTrack < Plane
+classdef SPPPlanePlanner < Plane2D
     %UNTITLED8 Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
+    pMin
+    pMax
     
     BRS1
     BRS1_tau    
@@ -40,10 +42,10 @@ classdef SPPPlaneFaSTrack < Plane
   end
   
   methods
-    function obj = SPPPlane(varargin)
+    function obj = SPPPlanePlanner(varargin)
       % obj = SPPPlane(x, wMax, vrange, dMax)
       %   Simply call Plane constructor
-      obj@Plane(varargin{:});
+      obj@Plane2D(varargin{:});
     end
   end
     

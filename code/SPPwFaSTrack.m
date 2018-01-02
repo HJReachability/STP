@@ -1,7 +1,6 @@
 function SPPwFaSTrack(problem_name, extraArgs)
 % SPPwFaSTrack()
-%     Solves the entire SPP with disturbances problem using the RTT method
-%     and FaSTrack
+%     Solves the entire SPP with disturbances problem using FaSTrack
 
 if nargin < 2
   extraArgs = [];
@@ -16,5 +15,5 @@ end
 
 SPPP.computeTEB();
 SPPP.computeNIRSFaSTrack();
-SPPP.simulateNI();
+SPPP.simulateNIFaSTrack();
 end

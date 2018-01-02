@@ -1,17 +1,23 @@
-function computeNomTrajFaSTrack(obj, g, SPPP_folder, veh)
+function computeNomTrajFaSTrack(obj, SPPP_obj, g, SPPP_folder, veh)
 % SPPPlane.computeNomTraj(g)
-%     Computes nominal trajectory of to be robustly tracked
+%     Computes nominal trajectory to be robustly tracked
 
 small = 1e-4;
 
 % Modify control bounds
-pMax = obj.pMax;
-dynSys = Plane(obj.x, pMax(1), pMax(2));
+pMax = SPPP_obj.pMax;
+dynSys = Plane2D(obj.x, pMax(1), pMax(2));
 
 % Set extraArgs
 extraArgs.uMode = 'min';
 extraArgs.visualize = true;
-extraArgs.projDim = [1 1 0];
+extraArgs.projDim = [1 1];
+
+if g.dim > 2
+  for i = 1:g.dim - 2
+      extraArgs.projDim = [extraArgs.projDim 0];
+  end
+end
 extraArgs.subSamples = 32;
 
 if ispc
@@ -34,7 +40,6 @@ if isempty(obj.FRS1)
   obj.nomTraj_tau = nomTraj_tau;
   obj.nomTraj = nomTraj;  
 else
-  
   indsBeforeBRS1 = find(obj.FRS1_tau < min(obj.BRS1_tau)-small);
   pad_tau = obj.FRS1_tau(indsBeforeBRS1);
   pad_nomTraj = repmat(nomTraj(:,1), 1, length(indsBeforeBRS1));

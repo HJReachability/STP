@@ -43,8 +43,8 @@ end
 
 %Grid
 gN = [55; 55; 25; 25];
-gMin = [-1.5; -1.5; -pi; -5];
-gMax = [ 1.5;  1.5;  pi; 5];
+gMin = [-1.5; -1.5; -pi; -1.5];
+gMax = [ 1.5;  1.5;  pi; 1.5];
 % createGrid takes in grid bounds, grid number, and periodic dimensions
 sD.grid = createGrid(gMin, gMax, gN, 3);
 
@@ -52,11 +52,11 @@ sD.grid = createGrid(gMin, gMax, gN, 3);
 data0 = sD.grid.xs{1}.^2 + sD.grid.xs{2}.^2;
 
 % obstacles
-extraArgs.obstacles = -data0;  %%%%%%%%%%%%%%%%%%%%
+extraArgs.obstacles = -data0;  
 
 if visualize
   % to visualize initial function over 2D grid, project onto 2D
-  [g2D, data02D] = proj(sD.grid,data0,[0 0 1 1],[0 2]);
+  [g2D, data02D] = proj(sD.grid,data0,[0 0 1 1],[0 0]);
   
   figure(1)
   clf
@@ -115,7 +115,7 @@ if visualize
   f = figure(2);
   set(f, 'Position', [400 400 450 400]);
   extraArgs.plotData.plotDims = [1 1 0 0];
-  extraArgs.plotData.projpt = [0 2];
+  extraArgs.plotData.projpt = [0 0];
   
   % delete previous time step's plot
   extraArgs.deleteLastPlot = false;
@@ -125,7 +125,7 @@ end
 dt = 0.1;
 
 % Max time
-tMax = 10;
+tMax = 0.2;
 
 % Vector of times
 tau = 0:dt:tMax;
@@ -135,6 +135,9 @@ extraArgs.stopConverge = true;
 
 % converges when function doesn't change by more than dt each time step
 extraArgs.convergeThreshold = dt;
+
+% saves memory by just saving previous time step 
+extraArgs.keepLast = true;
 
 
 if save_png
@@ -151,20 +154,23 @@ end
 
 
 % solve backwards reachable set
+% instead of none, do max_data0 - no obstacles or max over time
 [data, tau] = HJIPDE_solve(data0, tau, sD, 'none', extraArgs); 
 
 % largest cost along all time (along the entire 5th dimension which is
 % time)
-RTTRS.data = max(data,[],5); %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RTTRS.data = data;
+RTTRS.data = max(data,[],5); 
 
-RTTRS.g = schemeData.grid;
-RTTRS.dynSys = dynSys;
+%RTTRS.data = data;
+RTTRS.g = sD.grid;
+RTTRS.dynSys = sD.dynSys;
 
 
 if visualize
   figure(1)
   subplot(1,2,2)
-  [g2D, data2D] = proj(sD.grid, data, [0 0 1 1], [0 2]);
+  [g2D, data2D] = proj(sD.grid, data, [0 0 1 1], [0 0]);
   s = surf(g2D.xs{1}, g2D.xs{2}, sqrt(data2D));
   
   %Level set for tracking error bound
@@ -178,8 +184,8 @@ if visualize
   
   levels = [.5, .75, 1];  
   
-  [g3D, data3D] = proj(sD.grid,data,[0 0 0 1], 2);%'max');
-  [~, data03D] = proj(sD.grid,data0,[0 0 0 1], 2);
+  [g3D, data3D] = proj(sD.grid,data,[0 0 0 1], 0);%'max');
+  [~, data03D] = proj(sD.grid,data0,[0 0 0 1], 0);
   
   
   for i = 1:3
@@ -207,14 +213,14 @@ if visualize
       axis square
           
   set(gcf,'Color','white')
-end
+  end
 
 %tracking error bound
-teb = sqrt(min(data(:))) + 0.05;
+teb = sqrt(min(data(:))) + 0.03;
 
-%lev = 0.4408;
 lev = lev + 0.03;
 RTTRS.trackingRadius = lev;
+obj.trackingRadius = lev;
 
 if visualize
     figure(3)

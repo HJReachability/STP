@@ -11,30 +11,32 @@ if nargin < 4
 end
 
 R_augment = 1.1*(SPPP.Rc + RTTRS.trackingRadius); % Amount to augment RTTRS by   
-[g2D, RTTRS2D] = migrateRTTRS(RTTRS, R_augment);
+[g2D, RTTRS2D] = migrateRTTRSFaSTrack(RTTRS, R_augment);
 
 % Initialize 2D versions of obstacles
 obj.obs2D_tau = nomTraj_tau;
 obj.obs2D = zeros([SPPP.g2D.N' length(nomTraj_tau)]);
 
 % Initialize 3D versions of obstacles
-obj.obsForRTT_tau = nomTraj_tau;
-obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);
+%obj.obsForRTT_tau = nomTraj_tau;
+%obj.obsForRTT = zeros([SPPP.g.N' length(nomTraj_tau)]);
 
 for i = 1:length(nomTraj_tau)   
   % Rotate and shift raw obstacles
   p = nomTraj(1:2,i);                                %position elements of trajectory
-  t = nomTraj(3,i);                                  %theta element of trajectory
-  obsi_rot = rotateData(g2D, RTTRS2D, t, [1 2], []); %rotate RTTRS2D by theta on trajectory
+  %t = nomTraj(3,i);                                  %theta element of trajectory
+  %obsi_rot = rotateData(g2D, RTTRS2D, t, [1 2], []); %rotate RTTRS2D by theta on trajectory
   obsi_gShift = shiftGrid(g2D, p);                   %move the RTTRS2D to its corresponding position on the trajectory
-  obsi = migrateGrid(obsi_gShift, obsi_rot, SPPP.g2D); 
+  %obsi = migrateGrid(obsi_gShift, obsi_rot, SPPP.g2D); 
   
-  obj.obs2D(:,:,i) = obsi;  
+  obj.obs2D(:,:,i) = migrateGrid(obsi_gShift, RTTRS2D, SPPP.g2D); 
+  obj.obsForRTT(:,:,i) = max(obj.obs2D(:,:,i), -obj.target);
+  
   %final obsForRTT variable that subsequent vehicles will use when planning
-  obj.obsForRTT(:,:,:,i) = repmat(obsi, [1 1 SPPP.g.N(3)]);
+  %obj.obsForRTT(:,:,:,:,i) = repmat(obsi, [1 1 SPPP.g.N(3) SPPP.g.N(4)]);
   
   % Exclude target set
-  obj.obsForRTT(:,:,:,i) = max(obj.obsForRTT(:,:,:,i), -obj.target);
+  %obj.obsForRTT(:,:,:,i) = max(obj.obsForRTT(:,:,:,i), -obj.target);
 end
 
 end

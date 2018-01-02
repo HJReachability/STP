@@ -9,6 +9,130 @@ switch setup_name
     
     obj.max_num_affected_vehicles = 3;
     
+  case 'room'
+    if nargin < 3
+      error('Must specify extraArgs for ''room'' setup!')
+    end
+    
+    %% Initial states
+    if isfield(extraArgs, 'number_of_vehicles')
+      numVeh = extraArgs.number_of_vehicles;
+    else
+      error('Must specify the property ''number_of_vehicles''!')
+    end
+    
+    %% Sampling and collision radius
+    obj.max_BRS_time = 50;   
+    obj.dt = 0.5;
+    obj.Rc = 1;
+    
+    %% Initial targets
+    obj.targetR = 2;
+    
+    obj.setupName = setup_name;
+    
+    if isfield(extraArgs, 'ISTC_filename')
+      fprintf('Loading initial states and target centers...\n')
+      load(extraArgs.ISTC_filename)
+      obj.initStates = IS;
+      obj.targetCenters = TC;
+    else
+      [obj.initStates, obj.targetCenters, ~, obj.targetCentersSet] = ...
+        gen_targets_initStates_FaSTrack(setup_name, numVeh);
+    end
+
+    %% Grid
+    % Defaults
+    obj.gMin = [0 0 0 0];
+    obj.gMax = [50 50 2*pi 25];
+    obj.gN = [10 10 5 5];
+    
+    wind_prompt = 'Please enter wind speed in m/s (6 or 11 only): ';
+    wind_speed = input(wind_prompt);
+    while ~any(wind_speed == [6 11])
+      wind_speed = input(wind_prompt);
+    end
+    
+    % Custom modifications
+    if strcmp(extraArgs.dstb_or_intr, 'dstb') && wind_speed == 6
+      obj.gN = [20 20 5 5];  
+    elseif strcmp(extraArgs.dstb_or_intr, 'intr')  %%%%%%%%%%%%%%%%% Change for 4D
+      obj.gMin = [-50 -50 0];
+      obj.gMax = [550 550 2*pi];
+      obj.gN = [125 125 15];
+    end
+    
+    obj.g = createGrid(obj.gMin, obj.gMax, obj.gN, 3);
+    
+    %for visualization
+    obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2)); 
+    
+    %% Obstacles
+    temp_g2D = createGrid([-20 -20], [20 20], [15 15]);  
+    
+    % Financial District
+    Obs1 = shapeRectangleByCorners(obj.g2D, [30; 25], [35; 30]);
+    
+    % Union Square
+    %Obs2 = shapeRectangleByCorners(temp_g2D, [-25; -30], [25; 30]);
+    %Obs2_rot = rotateData(temp_g2D, Obs2, 7.5*pi/180, [1 2], []);
+    %Obs2_gShift = shiftGrid(temp_g2D, [325 185]);
+    %Obs2 = migrateGrid(Obs2_gShift, Obs2_rot, obj.g2D);
+    %Obs2b = shapeHyperplaneByPoints(obj.g2D, [170 0; 400 230], ...
+    %  [0 500]);
+    %Obs2 = shapeDifference(Obs2, Obs2b);
+    
+    % City Hall
+    %Obs3 = shapeRectangleByCorners(temp_g2D, [-25; -5], [25; 5]);
+    %Obs3_rot = rotateData(temp_g2D, Obs3, 7.5*pi/180, [1 2], []);
+    %Obs3_gShift = shiftGrid(temp_g2D, [170 65]);
+    %Obs3 = migrateGrid(Obs3_gShift, Obs3_rot, obj.g2D);
+    
+    %obj.staticObs = min(Obs1, Obs2);
+    obj.staticObs = Obs1;
+    
+    %obj.mapFile = 'map_streets.png';
+    
+    %% Wind speed
+    switch wind_speed
+      case 6
+        obj.dMax = [0.6 0];  %%%%%%%%%%%%%%%%%%Think about disturbance in both x and y
+      case 11
+        obj.dMax = [1.1 0];
+    end
+    
+    %% Separation time between arrivals to target
+    separation_time = input('Please enter separation time in seconds: ');
+    
+    % Scheduled times of arrival, going backwards in time
+    obj.tTarget = zeros(numVeh, 1);
+    for i = 1:numVeh
+      obj.tTarget(i) = -separation_time*(i-1);
+    end
+    
+    % Adjust global time horizon
+    obj.tMin = -obj.max_BRS_time - numVeh*separation_time;   
+    obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
+    
+    %% Augment static obstacles
+    if isfield(extraArgs, 'dstb_or_intr')
+      switch extraArgs.dstb_or_intr
+        case 'dstb'
+        case 'intr'
+          obj.tIAT = 10;
+          warning(['Static obstacles will be augmented after computing ' ...
+            'bufferRegion and FRSBRS'])
+        otherwise
+          error('The property ''dstb_or_intr'' must be ''dstb'' or ''intr''!')
+      end
+    else
+      error('Must specify property ''dstb_or_intr'' in extraArgs!')
+    end
+    
+    obj.extraArgs = extraArgs;
+    obj.plotSetupFaSTrack(setup_name); 
+      
+    
   case 'SF'
     if nargin < 3
       error('Must specify extraArgs for ''SF'' setup!')
@@ -36,14 +160,14 @@ switch setup_name
       obj.targetCenters = TC;
     else
       [obj.initStates, obj.targetCenters, ~, obj.targetCentersSet] = ...
-        gen_targets_initStates(setup_name, numVeh);
+        gen_targets_initStates_FaSTrack(setup_name, numVeh);
     end
 
     %% Grid
     % Defaults
-    obj.gMin = [0 0 0];
-    obj.gMax = [500 500 2*pi];
-    obj.gN = [101 101 15];
+    obj.gMin = [0 0 0 0];
+    obj.gMax = [500 500 2*pi 250];
+    obj.gN = [101 101 15 15];
     
     wind_prompt = 'Please enter wind speed in m/s (6 or 11 only): ';
     wind_speed = input(wind_prompt);
@@ -53,8 +177,8 @@ switch setup_name
     
     % Custom modifications
     if strcmp(extraArgs.dstb_or_intr, 'dstb') && wind_speed == 6
-      obj.gN = [201 201 15];  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    elseif strcmp(extraArgs.dstb_or_intr, 'intr')
+      obj.gN = [201 201 15 15];  
+    elseif strcmp(extraArgs.dstb_or_intr, 'intr')  %%%%%%%%%%%%%%%%% Change for 4D
       obj.gMin = [-50 -50 0];
       obj.gMax = [550 550 2*pi];
       obj.gN = [125 125 15];
@@ -66,7 +190,7 @@ switch setup_name
     obj.g2D = createGrid(obj.gMin(1:2), obj.gMax(1:2), obj.gN(1:2)); 
     
     %% Obstacles
-    temp_g2D = createGrid([-35 -35], [35 35], [101 101]);   
+    temp_g2D = createGrid([-35 -35], [35 35], [101 101]);  
     
     % Financial District
     Obs1 = shapeRectangleByCorners(obj.g2D, [300; 250], [350; 300]);
@@ -94,7 +218,7 @@ switch setup_name
     %% Wind speed
     switch wind_speed
       case 6
-        obj.dMax = [0.6 0];   
+        obj.dMax = [0.6 0];  %%%%%%%%%%%%%%%%%%Think about disturbance in both x and y
       case 11
         obj.dMax = [1.1 0];
     end
@@ -116,19 +240,10 @@ switch setup_name
     if isfield(extraArgs, 'dstb_or_intr')
       switch extraArgs.dstb_or_intr
         case 'dstb'
-          augStaticObs = addCRadius(obj.g2D, obj.staticObs, obj.RTT_tR);
-
-          % Set boundary of grid to also be a static obstacle 
-          obs_bdry = -shapeRectangleByCorners(obj.g2D, obj.g2D.min + [5;5], ...
-            obj.g2D.max - [5;5]);   
-        
-          obj.augStaticObs = min(augStaticObs, obs_bdry);
-
         case 'intr'
           obj.tIAT = 10;
           warning(['Static obstacles will be augmented after computing ' ...
             'bufferRegion and FRSBRS'])
-          
         otherwise
           error('The property ''dstb_or_intr'' must be ''dstb'' or ''intr''!')
       end
@@ -136,7 +251,8 @@ switch setup_name
       error('Must specify property ''dstb_or_intr'' in extraArgs!')
     end
     
-    obj.plotSetup(setup_name);
+    obj.extraArgs = extraArgs;
+    obj.plotSetupFaSTrack(setup_name); 
     
   case 'Bay_Area'
     %% Initial states and targets
@@ -196,7 +312,7 @@ switch setup_name
     obj.mapFile = 'bay_area_streets.png';
     
     %% Wind speed
-    obj.dMax = [1.1 0];
+    obj.dMax = [1.1 0];  %%%%%%%%%%%%%%%%%%%%%
   
     %% Target separation time
     % Scheduled times of arrival
@@ -210,7 +326,7 @@ switch setup_name
     obj.tMin = -1500 - numVeh*separation_time;
     obj.tau = obj.tMin:obj.dt:max(obj.tTarget);
     
-    obj.plotSetup(setup_name);
+    obj.plotSetupFaSTrack(setup_name);  
     
   otherwise
     error('Unknown setup_name!')
