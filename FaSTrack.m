@@ -9,19 +9,20 @@ gN = [20 20];
 g = createGrid(gMin, gMax, gN);
 %temp_g = createGrid([-20 -20], [20 20], [15 15]);  
 %obs = shapeRectangleByCorners(g, [30; 25], [35; 30]);
-obs = shapeRectangleByCorners(g, [30; 25], [40; 35]);
+obs = shapeRectangleByCorners(g, [30; 20], [40; 30]);
 
-vxmax = 1.5;
+vxmax = 1;
 vymax = 1;
 P = Plane2D([47; 20], vxmax, vymax);
 wmax = 2*pi;
 aRange = [-1.5, 1.5];
-dMax = 2;
+dMax = 0.8;
 dims = 1:4;
 Q = Plane4D([47; 20; 0; 0], wmax, aRange, dMax, dims);
 
 target = [20; 45];
-targetLength = 1;
+targetLength = 6.5;
+vehicleSize = 0.8;
 
 %% Computing Tracking Error Bound (TEB)
 TEBgN = [55; 55; 25; 25];
@@ -39,7 +40,8 @@ subplot(1,2,1)
 surf(TEBg2D.xs{1}, TEBg2D.xs{2}, sqrt(data02D))
 hold on
 
-sD.dynSys = P4D_Q2D_Rel([]);
+sD.dynSys = P4D_Q2D_Rel([0; 0; 0; 0], -2, 2, vxmax, vymax, ...
+    -dMax, dMax, aRange(1), aRange(2), [1 2 3 4]);
 sD.uMode = 'min';
 sD.dMode = 'max';
 sD.accuracy = 'low';
@@ -54,7 +56,7 @@ extraArgs.plotData.projpt = [0 0];
 extraArgs.deleteLastPlot = false;
 
 dt = 0.1;
-tMax = 0.2;
+tMax = 1;
 tau = 0:dt:tMax;
 extraArgs.stopConverge = true;
 extraArgs.convergeThreshold = dt;
@@ -85,6 +87,7 @@ alpha = .2;
 small = .05;
   
 levels = [.5, .75, 1];  
+%levels = [2.6, 3, 3.3];
   
 [g3D, data3D] = proj(sD.grid,data,[0 0 0 1], 0);
 [~, data03D] = proj(sD.grid,data0,[0 0 0 1], 0);
@@ -132,11 +135,11 @@ axis square
 
 %% Planning
 % Augment obstacles
-augObs = addCRadius(g, obs, trackingRadius);
+augObs = addCRadius(g, obs, trackingRadius + vehicleSize);
 obs_bdry = -shapeRectangleByCorners(g, gMin + [0.1, 0.1], ...
        gMax - [0.1, 0.1]); 
 augObs = min(augObs, obs_bdry);
-targetLsmall = targetLength - trackingRadius;
+targetLsmall = targetLength - trackingRadius - vehicleSize;
 targetsm = shapeRectangleByCorners(g, target - [targetLsmall; targetLsmall], ...
     target + [targetLsmall; targetLsmall]);
 
@@ -201,21 +204,53 @@ end
 %  computeOptTraj(g, BRS, BRS_tau, P, extraArgs);
 
 %% Simulation
-%Deriv = computeGradients(sD.grid, data);
-%tStart = inf;
-%tEnd = -inf;
-%Q.x = Q.xhist(:,1);  
-%Q.xhist = Q.x;     
-%Q.u = [];            
-%Q.uhist = [];         
+Deriv = computeGradients(sD.grid, data0);
+tStart = inf;
+tEnd = -inf;
+Q.x = Q.xhist(:,1);  
+Q.xhist = Q.x;     
+Q.u = [];            
+Q.uhist = [];    
+nomTraj_tau = BRS_tau(1:iter-1);
 %tStart = min(tStart, min(nomTraj_tau)); 
 %tEnd = max(tEnd, max(nomTraj_tau));
-%tau = tStart:obj.dt:tEnd;
+%tau = tStart:dtSmall:tEnd;
 
-%f = figure;
+f = figure;
+visSetIm(g, augObs, 'r');
+hold on;
+visSetIm(g, obs, 'k');
+hold on;
+rectangle('Position', [target(1)-targetLsmall target(2)-targetLsmall ...
+    2*targetLsmall 2*targetLsmall]); 
 
-%h = visSetIm(g, augObs, 'k');
-%h.LineWidth = 3;
+for i = 1:length(nomTraj_tau)
+    for s = 1:subSamples
+        w = s/subSamples;
+        prev_tInd = max(1, i-1);
+        nomTraj_pt = (1-w)*traj(:,prev_tInd) + ...
+          w*traj(:,i);
+        rel_x = nomTraj_pt - Q.x(1:2); 
+        rel_x(1:2) = rotate2D(rel_x(1:2), -Q.x(3));   
+        rel_x(3:4) = [Q.x(3); Q.x(4)];
+
+        deriv = eval_u(sD.grid, Deriv, rel_x);
+        u = sD.dynSys.optCtrl([], rel_x, deriv, 'max');
+        d = sD.dynSys.optDstb([], rel_x, deriv, 'min');
+        d = [d(1) d(3)];
+        Q.updateState(u, dtSmall/subSamples, Q.x, d);
+    end
+    Q.uhist(:, end-subSamples+1:end-1) = [];   
+    Q.xhist(:, end-subSamples+1:end-1) = [];
+    
+    plot(Q.x(1), Q.x(2), 'b*');
+    plot(traj(1, i), traj(2, i), 'ko');
+    title(sprintf('t = %.0f', i));
+    drawnow;
+end
+
+
+
 
 
 
