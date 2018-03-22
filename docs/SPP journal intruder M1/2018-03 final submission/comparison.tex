@@ -1,0 +1,28 @@
+% !TEX root = SPP2.tex
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/rtt_traj"}
+%  \caption{Simulated trajectories in the centralized controller method.}
+%  \label{fig:lrc_traj}
+%\end{figure}
+%
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{"fig/rtt_rs3"}
+%  \caption{Evolution of the reachable set for the third vehicle $\veh_3$ in the centralized controller method}
+%  \label{fig:rtt_rs3}
+%\end{figure}
+
+\section{Comparison of Proposed Methods}
+This section briefly discusses the relative advantages and limitations of the proposed obstacle generation methods. Each method makes a trade-off between optimality (in terms of $\ldt_i$) and flexibility in control and disturbance rejection.
+
+\subsection{Centralized Controller}
+Given an order of priority, the vehicles will have the relatively high $\ldt_i$ in this method since a higher-priority vehicle maximizes its $\ldt_i$ as much as possible, while at the same time inducing a relatively small obstacle as to minimize its impedance towards the lower-priority vehicles. 
+%However, it is important to note that since a higher priority vehicle only minimizes  LTDs can be much higher for lower priority vehicles in some cases, compared to the methods which jointly optimize the LTDs. 
+A limitation of this method is that a centralized controller is likely required to ensure that the optimal control is being applied by the vehicles at all times, and hence safety.
+
+\subsection{Least Restrictive Control}
+This method gives more control flexibility to the higher priority vehicles, as long as the control does not push the vehicle out of its BRS. This flexibility, however, comes at the price of having larger induced obstacle, lowering $\ldt_i$ for the lower-priority vehicles.  
+
+\subsection{Robust Trajectory Tracking}
+Since the obstacle size is constant over time, this method is easier to implement from a practical standpoint. This method also aims at striking a balance between $\ldt_i$ across vehicles. In particular, the $\ldt_i$ of a higher priority vehicle can be lower compared to the centralized controller method for example, so that a lower priority vehicle can achieve a higher $\ldt$, making this method particularly suitable for the scenarios where there is no strong sense of priority among vehicles. This method, however, is computationally tractable when the tracking error dynamics are independent of the absolute states, as it otherwise requires doing computation in the joint state space of system dynamics and virtual vehicle dynamics as defined in \eqref{eq:jdyn}. 

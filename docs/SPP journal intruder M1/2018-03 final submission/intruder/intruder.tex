@@ -1,0 +1,24 @@
+% !TEX root = ../STP_journal.tex
+\section{STP With An Intruder \label{sec:intruder}}
+In Section \ref{sec:incomp}, we made the basic STP algorithm more robust by taking into account disturbances and considering situations in which vehicles may not have complete information about other vehicles' control strategies. However, if a vehicle not in the set of STP vehicles enters the system, or even worse, if this vehicle is an adversarial intruder, the original plan can lead to vehicles entering into another vehicle's danger zone. Without an additional safety margin that takes a potential intruder into account, a vehicle trying to avoid the intruder may effectively become an intruder itself, leading to a domino effect. In this section, we propose a method to allow vehicles to avoid an intruder while maintaining the STP structure.
+\vspace{-0.1cm}
+\subsection{Theory}
+In general, the effect of an intruder on the vehicles in structured flight can be entirely unpredictable, since the intruder in principle could be adversarial in nature, and the number of intruders could be arbitrary. Therefore, for our analysis to produce reasonable results, two assumptions about the intruders must be made.
+
+\begin{assumption}
+\label{as:avoidOnce}
+At most one intruder (denoted as $\veh_I$) affects the STP vehicles at any given time. The intruder is removed from the system after affecting the STP vehicles after a duration of $\iat$. The removal of the intruder can be done, for example, by forcing it out of the altitude range of the STP vehicles.
+\end{assumption}
+
+Let the time at which intruder appears in the system be $\tsa$ and the time at which it disappears be $\tea$. Assumption \ref{as:avoidOnce} implies that $\tea \leq \tsa + \iat$. Thus, any vehicle $\veh_i$ would need to avoid the intruder $\veh_{\intr}$ for a maximum duration of $\iat$. This assumption can be valid in situations where intruders are rare, and that some fail-safe or enforcement mechanism exists to force the intruder out of the altitude level affecting the STP vehicles. Note that we do not make any assumptions about $\tsa$; however, we assume that once it appears, it stays for a maximum duration of $\iat$.
+%in addition, after avoiding the intruder, Qi can safely assume that it would not need to avoid another intruder
+
+\begin{assumption}
+\label{as:dynKnown}
+The dynamics of the intruder are known and given by $\dot\state_\intr = f_\intr(\state_\intr, \ctrl_\intr, \dstb_\intr)$.
+\end{assumption}
+Assumption \ref{as:dynKnown} is required for HJ reachability analysis. Even though assumption \ref{as:dynKnown} often does not hold for practical systems, a conservative model of the intruder may be used in situations where the dynamics of the intruder are not known exactly. Note that we only assume that the dynamics of the intruder are known, but its initial state $\state_{\intr}^{0}$, control $\ctrl_\intr$ and disturbance $\dstb_\intr$ it experiences are unknown.
+
+Based on the above assumptions, we aim to design a control policy that ensures for each STP vehicle separation with the intruder and with other STP vehicles, and successful transit to the destination. However, depending on the initial state of the intruder, its control policy, and the disturbances in the dynamics of a vehicle and the intruder, a vehicle may arrive at different states after avoiding the intruder. Therefore, a control policy that ensures a successful transit to the destination needs to account for all such possible states, which is a trajectory planning problem with multiple (infinite, to be precise) initial states and a single destination, and is hard to solve in general. 
+
+Thus, we divide the intruder avoidance problem into two sub-problems. (i) We first design a control policy that ensures a successful transit to the destination if no intruder appears or successful avoidance of the intruder if it does appear. (ii) After the intruder is removed from the system at $\tea$, we solve a new STP problem (that is, we ``re-plan") for vehicles which needed to avoid the intruder. In this case, the affected vehicles will re-plan as lowest-priority vehicles starting from the initial they happen to arrive at after avoiding the intruder. 

@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[journal]{IEEEtran}  
+%\documentclass[12pt, draftcls, onecolumn]{IEEEtran}      
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+%\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+\usepackage{mathtools}    % need for sub equations
+\usepackage{amsfonts}
+\usepackage{graphicx}   % need for figures
+\usepackage{subcaption} 
+\usepackage{epsfig} 
+\usepackage{cancel}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{bm}
+\usepackage[ruled,vlined,titlenotnumbered]{algorithm2e} 
+\usepackage{todonotes} \setlength{\marginparwidth}{2.5cm} 
+\usepackage{float}
+\usepackage{cite}
+\usepackage{enumitem}
+
+\newcommand{\MCnote}{\textcolor{red}}
+\newcommand{\SBnote}{\textcolor{red}}
+
+\newcommand{\R}{\mathbb{R}} % Real number
+\newcommand{\dist}{\text{dist}} % Distance
+\newcommand{\rc}{R_c} % Capture radius
+\newcommand{\cradius}{\rc}
+\newcommand{\N}{N} % number of agents
+
+\newcommand{\veh}{Q} % vehicle
+\newcommand{\intr}{I} % Intruder index
+\newcommand{\state}{x} % state
+\newcommand{\ctrl}{u} % control
+\newcommand{\dstb}{d} % disturbance
+\newcommand{\pos}{p} % position
+\newcommand{\npos}{h} % non-position states
+
+\newcommand{\traj}{\zeta}
+\newcommand{\errstate}{e}
+
+\newcommand{\fdyn}{f} % full dynamics
+\newcommand{\cset}{\mathcal{U}} % Control set
+\newcommand{\cfset}{\mathbb{U}} % control function set
+\newcommand{\dset}{\mathcal{D}} % disturbance
+\newcommand{\dfset}{\mathbb{D}} % disturbance function set
+\newcommand{\obsset}{\mathcal{G}} % Obstacle (the one used to solve PDE)
+\newcommand{\dz}{\mathcal{Z}} % danger zone
+\newcommand{\intobs}{\mathcal{M}} % Intermediate obstacles required for the intruder Method2
+
+\newcommand{\valfunc}{V} % value function
+\newcommand{\valfuncfwd}{W} % value function for forwards reachable set
+\newcommand{\brs}{\mathcal{V}} % backwards reachable set
+\newcommand{\frs}{\mathcal{W}} % forwards reachable set
+\newcommand{\pfrs}{\mathcal{P}} % projected forwards reachable set
+\newcommand{\targetset}{\mathcal{L}} % target set
+\newcommand{\ham}{H} % Hamiltonian
+\newcommand{\fc}{l} % Final condition
+\newcommand{\ic}{l} % Initial condition
+\newcommand{\obsfunc}{g} % Obstacle function
+\newcommand{\costate}{\lambda}
+
+\newcommand{\disckernel}{\Omega} % Discriminating kernel
+
+\newcommand{\edt}{t^\text{EDT}} % earliest departure time
+\newcommand{\ldt}{t^\text{LDT}} % latest departure time
+\newcommand{\sta}{t^\text{STA}} % scheduled time of arrival
+\newcommand{\ioset}{\mathcal{O}} % Induced obstacle
+\newcommand{\boset}{\mathcal{B}} % Base obstacle
+\newcommand{\sosetp}{\mathcal{S}} % static obstacle in position space
+\newcommand{\soset}{\ioset^\text{static}} % static obstacle in state space
+\newcommand{\iat}{t^\text{IAT}} % intruder avoidance time
+\newcommand{\wcttr}{t^\text{WC}} % worst case TTR
+
+\newcommand{\basicham}{\ham^\text{basic}}
+
+\newcommand{\tsa}{\underline{t}} % time of start of avoidance
+\newcommand{\tea}{\bar{t}} % time of end of avoidance
+
+\newcommand{\errorbound}{\mathcal{E}} % Error ``bubble" between vehicle and tracking reference
+\newcommand{\tracklaw}{\kappa} % Robust tracking law
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{alg}{Algorithm}
+\newtheorem{remark}{Remark}
+
+\title{\LARGE \bf Robust Sequential Trajectory Planning Under Disturbances and Adversarial Intruder}
+
+\author{Mo Chen, Somil Bansal, Jaime F. Fisac, Claire J. Tomlin
+\thanks{This work has been supported in part by NSF under CPS:ActionWebs (CNS-931843), by ONR under the HUNT (N0014-08-0696) and SMARTS (N00014-09-1-1051) MURIs and by grant N00014-12-1-0609, by AFOSR under the CHASE MURI (FA9550-10-1-0567). The research of M. Chen and J. F. Fisac have received funding from the ``NSERC'' program and ``la Caixa" Foundation, respectively.}
+\thanks{All authors are with the Department of Electrical Engineering and Computer Sciences, University of California, Berkeley. \{mochen72, somil, jfisac, tomlin\}@eecs.berkeley.edu}
+}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+%%%
+\begin{abstract}
+%Provably safe and scalable multi-vehicle trajectory planning is an important and urgent problem due to the expected increase of automation in civilian airspace in the near future. Although this problem has been studied in the past, there has not been a method that guarantees both goal satisfaction and safety for vehicles with general nonlinear dynamics while taking into account disturbances and potential adversarial agents, to the best of our knowledge. Hamilton-Jacobi (HJ) reachability is the ideal tool for guaranteeing goal satisfaction and safety under such scenarios, and has been successfully applied to many small-scale problems. However, a direct application of HJ reachability in most cases becomes intractable when there are more than two vehicles due to the exponentially scaling computational complexity with respect to system dimension. In this paper, we take advantage of the guarantees HJ reachability provides, and eliminate the computation burden by assigning a strict priority ordering to the vehicles under consideration. Under this sequential trajectory planning (STP) scheme, vehicles reserve ``space-time'' portions in the airspace, and the space-time portions guarantee dynamic feasibility, collision avoidance, and optimality of the trajectories given the priority ordering. With a computation complexity that scales quadratically when accounting for both disturbances and an intruder, and \textit{linearly} when accounting for only disturbances, STP can tractably solve the multi-vehicle trajectory planning problem for vehicles with general nonlinear dynamics in a practical setting. We demonstrate our theory in representative simulations.
+Provably safe and scalable multi-vehicle trajectory planning is an important and urgent problem. Although this problem has been studied in the past, there has not been a method that guarantees both goal satisfaction and safety for vehicles with general nonlinear dynamics while taking into account disturbances and potential adversarial agents, to the best of our knowledge. Hamilton-Jacobi (HJ) reachability is the ideal tool for guaranteeing goal satisfaction and safety under such scenarios, and has been successfully applied to many small-scale problems; however, its direct application in most cases becomes intractable when there are more than two vehicles due to the exponentially scaling computational complexity with respect to system dimension. In this paper, we take advantage of the guarantees HJ reachability provides, and eliminate the computation burden by assigning a strict priority ordering to vehicles under consideration. Under this sequential trajectory planning (STP) scheme, vehicles reserve ``space-time'' portions in the airspace. The space-time portions guarantee dynamic feasibility, collision avoidance, and optimality of trajectories given the priority ordering. With a computation complexity that scales quadratically when accounting for both disturbances and an intruder, and \textit{linearly} when accounting for only disturbances, STP can tractably solve the multi-vehicle trajectory planning problem for vehicles with general nonlinear dynamics in a practical setting. We demonstrate our theory in representative simulations. \vspace{-0.8cm}
+\end{abstract}
+
+%However, this problem is inherently challenging due to not only the complex interactions that exist between the vehicles under consideration, but also the presence of disturbances and potentially malicious intruders. 
+
+\input{introduction}
+
+\input{formulation}
+\input{HJIVI}
+\input{basic}
+\input{basic_results}
+
+% Disturbance files
+\input{disturbance/obs_gen1}
+\input{disturbance/obs_gen2}
+\input{disturbance/obs_gen3_revised}
+\input{disturbance/results1}
+\input{disturbance/results2}
+\input{disturbance/results3}
+
+%\input{incomp}
+%\input{incomp_results}
+
+% Intruder files
+\input{./intruder/intruder}
+\input{./intruder/method1}
+%\input{./intruder/method2}
+\input{./intruder/intruder_results}
+
+\input{conclusion.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\addtolength{\textheight}{1cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,references}
+\end{document}
