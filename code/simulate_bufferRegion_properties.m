@@ -114,9 +114,9 @@ end
 %% Simulation parameters
 switch mode
   case 'worst'
-    dt = 0.1;
+    dt = 0.05;
   case 'normal'
-    dt = 0.1;
+    dt = 0.05;
     
     for j = 1:length(targets)
       h = plotDisk(targets{j}, targetR, 'color', colors{j}, 'linewidth', 2);
@@ -132,7 +132,7 @@ small = 0.01;
 
 %% Plot reachable sets
 if ~exist(SPPP.RBR_filename, 'file')
-  SPPP.computeRBR;
+  SPPP.computeRBR(true);
 end
 load(SPPP.RBR_filename)
 
