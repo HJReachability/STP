@@ -13,14 +13,16 @@ if exist(SPPP.CARS_filename, 'file')
   fprintf('Loading CARS...\n')
   load(SPPP.CARS_filename)
 else
-  error('CARS file not found!')
+  SPPP.computeCARS
+%   error('CARS file not found!')
 end
 
 if exist(SPPP.minMinBRS_filename, 'file')
   fprintf('Loading minMinBRS...\n')
   load(SPPP.minMinBRS_filename)
 else
-  error('minMinBRS file not found!')
+  SPPP.computeMinMinBRS;
+%   error('minMinBRS file not found!')
 end
 
 %% Assign and check parameters
@@ -55,14 +57,14 @@ if exist(reach_file, 'file')
 else
   disp('Computing target reaching file...')
   
-  grid_min = [-15; -15; -pi]; % Lower corner of computation domain
-  grid_max = [15; 15; pi];    % Upper corner of computation domain
-  N = [31; 31; 31];         % Number of grid points per dimension
+  grid_min = [-20; -20; -pi]; % Lower corner of computation domain
+  grid_max = [20; 20; pi];    % Upper corner of computation domain
+  N = [51; 51; 51];         % Number of grid points per dimension
   pdDims = 3;               % 3rd diemension is periodic
   TRRS.g = createGrid(grid_min, grid_max, N, pdDims);
   
   data0 = shapeCylinder(TRRS.g, 3, [0; 0; 0], targetR);
-  tau = 0:0.05:10;
+  tau = 0:0.05:20;
   
   schemeData.grid = TRRS.g;
   schemeData.dynSys = Plane([0, 0, 0], avoid_wMax, avoid_vRange);
@@ -99,9 +101,19 @@ colors = {'b', 'r', [0 0.5 0], 'm', 'k'};
 
 %% Initialize planes
 % Initial positions of vehicles 1,2,3,4,I
-x0s = {[0; 0; 0]; [-13.369; 13.6353; 0]; [7.9605; 16.9; 3*pi/4]; ...
-  [12.3117; 0.5592; 0]; [0.0793; 1.4403; -3*pi/4]};
-targets = {[-10; -10]; [-15; 0]; [-2.5; 15]; [15; 15]};
+% For worst case
+% x0s = {[0; 0; 0]; [-13.369; 13.6353; 0]; [7.9605; 16.9; 3*pi/4]; ...
+%   [12.3117; 0.5592; 0]; [0.0793; 1.4403; -3*pi/4]};
+% For normal caseS{{
+x0s = {[0; 0; 0]; ...
+       [-2; 12; 0]; ...
+       [12; 16.9; 3*pi/4]; ...
+       [12.3117; 0.1; 0]; ...
+       [0.0793; 1.4403; -3*pi/4]};
+targets = {[-10; -10]; ...
+           [-15; 0]; ...
+           [-2.5; 15]; ...
+           [15; 15]};
 pls = cell(size(x0s));
 for j = 1:length(x0s)
   if j < length(x0s)
@@ -126,15 +138,18 @@ switch mode
     error('Unknown mode!')
 end
 
-tMax = 10;
+tMax = 20;
+tin = 10;
 t = 0:dt:tMax;
-small = 0.01;
+small = 0.02;
 
 %% Plot reachable sets
 if ~exist(SPPP.RBR_filename, 'file')
   SPPP.computeRBR(true);
+else
+  load(SPPP.RBR_filename) 
 end
-load(SPPP.RBR_filename)
+
 
 hCARS = cell(length(pls)-1, 1);
 hRBR  = cell(length(pls)-1, 1);
@@ -170,6 +185,9 @@ export_fig(sprintf('%s_%s_%d', mfilename, mode, vri-1), '-pdf')
 leg.Visible = 'off';
 hRBR{vri}.Visible = 'off';
 
+tagged = false(4,1);
+tagged(1) = true;
+
 for i = 2:length(t)
   for j = 1:length(pls)-1
     switch mode
@@ -184,13 +202,21 @@ for i = 2:length(t)
         
       case 'normal'
         x_rel = PlaneDubins_relState(pls{j}.x, pls{end}.x);
-        if eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
+        if ~tagged(j) && eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
+            tagged(j) = true;
+        end
+        
+        if tagged(j) && t(i) <= tin
           us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
         else
           us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
         end
         
-        [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
+        if t(i) <= tin
+            [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
+        else
+            us{end} = [0; 0];
+        end
     end
     
   end
@@ -225,6 +251,7 @@ for i = 2:length(t)
   
   title(sprintf('t = %.2f\n', t(i)))
   drawnow
+  export_fig(sprintf('%s/%s_sim/%s_%s_%d', SPPP.folder, mode, mfilename, mode, i), '-png')
 end
 
 savefig(sprintf('%s_%s_%d.fig', mfilename, mode, vri));
