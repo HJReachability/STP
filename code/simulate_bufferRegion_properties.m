@@ -32,19 +32,19 @@ avoid_vRange = CARS.dynSys.vRangeA;
 intr_wMax = CARS.dynSys.wMaxB;
 intr_vRange = CARS.dynSys.vRangeB;
 
-if avoid_wMax ~= minMinBRS.dynSys.wMaxA;
+if avoid_wMax ~= minMinBRS.dynSys.wMaxA
   error('CARS and minMinBRS wMaxA do not agree!')
 end
 
-if any(avoid_vRange ~= minMinBRS.dynSys.vRangeA);
+if any(avoid_vRange ~= minMinBRS.dynSys.vRangeA)
   error('CARS and minMinBRS vRangeA do not agree!')
 end
 
-if intr_wMax ~= minMinBRS.dynSys.wMaxB;
+if intr_wMax ~= minMinBRS.dynSys.wMaxB
   error('CARS and minMinBRS wMaxB do not agree!')
 end
 
-if any(intr_vRange ~= minMinBRS.dynSys.vRangeB);
+if any(intr_vRange ~= minMinBRS.dynSys.vRangeB)
   error('CARS and minMinBRS vRangeB do not agree!')
 end
 
@@ -110,10 +110,29 @@ x0s = {[0; 0; 0]; ...
        [12; 16.9; 3*pi/4]; ...
        [12.3117; 0.1; 0]; ...
        [0.0793; 1.4403; -3*pi/4]};
-targets = {[-10; -10]; ...
-           [-15; 0]; ...
-           [-2.5; 15]; ...
-           [15; 15]};
+
+vMax = CARS.dynSys.vRangeA(2);
+   
+x02st = [-0.8676; 7.978; atan2(-0.9996, 0.0292)];
+x0s{2} = x02st - 1.9 * [vMax*cos(x02st(3)); vMax*sin(x02st(3)); 0];
+
+x03st = [6.19; 15.46; atan2(-0.8977, -0.4405)];
+x0s{3} = x03st - 5.75 * [vMax*cos(x03st(3)); vMax*sin(x03st(3)); 0];
+
+x04st = [17.82; 7.139; atan2(-0.5155, -0.8569)];
+x0s{4} = x04st - 10 * [vMax*cos(x04st(3)); vMax*sin(x04st(3)); 0];
+% 
+% targets = {[-10; -10]; ...
+%            [-15; 0]; ...
+%            [-2.5; 15]; ...
+%            [15; 15]};
+
+targets = cell(4,1);
+for i = 1:4
+  targets{i} = x0s{i}(1:2) + ...
+    (11 + targetR) * [vMax*cos(x0s{i}(3)); vMax*sin(x0s{i}(3))];
+end
+         
 pls = cell(size(x0s));
 for j = 1:length(x0s)
   if j < length(x0s)
@@ -127,6 +146,10 @@ end
 switch mode
   case 'worst'
     dt = 0.05;
+    
+    for j = 1:length(targets)
+      h = plotDisk(targets{j}, targetR, 'color', colors{j}, 'linewidth', 2);
+    end    
   case 'normal'
     dt = 0.05;
     
@@ -164,14 +187,18 @@ end
 
 CARSderiv = computeGradients(CARS.g, CARS.data(:,:,:,end));
 
-vri = 2; % vehicle reaching intruder
+% vri = 2; % vehicle reaching intruder
+vri = 2; % vehicles >= this number do not need to avoid intruder yet
 hRBR{vri} = plotRBR(pls{vri}, pls{end}, RBR);
 
 switch mode
   case 'worst'
-    leg = legend([pls{1}.hpxpy, pls{1}.hpxpyhist, hCARS{1}, hRBR{vri}], ...
-      {'Pos. and heading', 'Trajectory', 'Avoid region', ...
-      '(Relative) buffer region'}, 'FontSize', 16', 'Location', 'SouthEast');
+%     leg = legend([pls{1}.hpxpy, pls{1}.hpxpyhist, hCARS{1}, hRBR{vri}], ...
+%       {'Pos. and heading', 'Trajectory', 'Avoid region', ...
+%       '(Relative) buffer region'}, 'FontSize', 16', 'Location', 'SouthEast');
+  leg = legend([h, pls{1}.hpxpy, pls{1}.hpxpyhist, hCARS{1}, hRBR{vri}], ...
+    {'Target', 'Pos. and heading', 'Trajectory', 'Avoid region', ...
+    '(Relative) buffer region'}, 'FontSize', 16', 'Location', 'SouthEast');
   case 'normal'
     leg = legend([h, pls{1}.hpxpy, pls{1}.hpxpyhist, hCARS{1}, hRBR{vri}], ...
       {'Target', 'Pos. and heading', 'Trajectory', 'Avoid region', ...
@@ -188,37 +215,47 @@ hRBR{vri}.Visible = 'off';
 tagged = false(4,1);
 tagged(1) = true;
 
+mkdir(sprintf('%s/%s_sim/%s_%s', SPPP.folder, mode, mfilename, mode), '-png')
 for i = 2:length(t)
-  for j = 1:length(pls)-1
-    switch mode
-      case 'worst'
-        if j == vri
-          [us{j},us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
-        elseif j == 1
-          us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
-        else
-          us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
-        end
-        
-      case 'normal'
-        x_rel = PlaneDubins_relState(pls{j}.x, pls{end}.x);
-        if ~tagged(j) && eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
-            tagged(j) = true;
-        end
-        
-        if tagged(j) && t(i) <= tin
-          us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
-        else
-          us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
-        end
-        
-        if t(i) <= tin
-            [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
-        else
-            us{end} = [0; 0];
-        end
+  if t(i) < tin
+    for j = 1:length(pls)-1
+      switch mode
+        case 'worst'
+%           if j == vri
+%             [us{j},us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
+%           elseif j == 1
+%             us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
+%           else
+%             us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
+%           end
+          if j >= vri
+            us{j} = [vMax; 0];
+          else
+            us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
+          end          
+
+        case 'normal'
+          x_rel = PlaneDubins_relState(pls{j}.x, pls{end}.x);
+          if ~tagged(j) && eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
+              tagged(j) = true;
+          end
+
+          if tagged(j) && t(i) <= tin
+            us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
+          else
+            us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
+          end
+
+          if t(i) <= tin
+              [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
+          else
+              us{end} = [0; 0];
+          end
+      end
+
     end
-    
+  else
+    us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
   end
   
   % Update states
