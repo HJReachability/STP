@@ -12,6 +12,7 @@ end
 if exist(SPPP.CARS_filename, 'file')
   fprintf('Loading CARS...\n')
   load(SPPP.CARS_filename)
+  load('SPPProblem_worst_toy/CARS2.mat');
 else
   SPPP.computeCARS
 %   error('CARS file not found!')
@@ -57,14 +58,14 @@ if exist(reach_file, 'file')
 else
   disp('Computing target reaching file...')
   
-  grid_min = [-20; -20; -pi]; % Lower corner of computation domain
-  grid_max = [20; 20; pi];    % Upper corner of computation domain
-  N = [51; 51; 51];         % Number of grid points per dimension
+  grid_min = [-50; -50; -pi]; % Lower corner of computation domain
+  grid_max = [50; 50; pi];    % Upper corner of computation domain
+  N = [201; 201; 36];         % Number of grid points per dimension
   pdDims = 3;               % 3rd diemension is periodic
   TRRS.g = createGrid(grid_min, grid_max, N, pdDims);
   
   data0 = shapeCylinder(TRRS.g, 3, [0; 0; 0], targetR);
-  tau = 0:0.05:20;
+  tau = 0:0.05:30;
   
   schemeData.grid = TRRS.g;
   schemeData.dynSys = Plane([0, 0, 0], avoid_wMax, avoid_vRange);
@@ -78,9 +79,8 @@ f = figure;
 f.Color = 'white';
 f.Position = [100 100 800 600];
 hold on
-L = 20;
-xlim(L * [-1 1])
-ylim(L * [-1 1])
+xlim([-10 40])
+ylim([-20 30])
 xlabel('x (m)', 'FontSize', 16)
 ylabel('y (m)', 'FontSize', 16)
 box on
@@ -91,10 +91,10 @@ eA_pos.ArrowLength = 1.5;
 eA_pos.MarkerSize = 25;
 eA_pos.LineStyle = '-';
 
-set(gca, 'xtick', [-20 -10 0 10 20])
-set(gca, 'ytick', [-20 -10 0 10 20])
-set(gca, 'xticklabels', {'-200', '-100', '0', '100', '200'})
-set(gca, 'yticklabels', {'-200', '-100', '0', '100', '200'})
+set(gca, 'xtick', [-10 0 10 20 30 40])
+set(gca, 'ytick', [-20 -10 0 10 20 30])
+set(gca, 'xticklabels', {'-100', '0', '100', '200', '300', '400'})
+set(gca, 'yticklabels', {'-200', '-100', '0', '100', '200', '300'})
 set(gca, 'fontsize', 16)
 
 colors = {'b', 'r', [0 0.5 0], 'm', 'k'};
@@ -112,15 +112,15 @@ x0s = {[0; 0; 0]; ...
        [0.0793; 1.4403; -3*pi/4]};
 
 vMax = CARS.dynSys.vRangeA(2);
-   
+ 
 x02st = [-0.8676; 7.978; atan2(-0.9996, 0.0292)];
 x0s{2} = x02st - 1.9 * [vMax*cos(x02st(3)); vMax*sin(x02st(3)); 0];
 
 x03st = [6.19; 15.46; atan2(-0.8977, -0.4405)];
 x0s{3} = x03st - 5.75 * [vMax*cos(x03st(3)); vMax*sin(x03st(3)); 0];
 
-x04st = [17.82; 7.139; atan2(-0.5155, -0.8569)];
-x0s{4} = x04st - 10 * [vMax*cos(x04st(3)); vMax*sin(x04st(3)); 0];
+x04st = [13.85; 9.61; atan2(-0.5155, -0.8569)];
+x0s{4} = x04st - 11.5 * [vMax*cos(x04st(3)); vMax*sin(x04st(3)); 0];
 % 
 % targets = {[-10; -10]; ...
 %            [-15; 0]; ...
@@ -149,6 +149,8 @@ switch mode
     
     for j = 1:length(targets)
       h = plotDisk(targets{j}, targetR, 'color', colors{j}, 'linewidth', 2);
+      plot([x0s{j}(1) targets{j}(1)], [x0s{j}(2) targets{j}(2)], ...
+        ':', 'color', colors{j}, 'linewidth', 2.5);
     end    
   case 'normal'
     dt = 0.05;
@@ -161,7 +163,7 @@ switch mode
     error('Unknown mode!')
 end
 
-tMax = 20;
+tMax = 30;
 tin = 10;
 t = 0:dt:tMax;
 small = 0.02;
@@ -185,7 +187,7 @@ for j = 1:length(pls)
   end
 end
 
-CARSderiv = computeGradients(CARS.g, CARS.data(:,:,:,end));
+CARS2deriv = computeGradients(CARS2.g, CARS2.data(:,:,:,end));
 
 % vri = 2; % vehicle reaching intruder
 vri = 2; % vehicles >= this number do not need to avoid intruder yet
@@ -217,10 +219,10 @@ tagged(1) = true;
 
 mkdir(sprintf('%s/%s_sim/%s_%s', SPPP.folder, mode, mfilename, mode), '-png')
 for i = 2:length(t)
-  if t(i) < tin
+  if t(i) <= tin
     for j = 1:length(pls)-1
-      switch mode
-        case 'worst'
+% %       switch mode
+%         case 'worst'
 %           if j == vri
 %             [us{j},us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
 %           elseif j == 1
@@ -228,62 +230,76 @@ for i = 2:length(t)
 %           else
 %             us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
 %           end
+%           [~,us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
           if j >= vri
             us{j} = [vMax; 0];
           else
-            us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
-          end          
-
-        case 'normal'
-          x_rel = PlaneDubins_relState(pls{j}.x, pls{end}.x);
-          if ~tagged(j) && eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
-              tagged(j) = true;
+            us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARS2);
+%             fprintf('u{%d} = (%.1f, %.1f)\n', j, us{j}(1), us{j}(2));
           end
-
-          if tagged(j) && t(i) <= tin
-            us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS, CARSderiv);
-          else
-            us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
-          end
-
-          if t(i) <= tin
-              [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
-          else
-              us{end} = [0; 0];
-          end
-      end
+          
+%         case 'normal'
+%           x_rel = PlaneDubins_relState(pls{j}.x, pls{end}.x);
+%           if ~tagged(j) && eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
+%               tagged(j) = true;
+%           end
+% 
+%           if tagged(j) && t(i) <= tin
+%             us{j} = avoid_intr_ctrl(pls{j}, pls{end}, CARS);
+%           else
+%             us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
+%           end
+% 
+%           if t(i) <= tin
+%               [~, us{end}] = reach_intr_ctrl(pls{vri}, pls{end}, RBR, minMinBRS);
+%           else
+%               us{end} = [0; 0];
+%           end
+%       end
 
     end
+    [~,us{end}] = avoid_intr_ctrl(pls{vri}, pls{end}, CARS, CARS2);
+    us{end} = us{end}(1:2);
+    
+    % Update which vehicle tries to reach the intruder
+    x_rel = PlaneDubins_relState(pls{vri}.x, pls{end}.x);
+    if eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
+      vri = vri + 1;
+  %     hRBR{vri} = plotRBR(pls{vri}, pls{end}, RBR);
+
+  %     keyboard
+      savefig(sprintf('%s_%s_%d.fig', mfilename, mode, vri-1));
+      export_fig(sprintf('%s_%s_%d', mfilename, mode, vri-1), '-pdf')
+
+      hRBR{vri}.Visible = 'off';
+    end
+  
   else
-    us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
+    for j = 1:length(pls)-1
+      us{j} = reach_ctrl(pls{j}, TRRS, targets{j});
+    end
+    us{end} = [0; 0];
   end
   
   % Update states
   for j = 1:length(pls)
     pls{j}.updateState(us{j}, dt);
   end
-  
-  % Update which vehicle tries to reach the intruder
-  x_rel = PlaneDubins_relState(pls{vri}.x, pls{end}.x);
-  if eval_u(CARS.g, CARS.data(:,:,:,end), x_rel) < small
-    vri = vri + 1;
-    hRBR{vri} = plotRBR(pls{vri}, pls{end}, RBR);
-    
-%     keyboard
-    savefig(sprintf('%s_%s_%d.fig', mfilename, mode, vri-1));
-    export_fig(sprintf('%s_%s_%d', mfilename, mode, vri-1), '-pdf')
-    
-    hRBR{vri}.Visible = 'off';
-  end
-  
+ 
   % Update plot
   for j = 1:length(pls)
+    if t(i) == tin
+      [~, phist] = pls{j}.getPosition;
+      plot(phist(1,:), phist(2,:), '-', 'color', colors{j}, ...
+        'linewidth', 0.5);
+      eA_pos.LineStyle = '--';
+    end
     pls{j}.plotPosition(eA_pos);
     
-    if j < length(pls)
-      delete(hCARS{j})
-      hCARS{j} = plotCARS(pls{j}, pls{end}, CARS);
-    end
+%     if j < length(pls)
+%       delete(hCARS{j})
+%       hCARS{j} = plotCARS(pls{j}, pls{end}, CARS);
+%     end
   end
   
   title(sprintf('t = %.2f\n', t(i)))

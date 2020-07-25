@@ -72,8 +72,7 @@ data0 = shapeCylinder(schemeData.grid, 3, [0; 0; 0], obj.Rc);
 tau = 0:obj.dt:obj.tIAT;
 
 %% Compute set
-extraArgs.visualize = true;
-extraArgs.deleteLastPlot = true;
+extraArgs.visualize.deleteLastPlot = true;
 
 if save_png
   if ispc
